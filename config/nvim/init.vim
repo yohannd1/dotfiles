@@ -58,27 +58,12 @@ endif
 " }}}
 " Filetype Config ---------------------------- {{{
 
-" 'tq' task format {{{
-
-" Config for my task/note outlining format
-augroup ft_tq
-    au!
-    au BufNewFile,BufRead,BufEnter *.tq set filetype=tq
-    au FileType tq setlocal syntax=tq
-    au FileType tq setlocal foldmethod=indent
-    au FileType tq setlocal tabstop=2 shiftwidth=2
-
-    " The following mapping only works for this century!
-    au FileType tq inoremap <buffer> <silent> <C-l> <C-r>=strftime("20%y-%m-%d")<CR>
-augroup end
-
-" }}}
 " Shell {{{
 
 augroup ft_sh
     au!
     au FileType sh setlocal tabstop=4 shiftwidth=4
-    au FileType sh set foldmethod=marker foldmarker=#==,==#
+    au FileType sh set foldmethod=marker
 augroup end
 
 " }}}
@@ -272,12 +257,6 @@ map <ScrollWheelDown> 15<C-E>
 nnoremap <silent> <Leader> "+
 vnoremap <silent> <Leader> "+
 
-" Indentation with Tab
-" nnoremap <silent> <Tab> >>
-" nnoremap <silent> <S-Tab> <<
-" vnoremap <silent> <Tab> >gv
-" vnoremap <silent> <S-Tab> <gv
-
 " Clear search query
 nnoremap <silent> <Leader>l :noh<CR>
 
@@ -288,11 +267,6 @@ nnoremap Ç q:i
 " Folding Commands
 nnoremap <silent> <Tab> za
 nnoremap <silent> <S-Tab> zm
-" nnoremap <silent> <Leader>j zo
-" nnoremap <silent> <Leader>k zc
-" nnoremap <silent> <Leader>J zO
-" nnoremap <silent> <Leader>K zC
-" nnoremap <silent> <Leader>m zm
 
 " Escape terminal in nvim
 tnoremap <silent> <Esc> <C-\><C-n>
@@ -321,9 +295,12 @@ nnoremap <f9> mzggg?G`zzz
 " Toggle Paste Mode
 nnoremap <silent> <Leader>tp :set paste!<cr>
 
-" Steve Losh: " Use sane regexes.
+" Steve Losh: "use sane regexes"
 nnoremap / /\v
 vnoremap / /\v
+
+" Insert today's date
+inoremap <buffer> <silent> <C-l> <C-r>=strftime("20%y-%m-%d")<CR>
 
 " }}}
 " Quick Editing ------------------------------ {{{

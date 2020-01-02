@@ -1,4 +1,4 @@
-# CONFIG #######################################==
+# CONFIG ##################################### {{{
 
 export DOTFILES="${HOME}/git/dotfiles"
 export GIT_PERSONAL="${HOME}/git/personal"
@@ -6,8 +6,8 @@ export EDITOR="nvim"
 export TERMINAL="st"
 export BAT_THEME="base16" # Theme for bat (cat with syntax highlighting)
 
-# ==#
-# LIBRARY ######################################==
+# }}}
+# LIBRARY #################################### {{{
 
 source_() { [ -f "${1}" ] && source "${1}"; }
 
@@ -53,10 +53,10 @@ git-branch() {
     fi
 }
 
-# ==#
-# APPLICATION SETTINGS #########################==
+# }}}
+# APPLICATION SETTINGS ####################### {{{
 
-# BASH #==
+# BASH {{{
 HISTCONTROL=ignoreboth
 export HISTSIZE=1000000
 export HISTFILESIZE=1000000000
@@ -72,7 +72,7 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# ==#
+# }}}
 
 # LESS
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -92,13 +92,13 @@ test -r "${DOTFILES}/config/dircolors" \
 # GCC
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-# ==#
-# PATH #########################################==
+# }}}
+# PATH ####################################### {{{
 
 path-push "${HOME}/.local/bin"
 
-# ==#
-# ALIASES ######################################==
+# }}}
+# ALIASES #################################### {{{
 
 alias ls='ls --color=auto'
 alias la='ls -A'
@@ -116,8 +116,8 @@ alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
-# ==#
-# USER FUNCTIONS ###############################==
+# }}}
+# USER FUNCTIONS ############################# {{{
 # These functions were designed to be used in ####
 # the shell; because of that, they should have ###
 # dashes '-' instead of underscores '_'. #########
@@ -157,8 +157,8 @@ else
     open() { xdg-open "${1}"; }
 fi
 
-# ==#
-# PROMPT CONFIG ################################==
+# }}}
+# PROMPT CONFIG ############################## {{{
 
 __set_prompt() {
 
@@ -205,4 +205,4 @@ if [ -z "${__SETUP}" ]; then
     fi
 fi
 
-# ==#
+# }}}
