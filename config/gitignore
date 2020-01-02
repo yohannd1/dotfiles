@@ -1,0 +1,22 @@
+# Compiled Python files
+*.pyc
+
+# Folder view configuration files
+.DS_Store
+desktop.ini
+
+# Thumbnail cache files
+Thumbs.db
+
+# IDE/Editor files
+*.sublime-*
+.vscode
+.idea
+Session.vim
+
+# Temp / Backup Files
+*~
+*.sw*
+
+# Local files
+local

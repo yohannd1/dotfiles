@@ -1,0 +1,208 @@
+# CONFIG #######################################==
+
+export DOTFILES="${HOME}/git/dotfiles"
+export GIT_PERSONAL="${HOME}/git/personal"
+export EDITOR="nvim"
+export TERMINAL="st"
+export BAT_THEME="base16" # Theme for bat (cat with syntax highlighting)
+
+# ==#
+# LIBRARY ######################################==
+
+source_() { [ -f "${1}" ] && source "${1}"; }
+
+# Personal and local scripts
+source_ "${GIT_PERSONAL}/local/share/bashrc.personal"
+source_ "${HOME}/.bashrc.local"
+
+path-push() {
+    # Appends the args to the PATH.
+    for ARG in "$@"; do
+        if [ -d "$ARG" ] && [[ ":$PATH:" != *":$ARG:"* ]]; then
+            export PATH="${PATH:+"$PATH:"}$ARG"
+        fi
+    done
+}
+
+tmux-attached() {
+    # Checks if a session is attached
+    if [[ -n "$1" ]]; then
+        tmux ls | grep "^$1.*(attached)\$" &>/dev/null
+    else
+        echo -e '\e[34mUsage:\e[m tmux-attached SESSION-NAME'
+    fi
+}
+
+tm() {
+    # Start a tmux session or reattach to it.
+    if [[ -n "$1" ]]; then
+        if tmux has -t="$1" &>/dev/null; then
+            tmux attach -t "$1"
+        else
+            tmux new-session -s "$1" \; source-file "${HOME}/.local/lib/tmux-sessions/$1.proj" \; $2
+        fi
+    else
+        echo -e '\e[34mUsage:\e[m tm SESSION-NAME <optional-command>'
+    fi
+}
+
+git-branch() {
+    local branch="$(git symbolic-ref --short -q HEAD 2>/dev/null)"
+    if [[ -n "${branch}" ]]; then
+        echo " ${branch}"
+    fi
+}
+
+# ==#
+# APPLICATION SETTINGS #########################==
+
+# BASH #==
+HISTCONTROL=ignoreboth
+export HISTSIZE=1000000
+export HISTFILESIZE=1000000000
+shopt -s histappend
+shopt -s checkwinsize
+
+# enable programmable completion features
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+
+# ==#
+
+# LESS
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+export LESS_TERMCAP_mb=$'\e[1;31m'     # begin bold
+export LESS_TERMCAP_md=$'\e[1;35m'     # begin blink
+export LESS_TERMCAP_me=$'\e[0m'        # reset bold/blink
+export LESS_TERMCAP_so=$'\e[33m'       # begin reverse video
+export LESS_TERMCAP_se=$'\e[0m'        # reset reverse video
+export LESS_TERMCAP_us=$'\e[1;32m'     # begin underline
+export LESS_TERMCAP_ue=$'\e[0m'        # reset underline
+
+# LS & DIR
+test -r "${DOTFILES}/config/dircolors" \
+    && eval "$(dircolors -b "${DOTFILES}/config/dircolors")" \
+    || eval "$(dircolors -b)"
+
+# GCC
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+# ==#
+# PATH #########################################==
+
+path-push "${HOME}/.local/bin"
+
+# ==#
+# ALIASES ######################################==
+
+alias ls='ls --color=auto'
+alias la='ls -A'
+alias ll='ls -alF'
+
+alias py3='python3'
+alias p3='python3'
+alias jl='julia'
+alias du='du -shc'
+alias vim='nvim' vi='nvim'
+alias r='ranger'
+
+alias cp-sync='cp -ur'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# ==#
+# USER FUNCTIONS ###############################==
+# These functions were designed to be used in ####
+# the shell; because of that, they should have ###
+# dashes '-' instead of underscores '_'. #########
+
+rl() { source "${HOME}/.bashrc"; }
+vp() { (cd "${GIT_PERSONAL}" && vi); }
+vf() { vi "$(find . | fzf)"; }
+
+rd() {
+    local CHOICEPATH="${HOME}/Documents/html-pages"
+    local CHOICE="$(ls "${CHOICEPATH}" | grep '\.html$' | fzf)"
+    open "${CHOICEPATH}/${CHOICE}" &
+}
+
+vs() {
+    ([ -f "Session.vim" ] \
+        && vi -S "Session.vim" \
+        || cd "$(git rev-parse --show-toplevel 2>/dev/null)" \
+        && vi -S "Session.vim")
+}
+
+cdgt() {
+    # CD to Git Top Level (cd-git-top)
+    local result=$(git rev-parse --show-toplevel 2>/dev/null)
+    [ -z "${result}" ] && cd "${result}" \
+        || echo "cgt: not on a git repository."
+}
+
+grept() {
+    grep --exclude-dir=".git" -rEI "TODO:|FIXME:|@todo|@fixme" . 2>/dev/null
+    grep --exclude-dir=".git" -rEI "NOTE:|@note" . 2>/dev/null
+}
+
+if [ -r "/sdcard" ]; then
+    open() { termux-open "${1}"; }
+else
+    open() { xdg-open "${1}"; }
+fi
+
+# ==#
+# PROMPT CONFIG ################################==
+
+__set_prompt() {
+
+    # Set colors
+    local _RESET='\[\e[m\]'
+    local _BORDER='\[\e[31m\]'
+    local _USER='\[\e[34m\]'
+    local _BRANCH='\[\e[36m\]'
+    local _PWD='\[\e[35m\]'
+
+    # Actually build the prompt
+    local _PROMPT=''
+    local _PROMPT+=${_BORDER}'['
+    local _PROMPT+=${_USER}
+    local _PROMPT+='\u:'
+    local _PROMPT+=${_BRANCH}
+    local _PROMPT+='$(git-branch)'
+    local _PROMPT+=${_PWD}
+    local _PROMPT+=' \w'
+    local _PROMPT+=${_BORDER}']'
+    local _PROMPT+=${_RESET}
+    local _PROMPT+='\$ '
+    export PS1="${_PROMPT}"
+
+}; __set_prompt
+
+if [ -z "${__SETUP}" ]; then
+    __SETUP="$(date)"
+    if [ -t 1 ]; then # If this session is a TTY
+        # Start the "scratch" and "main" tmux sessions.
+        if [ -z "${TMUX}" ]; then
+            if ! tmux has -t="scratch" &>/dev/null; then
+                tm "scratch" "detach"
+            fi
+
+            if [ "${PWD}" = "${HOME}" ] && ! tmux-attached "main"; then
+                tm "main"
+            fi
+        fi
+
+        # Set up FZF (may not work in every case, I need to check this someday)
+        [[ -f ~/.fzf.bash ]] && source ~/.fzf.bash || source /usr/share/doc/fzf/examples/key-bindings.bash
+
+    fi
+fi
+
+# ==#

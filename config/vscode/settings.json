@@ -1,0 +1,79 @@
+{
+  /*
+   * Editor Settings
+   */
+    "editor.renderWhitespace": "selection",
+    "editor.renderControlCharacters": false,
+    "editor.cursorBlinking": "phase",
+    "editor.cursorSmoothCaretAnimation": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "editor.detectIndentation": true,
+    "editor.minimap.renderCharacters": false,
+    "editor.copyWithSyntaxHighlighting": false,
+    "editor.fontFamily": "'Ubuntu Mono', 'Droid Sans Mono', Consolas, 'Courier New', 'monospace', monospace, 'Droid Sans Fallback'",
+    "editor.fontWeight": "800",
+    "editor.fontLigatures": true,
+    "editor.fontSize": 15,
+    "zenMode.hideTabs": false,
+    "zenMode.hideLineNumbers": false,
+
+  /*
+   * Files and Explorer
+   */
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "explorer.confirmDragAndDrop": false,
+
+  /*
+   * Other Settings
+   */
+  "telemetry.enableTelemetry": false,
+
+  /*
+   * Vim Extension Settings
+   */
+  "vim.easymotion": true,
+  "vim.sneak": true,
+  "vim.incsearch": true,
+  "vim.useSystemClipboard": false,
+  "vim.useCtrlKeys": false,
+  "vim.hlsearch": true,
+  "vim.leader": "<space>",
+  "vim.visualModeKeyBindingsNonRecursive": [
+    { "before": ["<leader>", "p"], "commands": ["editor.action.clipboardPasteAction"] },
+    { "before": ["<leader>", "x"], "commands": ["editor.action.clipboardCutAction"] },
+    { "before": ["<leader>", "y"], "commands": ["editor.action.clipboardCopyAction"] },
+  ],
+  "vim.normalModeKeyBindingsNonRecursive": [
+    { "before": ["<leader>", "p"], "commands": ["editor.action.clipboardPasteAction"] },
+    { "before": ["<leader>", "d"], "commands": ["editor.action.clipboardCutAction"] },
+    { "before": ["<leader>", "y"], "commands": ["editor.action.clipboardCopyAction"] },
+    { "before": ["<leader>", "o"], "commands": ["editor.toggleFold"] },
+    { "before": ["<leader>", "m"], "commands": ["editor.foldAll"] },
+    { "before": ["Ç"], "after": [":"] },
+    { "before": ["ç"], "after": [":"] },
+  ],
+  "vim.handleKeys": {
+      "<C-a>": false,
+      "<C-f>": false,
+      "<C-x>": true,
+      "<C-v>": true,
+      "<C-c>": true,
+      "<C-w>": true,
+      "<C-y>": false,
+      "<C-r>": true,
+      "<C-d>": true,
+      "<C-u>": true
+    },
+
+    /*
+     * Etc
+     */
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    "window.zoomLevel": 0,
+    "editor.lineNumbers": "relative",
+    "workbench.colorTheme": "One Dark Pro",
+    "vim.foldfix": true,
+}

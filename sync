@@ -1,0 +1,142 @@
+#!/bin/sh
+
+# TODO: search for broken symlinks in some directories (.local, .config) and ask to the user if they want to remove it;
+# TODO: at welcome_agree, show a resume of everything that will be done and where the ${DOTFILES} are.
+
+exists() { command -v "${1}" >/dev/null 2>&1; }
+
+# CONSTANTS ####################################==
+
+DOTFILES_URL_HTTPS="https://github.com/YohananDiamond/dotfiles"
+DOTFILES_URL_SSH="git@github.com:yohanandiamond/dotfiles"
+DOTFILES="${HOME}/git/dotfiles"
+BACKUP_DIR="${HOME}/.cache/dotfiles-symlink-backup/$(date '+%Y-%m-%d.%H:%M').$(shuf -i 0-99 -n 1)"
+
+# ==#
+# PROMPTS ######################################==
+
+welcome_agree() {
+    echo "Welcome to YohananDiamond's Dotfiles Setup!"
+    echo "This is a personal script of mine that links some config files I have."
+    echo "No packages are installed here, only config symlinking is done."
+    echo "Although I've implemented a backup system for preventing problems with losing the files, I can't assure it will actually work properly."
+    read -p "Do you want to proceed with installation? [y/N] " answer
+    [ "${answer}" != "y" ] && exit 1
+}
+
+check_and_clone() {
+    # Is this even useful for me? I have no idea.
+    if ! [ -r "${DOTFILES}" ]; then
+        echo "There is no folder at '${DOTFILES}'. Would you like to clone the repository?"
+        echo "If you choose not to do so, the program will be terminated."
+        read -p "Choice [Y/n]: " answer
+        [ "${answer}" == "n" ] && exit 1
+        read -p "Would you like to clone via SSH or HTTPS? [S/h]: " answer
+        if [ "${answer}" == "h" ]; then
+            git clone ${DOTFILES_URL_HTTPS} ${DOTFILES} || exit $?
+        else
+            git clone ${DOTFILES_URL_SSH} ${DOTFILES} || exit $?
+        fi
+    fi
+}
+
+# ==#
+# SYMLINKING ###################################==
+
+lf() {
+    ### Create a symlink file pointing to another, with some extra checks.
+    ### $1 => Original File: where $2 points to.
+    ### $2 => New File: will be created and point to $1. Full paths are recommended.
+    [ -z "${1}" ] || [ -z "${2}" ] && echo "lf: not enough arguments" && return 1
+
+    local ORIGINAL_FILE="${1}"
+    local NEW_FILE="${2}"
+
+    mkdir -p "$(dirname "${NEW_FILE}")"
+    echo "'${ORIGINAL_FILE}' -> '${NEW_FILE}'"
+
+    # TODO: cancel if ${ORIGINAL_FILE} doesn't exist.
+
+    # Check if ${NEW_FILE} exists and then backup it.
+    if [ -e "${NEW_FILE}" ] || [ -L "{NEW_FILE}" ]; then
+        local BACKUP_FILE_PATH="${BACKUP_DIR}/$(dirname "${NEW_FILE#?}")"
+        mkdir -p "${BACKUP_FILE_PATH}"
+        mv "${NEW_FILE}" -t "${BACKUP_FILE_PATH}"
+    fi
+
+    ln -s "${ORIGINAL_FILE}" "${NEW_FILE}"
+}
+
+lf_glob() {
+    ### Globs all files in the specified folder and symlink then to the target folder.
+    ### $1 => Original Folder: the files generated from $2 point to the ones here.
+    ### $2 => New Folder: the new files will be created here and will point to $1. Full paths are recommended.
+    [ -z "${1}" ] || [ -z "${2}" ] && echo "lf_glob: not enough arguments" && return 1
+
+    # TODO: find alternative to * that supports hidden files.
+    [ -n "$(ls "${1}")" ] && \
+        for globfile in "${1}"/*; do
+            lf "${globfile}" "${2}/$(basename "${globfile}")"
+        done
+}
+
+lf_config() {
+    ### Acts the same as lf, but the original file is rooted on the dotfiles "config" folder.
+    ### $1 => Same as [lf/$1], but roots on ${DOTFILES}/config
+    ### $2 => Same as [lf/$2]
+    [ -z "${1}" ] || [ -z "${2}" ] && echo "lf_config: not enough arguments" && return 1
+    lf "${DOTFILES}/config/${1}" "${2}"
+}
+
+link_files() {
+    ### Uses the lf functions above to link all configs.
+    ### No arguments are used.
+
+    # Directories
+    lf_config "bspwm" "${HOME}/.config/bspwm"
+    lf_config "i3" "${HOME}/.config/i3"
+    lf_config "polybar" "${HOME}/.config/polybar"
+    lf_config "sxhkd" "${HOME}/.config/sxhkd"
+    lf_config "termux" "${HOME}/.termux"
+    
+    # File links
+    lf_config "compton.conf" "${HOME}/.config/compton.conf"
+    lf_config "bashrc" "${HOME}/.bashrc"
+    lf_config "gitconfig" "${HOME}/.gitconfig"
+    lf_config "gitignore" "${HOME}/.gitignore"
+    lf_config "inputrc" "${HOME}/.inputrc"
+    lf_config "tmux.conf" "${HOME}/.tmux.conf"
+
+    # Glob directories.
+    lf_glob "${DOTFILES}/config/vscode" "${HOME}/.config/Code/User"
+    lf_glob "${DOTFILES}/config/nvim" "${HOME}/.config/nvim"
+    lf_glob "${DOTFILES}/local/bin" "${HOME}/.local/bin"
+    lf_glob "${DOTFILES}/local/lib" "${HOME}/.local/lib"
+    lf_glob "${DOTFILES}/local/share" "${HOME}/.local/share"
+}
+
+# ==#
+# VIM PLUGINS ##################################==
+
+ivp() {
+    # "ivp" -> Install Vim Plugin
+    # $1 => Destination Folder name (in ~/.cache/vim-plugins/)
+    # $2 => Repository address
+    # Git-clones the repository ($2) to the vim-plugins folder.
+    [ -z "${1}${2}" ] && echo "ivp: not enough arguments" && return 1
+    git clone "${2}" "${HOME}/.cache/vim-plugins/${1}"
+}
+
+setup_vimplugins() {
+    ! [ -r ~/.cache/vim-plugins ] && mkdir -p ~/.cache/vim-plugins
+    ln -s ~/.cache/vim-plugins ~/.config/nvim/bundle
+    ivp "onedark.vim" "https://github.com/joshdick/onedark.vim"
+}
+
+# ==#
+
+# Apply all the functions above
+welcome_agree
+check_and_clone
+link_files
+# setup_vimplugins
