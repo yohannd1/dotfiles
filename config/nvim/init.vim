@@ -30,7 +30,10 @@ exec pathogen#infect()
 
 " }}}
 " Plugin Settings ---------------------------- {{{
-"
+
+" Deoplete
+let g:deoplete#enable_at_startup = 1
+
 " Lightline
 let g:lightline = {
       \ 'colorscheme': 'onedark',
