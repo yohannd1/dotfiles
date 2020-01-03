@@ -40,10 +40,7 @@ let g:lightline = {
       \ 'active': {
       \   'left': [[ 'mode', 'paste' ], [ 'readonly', 'filename' ]],
       \ },
-      \ }
-
-" CtrlP
-" let g:ctrlp_cmd = 'CtrlPBuffer'
+  \ }
 
 " }}}
 " GUI ---------------------------------------- {{{
@@ -122,6 +119,14 @@ augroup ft_python
     au!
     au FileType python RunfileCommand python3 "%"
     au FileType python set foldmethod=marker " Trying this out for a bit.
+augroup end
+
+" }}}
+" Hylang {{{
+
+augroup ft_hy
+    au FileType hy RunfileCommand hy "%"
+    au FileType hy setlocal tabstop=2 shiftwidth=2
 augroup end
 
 " }}}
@@ -305,11 +310,17 @@ vnoremap / /\v
 " Insert today's date
 inoremap <silent> <C-l> <C-r>=strftime("20%y-%m-%d")<CR>
 
+" Clap!
+nnoremap <silent> <C-p> :Clap buffers<CR>
+nnoremap <silent> <C-o> :Clap files<CR>
+nnoremap <silent> <M-o> :Clap grep<CR>
+
 " }}}
 " Quick Editing ------------------------------ {{{
 
 nnoremap <silent> <Leader>ev :e $MYVIMRC<CR>
 nnoremap <silent> <Leader>et :e ~/git/personal/todo/todo.tq<CR>
 nnoremap <silent> <Leader>ex :e ~/.tmux.conf<CR>
+nnoremap <silent> <Leader>es :e ~/git/dotfiles/sync<CR>
 
 " }}}
