@@ -300,12 +300,13 @@ nnoremap / /\v
 vnoremap / /\v
 
 " Insert today's date
-inoremap <buffer> <silent> <C-l> <C-r>=strftime("20%y-%m-%d")<CR>
+inoremap <silent> <C-l> <C-r>=strftime("20%y-%m-%d")<CR>
 
 " }}}
 " Quick Editing ------------------------------ {{{
 
 nnoremap <silent> <Leader>ev :e $MYVIMRC<CR>
 nnoremap <silent> <Leader>et :e ~/git/personal/todo/todo.tq<CR>
+nnoremap <silent> <Leader>ex :e ~/.tmux.conf<CR>
 
 " }}}

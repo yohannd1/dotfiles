@@ -5,15 +5,15 @@
 
 exists() { command -v "${1}" >/dev/null 2>&1; }
 
-# CONSTANTS ####################################==
+# CONSTANTS ################################## {{{
 
 DOTFILES_URL_HTTPS="https://github.com/YohananDiamond/dotfiles"
 DOTFILES_URL_SSH="git@github.com:yohanandiamond/dotfiles"
 DOTFILES="${HOME}/git/dotfiles"
 BACKUP_DIR="${HOME}/.cache/dotfiles-symlink-backup/$(date '+%Y-%m-%d.%H:%M').$(shuf -i 0-99 -n 1)"
 
-# ==#
-# PROMPTS ######################################==
+# }}}
+# PROMPTS #################################### {{{
 
 welcome_agree() {
     echo "Welcome to YohananDiamond's Dotfiles Setup!"
@@ -40,8 +40,8 @@ check_and_clone() {
     fi
 }
 
-# ==#
-# SYMLINKING ###################################==
+# }}}
+# SYMLINKING ################################# {{{
 
 lf() {
     ### Create a symlink file pointing to another, with some extra checks.
@@ -101,7 +101,7 @@ link_files() {
     
     # File links
     lf_config "compton.conf" "${HOME}/.config/compton.conf"
-    lf_config "bashrc" "${HOME}/.bashrc"
+    lf_config "bash/bashrc" "${HOME}/.bashrc"
     lf_config "gitconfig" "${HOME}/.gitconfig"
     lf_config "gitignore" "${HOME}/.gitignore"
     lf_config "inputrc" "${HOME}/.inputrc"
@@ -115,8 +115,8 @@ link_files() {
     lf_glob "${DOTFILES}/local/share" "${HOME}/.local/share"
 }
 
-# ==#
-# VIM PLUGINS ##################################==
+# }}}
+# VIM PLUGINS ################################ {{{
 
 ivp() {
     # "ivp" -> Install Vim Plugin
@@ -124,19 +124,30 @@ ivp() {
     # $2 => Repository address
     # Git-clones the repository ($2) to the vim-plugins folder.
     [ -z "${1}${2}" ] && echo "ivp: not enough arguments" && return 1
+    [ -e "${HOME}/.cache/vim-plugins/${1}" ] && return 0 # Exit sucessfully if plugin already exists.
     git clone "${2}" "${HOME}/.cache/vim-plugins/${1}"
 }
 
 setup_vimplugins() {
-    ! [ -r ~/.cache/vim-plugins ] && mkdir -p ~/.cache/vim-plugins
-    ln -s ~/.cache/vim-plugins ~/.config/nvim/bundle
+    ! [ -r ~/.cache/vim-plugins ] \
+        && mkdir -p ~/.cache/vim-plugins \
+        && ln -s ~/.cache/vim-plugins ~/.config/nvim/bundle
     ivp "onedark.vim" "https://github.com/joshdick/onedark.vim"
+    ivp "deoplete.nvim" "https://github.com/Shougo/deoplete.nvim"
+    ivp "vim-toml" "https://github.com/cespare/vim-toml"
+    ivp "vim-surround" "https://github.com/tpope/vim-surround"
+    ivp "vim-repeat" "https://github.com/tpope/vim-repeat"
+    ivp "vim-commentary" "https://github.com/tpope/vim-commentary"
+    ivp "jsonc.vim" "https://github.com/neoclide/jsonc.vim"
+    ivp "lightline.vim" "https://github.com/itchyny/lightline.vim"
+    ivp "yats.vim" "https://github.com/HerringtonDarkholme/yats.vim" # Yet another TypeScript Syntax
+    ivp "vim-markdown-folding" "https://github.com/masukomi/vim-markdown-folding"
 }
 
-# ==#
+# }}}
 
 # Apply all the functions above
 welcome_agree
 check_and_clone
 link_files
-# setup_vimplugins
+setup_vimplugins

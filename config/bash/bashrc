@@ -14,6 +14,8 @@ source_() { [ -f "${1}" ] && source "${1}"; }
 # Personal and local scripts
 source_ "${GIT_PERSONAL}/local/share/bashrc.personal"
 source_ "${HOME}/.bashrc.local"
+source_ "${DOTFILES}/config/bash/fzf-completion"
+source_ "${DOTFILES}/config/bash/fzf-keybindings"
 
 path-push() {
     # Appends the args to the PATH.
@@ -57,10 +59,13 @@ git-branch() {
 # APPLICATION SETTINGS ####################### {{{
 
 # BASH {{{
+
+# History (unlimited :)
 HISTCONTROL=ignoreboth
-export HISTSIZE=1000000
-export HISTFILESIZE=1000000000
+export HISTSIZE=
+export HISTFILESIZE=
 shopt -s histappend
+
 shopt -s checkwinsize
 
 # enable programmable completion features

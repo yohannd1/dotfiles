@@ -6,25 +6,42 @@ set keyseq-timeout 0
 # Enable vi mode
 set editing-mode vi
 
+# Press tab only once to show completions (tab twice is exhaustive and, as my bell is disabled, it is pretty much useless)
+set show-all-if-ambiguous on
+
+# Ignore case on completion (I don't know if this will help, lemme try it out)
+set completion-ignore-case on
+
 # Bindings for the vi mode
 $if mode=vi
 
     # Mode indicator in prompt
     set show-mode-in-prompt on
 
-    # Cursor changes
+    # Change the cursor in insert or command mode.
     set vi-ins-mode-string "\1\e[6 q\2"
     set vi-cmd-mode-string "\1\e[2 q\2"
 
     # Vi Command Mode Keymaps
     set keymap vi-command
-    Control-l: clear-screen
+    "\C-l": clear-screen
+    "_": beginning-of-line
+
+    # No arrow keys
+    "\eOD": ""
+    "\e[D": ""
+    "\eOC": ""
+    "\e[C": ""
+    "\eOA": ""
+    "\e[A": ""
+    "\eOB": ""
+    "\e[B": ""
 
     # Vi Insert Mode Commands
     set keymap vi-insert
-    Control-l: clear-screen 
+    "\C-l": clear-screen 
 
-    # (Challenge) disable arrow keys
+    # No arrow keys
     "\eOD": ""
     "\e[D": ""
     "\eOC": ""
