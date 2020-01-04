@@ -125,8 +125,19 @@ augroup end
 " Hylang {{{
 
 augroup ft_hy
+    au!
     au FileType hy RunfileCommand hy "%"
     au FileType hy setlocal tabstop=2 shiftwidth=2
+augroup end
+
+" }}}
+" F# {{{
+
+augroup ft_fsharp
+    au!
+    " To be honest I wanted to compile to the .exe and run it... sadly I can't
+    " without writing some substitutions script and I'm too lazy.
+    au FileType fsharp RunfileCommand fsharpi "%"
 augroup end
 
 " }}}

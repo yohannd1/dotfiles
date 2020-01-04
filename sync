@@ -145,6 +145,7 @@ setup_vimplugins() {
     ivp "vim-clap" "https://github.com/liuchengxu/vim-clap"
     ivp "emmet-vim" "https://github.com/mattn/emmet-vim"
     ivp "vim-hy" "https://github.com/hylang/vim-hy"
+    ivp "vim-fsharp" "https://github.com/fsharp/vim-fsharp"
 }
 
 # }}}
