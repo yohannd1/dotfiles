@@ -146,6 +146,8 @@ setup_vimplugins() {
     ivp "emmet-vim" "https://github.com/mattn/emmet-vim"
     ivp "vim-hy" "https://github.com/hylang/vim-hy"
     ivp "vim-fsharp" "https://github.com/fsharp/vim-fsharp"
+    ivp "goyo.vim" "https://github.com/junegunn/goyo.vim"
+    ivp "SimpylFold" "https://github.com/tmhedberg/SimpylFold"
 }
 
 # }}}

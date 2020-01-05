@@ -152,7 +152,7 @@ augroup end
 """ There is a mapping in the Mappings section for this.
 
 function! TabOrComplete(mode)
-    if (col(".") > 1) && strcharpart(getline("."), col(".") - 2, 1) =~ '\w'
+    if (col(".") > 1) && strcharpart(getline("."), col(".") - 2, 1) =~ '\v[^ \t]'
         if (a:mode == 0)
             return "\<C-P>"
         elseif (a:mode == 1)
