@@ -142,6 +142,12 @@ setup_vimplugins() {
     ivp "lightline.vim" "https://github.com/itchyny/lightline.vim"
     ivp "yats.vim" "https://github.com/HerringtonDarkholme/yats.vim" # Yet another TypeScript Syntax
     ivp "vim-markdown-folding" "https://github.com/masukomi/vim-markdown-folding"
+    ivp "vim-clap" "https://github.com/liuchengxu/vim-clap"
+    ivp "emmet-vim" "https://github.com/mattn/emmet-vim"
+    ivp "vim-hy" "https://github.com/hylang/vim-hy"
+    ivp "vim-fsharp" "https://github.com/fsharp/vim-fsharp"
+    ivp "goyo.vim" "https://github.com/junegunn/goyo.vim"
+    ivp "SimpylFold" "https://github.com/tmhedberg/SimpylFold"
 }
 
 # }}}

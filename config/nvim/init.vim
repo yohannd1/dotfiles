@@ -40,10 +40,7 @@ let g:lightline = {
       \ 'active': {
       \   'left': [[ 'mode', 'paste' ], [ 'readonly', 'filename' ]],
       \ },
-      \ }
-
-" CtrlP
-" let g:ctrlp_cmd = 'CtrlPBuffer'
+  \ }
 
 " }}}
 " GUI ---------------------------------------- {{{
@@ -125,6 +122,25 @@ augroup ft_python
 augroup end
 
 " }}}
+" Hylang {{{
+
+augroup ft_hy
+    au!
+    au FileType hy RunfileCommand hy "%"
+    au FileType hy setlocal tabstop=2 shiftwidth=2
+augroup end
+
+" }}}
+" F# {{{
+
+augroup ft_fsharp
+    au!
+    " To be honest I wanted to compile to the .exe and run it... sadly I can't
+    " without writing some substitutions script and I'm too lazy.
+    au FileType fsharp RunfileCommand fsharpi "%"
+augroup end
+
+" }}}
 
 " }}}
 " Mini Plugins ------------------------------- {{{
@@ -136,7 +152,7 @@ augroup end
 """ There is a mapping in the Mappings section for this.
 
 function! TabOrComplete(mode)
-    if (col(".") > 1) && strcharpart(getline("."), col(".") - 2, 1) =~ '\w'
+    if (col(".") > 1) && strcharpart(getline("."), col(".") - 2, 1) =~ '\v[^ \t]'
         if (a:mode == 0)
             return "\<C-P>"
         elseif (a:mode == 1)
@@ -305,11 +321,17 @@ vnoremap / /\v
 " Insert today's date
 inoremap <silent> <C-l> <C-r>=strftime("20%y-%m-%d")<CR>
 
+" Clap!
+nnoremap <silent> <C-p> :Clap buffers<CR>
+nnoremap <silent> <C-o> :Clap files<CR>
+nnoremap <silent> <M-o> :Clap grep<CR>
+
 " }}}
 " Quick Editing ------------------------------ {{{
 
 nnoremap <silent> <Leader>ev :e $MYVIMRC<CR>
 nnoremap <silent> <Leader>et :e ~/git/personal/todo/todo.tq<CR>
 nnoremap <silent> <Leader>ex :e ~/.tmux.conf<CR>
+nnoremap <silent> <Leader>es :e ~/git/dotfiles/sync<CR>
 
 " }}}

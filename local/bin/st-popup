@@ -1,0 +1,2 @@
+#!/bin/sh
+st -c "float" -t "Power Menu" -e "${1}"

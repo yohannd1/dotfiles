@@ -181,6 +181,7 @@ exec --no-startup-id nm-applet
 
 # Rules
 for_window [class="float"] floating enable
+for_window [class="^.*"] border pixel 0 # Disable borders
 
 # Temp Rules (for specific windows that I found problems)
 for_window [title="GLFW.jl"] floating enable

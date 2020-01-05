@@ -1,0 +1,60 @@
+#!/bin/sh
+# Initial Source: https://faq.i3wm.org/question/239/how-do-i-suspendlockscreen-and-logout.1.html
+
+LOCK_COLOR="555555"
+
+match_arg() {
+    case "${1}" in
+        "lock")
+            do_lock
+            ;;
+        "logout")
+            do_logout
+            ;;
+        "suspend")
+            do_lock &
+            do_suspend
+            ;;
+        "hibernate")
+            do_hibernate
+            ;;
+        "reboot")
+            do_reboot
+            ;;
+        "shutdown")
+            do_shutdown
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+do_fuzzy() {
+    choices="$(echo "lock;logout;suspend;hibernate;reboot;shutdown" | sed 's|\;|\n|g')"
+    choice="$(echo "${choices}" | fzf --reverse --prompt "power: ")"
+    echo "${choice}"
+}
+
+do_showhelp() {
+    echo "Usage: $0 {lock|logout|suspend|hibernate|reboot|shutdown}"
+    echo "Fuzzy: $0"
+    exit 2
+}
+
+do_lock() { i3lock -c "${LOCK_COLOR}"; }
+do_logout() { i3-msg exit; }
+do_suspend() { systemctl suspend; } # Lock is done without i3lock here.
+do_hibernate() { echo "Hibernating currently disabled. Sorry." && exit 1; } # systemctl hibernate; }
+do_reboot() { systemctl reboot; }
+do_shutdown() { systemctl poweroff; }
+
+match_arg "${1}"
+if [ $? = 0 ]; then
+    exit 0
+else
+    match_arg "$(do_fuzzy)"
+    if ! [ $? = 0 ]; then
+        do_showhelp
+    fi
+fi
