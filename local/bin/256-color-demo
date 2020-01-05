@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# Prints all the 256 colors available on most terminals.
+
+for i in {0..255}; do
+	printf "\x1b[38;5;${i}mcolour${i}\x1b[0m "
+	[[ $(($i % ${1:-2})) == 0 ]] && printf "\n"
+done
+printf "\n"

@@ -19,4 +19,4 @@ Session.vim
 *.sw*
 
 # Local files
-local
+# local # No. This didn't allow me to upload my local folder. Fuck.
