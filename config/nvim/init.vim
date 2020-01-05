@@ -221,7 +221,7 @@ set listchars+=trail:~
 " Theme-related
 syntax on
 set background=dark
-colorscheme onedark
+if !exists("/sdcard") | colorscheme onedark | endif
 
 " Indentation
 set tabstop=4 shiftwidth=4
