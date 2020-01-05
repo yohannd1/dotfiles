@@ -16,12 +16,15 @@ BACKUP_DIR="${HOME}/.cache/dotfiles-symlink-backup/$(date '+%Y-%m-%d.%H:%M').$(s
 # PROMPTS #################################### {{{
 
 welcome_agree() {
-    echo "Welcome to YohananDiamond's Dotfiles Setup!"
-    echo "This is a personal script of mine that links some config files I have."
-    echo "No packages are installed here, only config symlinking is done."
-    echo "Although I've implemented a backup system for preventing problems with losing the files, I can't assure it will actually work properly."
-    read -p "Do you want to proceed with installation? [y/N] " answer
-    [ "${answer}" != "y" ] && exit 1
+    if ! [ -r "${DOTFILES}" ]; then
+        echo "Welcome to YohananDiamond's Dotfiles Setup!"
+        echo "This is a personal script of mine that links some config files I have."
+        echo "No packages are installed here, only config symlinking is done."
+        echo "Although I've implemented a backup system for preventing problems with losing the files, I can't assure it will actually work properly."
+        read -p "Do you want to proceed with installation? [y/N] " answer
+        [ "${answer}" != "y" ] && exit 1
+        check_and_clone
+    fi
 }
 
 check_and_clone() {
@@ -63,7 +66,8 @@ lf() {
         mv "${NEW_FILE}" -t "${BACKUP_FILE_PATH}"
     fi
 
-    ln -s "${ORIGINAL_FILE}" "${NEW_FILE}" || echo "The error above ocurred while symlinking '${ORIGINAL_FILE}' -> '${NEW_FILE}'"
+    ln -s "${ORIGINAL_FILE}" "${NEW_FILE}" \
+        || echo "The error above ocurred while symlinking '${ORIGINAL_FILE}' -> '${NEW_FILE}'"
 }
 
 lf_glob() {
@@ -77,7 +81,7 @@ lf_glob() {
         for globfile in "${1}"/*; do
             lf "${globfile}" "${2}/$(basename "${globfile}")"
         done
-}
+    }
 
 lf_config() {
     ### Acts the same as lf, but the original file is rooted on the dotfiles "config" folder.
@@ -91,13 +95,15 @@ link_files() {
     ### Uses the lf functions above to link all configs.
     ### No arguments are used.
 
+    echo "Symlinking files..."
+
     # Directories
     lf_config "bspwm" "${HOME}/.config/bspwm"
     lf_config "i3" "${HOME}/.config/i3"
     lf_config "polybar" "${HOME}/.config/polybar"
     lf_config "sxhkd" "${HOME}/.config/sxhkd"
     lf_config "termux" "${HOME}/.termux"
-    
+
     # File links
     lf_config "compton.conf" "${HOME}/.config/compton.conf"
     lf_config "bash/bashrc" "${HOME}/.bashrc"
@@ -128,31 +134,33 @@ ivp() {
 }
 
 setup_vimplugins() {
+    echo "Updating vim plugin cache..."
     ! [ -r ~/.cache/vim-plugins ] \
         && mkdir -p ~/.cache/vim-plugins \
         && ln -s ~/.cache/vim-plugins ~/.config/nvim/bundle
-    ivp "onedark.vim" "https://github.com/joshdick/onedark.vim"
-    ivp "deoplete.nvim" "https://github.com/Shougo/deoplete.nvim"
-    ivp "vim-toml" "https://github.com/cespare/vim-toml"
-    ivp "vim-surround" "https://github.com/tpope/vim-surround"
-    ivp "vim-repeat" "https://github.com/tpope/vim-repeat"
-    ivp "vim-commentary" "https://github.com/tpope/vim-commentary"
-    ivp "jsonc.vim" "https://github.com/neoclide/jsonc.vim"
-    ivp "lightline.vim" "https://github.com/itchyny/lightline.vim"
-    ivp "yats.vim" "https://github.com/HerringtonDarkholme/yats.vim" # Yet another TypeScript Syntax
-    ivp "vim-markdown-folding" "https://github.com/masukomi/vim-markdown-folding"
-    ivp "vim-clap" "https://github.com/liuchengxu/vim-clap"
-    ivp "emmet-vim" "https://github.com/mattn/emmet-vim"
-    ivp "vim-hy" "https://github.com/hylang/vim-hy"
-    ivp "vim-fsharp" "https://github.com/fsharp/vim-fsharp"
-    ivp "goyo.vim" "https://github.com/junegunn/goyo.vim"
-    ivp "SimpylFold" "https://github.com/tmhedberg/SimpylFold"
-}
+            ivp "onedark.vim" "https://github.com/joshdick/onedark.vim"
+            ivp "deoplete.nvim" "https://github.com/Shougo/deoplete.nvim"
+            ivp "vim-toml" "https://github.com/cespare/vim-toml"
+            ivp "vim-surround" "https://github.com/tpope/vim-surround"
+            ivp "vim-repeat" "https://github.com/tpope/vim-repeat"
+            ivp "vim-commentary" "https://github.com/tpope/vim-commentary"
+            ivp "jsonc.vim" "https://github.com/neoclide/jsonc.vim"
+            ivp "lightline.vim" "https://github.com/itchyny/lightline.vim"
+            ivp "yats.vim" "https://github.com/HerringtonDarkholme/yats.vim" # Yet another TypeScript Syntax
+            ivp "vim-markdown-folding" "https://github.com/masukomi/vim-markdown-folding"
+            ivp "vim-clap" "https://github.com/liuchengxu/vim-clap"
+            ivp "emmet-vim" "https://github.com/mattn/emmet-vim"
+            ivp "vim-hy" "https://github.com/hylang/vim-hy"
+            ivp "vim-fsharp" "https://github.com/fsharp/vim-fsharp"
+            ivp "goyo.vim" "https://github.com/junegunn/goyo.vim"
+            ivp "SimpylFold" "https://github.com/tmhedberg/SimpylFold"
+        }
 
 # }}}
 
 # Apply all the functions above
 welcome_agree
-check_and_clone
 link_files
 setup_vimplugins
+echo "Finished! Exit code: $?"
+exit $?
