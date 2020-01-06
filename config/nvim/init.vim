@@ -26,6 +26,7 @@ if has("python3")
 else
     call add(g:pathogen_disabled, "deoplete.nvim")
 endif
+call add(g:pathogen_disabled, "SimpylFold")
 exec pathogen#infect()
 
 " }}}
@@ -229,6 +230,9 @@ set softtabstop=4
 set expandtab
 set smarttab
 
+" Fold Expr
+set foldtext=MyFoldText()
+
 " Enable RGB colors {{{
 set termguicolors
 
@@ -241,7 +245,7 @@ endif
 " }}}
 " Functions ---------------------------------- {{{
 
-function! RunFile()
+function! RunFile() " {{{
     if !exists("b:runfile_command")
         echo "[RunFile()]: error: `b:runfile_command` not defined."
     else
@@ -250,14 +254,29 @@ function! RunFile()
         exec l:command_string
         normal! i
     endif
-endfunction
-
-function! OpenWORD()
+endfunction " }}}
+function! OpenWORD() " {{{
     let l:WORD = expand("<cWORD>")
     exec "!xdg-open " . l:WORD . " &"
-endfunction
+endfunction " }}}
+function! MyFoldText() " {{{
+    let l:tab_char = strpart(' ', shiftwidth())
+    let l:line_contents = substitute(getline(v:foldstart), '\t', l:tab_char, 'g')
+    let l:line_contents = substitute(l:line_contents, '{{{', '', 'g') " Remove fold marker
+
+    let l:numbers_width = &foldcolumn + &number * &numberwidth
+    let l:window_width = winwidth(0) - numbers_width - 1
+    let l:folded_lines_number = v:foldend - v:foldstart
+
+    let l:line_contents = strpart(l:line_contents, 0, l:window_width - 2 - len(l:folded_lines_number))
+    let l:void_size = l:window_width - len(l:line_contents) - len(folded_lines_number)
+    let l:void_char = '·'
+
+    return l:line_contents . repeat(l:void_char, l:void_size) . l:folded_lines_number . 'l   '
+endfunction " }}}
 
 " }}}
+
 " General Mappings --------------------------- {{{
 
 " Leader Key

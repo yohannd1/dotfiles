@@ -175,6 +175,7 @@ exec --no-startup-id xset r rate 400 35
 exec --no-startup-id compton -b
 exec --no-startup-id xsetroot -cursor_name left_ptr &
 exec_always --no-startup-id exec bash $HOME/.fehbg
+exec --no-startup-id ~/.local/bin/quick-check
 
 # Applets
 exec --no-startup-id nm-applet

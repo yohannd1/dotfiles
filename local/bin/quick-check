@@ -1,0 +1,7 @@
+#!/bin/sh
+
+while sleep 30; do
+    # Supports only one battery.
+    BAT="$(cat /sys/class/power_supply/BAT0/capacity)"
+    [ "${BAT}" -lt 20 ] && notify-send "Battery low! (${BAT})" -u "critical"
+done
