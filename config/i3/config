@@ -56,6 +56,7 @@ bindsym $mod+p focus mode_toggle
 
 # bindsym $mod+a focus parent
 # bindsym $mod+d focus child
+bindsym $mod+n exec st -t "Note" -e "edn"
 
 # launch rofi
 bindsym $mod+space exec --no-startup-id "rofi -modi combi -combi-modi window,drun,run,ssh -show combi -width 800 -lines 20 -theme android_notification -scroll-method 1"

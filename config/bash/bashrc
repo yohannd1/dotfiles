@@ -5,6 +5,7 @@ export GIT_PERSONAL="${HOME}/git/personal"
 export EDITOR="nvim"
 export TERMINAL="st"
 export BAT_THEME="base16" # Theme for bat (cat with syntax highlighting)
+export GOPATH="${HOME}/.cache/go"
 
 # }}}
 # LIBRARY #################################### {{{
@@ -101,6 +102,8 @@ export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quo
 # PATH ####################################### {{{
 
 path-push "${HOME}/.local/bin"
+path-push "${HOME}/.cache/go"
+path-push "/opt/bin"
 
 # }}}
 # ALIASES #################################### {{{
@@ -200,7 +203,9 @@ if [ -z "${__SETUP}" ]; then
             fi
 
             if [ "${PWD}" = "${HOME}" ] && ! tmux-attached "main"; then
-                tm "main"
+                tm "main"; exit
+            else
+                tmux new; exit
             fi
         fi
 

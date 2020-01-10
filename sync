@@ -9,7 +9,7 @@ exists() { command -v "${1}" >/dev/null 2>&1; }
 
 DOTFILES_URL_HTTPS="https://github.com/YohananDiamond/dotfiles"
 DOTFILES_URL_SSH="git@github.com:yohanandiamond/dotfiles"
-DOTFILES="${HOME}/git/dotfiles"
+DOTFILES="${HOME}/projects/dotfiles"
 BACKUP_DIR="${HOME}/.cache/dotfiles-symlink-backup/$(date '+%Y-%m-%d.%H:%M').$(shuf -i 0-99 -n 1)"
 
 # }}}
@@ -60,7 +60,7 @@ lf() {
     # TODO: cancel if ${ORIGINAL_FILE} doesn't exist.
 
     # Check if ${NEW_FILE} exists and then backup it.
-    if [ -e "${NEW_FILE}" ] || [ -L "{NEW_FILE}" ]; then
+    if [ -e "${NEW_FILE}" ] || [ -L "${NEW_FILE}" ]; then
         local BACKUP_FILE_PATH="${BACKUP_DIR}/$(dirname "${NEW_FILE#?}")"
         mkdir -p "${BACKUP_FILE_PATH}"
         mv "${NEW_FILE}" -t "${BACKUP_FILE_PATH}"
@@ -103,6 +103,7 @@ link_files() {
     lf_config "polybar" "${HOME}/.config/polybar"
     lf_config "sxhkd" "${HOME}/.config/sxhkd"
     lf_config "termux" "${HOME}/.termux"
+    lf_config "kak" "${HOME}/.config/kak"
 
     # File links
     lf_config "compton.conf" "${HOME}/.config/compton.conf"

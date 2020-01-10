@@ -182,6 +182,7 @@ command! -nargs=0 WhitespaceMode set list!
 command! -nargs=0 WrapMode set wrap!
 command! -nargs=0 OpenWORD call OpenWORD()
 command! -nargs=* RunfileCommand let b:runfile_command = join([<f-args>], ' ') " Remember to quote '%' for better performance when using this.
+command! -nargs=* EditNote call EditNote(join([<f-args>], ' '))
 command! -nargs=0 RunFile call RunFile()
 
 " }}}
@@ -276,7 +277,22 @@ function! MyFoldText() " {{{
 endfunction " }}}
 
 " }}}
+function! EditNote(filename) " {{{
+    let l:new_filename = substitute(a:filename, ' ', '-', 'g')
+    let l:new_filename = substitute(l:new_filename, '.*', '\L&', 'g')
+    let l:new_filename = substitute(l:new_filename, '\v(!|/)', '', 'g')
+    if isdirectory(expand("~/git/personal/wiki"))
+        if (l:new_filename != "")
+            exec "e ~/git/personal/wiki/" . l:new_filename . ".md"
+        else
+            echo "... No arguments provided."
+        endif
+    else
+        echo "Not found: '~/git/personal/wiki'. Please create said directory."
+    endif
+endfunction " }}}
 
+" }}}
 " General Mappings --------------------------- {{{
 
 " Leader Key
