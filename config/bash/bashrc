@@ -1,10 +1,11 @@
 # CONFIG ##################################### {{{
 
-export DOTFILES="${HOME}/git/dotfiles"
-export GIT_PERSONAL="${HOME}/git/personal"
+export PROJECTS="${HOME}/projects"
+export DOTFILES="${PROJECTS}/dotfiles"
+export PERSONAL="${PROJECTS}/personal"
 export EDITOR="nvim"
 export TERMINAL="st"
-export BAT_THEME="base16" # Theme for bat (cat with syntax highlighting)
+export BAT_THEME="base16"
 export GOPATH="${HOME}/.cache/go"
 
 # }}}
@@ -131,11 +132,12 @@ alias egrep='egrep --color=auto'
 # dashes '-' instead of underscores '_'. #########
 
 rl() { source "${HOME}/.bashrc"; }
-vp() { (cd "${GIT_PERSONAL}" && vi); }
+sy() { "${DOTFILES}/sync"; }
+vp() { (cd "${PERSONAL}" && vi); }
 vf() { vi "$(find . | fzf)"; }
 
 rd() {
-    local CHOICEPATH="${HOME}/Documents/html-pages"
+    local CHOICEPATH="${HOME}/persist/articles"
     local CHOICE="$(ls "${CHOICEPATH}" | grep '\.html$' | fzf)"
     open "${CHOICEPATH}/${CHOICE}" &
 }
@@ -172,24 +174,24 @@ __set_prompt() {
 
     # Set colors
     local _RESET='\[\e[m\]'
-    local _BORDER='\[\e[31m\]'
-    local _USER='\[\e[34m\]'
-    local _BRANCH='\[\e[36m\]'
-    local _PWD='\[\e[35m\]'
+    local _BORDER='\[\e[32m\]'
+    local _USER='\[\e[33m\]'
+    local _BRANCH='\[\e[35m\]'
+    local _PWD='\[\e[36m\]'
 
     # Actually build the prompt
-    local _PROMPT=''
-    local _PROMPT+=${_BORDER}'['
-    local _PROMPT+=${_USER}
-    local _PROMPT+='\u:'
-    local _PROMPT+=${_BRANCH}
-    local _PROMPT+='$(git-branch)'
-    local _PROMPT+=${_PWD}
-    local _PROMPT+=' \w'
-    local _PROMPT+=${_BORDER}']'
-    local _PROMPT+=${_RESET}
-    local _PROMPT+='\$ '
-    export PS1="${_PROMPT}"
+    local prompt=''
+    local prompt+=${_BORDER}'['
+    local prompt+=${_USER}
+    local prompt+='\u:'
+    local prompt+=${_BRANCH}
+    local prompt+='$(git-branch)'
+    local prompt+=${_PWD}
+    local prompt+=' \w'
+    local prompt+=${_BORDER}']'
+    local prompt+=${_RESET}
+    local prompt+='\$ '
+    export PS1="${prompt}"
 
 }; __set_prompt
 

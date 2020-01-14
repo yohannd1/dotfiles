@@ -77,7 +77,7 @@ lf_glob() {
     [ -z "${1}" ] || [ -z "${2}" ] && echo "lf_glob: not enough arguments" && return 1
 
     # TODO: find alternative to * that supports hidden files.
-    [ -n "$(ls "${1}")" ] && \
+    [ -n "$(ls "${1}" 2>/dev/null)" ] && \
         for globfile in "${1}"/*; do
             lf "${globfile}" "${2}/$(basename "${globfile}")"
         done
@@ -104,6 +104,8 @@ link_files() {
     lf_config "sxhkd" "${HOME}/.config/sxhkd"
     lf_config "termux" "${HOME}/.termux"
     lf_config "kak" "${HOME}/.config/kak"
+    lf_config "vifm" "${HOME}/.config/vifm"
+    lf_config "rofi" "${HOME}/.config/rofi"
 
     # File links
     lf_config "compton.conf" "${HOME}/.config/compton.conf"
@@ -112,6 +114,8 @@ link_files() {
     lf_config "gitignore" "${HOME}/.gitignore"
     lf_config "inputrc" "${HOME}/.inputrc"
     lf_config "tmux.conf" "${HOME}/.tmux.conf"
+    lf_config "emacs/init.el" "${HOME}/.emacs.d/init.el"
+    lf_config "xresources" "${HOME}/.Xresources"
 
     # Glob directories.
     lf_glob "${DOTFILES}/config/vscode" "${HOME}/.config/Code/User"
@@ -119,10 +123,13 @@ link_files() {
     lf_glob "${DOTFILES}/local/bin" "${HOME}/.local/bin"
     lf_glob "${DOTFILES}/local/lib" "${HOME}/.local/lib"
     lf_glob "${DOTFILES}/local/share" "${HOME}/.local/share"
+    lf_glob "${HOME}/projects/personal/local/bin" "${HOME}/.local/bin"
+    lf_glob "${HOME}/projects/personal/local/lib" "${HOME}/.local/lib"
+    lf_glob "${HOME}/projects/personal/local/share" "${HOME}/.local/share"
 }
 
 # }}}
-# VIM PLUGINS ################################ {{{
+# (NEO)VIM PLUGINS ################################ {{{
 
 ivp() {
     # "ivp" -> Install Vim Plugin
@@ -155,6 +162,8 @@ setup_vimplugins() {
             ivp "vim-fsharp" "https://github.com/fsharp/vim-fsharp"
             ivp "goyo.vim" "https://github.com/junegunn/goyo.vim"
             ivp "SimpylFold" "https://github.com/tmhedberg/SimpylFold"
+            ivp "julia-vim" "https://github.com/JuliaEditorSupport/julia-vim"
+            ivp "delimitMate" "https://github.com/Raimondi/delimitMate"
         }
 
 # }}}

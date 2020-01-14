@@ -82,7 +82,7 @@ augroup end
 
 augroup ft_rust
     au!
-    au FileType rust RunfileCommand cargo run "%"
+    au FileType rust RunfileCommand RUST_BACKTRACE=1 cargo run "%"
     au FileType rust set foldmethod=syntax
 augroup end 
 
@@ -142,6 +142,33 @@ augroup ft_fsharp
 augroup end
 
 " }}}
+" Lua {{{
+
+augroup ft_lua
+    au!
+    au FileType lua RunfileCommand lua "%"
+augroup end
+
+" }}}
+" Conf (general) {{{
+
+augroup ft_conf
+    au!
+    au FileType conf set foldmethod=marker
+augroup end
+
+" }}}
+" Markdown {{{
+
+augroup ft_markdown
+    au!
+    au FileType markdown RunfileCommand "compile-md" "%" "&&" "xdg-open" "/tmp/md-compile.html" "&"
+augroup end
+
+" }}}
+" Extras {{{
+au FileType xdefaults setlocal commentstring=\!%s
+" }}}
 
 " }}}
 " Mini Plugins ------------------------------- {{{
@@ -184,6 +211,8 @@ command! -nargs=0 OpenWORD call OpenWORD()
 command! -nargs=* RunfileCommand let b:runfile_command = join([<f-args>], ' ') " Remember to quote '%' for better performance when using this.
 command! -nargs=* EditNote call EditNote(join([<f-args>], ' '))
 command! -nargs=0 RunFile call RunFile()
+
+cnoreabbrev rl Reload
 
 " }}}
 " Settings ----------------------------------- {{{
@@ -281,15 +310,18 @@ function! EditNote(filename) " {{{
     let l:new_filename = substitute(a:filename, ' ', '-', 'g')
     let l:new_filename = substitute(l:new_filename, '.*', '\L&', 'g')
     let l:new_filename = substitute(l:new_filename, '\v(!|/)', '', 'g')
-    if isdirectory(expand("~/git/personal/wiki"))
+    if isdirectory(expand("~/projects/personal/wiki"))
         if (l:new_filename != "")
-            exec "e ~/git/personal/wiki/" . l:new_filename . ".md"
+            exec "e ~/projects/personal/wiki/" . l:new_filename . ".md"
         else
             echo "... No arguments provided."
         endif
     else
-        echo "Not found: '~/git/personal/wiki'. Please create said directory."
+        echo "Not found: '~/projects/personal/wiki'. Please create said directory."
     endif
+endfunction " }}}
+function! MarkdownCompile(file) " {{{
+    exec "!cmark '" . file . "' | html-wrapper > /tmp/markdown-temp"
 endfunction " }}}
 
 " }}}
@@ -361,12 +393,15 @@ nnoremap <silent> <C-p> :Clap buffers<CR>
 nnoremap <silent> <C-o> :Clap files<CR>
 nnoremap <silent> <M-o> :Clap grep<CR>
 
+" Quick character insert
+inoremap <C-g>` ```<CR>```<Up><End><CR>
+
 " }}}
 " Quick Editing ------------------------------ {{{
 
 nnoremap <silent> <Leader>ev :e $MYVIMRC<CR>
-nnoremap <silent> <Leader>et :e ~/git/personal/todo/todo.tq<CR>
+nnoremap <silent> <Leader>et :e ~/projects/personal/todo/todo.tq<CR>
 nnoremap <silent> <Leader>ex :e ~/.tmux.conf<CR>
-nnoremap <silent> <Leader>es :e ~/git/dotfiles/sync<CR>
+nnoremap <silent> <Leader>es :e ~/projects/dotfiles/sync<CR>
 
 " }}}
