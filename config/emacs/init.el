@@ -3,18 +3,22 @@
 (add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/"))
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
 (package-initialize)
-;(package-refresh-contents) ;; TODO: see if this is making everything bad to use.
+(custom-set-variables
+ '(package-selected-packages (quote (rust-mode use-package helm evil-c evil async))))
+(custom-set-faces)
 
-(unless (display-graphic-p)
-  (send-string-to-terminal "\033[2 q"))
+(defun emacsclient-code (_)
+  "Code that should be ran when a client connects to the daemon or something like."
+  (unless (display-graphic-p)
+    (send-string-to-terminal "\033[2 q")))
+
+(add-to-list 'after-make-frame-functions 'emacsclient-code)
 
 ;; Download Evil
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 (unless (package-installed-p 'evil)
   (package-install 'evil))
-; (unless (package-installed-p 'helm)
-;   (package-install 'helm))
 
 ;; Enable Evil
 (require 'evil)
@@ -34,17 +38,7 @@
   (load-file "~/.emacs.d/init.el"))
 
 ;; Other settings
+(menu-bar-mode -1)
+(tool-bar-mode -1)
 (global-visual-line-mode)
 (global-linum-mode)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages (quote (use-package helm evil-c evil async))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

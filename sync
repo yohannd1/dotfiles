@@ -116,6 +116,7 @@ link_files() {
     lf_config "tmux.conf" "${HOME}/.tmux.conf"
     lf_config "emacs/init.el" "${HOME}/.emacs.d/init.el"
     lf_config "xresources" "${HOME}/.Xresources"
+    lf_config "taskwarrior/taskrc" "${HOME}/.taskrc"
 
     # Glob directories.
     lf_glob "${DOTFILES}/config/vscode" "${HOME}/.config/Code/User"
