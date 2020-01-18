@@ -1,7 +1,10 @@
 ;; -*- origami-fold-style: triple-braces -*-
 ;;; YohananDiamond's barely alive init.el file.
-;;; Going to make this better later, I guess.
-;;; I removed half of my config accidentally and it wasn't saved anywhere else.
+
+(defvar my/init-amount -1
+  "Indicates the amount of times the init file has been loaded.
+Starts with -1 because, for convenience reasons, it is increased on the start of the file.")
+(setq my/init-amount (+ my/init-amount 1))
 
 ;; Package Management {{{
 
@@ -9,8 +12,8 @@
 
 (require 'package)
 (setq package-archives
-      '(("melpa" . "http://melpa.org/packages")
-	("melpa-stable" . "http://stable.melpa.org/packages/")
+      '(("melpa-stable" . "http://stable.melpa.org/packages/")
+	("melpa" . "http://melpa.org/packages")
 	("gnu" . "http://elpa.gnu.org/")))
 (package-initialize)
 
@@ -72,6 +75,10 @@
 	 ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 ;; }}}
+;; Clojure Mode {{{
+(use-package clojure-mode
+  :ensure t)
+;; }}}
 ;; Rainbow Delimiters {{{
 ;; TODO: Fix this (it doesn't seem to work at startup)
 (use-package rainbow-delimiters
@@ -118,67 +125,69 @@
 (defun my/term-change-cursor (&optional cursor-type)
   "Sends a escape code to the terminal indicating that the cursor should change."
   (if (eq cursor-type nil) (setq cursor-type 2))
-  (send-string-to-terminal (concat "\033[" (number-to-string cursor-type) " q")))
+  (when (not (display-graphic-p))
+    (send-string-to-terminal (concat "\033[" (number-to-string cursor-type) " q"))))
 
 ;; }}}
 ;; Minor settings {{{
 
-(global-visual-line-mode)
-(global-linum-mode)
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
+;; Modes to enable
+(global-visual-line-mode 1)
+(global-linum-mode 1)
+(electric-pair-mode 1)
+
+;; Modes to disable
+(tool-bar-mode 0)
+(menu-bar-mode 0)
+(scroll-bar-mode 0)
+
 (setq inhibit-startup-message t) ; Disable welcome message on startup
 ;; (setq initial-scratch-message nil) ; Disable scratch buffer on startup
+
 (setq vc-follow-symlinks t)
 (setq linum-format "%3d ")
 
 ;; }}}
 ;; GUI or Terminal? {{{
 
-;; I'm tired.
-;; Works well on all cases, except GUI emacsclient.
-;; https://stackoverflow.com/questions/18904529/after-emacs-deamon-i-can-not-see-new-theme-in-emacsclient-frame-it-works-fr
-;; Cases enum { term-standalone; term-client; gui-standalone; gui-client; daemon; }
-(defun my/graphic-or-not (&optional frame)
+(defun my/load-theme ()
+  "Detects whether the current frame is on GUI or a terminal and then loads the corresponding theme."
   (if (display-graphic-p)
-    ;; Theme & Font loading on GUI
-    (if (daemonp)
-    (if (eq frame nil)
-    ;; If the command is called without args (probably simply from the call that is after this function), do nothing
-    nil
-  ;; On other cases, do the magic
-  (with-selected-frame frame
-	      (require 'atom-one-dark-theme)
-	      (load-theme 'atom-one-dark t)
-	      (set-frame-font "Cascadia Code 11" nil t)))
-	(progn
-  (load-theme 'atom-one-dark t)
-  (set-frame-font "Cascadia Code 11" nil t)))
+      (progn
+	(load-theme my/theme-gui t)
+	(set-frame-font "Cascadia Code 11" nil t))
     (progn
-  (my/term-change-cursor)
-  (load-theme 'term-dash t)
-  ;; Evil hooks for changing cursor on mode change {{{
-  (add-hook 'evil-normal-state-entry-hook #'my/term-change-cursor)
-  (add-hook 'evil-motion-state-entry-hook #'my/term-change-cursor)
-  (add-hook 'evil-replace-state-entry-hook #'my/term-change-cursor)
-  (add-hook 'evil-visual-state-entry-hook #'my/term-change-cursor)
-  (add-hook 'evil-insert-state-entry-hook (lambda () (my/term-change-cursor 6)))
-  (add-hook 'evil-operator-state-entry-hook (lambda () (my/term-change-cursor 3)))
-  (add-hook 'evil-emacs-state-entry-hook #'my/term-change-cursor)
-  ;; }}}
-  )))
-(my/graphic-or-not)
+      (load-theme my/theme-term t))))
 
-  ;; Run the function above when a client connects
-  (when (not (boundp 'my/added-client-hooks))
-    (setq my/added-client-hooks nil))
-  (when (not my/added-client-hooks)
-    (add-to-list 'after-make-frame-functions #'my/graphic-or-not))
+(defvar my/theme-gui 'atom-one-dark
+  "The GUI theme to be used.")
+(defvar my/theme-term 'term-dash
+  "The terminal theme to be used.")
 
-  ;; }}}
+(when (eq my/init-amount 0)
+  (if (daemonp)
+      (progn
+	(add-hook 'after-make-frame-functions
+		  (lambda (frame)
+		    (with-selected-frame frame (my/load-theme)))))
+    (progn
+      (my/load-theme)))
+  (if (display-graphic-p)
+      nil
+      (progn
+	;; Evil hooks for changing cursor on mode change {{{
+	(add-hook 'evil-normal-state-entry-hook #'my/term-change-cursor)
+	(add-hook 'evil-motion-state-entry-hook #'my/term-change-cursor)
+	(add-hook 'evil-replace-state-entry-hook #'my/term-change-cursor)
+	(add-hook 'evil-visual-state-entry-hook #'my/term-change-cursor)
+	(add-hook 'evil-insert-state-entry-hook (lambda () (my/term-change-cursor 6)))
+	(add-hook 'evil-operator-state-entry-hook (lambda () (my/term-change-cursor 3)))
+	(add-hook 'evil-emacs-state-entry-hook #'my/term-change-cursor)
+	;; }}}
+	)))
 
-;; TODO: Try to remember the rest of the config that I exterminated -- I lost the damn cursor changer... :(
+;; }}}
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -187,6 +196,9 @@
  '(custom-safe-themes
    (quote
     ("2992c7eeda3e58b1c19b3f0029fea302c969530cb5cf5904436d91d216993f39" default)))
+ '(package-selected-packages
+   (quote
+    (clojure-mode which-key use-package try simpleclip rust-mode rainbow-delimiters origami markdown-mode helm haskell-mode evil-commentary auto-complete atom-one-dark-theme)))
  '(safe-local-variable-values (quote ((origami-fold-style . triple-braces)))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

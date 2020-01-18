@@ -8,7 +8,7 @@
     new = green bold
 
 [core]
-    editor = emacs -nw
+    editor = emacs-ttyorgui emacsclient
     excludesfile = ~/.gitignore
     # attributesfile = ~/.gitattributes
     ignorecase = false
