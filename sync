@@ -9,7 +9,7 @@ exists() { command -v "${1}" >/dev/null 2>&1; }
 
 DOTFILES_URL_HTTPS="https://github.com/YohananDiamond/dotfiles"
 DOTFILES_URL_SSH="git@github.com:yohanandiamond/dotfiles"
-DOTFILES="${HOME}/git/dotfiles"
+DOTFILES="${HOME}/projects/dotfiles"
 BACKUP_DIR="${HOME}/.cache/dotfiles-symlink-backup/$(date '+%Y-%m-%d.%H:%M').$(shuf -i 0-99 -n 1)"
 
 # }}}
@@ -60,7 +60,7 @@ lf() {
     # TODO: cancel if ${ORIGINAL_FILE} doesn't exist.
 
     # Check if ${NEW_FILE} exists and then backup it.
-    if [ -e "${NEW_FILE}" ] || [ -L "{NEW_FILE}" ]; then
+    if [ -e "${NEW_FILE}" ] || [ -L "${NEW_FILE}" ]; then
         local BACKUP_FILE_PATH="${BACKUP_DIR}/$(dirname "${NEW_FILE#?}")"
         mkdir -p "${BACKUP_FILE_PATH}"
         mv "${NEW_FILE}" -t "${BACKUP_FILE_PATH}"
@@ -77,7 +77,7 @@ lf_glob() {
     [ -z "${1}" ] || [ -z "${2}" ] && echo "lf_glob: not enough arguments" && return 1
 
     # TODO: find alternative to * that supports hidden files.
-    [ -n "$(ls "${1}")" ] && \
+    [ -n "$(ls "${1}" 2>/dev/null)" ] && \
         for globfile in "${1}"/*; do
             lf "${globfile}" "${2}/$(basename "${globfile}")"
         done
@@ -103,6 +103,9 @@ link_files() {
     lf_config "polybar" "${HOME}/.config/polybar"
     lf_config "sxhkd" "${HOME}/.config/sxhkd"
     lf_config "termux" "${HOME}/.termux"
+    lf_config "kak" "${HOME}/.config/kak"
+    lf_config "vifm" "${HOME}/.config/vifm"
+    lf_config "rofi" "${HOME}/.config/rofi"
 
     # File links
     lf_config "compton.conf" "${HOME}/.config/compton.conf"
@@ -111,6 +114,9 @@ link_files() {
     lf_config "gitignore" "${HOME}/.gitignore"
     lf_config "inputrc" "${HOME}/.inputrc"
     lf_config "tmux.conf" "${HOME}/.tmux.conf"
+    lf_config "emacs/init.el" "${HOME}/.emacs.d/init.el"
+    lf_config "xresources" "${HOME}/.Xresources"
+    lf_config "taskwarrior/taskrc" "${HOME}/.taskrc"
 
     # Glob directories.
     lf_glob "${DOTFILES}/config/vscode" "${HOME}/.config/Code/User"
@@ -118,10 +124,12 @@ link_files() {
     lf_glob "${DOTFILES}/local/bin" "${HOME}/.local/bin"
     lf_glob "${DOTFILES}/local/lib" "${HOME}/.local/lib"
     lf_glob "${DOTFILES}/local/share" "${HOME}/.local/share"
+    lf_glob "${HOME}/persist/local/bin" "${HOME}/.local/bin"
+    lf_glob "${HOME}/persist/local/share" "${HOME}/.local/share"
 }
 
 # }}}
-# VIM PLUGINS ################################ {{{
+# (NEO)VIM PLUGINS ################################ {{{
 
 ivp() {
     # "ivp" -> Install Vim Plugin
@@ -154,6 +162,8 @@ setup_vimplugins() {
             ivp "vim-fsharp" "https://github.com/fsharp/vim-fsharp"
             ivp "goyo.vim" "https://github.com/junegunn/goyo.vim"
             ivp "SimpylFold" "https://github.com/tmhedberg/SimpylFold"
+            ivp "julia-vim" "https://github.com/JuliaEditorSupport/julia-vim"
+            ivp "delimitMate" "https://github.com/Raimondi/delimitMate"
         }
 
 # }}}

@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Initial variables
+notified_low=
+notified_full=
+
+while sleep 30; do
+    # Supports only one battery, for now.
+    battery_level="$(cat /sys/class/power_supply/BAT0/capacity)"
+    if [ "${battery_level}" = 20 ] || [ "${battery_level}" -lt 20 ]; then
+        [ -z "${notified_low}" ] && notify-send -u critical "Battery low! :: ${battery_level}%"
+        notified_low=done
+    else
+        notified_low=
+        if [ "${battery_level}" = 90 ] || [ "${battery_level}" -gt 90 ]; then
+            [ -z "${notified_full}" ] && notify-send "Battery is almost charged! :: ${battery_level}%"
+            notified_full=done
+        else
+            notified_full=
+        fi
+    fi
+done

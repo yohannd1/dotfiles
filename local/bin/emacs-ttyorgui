@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -e
+
+# Initial checks
+[ $# -gt 0 ]
+[ "${1}" = emacs ] || [ "${1}" = emacsclient ] || (echo "Bad command! ${1}"; exit 1)
+
+if [ $# = 1 ]; then
+    [ -t 1 ] && exec "${1}" -nw || exec "${1}"
+else
+    if [ -t 1 ]; then
+	exec "${1}" -nw ${@:2}
+    else
+	exec "${1}" ${@:2}
+    fi
+fi

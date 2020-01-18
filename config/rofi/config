@@ -1,0 +1,27 @@
+! vim: ft=xdefaults
+rofi.modi: combi
+rofi.width: 1000
+rofi.lines: 20
+rofi.font: Cascadia Code 13
+rofi.theme: /usr/share/rofi/themes/gruvbox-dark-soft.rasi
+rofi.show-icons: false
+rofi.combi-modi: drun,run
+rofi.kb-move-char-back: Left
+rofi.kb-move-char-forward: Right
+rofi.kb-row-up: Up,Control+k,ISO_Left_Tab
+rofi.kb-accept-entry: Control+m,Return,KP_Enter
+rofi.kb-row-down: Down,Control+j
+rofi.kb-page-prev: Control+b
+rofi.kb-page-next: Control+f
+rofi.kb-row-first: Home,KP_Home,Alt+k
+rofi.kb-row-last: End,KP_End,Alt+j
+rofi.kb-cancel: Escape,Control+bracketleft
+
+! Unmap some things
+rofi.kb-remove-to-eol: Control+0
+! Border width
+rofi.bw: 0
+! Set the matching algorithm: (normal, regex, glob, fuzzy) -> Fuzzy didn't work well... (at least the sorting)
+rofi.matching: normal
+! "Scrolling method. (0: Page, 1: Centered)" Set from: Commandline
+rofi.scroll-method: 1

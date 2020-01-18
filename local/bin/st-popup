@@ -1,2 +1,7 @@
 #!/bin/sh
-st -c "float" -t "Power Menu" -e "${1}"
+
+if [ -t 1 ]; then 
+    eval "${@}"
+else
+    st -c "float" -t "st-popup" -f "Cascadia Code:pixelsize=18:antialias=true:autohint=true" -e "${@}" 
+fi

@@ -26,6 +26,7 @@ if has("python3")
 else
     call add(g:pathogen_disabled, "deoplete.nvim")
 endif
+call add(g:pathogen_disabled, "SimpylFold")
 exec pathogen#infect()
 
 " }}}
@@ -81,7 +82,7 @@ augroup end
 
 augroup ft_rust
     au!
-    au FileType rust RunfileCommand cargo run "%"
+    au FileType rust RunfileCommand RUST_BACKTRACE=1 cargo run "%"
     au FileType rust set foldmethod=syntax
 augroup end 
 
@@ -141,6 +142,33 @@ augroup ft_fsharp
 augroup end
 
 " }}}
+" Lua {{{
+
+augroup ft_lua
+    au!
+    au FileType lua RunfileCommand lua "%"
+augroup end
+
+" }}}
+" Conf (general) {{{
+
+augroup ft_conf
+    au!
+    au FileType conf set foldmethod=marker
+augroup end
+
+" }}}
+" Markdown {{{
+
+augroup ft_markdown
+    au!
+    au FileType markdown RunfileCommand "compile-md" "%" "&&" "xdg-open" "/tmp/md-compile.html" "&"
+augroup end
+
+" }}}
+" Extras {{{
+au FileType xdefaults setlocal commentstring=\!%s
+" }}}
 
 " }}}
 " Mini Plugins ------------------------------- {{{
@@ -152,7 +180,7 @@ augroup end
 """ There is a mapping in the Mappings section for this.
 
 function! TabOrComplete(mode)
-    if (col(".") > 1) && strcharpart(getline("."), col(".") - 2, 1) =~ '\v[^ \t]'
+    if (col(".") > 1) && !(strcharpart(getline("."), col(".") - 2, 1) =~ '\v[ \t]')
         if (a:mode == 0)
             return "\<C-P>"
         elseif (a:mode == 1)
@@ -181,7 +209,10 @@ command! -nargs=0 WhitespaceMode set list!
 command! -nargs=0 WrapMode set wrap!
 command! -nargs=0 OpenWORD call OpenWORD()
 command! -nargs=* RunfileCommand let b:runfile_command = join([<f-args>], ' ') " Remember to quote '%' for better performance when using this.
+command! -nargs=* EditNote call EditNote(join([<f-args>], ' '))
 command! -nargs=0 RunFile call RunFile()
+
+cnoreabbrev rl Reload
 
 " }}}
 " Settings ----------------------------------- {{{
@@ -221,13 +252,16 @@ set listchars+=trail:~
 " Theme-related
 syntax on
 set background=dark
-colorscheme onedark
+if !exists("/sdcard") | colorscheme onedark | endif
 
 " Indentation
 set tabstop=4 shiftwidth=4
 set softtabstop=4
 set expandtab
 set smarttab
+
+" Fold Expr
+set foldtext=MyFoldText()
 
 " Enable RGB colors {{{
 set termguicolors
@@ -241,7 +275,7 @@ endif
 " }}}
 " Functions ---------------------------------- {{{
 
-function! RunFile()
+function! RunFile() " {{{
     if !exists("b:runfile_command")
         echo "[RunFile()]: error: `b:runfile_command` not defined."
     else
@@ -250,12 +284,45 @@ function! RunFile()
         exec l:command_string
         normal! i
     endif
-endfunction
-
-function! OpenWORD()
+endfunction " }}}
+function! OpenWORD() " {{{
     let l:WORD = expand("<cWORD>")
     exec "!xdg-open " . l:WORD . " &"
-endfunction
+endfunction " }}}
+function! MyFoldText() " {{{
+    let l:tab_char = strpart(' ', shiftwidth())
+    let l:line_contents = substitute(getline(v:foldstart), '\t', l:tab_char, 'g')
+    let l:line_contents = substitute(l:line_contents, '{{{', '', 'g') " Remove fold marker
+
+    let l:numbers_width = &foldcolumn + &number * &numberwidth
+    let l:window_width = winwidth(0) - numbers_width - 1
+    let l:folded_lines_number = v:foldend - v:foldstart
+
+    let l:line_contents = strpart(l:line_contents, 0, l:window_width - 2 - len(l:folded_lines_number))
+    let l:void_size = l:window_width - len(l:line_contents) - len(folded_lines_number)
+    let l:void_char = '·'
+
+    return l:line_contents . repeat(l:void_char, l:void_size) . l:folded_lines_number . 'l   '
+endfunction " }}}
+
+" }}}
+function! EditNote(filename) " {{{
+    let l:new_filename = substitute(a:filename, ' ', '-', 'g')
+    let l:new_filename = substitute(l:new_filename, '.*', '\L&', 'g')
+    let l:new_filename = substitute(l:new_filename, '\v(!|/)', '', 'g')
+    if isdirectory(expand("~/projects/personal/wiki"))
+        if (l:new_filename != "")
+            exec "e ~/projects/personal/wiki/" . l:new_filename . ".md"
+        else
+            echo "... No arguments provided."
+        endif
+    else
+        echo "Not found: '~/projects/personal/wiki'. Please create said directory."
+    endif
+endfunction " }}}
+function! MarkdownCompile(file) " {{{
+    exec "!cmark '" . file . "' | html-wrapper > /tmp/markdown-temp"
+endfunction " }}}
 
 " }}}
 " General Mappings --------------------------- {{{
@@ -326,12 +393,15 @@ nnoremap <silent> <C-p> :Clap buffers<CR>
 nnoremap <silent> <C-o> :Clap files<CR>
 nnoremap <silent> <M-o> :Clap grep<CR>
 
+" Quick character insert
+inoremap <C-g>` ```<CR>```<Up><End><CR>
+
 " }}}
 " Quick Editing ------------------------------ {{{
 
 nnoremap <silent> <Leader>ev :e $MYVIMRC<CR>
-nnoremap <silent> <Leader>et :e ~/git/personal/todo/todo.tq<CR>
+nnoremap <silent> <Leader>et :e ~/projects/personal/todo/todo.tq<CR>
 nnoremap <silent> <Leader>ex :e ~/.tmux.conf<CR>
-nnoremap <silent> <Leader>es :e ~/git/dotfiles/sync<CR>
+nnoremap <silent> <Leader>es :e ~/projects/dotfiles/sync<CR>
 
 " }}}

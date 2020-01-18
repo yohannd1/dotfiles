@@ -1,19 +1,72 @@
-# i3 config file (v4)
+# i3 (v4.0) config file
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
 
-# Variables
+# Change main font
+font pango:Cascadia Code Regular 10
+
+# Some Variables {{{
+
 set $mod Mod4
 set $alt Mod1
 
-# Font
-font pango:Cascadia Code Regular 10
+# Define names for default workspaces for which we configure key bindings later on.
+set $ws1   "1"
+set $ws2   "2"
+set $ws3   "3"
+set $ws4   "4"
+set $ws5   "5"
+set $ws6   "6"
+set $ws7   "7"
+set $ws8   "8"
+set $ws9   "9"
+set $ws10 "10"
+
+# }}}
+# Mappings {{{
+
+# Commands {{{
+
+# Start a Terminal
+bindsym $mod+Return exec st -t "Suckless Terminal"
+
+# Notes
+bindsym $mod+n exec st -t "Note" -e "edn"
+
+# Rofi
+bindsym $mod+space exec --no-startup-id lnc
+
+# Show power menu (made by me :P)
+bindsym $mod+Shift+o exec "env st-popup pow"
+
+# Editor!
+bindsym $mod+m exec "emacs-ttyorgui emacs"
+
+# Pulse Audio controls
+bindsym XF86AudioLowerVolume exec --no-startup-id amixer set Master 5%-
+bindsym XF86AudioRaiseVolume exec --no-startup-id amixer set Master 5%+
+bindsym XF86AudioMute exec --no-startup-id amixer -D pulse set Master 1+ toggle
+
+# Media player key bindings
+bindsym XF86AudioPlay exec playerctl pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
+
+# Brightness key bindings
+bindsym XF86MonBrightnessUp exec xbacklight -inc 10
+bindsym XF86MonBrightnessDown exec xbacklight -dec 10
+#bindsym XF86PowerOff exec "env st-popup pow"
+
+# }}}
+# General {{{
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
-# Start a Terminal
-bindsym $mod+Return exec st -t "Suckless Terminal"
-# bindsym $mod+Return exec i3-sensible-terminal
+# reload the configuration file
+bindsym $mod+Shift+c reload
+
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+Shift+r restart
 
 # Kill focused window
 bindsym $mod+Shift+q kill
@@ -54,25 +107,6 @@ bindsym $mod+Shift+space floating toggle
 # change focus between tiling / floating windows
 bindsym $mod+p focus mode_toggle
 
-# bindsym $mod+a focus parent
-# bindsym $mod+d focus child
-
-# launch rofi
-bindsym $mod+space exec --no-startup-id "rofi -modi combi -combi-modi window,drun,run,ssh -show combi -width 800 -lines 20 -theme android_notification -scroll-method 1"
-
-# Define names for default workspaces for which we configure key bindings later on.
-# We use variables to avoid repeating the names in multiple places.
-set $ws1   "1"
-set $ws2   "2"
-set $ws3   "3"
-set $ws4   "4"
-set $ws5   "5"
-set $ws6   "6"
-set $ws7   "7"
-set $ws8   "8"
-set $ws9   "9"
-set $ws10 "10"
-
 # switch to workspace
 bindsym $mod+1 workspace $ws1
 bindsym $mod+2 workspace $ws2
@@ -97,19 +131,9 @@ bindsym $mod+Shift+8 move container to workspace $ws8
 bindsym $mod+Shift+9 move container to workspace $ws9
 bindsym $mod+Shift+0 move container to workspace $ws10
 
-# reload the configuration file
-bindsym $mod+Shift+c reload
+# }}}
+# Resizing {{{
 
-# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
-bindsym $mod+Shift+r restart
-
-# show power menu (made by me :P)
-bindsym $mod+Shift+o exec "env st-popup pow"
-# bindsym $mod+Shift+o exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
-
-# MODES ##########################################
-
-# Bindings
 bindsym $mod+r mode "resize"
 
 mode "resize" {
@@ -132,9 +156,11 @@ mode "resize" {
     bindsym $mod+r mode "default"
 }
 
-# OPTIONS ########################################
+# }}}
 
-# Start i3bar
+# }}}
+# Bar {{{
+
 bar {
     status_command i3status -c ~/.config/i3/i3status.conf
     tray_output primary
@@ -155,6 +181,9 @@ bar {
     }
 }
 
+# }}}
+# Aesthetics {{{
+
 # Window decoration colors
 ####################### Border  Backgr. Text    Indict.
 client.placeholder      #5c6370 #5c6370 #282c34 #5c6370
@@ -165,38 +194,31 @@ client.focused_inactive #abb2bf #abb2bf #282c34 #abb2bf
 client.urgent           #e06c75 #e06c75 #282c34 #e06c75
 #######################################################
 
-# Other options
+# }}}
+# General Options & Startup Commands {{{
+
 focus_follows_mouse no
-
-# Key delays
 exec --no-startup-id xset r rate 400 35
-
-# Related programs
 exec --no-startup-id compton -b
 exec --no-startup-id xsetroot -cursor_name left_ptr &
+exec --no-startup-id ~/.local/bin/quick-check
 exec_always --no-startup-id exec bash $HOME/.fehbg
+exec --no-startup-id xinput set-prop 16 323 1 # Touchpad: tap to click
+exec --no-startup-id xinput set-prop 16 305 1 # Touchpad: natural scrolling
 
 # Applets
 exec --no-startup-id nm-applet
 
-# Rules
+# Systemd: disable power key
+exec --no-startup-id systemd-inhibit --what=handle-power-key sleep infinity
+
+# }}}
+# Rules {{{
+
 for_window [class="float"] floating enable
-for_window [class="^.*"] border pixel 0 # Disable borders
+for_window [class="^.*"] border pixel 0
 
 # Temp Rules (for specific windows that I found problems)
 for_window [title="GLFW.jl"] floating enable
 
-# Pulse Audio controls
-bindsym XF86AudioLowerVolume exec --no-startup-id amixer set Master 5%-
-bindsym XF86AudioRaiseVolume exec --no-startup-id amixer set Master 5%+
-bindsym XF86AudioMute exec --no-startup-id amixer -D pulse set Master 1+ toggle
-
-# Media player key bindings (you need playerctl for this to work.)
-bindsym XF86AudioPlay exec playerctl pause
-#                ^^^^ On my PC it's a Toggle
-bindsym XF86AudioNext exec playerctl next
-bindsym XF86AudioPrev exec playerctl previous
-
-# Brightness key bindings
-bindsym XF86MonBrightnessUp exec xbacklight -inc 10
-bindsym XF86MonBrightnessDown exec xbacklight -dec 10
+# }}}
