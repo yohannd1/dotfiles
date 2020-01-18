@@ -1,10 +1,14 @@
+# -*- origami-fold-style: triple-braces -*-
 # CONFIG ##################################### {{{
 
 export PROJECTS="${HOME}/projects"
 export DOTFILES="${PROJECTS}/dotfiles"
-export PERSONAL="${PROJECTS}/personal"
-export EDITOR="nvim"
+
+# export EDITOR="nvim"
+export EDITOR="emacs-ttyorgui emacsclient"
 export TERMINAL="st"
+export BROWSER="firefox"
+
 export BAT_THEME="base16"
 export GOPATH="${HOME}/.cache/go"
 
@@ -119,10 +123,10 @@ alias jl='julia'
 alias du='du -shc'
 alias nvim='echo NOPE:: '
 alias vim='nvim' vi='nvim'
-# alias r='ranger'
-alias ec='emacsclient -nw'
+alias ec='echo -e "\\033[2 q" && emacsclient -nw'
 alias t='task'
 alias tsh='tasksh'
+alias emacs='emacs-ttyorgui emacs'
 
 alias cp-sync='cp -ur'
 alias grep='grep --color=auto'

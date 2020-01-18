@@ -38,6 +38,9 @@ bindsym $mod+space exec --no-startup-id lnc
 # Show power menu (made by me :P)
 bindsym $mod+Shift+o exec "env st-popup pow"
 
+# Editor!
+bindsym $mod+m exec "emacs-ttyorgui emacs"
+
 # Pulse Audio controls
 bindsym XF86AudioLowerVolume exec --no-startup-id amixer set Master 5%-
 bindsym XF86AudioRaiseVolume exec --no-startup-id amixer set Master 5%+
@@ -51,7 +54,7 @@ bindsym XF86AudioPrev exec playerctl previous
 # Brightness key bindings
 bindsym XF86MonBrightnessUp exec xbacklight -inc 10
 bindsym XF86MonBrightnessDown exec xbacklight -dec 10
-bindsym XF86PowerOff exec "env st-popup pow"
+#bindsym XF86PowerOff exec "env st-popup pow"
 
 # }}}
 # General {{{

@@ -1,3 +1,4 @@
+# -*- mode: conf-space -*-
 # [Created by task 2.5.1 1/14/2020 14:26:24]
 # Taskwarrior program configuration file.
 # For more documentation, see http://taskwarrior.org or try 'man task', 'man task-color',
@@ -9,29 +10,29 @@
 #   #variable=foo  -- By commenting out the line, or deleting it, this uses the default
 
 # Use the command 'task show' to see all defaults and overrides
-data.location=~/projects/personal/tw
+data.location=~/wiki/taskwarrior
 
 rule.precedence.color=deleted,completed,active,keyword.,tag.,project.,overdue,scheduled,due.today,due,blocked,blocking,recurring,tagged,uda.
 
 # General decoration
-color.label=
-color.label.sort=
-color.alternate=on color0
+color.label=color3
+color.label.sort=color3
+color.alternate=on color238
 color.header=color4
 color.footnote=color6
 color.warning=color0 on color3
-color.error=color6
-color.debug=color6
+color.error=color0 on color1
+color.debug=color0 on color6
 
 # Task state
-color.completed=
+color.completed=color2
 color.deleted=
-color.active=bold red
+color.active=bold color0 on color5
 color.recurring=color4
 color.scheduled=
 color.until=
-color.blocked=color0 on color10
-color.blocking=color15 on color10
+color.blocked=color1
+color.blocking=color2
 
 # Project
 color.project.none=
@@ -47,9 +48,9 @@ color.tag.none=
 color.tagged=color4
 
 # Due
-color.due=color9
-color.due.today=color5
-color.overdue=color5
+color.due=color5
+color.due.today=color3
+color.overdue=color3
 
 # Report: burndown
 color.burndown.done=color0 on color6
@@ -83,3 +84,9 @@ color.sync.rejected=color13
 color.undo.after=color2
 color.undo.before=color1
 
+uda.reviewed.type=date
+uda.reviewed.label=Reviewed
+report._reviewed.description=Tasksh review report.  Adjust the filter to your needs.
+report._reviewed.columns=uuid
+report._reviewed.sort=reviewed+,modified+
+report._reviewed.filter=( reviewed.none: or reviewed.before:now-6days ) and ( +PENDING or +WAITING )

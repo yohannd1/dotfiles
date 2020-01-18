@@ -124,9 +124,8 @@ link_files() {
     lf_glob "${DOTFILES}/local/bin" "${HOME}/.local/bin"
     lf_glob "${DOTFILES}/local/lib" "${HOME}/.local/lib"
     lf_glob "${DOTFILES}/local/share" "${HOME}/.local/share"
-    lf_glob "${HOME}/projects/personal/local/bin" "${HOME}/.local/bin"
-    lf_glob "${HOME}/projects/personal/local/lib" "${HOME}/.local/lib"
-    lf_glob "${HOME}/projects/personal/local/share" "${HOME}/.local/share"
+    lf_glob "${HOME}/persist/local/bin" "${HOME}/.local/bin"
+    lf_glob "${HOME}/persist/local/share" "${HOME}/.local/share"
 }
 
 # }}}
