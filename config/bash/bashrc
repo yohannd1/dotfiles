@@ -125,6 +125,7 @@ alias nvim='echo NOPE:: '
 alias vim='nvim' vi='nvim'
 alias ec='echo -e "\\033[2 q" && emacsclient -nw'
 alias t='task'
+alias tt='t +TODAY or +OVERDUE'
 alias tsh='tasksh'
 alias emacs='emacs-ttyorgui emacs'
 
@@ -199,7 +200,7 @@ __set_prompt() {
     local prompt+=${_BORDER}']'
     local prompt+=${_RESET}
     local prompt+='\$ '
-    export PS1="${prompt}"
+    PS1="${prompt}"
 
 }; __set_prompt
 

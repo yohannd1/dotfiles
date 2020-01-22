@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ -d "/sdcard" ]; then
+   termux-open $@ &
+else
+   xdg-open $@ &
+fi

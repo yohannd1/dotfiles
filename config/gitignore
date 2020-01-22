@@ -19,5 +19,5 @@ Session.vim
 *~
 *.sw*
 
-# Local files
-# local # No. This didn't allow me to upload my local folder. Fuck.
+# Package managers
+**/Cargo.lock

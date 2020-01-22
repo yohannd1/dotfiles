@@ -1,11 +1,12 @@
 #!/bin/sh
+# -*- origami-fold-style: triple-braces -*-
 
 # TODO: search for broken symlinks in some directories (.local, .config) and ask to the user if they want to remove it;
 # TODO: at welcome_agree, show a resume of everything that will be done and where the ${DOTFILES} are.
 
 exists() { command -v "${1}" >/dev/null 2>&1; }
 
-# CONSTANTS ################################## {{{
+# CONSTANTS {{{
 
 DOTFILES_URL_HTTPS="https://github.com/YohananDiamond/dotfiles"
 DOTFILES_URL_SSH="git@github.com:yohanandiamond/dotfiles"
@@ -13,7 +14,7 @@ DOTFILES="${HOME}/projects/dotfiles"
 BACKUP_DIR="${HOME}/.cache/dotfiles-symlink-backup/$(date '+%Y-%m-%d.%H:%M').$(shuf -i 0-99 -n 1)"
 
 # }}}
-# PROMPTS #################################### {{{
+# PROMPTS {{{
 
 welcome_agree() {
     if ! [ -r "${DOTFILES}" ]; then
@@ -44,7 +45,7 @@ check_and_clone() {
 }
 
 # }}}
-# SYMLINKING ################################# {{{
+# SYMLINKING {{{
 
 lf() {
     ### Create a symlink file pointing to another, with some extra checks.
@@ -115,8 +116,10 @@ link_files() {
     lf_config "inputrc" "${HOME}/.inputrc"
     lf_config "tmux.conf" "${HOME}/.tmux.conf"
     lf_config "emacs/init.el" "${HOME}/.emacs.d/init.el"
+    lf_config "emacs/code" "${HOME}/.emacs.d/code"
     lf_config "xresources" "${HOME}/.Xresources"
     lf_config "taskwarrior/taskrc" "${HOME}/.taskrc"
+    lf_config "zsh/zshrc" "${HOME}/.zshrc"
 
     # Glob directories.
     lf_glob "${DOTFILES}/config/vscode" "${HOME}/.config/Code/User"
@@ -129,7 +132,7 @@ link_files() {
 }
 
 # }}}
-# (NEO)VIM PLUGINS ################################ {{{
+# NEOVIM PLUGINS {{{
 
 ivp() {
     # "ivp" -> Install Vim Plugin

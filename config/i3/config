@@ -1,3 +1,4 @@
+# -*- origami-fold-style: triple-braces -*-
 # i3 (v4.0) config file
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
 
@@ -40,6 +41,10 @@ bindsym $mod+Shift+o exec "env st-popup pow"
 
 # Editor!
 bindsym $mod+m exec "emacs-ttyorgui emacs"
+
+# Print Screen
+bindsym Print exec flameshot screen -c
+bindsym $mod+Print exec flameshot gui
 
 # Pulse Audio controls
 bindsym XF86AudioLowerVolume exec --no-startup-id amixer set Master 5%-
@@ -106,6 +111,9 @@ bindsym $mod+Shift+space floating toggle
 
 # change focus between tiling / floating windows
 bindsym $mod+p focus mode_toggle
+
+# sticky!
+bindsym $mod+o sticky toggle
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1

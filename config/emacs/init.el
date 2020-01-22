@@ -13,7 +13,7 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
 (require 'package)
 (setq package-archives
       '(("melpa-stable" . "http://stable.melpa.org/packages/")
-	("melpa" . "http://melpa.org/packages")
+	;; ("melpa" . "http://melpa.org/packages")
 	("gnu" . "http://elpa.gnu.org/")))
 (package-initialize)
 
@@ -77,6 +77,14 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
 ;; }}}
 ;; Clojure Mode {{{
 (use-package clojure-mode
+  :ensure t)
+;; }}}
+;; Julia Mode {{{
+(use-package julia-mode
+  :ensure t)
+;; }}}
+;; Typescript Mode {{{
+(use-package typescript-mode
   :ensure t)
 ;; }}}
 ;; Rainbow Delimiters {{{
@@ -147,6 +155,16 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
 (setq vc-follow-symlinks t)
 (setq linum-format "%3d ")
 
+;; Backup and autosave files
+(setq version-control t
+      kept-new-versions 5
+      kept-old-versions 3
+      delete-old-versions t
+      backup-by-copying t
+      vc-make-backup-files t
+      backup-directory-alist '(("" . "~/.cache/emacs/backup"))
+      auto-save-file-name-transforms '((".*" "~/.cache/emacs/saves" t)))
+
 ;; }}}
 ;; GUI or Terminal? {{{
 
@@ -165,6 +183,8 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
   "The terminal theme to be used.")
 
 (when (eq my/init-amount 0)
+  (add-to-list 'custom-theme-load-path "~/.emacs.d/code/")
+  (add-to-list 'load-path "~/.emacs.d/code/")
   (if (daemonp)
       (progn
 	(add-hook 'after-make-frame-functions
@@ -198,7 +218,7 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
     ("2992c7eeda3e58b1c19b3f0029fea302c969530cb5cf5904436d91d216993f39" default)))
  '(package-selected-packages
    (quote
-    (clojure-mode which-key use-package try simpleclip rust-mode rainbow-delimiters origami markdown-mode helm haskell-mode evil-commentary auto-complete atom-one-dark-theme)))
+    (typescript-mode clojure-mode which-key use-package try simpleclip rust-mode rainbow-delimiters origami markdown-mode helm haskell-mode evil-commentary auto-complete atom-one-dark-theme)))
  '(safe-local-variable-values (quote ((origami-fold-style . triple-braces)))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -206,3 +226,8 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+(evil-set-initial-state 'term-mode 'emacs)
+
+(setq c-default-style "linux"
+      c-basic-offset 4)
