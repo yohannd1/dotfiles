@@ -36,6 +36,7 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
   (setq evil-want-C-u-scroll t)
   :config (evil-mode 1)
   (with-eval-after-load 'evil-maps
+    (define-key evil-motion-state-map (kbd "M-o") 'save-buffer-reload-term-dash)
     (define-key evil-motion-state-map (kbd "ç") 'evil-ex)
     (define-key evil-motion-state-map (kbd "M-j") 'evil-window-down)
     (define-key evil-motion-state-map (kbd "M-k") 'evil-window-up)
@@ -206,28 +207,23 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
 	;; }}}
 	)))
 
-;; }}}
+(if (display-graphic-p)
+    ()
+  (progn
+    (xterm-mouse-mode)))
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   (quote
-    ("2992c7eeda3e58b1c19b3f0029fea302c969530cb5cf5904436d91d216993f39" default)))
- '(package-selected-packages
-   (quote
-    (typescript-mode clojure-mode which-key use-package try simpleclip rust-mode rainbow-delimiters origami markdown-mode helm haskell-mode evil-commentary auto-complete atom-one-dark-theme)))
- '(safe-local-variable-values (quote ((origami-fold-style . triple-braces)))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+;; }}}
 
 (evil-set-initial-state 'term-mode 'emacs)
 
 (setq c-default-style "linux"
       c-basic-offset 4)
+
+(defun save-buffer-reload-term-dash ()
+  (interactive)
+  (save-buffer)
+  (load-theme 'term-dash t))
+
+(custom-set-variables
+ '(safe-local-variable-values (quote ((origami-fold-style . triple-braces)))))
+(custom-set-faces)

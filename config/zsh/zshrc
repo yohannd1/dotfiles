@@ -44,7 +44,7 @@ export KEYTIMEOUT=1
 export PROJECTS="${HOME}/projects"
 export DOTFILES="${PROJECTS}/dotfiles"
 
-export EDITOR="emacs-ttyorgui emacsclient"
+export EDITOR="emacs-plus emacsclient"
 export TERMINAL="st"
 export BROWSER="firefox"
 
@@ -200,6 +200,7 @@ alias la='ls -A'
 alias ll='ls -alF'
 
 alias t='task'
+alias tl='t ls'
 alias tt='t +TODAY or +OVERDUE'
 alias to='t +TOMORROW'
 alias tsh='tasksh'
@@ -213,8 +214,8 @@ alias jl='julia'
 
 alias nvim='echo NeoVim is disabled for now, I guess. Yargs:'
 alias vim='nvim' vi='nvim'
-alias ec='echo -e "\\033[2 q" && emacsclient -nw'
-alias emacs='emacs-ttyorgui emacs'
+alias ec='emacs-plus emacsclient'
+alias emacs='emacs-plus emacs'
 
 alias cp-sync='cp -ur'
 

@@ -38,9 +38,9 @@ color.blocking=color2
 color.project.none=
 
 # Priority
-color.uda.priority.H=bold blue #color14
-color.uda.priority.M=bold yellow #color12
-color.uda.priority.L=bold green #color11
+color.uda.priority.H=bold blue
+color.uda.priority.M=bold yellow
+color.uda.priority.L=bold green
 
 # Tags
 color.tag.next=
