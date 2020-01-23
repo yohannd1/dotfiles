@@ -46,7 +46,7 @@ export DOTFILES="${PROJECTS}/dotfiles"
 
 export EDITOR="emacs-plus emacsclient"
 export TERMINAL="st"
-export BROWSER="firefox"
+export BROWSER="qutebrowser"
 
 export BAT_THEME="base16"
 export GOPATH="${HOME}/.cache/go"

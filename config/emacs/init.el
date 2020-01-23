@@ -22,7 +22,6 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
   (package-install 'use-package))
 
 ;; }}}
-;; Actual packages {{{
 
 ;; Theme: 'atom-one-dark-theme {{{
 (use-package atom-one-dark-theme
@@ -118,8 +117,6 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
 ;; }}}
 
 ;; }}}
-
-;; }}}
 ;; Interactive Commands {{{
 
 ;; rl -> Reload {{{
@@ -153,7 +150,7 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
 (setq inhibit-startup-message t) ; Disable welcome message on startup
 ;; (setq initial-scratch-message nil) ; Disable scratch buffer on startup
 
-(setq vc-follow-symlinks t)
+(setq vc-follow-symlinks nil)
 (setq linum-format "%3d ")
 
 ;; Backup and autosave files
@@ -227,3 +224,11 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
 (custom-set-variables
  '(safe-local-variable-values (quote ((origami-fold-style . triple-braces)))))
 (custom-set-faces)
+
+;; Not working, for some reason:
+;; (setq mode-line-format
+;;       (list
+;;        '(:eval (propertize " %m "
+;; 			   'face 'mode-line-emphasis))
+;;        '(:eval (propertize " %b "
+;; 			   'face 'mode-line-buffer-id))))

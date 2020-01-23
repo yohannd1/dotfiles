@@ -1,229 +1,232 @@
 # -*- origami-fold-style: triple-braces -*-
 # CONFIG ##################################### {{{
 
-export PROJECTS="${HOME}/projects"
-export DOTFILES="${PROJECTS}/dotfiles"
+echo "This shell is disabled now. die."
+exec zsh
 
-# export EDITOR="nvim"
-export EDITOR="emacs-ttyorgui emacsclient"
-export TERMINAL="st"
-export BROWSER="firefox"
+# export PROJECTS="${HOME}/projects"
+# export DOTFILES="${PROJECTS}/dotfiles"
 
-export BAT_THEME="base16"
-export GOPATH="${HOME}/.cache/go"
+# # export EDITOR="nvim"
+# export EDITOR="emacs-ttyorgui emacsclient"
+# export TERMINAL="st"
+# export BROWSER="firefox"
 
-# }}}
-# LIBRARY #################################### {{{
+# export BAT_THEME="base16"
+# export GOPATH="${HOME}/.cache/go"
 
-source_() { [ -f "${1}" ] && source "${1}"; }
+# # }}}
+# # LIBRARY #################################### {{{
 
-# Personal and local scripts
-source_ "${GIT_PERSONAL}/local/share/bashrc.personal"
-source_ "${HOME}/.bashrc.local"
-source_ "${DOTFILES}/config/bash/fzf-completion"
-source_ "${DOTFILES}/config/bash/fzf-keybindings"
+# source_() { [ -f "${1}" ] && source "${1}"; }
 
-path-push() {
-    # Appends the args to the PATH.
-    for ARG in "$@"; do
-        if [ -d "$ARG" ] && [[ ":$PATH:" != *":$ARG:"* ]]; then
-            export PATH="${PATH:+"$PATH:"}$ARG"
-        fi
-    done
-}
+# # Personal and local scripts
+# source_ "${GIT_PERSONAL}/local/share/bashrc.personal"
+# source_ "${HOME}/.bashrc.local"
+# source_ "${DOTFILES}/config/bash/fzf-completion"
+# source_ "${DOTFILES}/config/bash/fzf-keybindings"
 
-tmux-attached() {
-    # Checks if a session is attached
-    if [[ -n "$1" ]]; then
-        tmux ls | grep "^$1.*(attached)\$" &>/dev/null
-    else
-        echo -e '\e[34mUsage:\e[m tmux-attached SESSION-NAME'
-    fi
-}
+# path-push() {
+#     # Appends the args to the PATH.
+#     for ARG in "$@"; do
+#         if [ -d "$ARG" ] && [[ ":$PATH:" != *":$ARG:"* ]]; then
+#             export PATH="${PATH:+"$PATH:"}$ARG"
+#         fi
+#     done
+# }
 
-tm() {
-    # Start a tmux session or reattach to it.
-    if [[ -n "$1" ]]; then
-        if tmux has -t="$1" &>/dev/null; then
-            tmux attach -t "$1"
-        else
-            tmux new-session -s "$1" \; source-file "${HOME}/.local/lib/tmux-sessions/$1.proj" \; $2
-        fi
-    else
-        echo -e '\e[34mUsage:\e[m tm SESSION-NAME <optional-command>'
-    fi
-}
+# tmux-attached() {
+#     # Checks if a session is attached
+#     if [[ -n "$1" ]]; then
+#         tmux ls | grep "^$1.*(attached)\$" &>/dev/null
+#     else
+#         echo -e '\e[34mUsage:\e[m tmux-attached SESSION-NAME'
+#     fi
+# }
 
-git-branch() {
-    local branch="$(git symbolic-ref --short -q HEAD 2>/dev/null)"
-    if [[ -n "${branch}" ]]; then
-        echo " ${branch}"
-    fi
-}
+# tm() {
+#     # Start a tmux session or reattach to it.
+#     if [[ -n "$1" ]]; then
+#         if tmux has -t="$1" &>/dev/null; then
+#             tmux attach -t "$1"
+#         else
+#             tmux new-session -s "$1" \; source-file "${HOME}/.local/lib/tmux-sessions/$1.proj" \; $2
+#         fi
+#     else
+#         echo -e '\e[34mUsage:\e[m tm SESSION-NAME <optional-command>'
+#     fi
+# }
 
-# }}}
-# APPLICATION SETTINGS ####################### {{{
+# git-branch() {
+#     local branch="$(git symbolic-ref --short -q HEAD 2>/dev/null)"
+#     if [[ -n "${branch}" ]]; then
+#         echo " ${branch}"
+#     fi
+# }
 
-# BASH {{{
+# # }}}
+# # APPLICATION SETTINGS ####################### {{{
 
-# History (unlimited :)
-HISTCONTROL=ignoreboth
-export HISTSIZE=
-export HISTFILESIZE=
-shopt -s histappend
+# # BASH {{{
 
-shopt -s checkwinsize
+# # History (unlimited :)
+# HISTCONTROL=ignoreboth
+# export HISTSIZE=
+# export HISTFILESIZE=
+# shopt -s histappend
 
-# enable programmable completion features
-if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-  fi
-fi
+# shopt -s checkwinsize
 
-# }}}
+# # enable programmable completion features
+# if ! shopt -oq posix; then
+#   if [ -f /usr/share/bash-completion/bash_completion ]; then
+#     . /usr/share/bash-completion/bash_completion
+#   elif [ -f /etc/bash_completion ]; then
+#     . /etc/bash_completion
+#   fi
+# fi
 
-# LESS
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
-export LESS_TERMCAP_mb=$'\e[1;31m'     # begin bold
-export LESS_TERMCAP_md=$'\e[1;35m'     # begin blink
-export LESS_TERMCAP_me=$'\e[0m'        # reset bold/blink
-export LESS_TERMCAP_so=$'\e[33m'       # begin reverse video
-export LESS_TERMCAP_se=$'\e[0m'        # reset reverse video
-export LESS_TERMCAP_us=$'\e[1;32m'     # begin underline
-export LESS_TERMCAP_ue=$'\e[0m'        # reset underline
+# # }}}
 
-# LS & DIR
-test -r "${DOTFILES}/config/dircolors" \
-    && eval "$(dircolors -b "${DOTFILES}/config/dircolors")" \
-    || eval "$(dircolors -b)"
+# # LESS
+# [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+# export LESS_TERMCAP_mb=$'\e[1;31m'     # begin bold
+# export LESS_TERMCAP_md=$'\e[1;35m'     # begin blink
+# export LESS_TERMCAP_me=$'\e[0m'        # reset bold/blink
+# export LESS_TERMCAP_so=$'\e[33m'       # begin reverse video
+# export LESS_TERMCAP_se=$'\e[0m'        # reset reverse video
+# export LESS_TERMCAP_us=$'\e[1;32m'     # begin underline
+# export LESS_TERMCAP_ue=$'\e[0m'        # reset underline
 
-# GCC
-export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+# # LS & DIR
+# test -r "${DOTFILES}/config/dircolors" \
+#     && eval "$(dircolors -b "${DOTFILES}/config/dircolors")" \
+#     || eval "$(dircolors -b)"
 
-# }}}
-# PATH ####################################### {{{
+# # GCC
+# export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-path-push "${HOME}/.local/bin"
-path-push "${HOME}/.cache/go"
-path-push "/opt/bin"
+# # }}}
+# # PATH ####################################### {{{
 
-# }}}
-# ALIASES #################################### {{{
+# path-push "${HOME}/.local/bin"
+# path-push "${HOME}/.cache/go"
+# path-push "/opt/bin"
 
-alias ls='ls --color=auto'
-alias la='ls -A'
-alias ll='ls -alF'
+# # }}}
+# # ALIASES #################################### {{{
 
-alias py3='python3'
-alias p3='python3'
-alias jl='julia'
-alias du='du -shc'
-alias nvim='echo NOPE:: '
-alias vim='nvim' vi='nvim'
-alias ec='echo -e "\\033[2 q" && emacsclient -nw'
-alias t='task'
-alias tt='t +TODAY or +OVERDUE'
-alias tsh='tasksh'
-alias emacs='emacs-ttyorgui emacs'
+# alias ls='ls --color=auto'
+# alias la='ls -A'
+# alias ll='ls -alF'
 
-alias cp-sync='cp -ur'
-alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
+# alias py3='python3'
+# alias p3='python3'
+# alias jl='julia'
+# alias du='du -shc'
+# alias nvim='echo NOPE:: '
+# alias vim='nvim' vi='nvim'
+# alias ec='echo -e "\\033[2 q" && emacsclient -nw'
+# alias t='task'
+# alias tt='t +TODAY or +OVERDUE'
+# alias tsh='tasksh'
+# alias emacs='emacs-ttyorgui emacs'
 
-# }}}
-# USER FUNCTIONS ############################# {{{
-# These functions were designed to be used in ####
-# the shell; because of that, they should have ###
-# dashes '-' instead of underscores '_'. #########
+# alias cp-sync='cp -ur'
+# alias grep='grep --color=auto'
+# alias fgrep='fgrep --color=auto'
+# alias egrep='egrep --color=auto'
 
-rl() { source "${HOME}/.bashrc"; }
-sy() { "${DOTFILES}/sync"; }
-vp() { (cd "${PERSONAL}" && vi); }
-vf() { vi "$(find . | fzf)"; }
+# # }}}
+# # USER FUNCTIONS ############################# {{{
+# # These functions were designed to be used in ####
+# # the shell; because of that, they should have ###
+# # dashes '-' instead of underscores '_'. #########
 
-rd() {
-    local CHOICEPATH="${HOME}/persist/articles"
-    local CHOICE="$(ls "${CHOICEPATH}" | grep '\.html$' | fzf)"
-    open "${CHOICEPATH}/${CHOICE}" &
-}
+# rl() { source "${HOME}/.bashrc"; }
+# sy() { "${DOTFILES}/sync"; }
+# vp() { (cd "${PERSONAL}" && vi); }
+# vf() { vi "$(find . | fzf)"; }
 
-vs() {
-    ([ -f "Session.vim" ] \
-        && vi -S "Session.vim" \
-        || cd "$(git rev-parse --show-toplevel 2>/dev/null)" \
-        && vi -S "Session.vim")
-}
+# rd() {
+#     local CHOICEPATH="${HOME}/persist/articles"
+#     local CHOICE="$(ls "${CHOICEPATH}" | grep '\.html$' | fzf)"
+#     open "${CHOICEPATH}/${CHOICE}" &
+# }
 
-cdgt() {
-    # CD to Git Top Level (cd-git-top)
-    local result=$(git rev-parse --show-toplevel 2>/dev/null)
-    [ -z "${result}" ] && cd "${result}" \
-        || echo "cgt: not on a git repository."
-}
+# vs() {
+#     ([ -f "Session.vim" ] \
+#         && vi -S "Session.vim" \
+#         || cd "$(git rev-parse --show-toplevel 2>/dev/null)" \
+#         && vi -S "Session.vim")
+# }
 
-grept() {
-    grep --exclude-dir=".git" -rEI "TODO:|FIXME:|@todo|@fixme" . 2>/dev/null
-    grep --exclude-dir=".git" -rEI "NOTE:|@note" . 2>/dev/null
-}
+# cdgt() {
+#     # CD to Git Top Level (cd-git-top)
+#     local result=$(git rev-parse --show-toplevel 2>/dev/null)
+#     [ -z "${result}" ] && cd "${result}" \
+#         || echo "cgt: not on a git repository."
+# }
 
-if [ -r "/sdcard" ]; then
-    open() { termux-open "${1}"; }
-else
-    open() { xdg-open "${1}"; }
-fi
+# grept() {
+#     grep --exclude-dir=".git" -rEI "TODO:|FIXME:|@todo|@fixme" . 2>/dev/null
+#     grep --exclude-dir=".git" -rEI "NOTE:|@note" . 2>/dev/null
+# }
 
-# }}}
-# PROMPT CONFIG ############################## {{{
+# if [ -r "/sdcard" ]; then
+#     open() { termux-open "${1}"; }
+# else
+#     open() { xdg-open "${1}"; }
+# fi
 
-__set_prompt() {
+# # }}}
+# # PROMPT CONFIG ############################## {{{
 
-    # Set colors
-    local _RESET='\[\e[m\]'
-    local _BORDER='\[\e[32m\]'
-    local _USER='\[\e[33m\]'
-    local _BRANCH='\[\e[35m\]'
-    local _PWD='\[\e[36m\]'
+# __set_prompt() {
 
-    # Actually build the prompt
-    local prompt=''
-    local prompt+=${_BORDER}'['
-    local prompt+=${_USER}
-    local prompt+='\u:'
-    local prompt+=${_BRANCH}
-    local prompt+='$(git-branch)'
-    local prompt+=${_PWD}
-    local prompt+=' \w'
-    local prompt+=${_BORDER}']'
-    local prompt+=${_RESET}
-    local prompt+='\$ '
-    PS1="${prompt}"
+#     # Set colors
+#     local _RESET='\[\e[m\]'
+#     local _BORDER='\[\e[32m\]'
+#     local _USER='\[\e[33m\]'
+#     local _BRANCH='\[\e[35m\]'
+#     local _PWD='\[\e[36m\]'
 
-}; __set_prompt
+#     # Actually build the prompt
+#     local prompt=''
+#     local prompt+=${_BORDER}'['
+#     local prompt+=${_USER}
+#     local prompt+='\u:'
+#     local prompt+=${_BRANCH}
+#     local prompt+='$(git-branch)'
+#     local prompt+=${_PWD}
+#     local prompt+=' \w'
+#     local prompt+=${_BORDER}']'
+#     local prompt+=${_RESET}
+#     local prompt+='\$ '
+#     PS1="${prompt}"
 
-if [ -z "${__SETUP}" ]; then
-    __SETUP="$(date)"
-    if [ -t 1 ]; then # If this session is a TTY
-        # Start the "scratch" and "main" tmux sessions.
-        if [ -z "${TMUX}" ]; then
-            if ! tmux has -t="scratch" &>/dev/null; then
-                tm "scratch" "detach"
-            fi
+# }; __set_prompt
 
-            if [ "${PWD}" = "${HOME}" ] && ! tmux-attached "main"; then
-                tm "main"; exit
-            else
-                tmux new; exit
-            fi
-        fi
+# if [ -z "${__SETUP}" ]; then
+#     __SETUP="$(date)"
+#     if [ -t 1 ]; then # If this session is a TTY
+#         # Start the "scratch" and "main" tmux sessions.
+#         if [ -z "${TMUX}" ]; then
+#             if ! tmux has -t="scratch" &>/dev/null; then
+#                 tm "scratch" "detach"
+#             fi
 
-        # Set up FZF (may not work in every case, I need to check this someday)
-        [[ -f ~/.fzf.bash ]] && source ~/.fzf.bash || source /usr/share/doc/fzf/examples/key-bindings.bash
+#             if [ "${PWD}" = "${HOME}" ] && ! tmux-attached "main"; then
+#                 tm "main"; exit
+#             else
+#                 tmux new; exit
+#             fi
+#         fi
 
-    fi
-fi
+#         # Set up FZF (may not work in every case, I need to check this someday)
+#         [[ -f ~/.fzf.bash ]] && source ~/.fzf.bash || source /usr/share/doc/fzf/examples/key-bindings.bash
 
-# }}}
+#     fi
+# fi
+
+# # }}}
