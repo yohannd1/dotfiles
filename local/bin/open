@@ -1,7 +1,11 @@
 #!/bin/sh
 
+if [ "${1}" = "--help" ] || [ $# != 1 ]; then
+    echo "Usage: ${0} FILE-TO-OPEN"
+fi
+
 if [ -d "/sdcard" ]; then
-   termux-open $@ &
+   termux-open "${1}" >/dev/null 2>/dev/null &
 else
-   xdg-open $@ &
+   xdg-open "${1}" >/dev/null 2>/dev/null &
 fi

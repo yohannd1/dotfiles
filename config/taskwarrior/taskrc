@@ -32,7 +32,7 @@ color.recurring=color4
 color.scheduled=
 color.until=
 color.blocked=color1
-color.blocking=color2
+color.blocking=bold color2
 
 # Project
 color.project.none=
@@ -45,12 +45,12 @@ color.uda.priority.L=bold green
 # Tags
 color.tag.next=
 color.tag.none=
-color.tagged=color4
+color.tagged=
 
 # Due
 color.due=color5
 color.due.today=color3
-color.overdue=color3
+color.overdue=color1
 
 # Report: burndown
 color.burndown.done=color0 on color6
@@ -84,9 +84,11 @@ color.sync.rejected=color13
 color.undo.after=color2
 color.undo.before=color1
 
+# Tasksh Review Report
 uda.reviewed.type=date
 uda.reviewed.label=Reviewed
-report._reviewed.description=Tasksh review report.  Adjust the filter to your needs.
+report._reviewed.description=Tasksh Review Report
 report._reviewed.columns=uuid
 report._reviewed.sort=reviewed+,modified+
 report._reviewed.filter=( reviewed.none: or reviewed.before:now-6days ) and ( +PENDING or +WAITING )
+

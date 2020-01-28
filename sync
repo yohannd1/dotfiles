@@ -1,5 +1,6 @@
 #!/bin/sh
 # -*- origami-fold-style: triple-braces -*-
+# vim: foldmethod=marker
 
 # TODO: search for broken symlinks in some directories (.local, .config) and ask to the user if they want to remove it;
 # TODO: at welcome_agree, show a resume of everything that will be done and where the ${DOTFILES} are.
@@ -166,7 +167,7 @@ setup_vimplugins() {
             ivp "goyo.vim" "https://github.com/junegunn/goyo.vim"
             ivp "SimpylFold" "https://github.com/tmhedberg/SimpylFold"
             ivp "julia-vim" "https://github.com/JuliaEditorSupport/julia-vim"
-            ivp "delimitMate" "https://github.com/Raimondi/delimitMate"
+            # ivp "delimitMate" "https://github.com/Raimondi/delimitMate"
         }
 
 # }}}

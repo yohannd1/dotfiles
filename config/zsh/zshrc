@@ -1,6 +1,69 @@
 # -*- origami-fold-style: triple-braces -*-
+# vim: foldmethod=marker
 # Partially stolen from https://github.com/LukeSmithxyz/voidrice and my own bashrc
 
+# Backend functions {{{
+## Functions that usually aren't used only on the shell setup.
+
+## Silently source a file, if it exists.
+source-maybe() { # {{{
+    if [ -f "${1}" ]; then
+	source "${1}"
+    else
+	return 1
+    fi
+}
+# }}}
+
+## If ${1} is not in ${PATH}, append to it.
+## Exit codes:
+## 1 => Invalid arguments;
+## 2 => ${1} already exists on ${PATH};
+path-maybe() { # {{{
+    [ $# != 1 ] && return 1
+
+    if [[ ":${PATH}:" == *"${1}"* ]]; then
+	return 2
+    else
+	export PATH="${PATH:+"${PATH}:"}${1}"
+    fi
+}
+# }}}
+
+## Check if a tmux session is attached.
+tmux-attached() { # {{{
+    if [ $# = 1 ]; then
+	tmux ls | grep "^${1}.*(attached)\$" &>/dev/null
+    else
+	echo -e '\e[1m\e[34mUsage:\e[m ${0} SESSION-NAME'
+	return 1
+    fi
+} # }}}
+
+## Start a tmux session or reattach to it.
+tmux-session() { # {{{
+    if [[ -n "$1" ]]; then
+	if tmux has -t="$1" &>/dev/null; then
+	    tmux attach -t "$1"
+	else
+	    tmux new-session -s "$1" \; source-file "${HOME}/.local/lib/tmux-sessions/$1.proj" \; $2
+	fi
+    else
+	echo -e '\e[1m\e[34mUsage:\e[m ${0} SESSION-NAME <optional-command>'
+    fi
+} # }}}
+
+## Get the current git branch.
+git-branch() { # {{{
+    local branch="$(git symbolic-ref --short -q HEAD 2>/dev/null)"
+    if [ -n "${branch}" ]; then
+	echo "${branch}"
+    else
+	return 1
+    fi
+} # }}}
+
+# }}}
 # First Steps {{{
 
 if [ "${SHELL_FIRST:-0}" = 0 ]; then
@@ -10,7 +73,7 @@ if [ "${SHELL_FIRST:-0}" = 0 ]; then
     if [ -t 1 ]; then
 	if [ -z "${TMUX}" ]; then
 	    if ! tmux has -t "scratch" &>/dev/null; then
-		tm "scratch" detach
+		tmux-session "scratch" detach &>/dev/null
 	    fi
 
 	    exec tmux new
@@ -107,68 +170,6 @@ lfcd () {
 bindkey -s '^O' '^Ulfcd\n'
 
 # }}}
-# Backend functions {{{
-## Functions that usually aren't used only on the shell setup.
-
-## Silently source a file, if it exists.
-source-maybe() { # {{{
-    if [ -f "${1}" ]; then
-	source "${1}"
-    else
-	return 1
-    fi
-}
-# }}}
-
-## If ${1} is not in ${PATH}, append to it.
-## Exit codes:
-## 1 => Invalid arguments;
-## 2 => ${1} already exists on ${PATH};
-path-maybe() { # {{{
-    [ $# != 1 ] && return 1
-
-    if [[ ":${PATH}:" == *"${1}"* ]]; then
-	return 2
-    else
-	export PATH="${PATH:+"${PATH}:"}${1}"
-    fi
-}
-# }}}
-
-## Check if a tmux session is attached.
-tmux-attached() { # {{{
-    if [ $# = 1 ]; then
-	tmux ls | grep "^${1}.*(attached)\$" &>/dev/null
-    else
-	echo -e '\e[1m\e[34mUsage:\e[m ${0} SESSION-NAME'
-	return 1
-    fi
-} # }}}
-
-## Start a tmux session or reattach to it.
-tmux-session() { # {{{
-    if [[ -n "$1" ]]; then
-	if tmux has -t="$1" &>/dev/null; then
-	    tmux attach -t "$1"
-	else
-	    tmux new-session -s "$1" \; source-file "${HOME}/.local/lib/tmux-sessions/$1.proj" \; $2
-	fi
-    else
-	echo -e '\e[1m\e[34mUsage:\e[m ${0} SESSION-NAME <optional-command>'
-    fi
-} # }}}
-
-## Get the current git branch.
-git-branch() { # {{{
-    local branch="$(git symbolic-ref --short -q HEAD 2>/dev/null)"
-    if [ -n "${branch}" ]; then
-	echo "${branch}"
-    else
-	return 1
-    fi
-} # }}}
-
-# }}}
 # User functions {{{
 ## Functions that were designed to be used in the shell.
 
@@ -201,21 +202,20 @@ alias ll='ls -alF'
 
 alias t='task'
 alias tl='t ls'
-alias tt='t +TODAY or +OVERDUE'
-alias to='t +TOMORROW'
+alias tt='t due:today or sched:today or +OVERDUE'
+alias to='t due:tomorrow or sched:tomorrow'
 alias tsh='tasksh'
 
-alias tm='tmux-session'
 alias du='du -shc'
 
 alias py3='python3'
 alias p3='python3'
 alias jl='julia'
 
-alias nvim='echo NeoVim is disabled for now, I guess. Yargs:'
 alias vim='nvim' vi='nvim'
+# alias emacs='emacs-plus emacs'
+alias emacs="echo I'm outta emacs now... it was a good time."
 alias ec='emacs-plus emacsclient'
-alias emacs='emacs-plus emacs'
 
 alias cp-sync='cp -ur'
 

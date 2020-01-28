@@ -225,10 +225,5 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
  '(safe-local-variable-values (quote ((origami-fold-style . triple-braces)))))
 (custom-set-faces)
 
-;; Not working, for some reason:
-;; (setq mode-line-format
-;;       (list
-;;        '(:eval (propertize " %m "
-;; 			   'face 'mode-line-emphasis))
-;;        '(:eval (propertize " %b "
-;; 			   'face 'mode-line-buffer-id))))
+(setq scroll-step 1
+      scroll-margin 5)

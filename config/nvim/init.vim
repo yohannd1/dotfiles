@@ -64,7 +64,7 @@ endif
 augroup ft_sh
     au!
     au FileType sh setlocal tabstop=4 shiftwidth=4
-    au FileType sh set foldmethod=marker
+    " au FileType sh set foldmethod=marker
 augroup end
 
 " }}}
@@ -119,7 +119,7 @@ augroup end
 augroup ft_python
     au!
     au FileType python RunfileCommand python3 "%"
-    au FileType python set foldmethod=marker " Trying this out for a bit.
+    " au FileType python set foldmethod=marker
 augroup end
 
 " }}}
@@ -154,7 +154,7 @@ augroup end
 
 augroup ft_conf
     au!
-    au FileType conf set foldmethod=marker
+    " au FileType conf set foldmethod=marker
 augroup end
 
 " }}}
@@ -190,14 +190,6 @@ function! TabOrComplete(mode)
         return "\<Tab>"
     endif
 endfunction
-
-" }}}
-" (Not Implemented) Auto-pair {{{
-
-""" Checks if it's a good idea to insert a matching ')' for '(' and similars.
-" function PairNeeded()
-" 
-" end
 
 " }}}
 

@@ -1,4 +1,5 @@
 # -*- origami-fold-style: triple-braces -*-
+# vim: foldmethod=marker
 # i3 (v4.0) config file
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
 
@@ -40,7 +41,7 @@ bindsym $mod+space exec --no-startup-id lnc
 bindsym $mod+Shift+o exec "env st-popup pow"
 
 # Editor!
-bindsym $mod+m exec "emacs-ttyorgui emacs"
+# bindsym $mod+m exec "emacs-ttyorgui emacs"
 
 # Print Screen
 bindsym Print exec flameshot screen -c
@@ -59,7 +60,7 @@ bindsym XF86AudioPrev exec playerctl previous
 # Brightness key bindings
 bindsym XF86MonBrightnessUp exec xbacklight -inc 10
 bindsym XF86MonBrightnessDown exec xbacklight -dec 10
-#bindsym XF86PowerOff exec "env st-popup pow"
+# bindsym XF86PowerOff exec "env st-popup pow" # Disabled.
 
 # }}}
 # General {{{
