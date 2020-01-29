@@ -24,45 +24,6 @@ set $ws9   "9"
 set $ws10 "10"
 
 # }}}
-# Mappings {{{
-
-# Commands {{{
-
-# Start a Terminal
-bindsym $mod+Return exec st -t "Suckless Terminal"
-
-# Notes
-bindsym $mod+n exec st -t "Note" -e "edn"
-
-# Rofi
-bindsym $mod+space exec --no-startup-id lnc
-
-# Show power menu (made by me :P)
-bindsym $mod+Shift+o exec "env st-popup pow"
-
-# Editor!
-# bindsym $mod+m exec "emacs-ttyorgui emacs"
-
-# Print Screen
-bindsym Print exec flameshot screen -c
-bindsym $mod+Print exec flameshot gui
-
-# Pulse Audio controls
-bindsym XF86AudioLowerVolume exec --no-startup-id amixer set Master 5%-
-bindsym XF86AudioRaiseVolume exec --no-startup-id amixer set Master 5%+
-bindsym XF86AudioMute exec --no-startup-id amixer -D pulse set Master 1+ toggle
-
-# Media player key bindings
-bindsym XF86AudioPlay exec playerctl pause
-bindsym XF86AudioNext exec playerctl next
-bindsym XF86AudioPrev exec playerctl previous
-
-# Brightness key bindings
-bindsym XF86MonBrightnessUp exec xbacklight -inc 10
-bindsym XF86MonBrightnessDown exec xbacklight -dec 10
-# bindsym XF86PowerOff exec "env st-popup pow" # Disabled.
-
-# }}}
 # General {{{
 
 # Use Mouse+$mod to drag floating windows to their wanted position
@@ -146,10 +107,6 @@ bindsym $mod+Shift+0 move container to workspace $ws10
 bindsym $mod+r mode "resize"
 
 mode "resize" {
-    # Pressing left will shrink the window’s width.
-    # Pressing right will grow the window’s width.
-    # Pressing up will shrink the window’s height.
-    # Pressing down will grow the window’s height.
     bindsym h resize shrink width 10 px or 10 ppt
     bindsym j resize grow height 10 px or 10 ppt
     bindsym k resize shrink height 10 px or 10 ppt
@@ -164,8 +121,6 @@ mode "resize" {
     bindsym Escape mode "default"
     bindsym $mod+r mode "default"
 }
-
-# }}}
 
 # }}}
 # Bar {{{
@@ -207,19 +162,8 @@ client.urgent           #e06c75 #e06c75 #282c34 #e06c75
 # General Options & Startup Commands {{{
 
 focus_follows_mouse no
-exec --no-startup-id xset r rate 400 35
-exec --no-startup-id compton -b
-exec --no-startup-id xsetroot -cursor_name left_ptr &
-exec --no-startup-id ~/.local/bin/quick-check
-exec_always --no-startup-id exec bash $HOME/.fehbg
-exec --no-startup-id xinput set-prop 16 323 1 # Touchpad: tap to click
-exec --no-startup-id xinput set-prop 16 305 1 # Touchpad: natural scrolling
-
-# Applets
-exec --no-startup-id nm-applet
-
-# Systemd: disable power key
-exec --no-startup-id systemd-inhibit --what=handle-power-key sleep infinity
+exec --no-startup-id ~/.local/bin/my-init 1
+exec_always --no-startup-id ~/.local/bin/my-init
 
 # }}}
 # Rules {{{

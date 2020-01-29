@@ -107,8 +107,8 @@ export KEYTIMEOUT=1
 export PROJECTS="${HOME}/projects"
 export DOTFILES="${PROJECTS}/dotfiles"
 
-export EDITOR="emacs-plus emacsclient"
-export TERMINAL="st"
+export EDITOR="nvim"
+export TERMINAL="alacritty"
 export BROWSER="qutebrowser"
 
 export BAT_THEME="base16"
@@ -214,7 +214,7 @@ alias jl='julia'
 
 alias vim='nvim' vi='nvim'
 # alias emacs='emacs-plus emacs'
-alias emacs="echo I'm outta emacs now... it was a good time."
+alias emacs="echo I\\'m outta emacs now... it was a good time."
 alias ec='emacs-plus emacsclient'
 
 alias cp-sync='cp -ur'

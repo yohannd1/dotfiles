@@ -150,7 +150,7 @@ setup_vimplugins() {
     ! [ -r ~/.cache/vim-plugins ] \
         && mkdir -p ~/.cache/vim-plugins \
         && ln -s ~/.cache/vim-plugins ~/.config/nvim/bundle
-            ivp "onedark.vim" "https://github.com/joshdick/onedark.vim"
+            # ivp "onedark.vim" "https://github.com/joshdick/onedark.vim"
             ivp "deoplete.nvim" "https://github.com/Shougo/deoplete.nvim"
             ivp "vim-toml" "https://github.com/cespare/vim-toml"
             ivp "vim-surround" "https://github.com/tpope/vim-surround"
@@ -168,6 +168,8 @@ setup_vimplugins() {
             ivp "SimpylFold" "https://github.com/tmhedberg/SimpylFold"
             ivp "julia-vim" "https://github.com/JuliaEditorSupport/julia-vim"
             # ivp "delimitMate" "https://github.com/Raimondi/delimitMate"
+            ivp "nord-vim" "https://github.com/arcticicestudio/nord-vim"
+            ivp "vim-which-key" "https://github.com/liuchengxu/vim-which-key"
         }
 
 # }}}

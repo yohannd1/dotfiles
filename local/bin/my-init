@@ -1,0 +1,20 @@
+#!/bin/sh
+# Custom init startup.
+# Just for some time, while I don't set up my arch system.
+
+if [ "${1}" = 1 ]; then
+    # Configuration
+    xsetroot -cursor_name left_ptr &
+    xset r rate 400 35 &
+    xinput set-prop 16 323 1 & # Touchpad: tap to click
+    xinput set-prop 16 305 1 & # Touchpad: natural scrolling
+    systemd-inhibit --what=handle-power-key sleep infinity &
+
+    # Programs
+    compton -b &
+    nm-applet &
+    sxhkd &
+    ~/.local/bin/recurring-check &
+fi
+
+"${HOME}/.fehbg" &
