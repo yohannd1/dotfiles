@@ -23,6 +23,15 @@ set $ws8   "8"
 set $ws9   "9"
 set $ws10 "10"
 
+# Colors
+set $bg       #2e3440
+set $fg       #d8dee9
+set $bri_bg   #4c566a
+set $drk_fg   #d8dee9
+set $blue     #81a1c1
+set $red      #bf616a
+set $yellow   #ebcb8b
+
 # }}}
 # General {{{
 
@@ -132,15 +141,15 @@ bar {
     position top
 
     colors {
-        background #282c34
-        statusline #abb2bf
-        separator  #383c44
+        background  $bg
+        statusline  $fg
+        separator   $bri_bg
         ################## Border  Back    Text
-        focused_workspace  #3b84c0 #3b84c0 #282c34
-        active_workspace   #3b84c0 #3b84c0 #282c34
-        inactive_workspace #282c34 #282c34 #abb2bf
-        urgent_workspace   #e06c75 #e06c75 #282c34
-        binding_mode       #d19a66 #d19a66 #282c34
+        focused_workspace  $blue   $blue   $bg
+        active_workspace   $blue   $blue   $bg
+        inactive_workspace $bg     $bg     $fg
+        urgent_workspace   $red    $red    $bg
+        binding_mode       $yellow $yellow $bg
         ##########################################
     }
 }
@@ -150,12 +159,12 @@ bar {
 
 # Window decoration colors
 ####################### Border  Backgr. Text    Indict.
-client.placeholder      #5c6370 #5c6370 #282c34 #5c6370
-client.background       #3b84c0 #3b84c0 #282c34 #3b84c0
-client.focused          #3b84c0 #3b84c0 #282c34 #3b84c0
-client.unfocused        #282c34 #282c34 #abb2bf #282c34
-client.focused_inactive #abb2bf #abb2bf #282c34 #abb2bf
-client.urgent           #e06c75 #e06c75 #282c34 #e06c75
+client.placeholder      $bri_bg $bri_bg $bg     $bri_bg
+client.background       $blue   $blue   $bg     $blue
+client.focused          $blue   $blue   $bg     $blue
+client.unfocused        $bg     $bg     $drk_fg $bg
+client.focused_inactive $drk_fg $drk_fg $bg     $drk_fg
+client.urgent           $red    $red    $bg     $red
 #######################################################
 
 # }}}
@@ -175,3 +184,5 @@ for_window [class="^.*"] border pixel 0
 for_window [title="GLFW.jl"] floating enable
 
 # }}}
+
+gaps inner 10

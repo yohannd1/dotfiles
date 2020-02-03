@@ -108,6 +108,7 @@ link_files() {
     lf_config "kak" "${HOME}/.config/kak"
     lf_config "vifm" "${HOME}/.config/vifm"
     lf_config "rofi" "${HOME}/.config/rofi"
+    lf_config "alacritty" "${HOME}/.config/alacritty"
 
     # File links
     lf_config "compton.conf" "${HOME}/.config/compton.conf"

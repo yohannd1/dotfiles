@@ -16,11 +16,12 @@ super + Return
 
 # Program Launcher
 super + space
-    lnc
+    dmenu_run -l 0
+    # lnc
 
 # Power Menu
 super + shift + o
-    st-popup pow
+    pow
 
 # Print Screen
 Print

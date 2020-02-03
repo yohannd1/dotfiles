@@ -32,7 +32,7 @@ match_arg() {
 
 do_fuzzy() {
     choices="$(echo "lock;logout;suspend;hibernate;reboot;shutdown" | sed 's|\;|\n|g')"
-    choice="$(echo "${choices}" | fzf --reverse --prompt "power: ")"
+    choice="$(echo "${choices}" | dmenu -l 0)"
     echo "${choice}"
 }
 
@@ -42,10 +42,13 @@ do_showhelp() {
     exit 2
 }
 
-do_lock() { i3lock -c "${LOCK_COLOR}"; }
+do_lock() { xdg-screensaver lock; }
+do_hibernate() {
+    notify-send -u low "Hibernating currently disabled. Sorry."
+    exit 1
+}
 do_logout() { i3-msg exit; }
-do_suspend() { systemctl suspend; } # Lock is done without i3lock here.
-do_hibernate() { echo "Hibernating currently disabled. Sorry." && exit 1; } # systemctl hibernate; }
+do_suspend() { do_lock && systemctl suspend; }
 do_reboot() { systemctl reboot; }
 do_shutdown() { systemctl poweroff; }
 
