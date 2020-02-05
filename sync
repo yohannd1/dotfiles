@@ -171,6 +171,7 @@ setup_vimplugins() {
             # ivp "delimitMate" "https://github.com/Raimondi/delimitMate"
             ivp "nord-vim" "https://github.com/arcticicestudio/nord-vim"
             ivp "vim-which-key" "https://github.com/liuchengxu/vim-which-key"
+            # ivp "ion-vim@yohanandiamond" "https://gitlab.redox-os.org/YohananDiamond/ion-vim" # I'm already having this one locally.
         }
 
 # }}}

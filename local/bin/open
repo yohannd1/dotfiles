@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ "${1}" = "--help" ] || [ $# != 1 ]; then
-    echo "Usage: ${0} FILE-TO-OPEN"
+    echo "Usage: ${0} <FILE-TO-OPEN>"
 fi
 
 if [ -d "/sdcard" ]; then

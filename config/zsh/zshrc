@@ -83,23 +83,6 @@ fi
 
 
 # }}}
-# Autoload Extensions {{{
-
-autoload -U colors && colors
-
-# Completion
-autoload -U compinit
-zstyle ':completion:*' menu select
-zmodload zsh/complist
-compinit
-_comp_options+=(globdots) # Include hidden files in autocomplete
-
-# }}}
-# Prompt {{{
-
-PS1="%B%{$fg[green]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[magenta]%}%~%{$fg[green]%}]%{$reset_color%}$%b "
-
-# }}}
 # Exports {{{
 
 export KEYTIMEOUT=1
@@ -113,6 +96,33 @@ export BROWSER="qutebrowser"
 
 export BAT_THEME="base16"
 export GOPATH="${HOME}/.cache/go"
+
+export FZF_DEFAULT_OPTS='
+  --color fg:#D8DEE9,bg:-1,hl:#A3BE8C,fg+:#D8DEE9,bg+:#434C5E,hl+:#A3BE8C
+  --color pointer:#BF616A,info:#4C566A,spinner:#4C566A,header:#4C566A,prompt:#81A1C1,marker:#EBCB8B
+'
+
+# }}}
+# Plugins and Extensions {{{
+
+autoload -U colors && colors
+
+# Completion
+autoload -U compinit
+zstyle ':completion:*' menu select
+zmodload zsh/complist
+compinit
+_comp_options+=(globdots) # Include hidden files in autocomplete
+
+# Load some extra files
+source-maybe "${DOTFILES}/config/zsh/fzf-completion.zsh"
+source-maybe "${DOTFILES}/config/zsh/fzf-keybindings.zsh"
+bindkey '^R' fzf-history-widget # Not working inside the scripts above. confusing...
+
+# }}}
+# Prompt {{{
+
+PS1="%B%{$fg[green]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[magenta]%}%~%{$fg[green]%}]%{$reset_color%}$%b "
 
 # }}}
 # Vim bindings and cursor {{{
@@ -187,8 +197,6 @@ rd() {
 # Sourcing {{{
 
 source-maybe "${HOME}/.zshrc.local"
-source-maybe "${DOTFILES}/config/zsh/fzf-completion"
-source-maybe "${DOTFILES}/config/zsh/fzf-keybindings"
 path-maybe "${HOME}/.local/bin"
 path-maybe "${HOME}/.cache/go"
 path-maybe "/opt/bin"
@@ -211,10 +219,10 @@ alias du='du -shc'
 alias py3='python3'
 alias p3='python3'
 alias jl='julia'
+alias less='echo -e "\033[2 q" && less'
 
 alias vim='nvim' vi='nvim'
-# alias emacs='emacs-plus emacs'
-alias emacs="echo I\\'m outta emacs now... it was a good time."
+alias emacs='emacs-plus emacs'
 alias ec='emacs-plus emacsclient'
 
 alias cp-sync='cp -ur'

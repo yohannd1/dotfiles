@@ -229,17 +229,17 @@ set complete=.,w,b,u,t
 " set completeopt=longest,menuone
 set completeopt-=preview
 set completeopt+=menuone,noselect
-set shortmess+=c
+set shortmess+=atcI
 set belloff+=ctrlg
 filetype plugin indent on
 
 " Listchars
 set listchars=tab:»\ 
-set listchars+=space:·
-set listchars+=extends:%
-set listchars+=precedes:%
-set listchars+=eol:$,
-set listchars+=trail:~
+" set listchars+=space:·
+" set listchars+=extends:%
+" set listchars+=precedes:%
+" set listchars+=eol:$,
+" set listchars+=trail:~
 
 " Theme-related
 syntax on
@@ -248,25 +248,24 @@ set background=dark
 colorscheme nord
 
 " Indentation
-set tabstop=4 shiftwidth=4
-set softtabstop=4
-set expandtab
-set smarttab
+set tabstop=8 " For tab characters
+set shiftwidth=4 softtabstop=4
+set expandtab smarttab
 
 " Fold Expr
 set foldtext=MyFoldText()
 
 " Enable RGB colors {{{
-if exists('+termguicolors')
-  let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
-  let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
-  set termguicolors
-endif
+" if exists('+termguicolors')
+"   let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
+"   let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
+"   set termguicolors
+" endif
 
-if !has('nvim') && $TERM ==# 'screen-256color'
-    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-endif
+" if !has('nvim') && $TERM ==# 'screen-256color'
+"     let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+"     let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+" endif
 " }}}
 
 " }}}
