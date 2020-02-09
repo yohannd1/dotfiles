@@ -124,7 +124,11 @@ bindkey '^R' fzf-history-widget # Not working inside the scripts above. confusin
 # }}}
 # Prompt {{{
 
-PS1="%B%{$fg[green]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[magenta]%}%~%{$fg[green]%}]%{$reset_color%}$%b "
+if [ "$(uname -o)" = "Android" ]; then
+    PS1="%B%{$fg[green]%}%{$fg[magenta]%}%~%{$fg[green]%}%{$reset_color%}%b "
+else
+    PS1="%B%{$fg[green]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[magenta]%}%~%{$fg[green]%}]%{$reset_color%}%b "
+fi
 
 # }}}
 # Vim bindings and cursor {{{
