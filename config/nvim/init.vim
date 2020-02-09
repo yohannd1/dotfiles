@@ -15,6 +15,7 @@
 " Prologue ----------------------------------- {{{
 
 let INIT_PATH = resolve(expand("<sfile>:p:h"))
+let g:nord_italic = 1
 
 " }}}
 " Plugin Setup ------------------------------- {{{
@@ -162,7 +163,24 @@ augroup end
 
 augroup ft_markdown
     au!
-    au FileType markdown RunfileCommand "compile-md" "%" "&&" "xdg-open" "/tmp/md-compile.html" "&"
+    " au FileType markdown RunfileCommand "compile-md" "%" "&&" "xdg-open" "/tmp/md-compile.html" "&"
+    au FileType markdown setlocal textwidth=72
+augroup end
+
+" }}}
+" C {{{
+
+augroup ft_c
+    au!
+    au BufNewFile,BufRead,BufEnter *.fx set filetype=c
+augroup end
+
+" }}}
+" Nim {{{
+
+augroup ft_nim
+    au!
+    au Filetype nim setlocal shiftwidth=2 softtabstop=2
 augroup end
 
 " }}}
@@ -255,6 +273,9 @@ set expandtab smarttab
 " Fold Expr
 set foldtext=MyFoldText()
 
+let &t_ZH = "\<Esc>[3m"
+let &t_ZR = "\<Esc>[23m"
+
 " Enable RGB colors {{{
 " if exists('+termguicolors')
 "   let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
@@ -288,7 +309,7 @@ endfunction " }}}
 function! MyFoldText() " {{{
     let l:tab_char = strpart(' ', shiftwidth())
     let l:line_contents = substitute(getline(v:foldstart), '\t', l:tab_char, 'g')
-    let l:line_contents = substitute(l:line_contents, '{{{', '', 'g') " Remove fold marker
+    let l:line_contents = substitute(l:line_contents, '{{{', '', 'g') " Remove fold marker }}}
 
     let l:numbers_width = &foldcolumn + &number * &numberwidth
     let l:window_width = winwidth(0) - numbers_width - 1
@@ -300,8 +321,6 @@ function! MyFoldText() " {{{
 
     return l:line_contents . repeat(l:void_char, l:void_size) . l:folded_lines_number . 'l   '
 endfunction " }}}
-
-" }}}
 function! EditNote(filename) " {{{
     let l:new_filename = substitute(a:filename, ' ', '-', 'g')
     let l:new_filename = substitute(l:new_filename, '.*', '\L&', 'g')

@@ -63,6 +63,12 @@ git-branch() { # {{{
     fi
 } # }}}
 
+## Gets a random alphanumeric string matching [0-9a-z]{$1}.
+## $1 => The amount of digits.
+random-string() { # {{{
+    cat /dev/urandom | tr -dc 'a-z0-9' | fold -w ${1:-8} | head -n 1
+} # }}}
+
 # }}}
 # First Steps {{{
 
@@ -72,11 +78,7 @@ if [ "${SHELL_FIRST:-0}" = 0 ]; then
     # Defer to a shell inside tmux, if not attached yet.
     if [ -t 1 ]; then
 	if [ -z "${TMUX}" ]; then
-	    if ! tmux has -t "scratch" &>/dev/null; then
-		tmux-session "scratch" detach &>/dev/null
-	    fi
-
-	    exec tmux new
+            exec tmux new -s $(random-string 4)
 	fi
     fi
 fi
@@ -200,6 +202,7 @@ source-maybe "${HOME}/.zshrc.local"
 path-maybe "${HOME}/.local/bin"
 path-maybe "${HOME}/.cache/go"
 path-maybe "/opt/bin"
+path-maybe "${HOME}/.nimble/bin"
 
 # }}}
 # Aliases {{{
@@ -212,6 +215,7 @@ alias t='task'
 alias tl='t ls'
 alias tt='t due:today or sched:today or +OVERDUE'
 alias to='t due:tomorrow or sched:tomorrow'
+alias t-s='t pro:school'
 alias tsh='tasksh'
 
 alias du='du -shc'
@@ -219,7 +223,7 @@ alias du='du -shc'
 alias py3='python3'
 alias p3='python3'
 alias jl='julia'
-alias less='echo -e "\033[2 q" && less'
+alias r='ranger'
 
 alias vim='nvim' vi='nvim'
 alias emacs='emacs-plus emacs'

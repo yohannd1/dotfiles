@@ -136,14 +136,45 @@ link_files() {
 # }}}
 # NEOVIM PLUGINS {{{
 
-ivp() {
-    # "ivp" -> Install Vim Plugin
-    # $1 => Destination Folder name (in ~/.cache/vim-plugins/)
-    # $2 => Repository address
-    # Git-clones the repository ($2) to the vim-plugins folder.
+## "ivp" -> Install Vim Plugin
+## $1 => Destination Folder name (in ~/.cache/vim-plugins/)
+## $2 => Repository address
+## Git-clones the repository ($2) to the vim-plugins folder.
+ivp() { # {{{
     [ -z "${1}${2}" ] && echo "ivp: not enough arguments" && return 1
+
+    if ! (echo "${VIM_PLUGINS}" | grep '^.*:$' >/dev/null 2>/dev/null ||
+          echo "${VIM_PLUGINS}" | grep '^$' >/dev/null 2>/dev/null); then
+        VIM_PLUGINS="${VIM_PLUGINS}:"
+    fi
+    VIM_PLUGINS="${VIM_PLUGINS}${1}"
+
     [ -e "${HOME}/.cache/vim-plugins/${1}" ] && return 0 # Exit sucessfully if plugin already exists.
     git clone "${2}" "${HOME}/.cache/vim-plugins/${1}"
+} # }}}
+
+## A "garbage collection" for vim plugins
+gc_vimplugins() {
+    PLUGINS="$(ls ~/.cache/vim-plugins)"
+    echo "${PLUGINS}" | while read plugin; do
+    if (echo "${VIM_PLUGINS}" | grep -q '^'"${plugin}"':.*$' ||
+        echo "${VIM_PLUGINS}" | grep -q '^.*:'"${plugin}"'$' ||
+        echo "${VIM_PLUGINS}" | grep -q '^.*:'"${plugin}"':.*$'); then
+            : # File is on the plugin list
+        else
+            plugin_path="${HOME}/.cache/vim-plugins/${plugin}"
+            if file "${plugin_path}" | grep -q '^'"${plugin_path}"': symbolic link to .*$'; then
+                : # File is symlink
+            else
+                echo -n "Removing disabled plugin: ${plugin}..."
+                if rm -rf "${plugin_path}"; then
+                    echo " done."
+                else
+                    echo " failed."
+                fi
+            fi
+    fi
+done
 }
 
 setup_vimplugins() {
@@ -160,7 +191,7 @@ setup_vimplugins() {
             ivp "jsonc.vim" "https://github.com/neoclide/jsonc.vim"
             ivp "lightline.vim" "https://github.com/itchyny/lightline.vim"
             ivp "yats.vim" "https://github.com/HerringtonDarkholme/yats.vim" # Yet another TypeScript Syntax
-            ivp "vim-markdown-folding" "https://github.com/masukomi/vim-markdown-folding"
+            # ivp "vim-markdown-folding" "https://github.com/masukomi/vim-markdown-folding"
             ivp "vim-clap" "https://github.com/liuchengxu/vim-clap"
             ivp "emmet-vim" "https://github.com/mattn/emmet-vim"
             ivp "vim-hy" "https://github.com/hylang/vim-hy"
@@ -172,13 +203,16 @@ setup_vimplugins() {
             ivp "nord-vim" "https://github.com/arcticicestudio/nord-vim"
             ivp "vim-which-key" "https://github.com/liuchengxu/vim-which-key"
             # ivp "ion-vim@yohanandiamond" "https://gitlab.redox-os.org/YohananDiamond/ion-vim" # I'm already having this one locally.
+            ivp "nvim-nim" "https://github.com/baabelfish/nvim-nim"
+            ivp "tabular" "https://github.com/godlygeek/tabular"
+            ivp "vim-markdown" "https://github.com/plasticboy/vim-markdown"
         }
 
 # }}}
 
-# Apply all the functions above
 welcome_agree
 link_files
 setup_vimplugins
-echo "Finished! Exit code: $?"
-exit $?
+gc_vimplugins
+
+echo "Finished with exit code $?." && exit $?
