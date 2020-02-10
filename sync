@@ -97,7 +97,7 @@ link_files() {
     ### Uses the lf functions above to link all configs.
     ### No arguments are used.
 
-    echo "Symlinking files..."
+    echo -n "   [ NOW ] Symlinking files..."
 
     # Directories
     lf_config "bspwm" "${HOME}/.config/bspwm"
@@ -131,6 +131,8 @@ link_files() {
     lf_glob "${DOTFILES}/local/share" "${HOME}/.local/share"
     lf_glob "${HOME}/persist/local/bin" "${HOME}/.local/bin"
     lf_glob "${HOME}/persist/local/share" "${HOME}/.local/share"
+
+    echo " done."
 }
 
 # }}}
@@ -154,7 +156,7 @@ ivp() { # {{{
 } # }}}
 
 ## A "garbage collection" for vim plugins
-gc_vimplugins() {
+gc_vimplugins() { # {{{
     PLUGINS="$(ls ~/.cache/vim-plugins)"
     echo "${PLUGINS}" | while read plugin; do
     if (echo "${VIM_PLUGINS}" | grep -q '^'"${plugin}"':.*$' ||
@@ -175,38 +177,42 @@ gc_vimplugins() {
             fi
     fi
 done
-}
+} # }}}
 
 setup_vimplugins() {
-    echo "Updating vim plugin cache..."
-    ! [ -r ~/.cache/vim-plugins ] \
-        && mkdir -p ~/.cache/vim-plugins \
-        && ln -s ~/.cache/vim-plugins ~/.config/nvim/bundle
-            # ivp "onedark.vim" "https://github.com/joshdick/onedark.vim"
-            ivp "deoplete.nvim" "https://github.com/Shougo/deoplete.nvim"
-            ivp "vim-toml" "https://github.com/cespare/vim-toml"
-            ivp "vim-surround" "https://github.com/tpope/vim-surround"
-            ivp "vim-repeat" "https://github.com/tpope/vim-repeat"
-            ivp "vim-commentary" "https://github.com/tpope/vim-commentary"
-            ivp "jsonc.vim" "https://github.com/neoclide/jsonc.vim"
-            ivp "lightline.vim" "https://github.com/itchyny/lightline.vim"
-            ivp "yats.vim" "https://github.com/HerringtonDarkholme/yats.vim" # Yet another TypeScript Syntax
-            # ivp "vim-markdown-folding" "https://github.com/masukomi/vim-markdown-folding"
-            ivp "vim-clap" "https://github.com/liuchengxu/vim-clap"
-            ivp "emmet-vim" "https://github.com/mattn/emmet-vim"
-            ivp "vim-hy" "https://github.com/hylang/vim-hy"
-            ivp "vim-fsharp" "https://github.com/fsharp/vim-fsharp"
-            ivp "goyo.vim" "https://github.com/junegunn/goyo.vim"
-            ivp "SimpylFold" "https://github.com/tmhedberg/SimpylFold"
-            ivp "julia-vim" "https://github.com/JuliaEditorSupport/julia-vim"
-            # ivp "delimitMate" "https://github.com/Raimondi/delimitMate"
-            ivp "nord-vim" "https://github.com/arcticicestudio/nord-vim"
-            ivp "vim-which-key" "https://github.com/liuchengxu/vim-which-key"
-            # ivp "ion-vim@yohanandiamond" "https://gitlab.redox-os.org/YohananDiamond/ion-vim" # I'm already having this one locally.
-            ivp "nvim-nim" "https://github.com/baabelfish/nvim-nim"
-            ivp "tabular" "https://github.com/godlygeek/tabular"
-            ivp "vim-markdown" "https://github.com/plasticboy/vim-markdown"
-        }
+    echo "   [ NOW ] Updating vim plugin cache..."
+
+    if ! [ -r ~/.cache/vim-plugins ]; then
+        mkdir -p ~/.cache/vim-plugins/
+        ln -s ~/.cache/vim-plugins "${DOTFILES}/config/nvim/bundle"
+    fi
+
+    # ivp "delimitMate" "https://github.com/Raimondi/delimitMate"
+    # ivp "SimpylFold" "https://github.com/tmhedberg/SimpylFold"
+    # ivp "vim-markdown-folding" "https://github.com/masukomi/vim-markdown-folding"
+    # ivp "onedark.vim" "https://github.com/joshdick/onedark.vim"
+    # ivp "ion-vim@yohanandiamond" "https://gitlab.redox-os.org/YohananDiamond/ion-vim" # I'm already having this one locally.
+    ivp "deoplete.nvim" "https://github.com/Shougo/deoplete.nvim"
+    ivp "vim-toml" "https://github.com/cespare/vim-toml"
+    ivp "vim-surround" "https://github.com/tpope/vim-surround"
+    ivp "vim-repeat" "https://github.com/tpope/vim-repeat"
+    ivp "vim-commentary" "https://github.com/tpope/vim-commentary"
+    ivp "jsonc.vim" "https://github.com/neoclide/jsonc.vim"
+    ivp "lightline.vim" "https://github.com/itchyny/lightline.vim"
+    ivp "yats.vim" "https://github.com/HerringtonDarkholme/yats.vim"
+    ivp "vim-clap" "https://github.com/liuchengxu/vim-clap"
+    ivp "emmet-vim" "https://github.com/mattn/emmet-vim"
+    ivp "vim-hy" "https://github.com/hylang/vim-hy"
+    ivp "vim-fsharp" "https://github.com/fsharp/vim-fsharp"
+    ivp "goyo.vim" "https://github.com/junegunn/goyo.vim"
+    ivp "julia-vim" "https://github.com/JuliaEditorSupport/julia-vim"
+    ivp "nord-vim" "https://github.com/arcticicestudio/nord-vim"
+    ivp "vim-which-key" "https://github.com/liuchengxu/vim-which-key"
+    ivp "nvim-nim" "https://github.com/baabelfish/nvim-nim"
+    ivp "tabular" "https://github.com/godlygeek/tabular"
+    ivp "vim-markdown" "https://github.com/plasticboy/vim-markdown"
+    ivp "nnn.vim" "https://github.com/mcchrish/nnn.vim"
+}
 
 # }}}
 
@@ -215,4 +221,4 @@ link_files
 setup_vimplugins
 gc_vimplugins
 
-echo "Finished with exit code $?." && exit $?
+echo "   [ END ]"

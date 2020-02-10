@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+# Remove header with metadata of markdown files
+
+import sys
+import re
+
+contents = None
+if len(sys.argv) == 1:
+    contents = "".join(sys.stdin.readlines())
+elif len(sys.argv) == 2:
+    with open(sys.argv[1], "r") as f:
+        contents = f.read()
+else:
+    raise Exception("invalid argument list: {}; only one argument is accepted (the file name)".format(sys.argv[1:]))
+
+exp = r"^---\n(.*:.*\n)*---\n*"
+print(re.sub(exp, "", contents))

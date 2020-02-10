@@ -27,7 +27,7 @@ if has("python3")
 else
     call add(g:pathogen_disabled, "deoplete.nvim")
 endif
-call add(g:pathogen_disabled, "SimpylFold")
+if !executable("nnn") | call add(g:pathogen_disabled, "nnn.vim") | endif
 exec pathogen#infect()
 
 " }}}
@@ -43,6 +43,10 @@ let g:lightline = {
       \   'left': [[ 'mode', 'paste' ], [ 'readonly', 'filename' ]],
       \ },
   \ }
+
+" nnn.vim
+let g:nnn#set_default_mappings = 0
+let g:nnn#layout = { 'left': '~20%' }
 
 " }}}
 " GUI ---------------------------------------- {{{
@@ -165,6 +169,7 @@ augroup ft_markdown
     au!
     " au FileType markdown RunfileCommand "compile-md" "%" "&&" "xdg-open" "/tmp/md-compile.html" "&"
     au FileType markdown setlocal textwidth=72
+    au FileType markdown RunfileCommand "md-preview" "%"
 augroup end
 
 " }}}
@@ -335,9 +340,6 @@ function! EditNote(filename) " {{{
         echo "Not found: '~/projects/personal/wiki'. Please create said directory."
     endif
 endfunction " }}}
-function! MarkdownCompile(file) " {{{
-    exec "!cmark '" . file . "' | html-wrapper > /tmp/markdown-temp"
-endfunction " }}}
 
 " }}}
 " General Mappings --------------------------- {{{
@@ -410,6 +412,9 @@ nnoremap <silent> <M-o> :Clap grep<CR>
 
 " Quick character insert
 inoremap <C-g>` ```<CR>```<Up><End><CR>
+
+" NnnPicker
+nnoremap <leader>n :NnnPicker '%:p:h'<CR>
 
 " }}}
 " Quick Editing ------------------------------ {{{
