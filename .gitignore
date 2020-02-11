@@ -1,0 +1,2 @@
+# The bundle symlink. Is not included to prevent cloning errors if the file doesn't exist on the cloned computer.
+config/nvim/bundle
