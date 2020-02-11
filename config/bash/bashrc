@@ -1,2 +1,4 @@
 # Temporary measure: Launch zsh if it's a TTY
 if [ -t 1 ]; then exec zsh; fi
+
+source /home/yohanan/.config/broot/launcher/bash/br

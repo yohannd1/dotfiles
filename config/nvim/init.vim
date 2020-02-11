@@ -12,10 +12,12 @@
 " To see all map modes, :h map-overview
 
 " }}}
-" Prologue ----------------------------------- {{{
+" Preparations ------------------------------- {{{
 
-let INIT_PATH = resolve(expand("<sfile>:p:h"))
-let g:nord_italic = 1
+let g:VIM_CONFIG = resolve(expand("<sfile>:p:h"))
+let $MYVIMRC = g:VIM_CONFIG . "/init.vim"
+let g:is_windows = isdirectory('C:\') ? 1 : 0
+let g:at_home = isdirectory(expand('~/projects/dotfiles')) || $DOTFILES != ""
 
 " }}}
 " Plugin Setup ------------------------------- {{{
@@ -27,8 +29,11 @@ if has("python3")
 else
     call add(g:pathogen_disabled, "deoplete.nvim")
 endif
+if isdirectory('C:\')
+    call add(g:pathogen_disabled, "nvim-nim") " Compatibility issues
+endif
 if !executable("nnn") | call add(g:pathogen_disabled, "nnn.vim") | endif
-exec pathogen#infect()
+call pathogen#infect()
 
 " }}}
 " Plugin Settings ---------------------------- {{{
@@ -48,17 +53,21 @@ let g:lightline = {
 let g:nnn#set_default_mappings = 0
 let g:nnn#layout = { 'left': '~20%' }
 
+" vim-markdown
+let g:vim_markdown_frontmatter = 1
+let g:vim_markdown_folding_style_pythonic = 1
+let g:vim_markdown_override_foldtext = 0
+let g:vim_markdown_no_extensions_in_markdown = 1
+
 " }}}
-" GUI ---------------------------------------- {{{
+" GUI Options -------------------------------- {{{
 
 if has('gui_running')
     set guioptions=agit
 
-    if isdirectory('C:\')
-        let &guifont='Fixedsys 9,Ubuntu Mono 12,Fira Code 10.5,Cascadia Code 10.5,Consolas 12,Monospace 12'
-    else
-        let &guifont='Cascadia Code 10.5,Fira Code 10.5,Ubuntu Mono 12,Consolas 12,Monospace 12'
-    endif
+    let &guifont = is_windows
+        \ ? 'Fixedsys 9,Ubuntu Mono 12,Fira Code 10.5,Cascadia Code 10.5,Consolas 12,Monospace 12'
+        \ : 'Cascadia Code 10.5,Fira Code 10.5,Ubuntu Mono 12,Consolas 12,Monospace 12'
 endif
 
 " }}}
@@ -69,7 +78,6 @@ endif
 augroup ft_sh
     au!
     au FileType sh setlocal tabstop=4 shiftwidth=4
-    " au FileType sh set foldmethod=marker
 augroup end
 
 " }}}
@@ -124,7 +132,6 @@ augroup end
 augroup ft_python
     au!
     au FileType python RunfileCommand python3 "%"
-    " au FileType python set foldmethod=marker
 augroup end
 
 " }}}
@@ -159,7 +166,6 @@ augroup end
 
 augroup ft_conf
     au!
-    " au FileType conf set foldmethod=marker
 augroup end
 
 " }}}
@@ -167,7 +173,6 @@ augroup end
 
 augroup ft_markdown
     au!
-    " au FileType markdown RunfileCommand "compile-md" "%" "&&" "xdg-open" "/tmp/md-compile.html" "&"
     au FileType markdown setlocal textwidth=72
     au FileType markdown RunfileCommand "md-preview" "%"
 augroup end
@@ -191,29 +196,6 @@ augroup end
 " }}}
 " Extras {{{
 au FileType xdefaults setlocal commentstring=\!%s
-" }}}
-
-" }}}
-" Mini Plugins ------------------------------- {{{
-
-" Tab or Complete {{{
-
-""" Used when no completion plugin is available.
-""" When pressing the tab key, decide if it's needed to complete the current word, or else simply insert the tab key.
-""" There is a mapping in the Mappings section for this.
-
-function! TabOrComplete(mode)
-    if (col(".") > 1) && !(strcharpart(getline("."), col(".") - 2, 1) =~ '\v[ \t]')
-        if (a:mode == 0)
-            return "\<C-P>"
-        elseif (a:mode == 1)
-            return "\<C-N>"
-        endif
-    else 
-        return "\<Tab>"
-    endif
-endfunction
-
 " }}}
 
 " }}}
@@ -249,7 +231,6 @@ set wrap
 set cursorline
 set showcmd
 set complete=.,w,b,u,t
-" set completeopt=longest,menuone
 set completeopt-=preview
 set completeopt+=menuone,noselect
 set shortmess+=atcI
@@ -340,6 +321,23 @@ function! EditNote(filename) " {{{
         echo "Not found: '~/projects/personal/wiki'. Please create said directory."
     endif
 endfunction " }}}
+function! AddBookmark(letter, path) " {{{
+    execute 'nnoremap <silent> <Leader>e' . a:letter . ' :e ' . a:path . '<CR>'
+endfunction " }}}
+function! TabOrComplete(mode) " {{{
+    """ Used when no completion plugin is available.
+    """ When pressing the tab key, decide if it's needed to complete the current word, or else simply insert the tab key.
+    """ There is a mapping in the Mappings section for this.
+    if (col(".") > 1) && !(strcharpart(getline("."), col(".") - 2, 1) =~ '\v[ \t]')
+        if (a:mode == 0)
+            return "\<C-P>"
+        elseif (a:mode == 1)
+            return "\<C-N>"
+        endif
+    else 
+        return "\<Tab>"
+    endif
+endfunction " }}}
 
 " }}}
 " General Mappings --------------------------- {{{
@@ -354,6 +352,8 @@ set timeoutlen=1000 ttimeoutlen=0
 " Mouse Wheel Scrolling
 map <ScrollWheelUp> 15<C-Y>
 map <ScrollWheelDown> 15<C-E>
+map <RightMouse> <nop>
+map <LeftMouse> <nop>
 
 " Copy to X register
 " How this works: the other keybindings usually work; but, if they don't exist or the timeout ends, <Leader> will translate to "+.
@@ -419,9 +419,9 @@ nnoremap <leader>n :NnnPicker '%:p:h'<CR>
 " }}}
 " Quick Editing ------------------------------ {{{
 
-nnoremap <silent> <Leader>ev :e $MYVIMRC<CR>
-nnoremap <silent> <Leader>et :e ~/projects/personal/todo/todo.tq<CR>
-nnoremap <silent> <Leader>ex :e ~/.tmux.conf<CR>
-nnoremap <silent> <Leader>es :e ~/projects/dotfiles/sync<CR>
+if at_home
+    call AddBookmark('v', '$MYVIMRC')
+    call AddBookmark('s', '~/projects/dotfiles/sync')
+endif
 
 " }}}

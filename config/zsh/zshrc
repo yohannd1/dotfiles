@@ -88,6 +88,7 @@ fi
 # Exports {{{
 
 export KEYTIMEOUT=1
+export TERM=xterm-256color
 
 export PROJECTS="${HOME}/projects"
 export DOTFILES="${PROJECTS}/dotfiles"
@@ -95,6 +96,7 @@ export DOTFILES="${PROJECTS}/dotfiles"
 export EDITOR="nvim"
 export TERMINAL="alacritty"
 export BROWSER="qutebrowser"
+export PAGER="bat"
 
 export BAT_THEME="base16"
 export GOPATH="${HOME}/.cache/go"
@@ -228,6 +230,8 @@ alias py3='python3'
 alias p3='python3'
 alias jl='julia'
 alias r='ranger'
+alias nm='neomutt'
+alias wk='br ~/wiki'
 
 alias vim='nvim' vi='nvim'
 alias emacs='emacs-plus emacs'
@@ -269,7 +273,9 @@ export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quo
 # }}}
 # Post Processing {{{
 
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null ||
-        source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null
+if ! source-maybe /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh; then
+    source-maybe /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 
+fi
+source-maybe /home/yohanan/.config/broot/launcher/bash/br
 
 # }}}

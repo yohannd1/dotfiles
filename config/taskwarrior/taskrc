@@ -1,22 +1,23 @@
 # -*- mode: conf-space -*-
-# [Created by task 2.5.1 1/14/2020 14:26:24]
-# Taskwarrior program configuration file.
-# For more documentation, see http://taskwarrior.org or try 'man task', 'man task-color',
-# 'man task-sync' or 'man taskrc'
-
-# Here is an example of entries that use the default, override and blank values
-#   variable=foo   -- By specifying a value, this overrides the default
-#   variable=      -- By specifying no value, this means no default
-#   #variable=foo  -- By commenting out the line, or deleting it, this uses the default
+# vim: foldmethod=marker
 
 # Use the command 'task show' to see all defaults and overrides
 data.location=~/wiki/taskwarrior
 
-rule.precedence.color=deleted,completed,active,keyword.,tag.,project.,overdue,scheduled,due.today,due,blocked,blocking,recurring,tagged,uda.
+# Precedence
+rule.precedence.color=deleted,completed,active,keyword.,tag.,project.,overdue,due.today,due,recurring,scheduled,blocking,blocked,tagged,uda.
+
+# "next" Report {{{
+
+# Sorting and Filtering
+report.next.sort=scheduled+,due+,urgency-
+report.next.filter=status:pending limit:page -hold
+
+# }}}
+# Colors {{{
 
 # General decoration
-color.label=color3
-color.label.sort=color3
+color.label=color4
 color.alternate=on color0
 color.header=color4
 color.footnote=color6
@@ -25,31 +26,31 @@ color.error=color0 on color1
 color.debug=color0 on color6
 
 # Task state
-color.completed=color2
+color.completed=
 color.deleted=
 color.active=bold color0 on color5
-color.recurring=color4
+color.recurring=
 color.scheduled=
 color.until=
 color.blocked=color1
-color.blocking=bold color2
+color.blocking=bold
 
 # Project
 color.project.none=
 
 # Priority
-color.uda.priority.H=bold blue
-color.uda.priority.M=bold yellow
-color.uda.priority.L=bold green
+color.uda.priority.H=bold cyan
+color.uda.priority.M=
+color.uda.priority.L=
 
 # Tags
-color.tag.next=
+color.tag.next=cyan
 color.tag.none=
 color.tagged=
 
 # Due
-color.due=color5
-color.due.today=color3
+color.due=
+color.due.today=color2
 color.overdue=color1
 
 # Report: burndown
@@ -92,3 +93,4 @@ report._reviewed.columns=uuid
 report._reviewed.sort=reviewed+,modified+
 report._reviewed.filter=( reviewed.none: or reviewed.before:now-6days ) and ( +PENDING or +WAITING )
 
+# }}}

@@ -4,12 +4,12 @@ case $# in
     0)
         cat /dev/stdin |
             md-remove-metadata |
-            comrak --gfm |
+            comrak --gfm --unsafe |
             md-wrap-output -t "STDIN"
         ;;
     1)
         md-remove-metadata "${1}" |
-            comrak --gfm |
+            comrak --gfm --unsafe |
             md-wrap-output -t "$(basename "${1}")"
         ;;
     *)
