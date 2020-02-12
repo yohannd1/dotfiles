@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Markdown Preview
+
+[ -f "${1}" ] || exit 1
+[ $# = 1 ] || exit 1
+
+FILE=$(mktemp)
+mv "${FILE}" "${FILE}.html"
+FILE="${FILE}.html"
+md-compile "${1}" > "${FILE}"
+
+"${BROWSER}" "${FILE}"
+rm "${FILE}"

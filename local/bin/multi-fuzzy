@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ -t 1 ]; then
+    cat /dev/stdin | fzf
+else
+    cat /dev/stdin | dmenu
+fi

@@ -12,9 +12,12 @@
 " To see all map modes, :h map-overview
 
 " }}}
-" Prologue ----------------------------------- {{{
+" Preparations ------------------------------- {{{
 
-let INIT_PATH = resolve(expand("<sfile>:p:h"))
+let g:VIM_CONFIG = resolve(expand("<sfile>:p:h"))
+let $MYVIMRC = g:VIM_CONFIG . "/init.vim"
+let g:is_windows = isdirectory('C:\') ? 1 : 0
+let g:at_home = isdirectory(expand('~/projects/dotfiles')) || $DOTFILES != ""
 
 " }}}
 " Plugin Setup ------------------------------- {{{
@@ -26,8 +29,11 @@ if has("python3")
 else
     call add(g:pathogen_disabled, "deoplete.nvim")
 endif
-call add(g:pathogen_disabled, "SimpylFold")
-exec pathogen#infect()
+if isdirectory('C:\')
+    call add(g:pathogen_disabled, "nvim-nim") " Compatibility issues
+endif
+if !executable("nnn") | call add(g:pathogen_disabled, "nnn.vim") | endif
+call pathogen#infect()
 
 " }}}
 " Plugin Settings ---------------------------- {{{
@@ -37,23 +43,31 @@ let g:deoplete#enable_at_startup = 1
 
 " Lightline
 let g:lightline = {
-      \ 'colorscheme': 'onedark',
+      \ 'colorscheme': 'nord',
       \ 'active': {
       \   'left': [[ 'mode', 'paste' ], [ 'readonly', 'filename' ]],
       \ },
   \ }
 
+" nnn.vim
+let g:nnn#set_default_mappings = 0
+let g:nnn#layout = { 'left': '~20%' }
+
+" vim-markdown
+let g:vim_markdown_frontmatter = 1
+let g:vim_markdown_folding_style_pythonic = 1
+let g:vim_markdown_override_foldtext = 0
+let g:vim_markdown_no_extensions_in_markdown = 1
+
 " }}}
-" GUI ---------------------------------------- {{{
+" GUI Options -------------------------------- {{{
 
 if has('gui_running')
     set guioptions=agit
 
-    if isdirectory('C:\')
-        let &guifont='Fixedsys 9,Ubuntu Mono 12,Fira Code 10.5,Cascadia Code 10.5,Consolas 12,Monospace 12'
-    else
-        let &guifont='Cascadia Code 10.5,Fira Code 10.5,Ubuntu Mono 12,Consolas 12,Monospace 12'
-    endif
+    let &guifont = is_windows
+        \ ? 'Fixedsys 9,Ubuntu Mono 12,Fira Code 10.5,Cascadia Code 10.5,Consolas 12,Monospace 12'
+        \ : 'Cascadia Code 10.5,Fira Code 10.5,Ubuntu Mono 12,Consolas 12,Monospace 12'
 endif
 
 " }}}
@@ -64,7 +78,6 @@ endif
 augroup ft_sh
     au!
     au FileType sh setlocal tabstop=4 shiftwidth=4
-    au FileType sh set foldmethod=marker
 augroup end
 
 " }}}
@@ -119,7 +132,6 @@ augroup end
 augroup ft_python
     au!
     au FileType python RunfileCommand python3 "%"
-    au FileType python set foldmethod=marker " Trying this out for a bit.
 augroup end
 
 " }}}
@@ -154,7 +166,6 @@ augroup end
 
 augroup ft_conf
     au!
-    au FileType conf set foldmethod=marker
 augroup end
 
 " }}}
@@ -162,43 +173,29 @@ augroup end
 
 augroup ft_markdown
     au!
-    au FileType markdown RunfileCommand "compile-md" "%" "&&" "xdg-open" "/tmp/md-compile.html" "&"
+    au FileType markdown setlocal textwidth=72
+    au FileType markdown RunfileCommand "md-preview" "%"
+augroup end
+
+" }}}
+" C {{{
+
+augroup ft_c
+    au!
+    au BufNewFile,BufRead,BufEnter *.fx set filetype=c
+augroup end
+
+" }}}
+" Nim {{{
+
+augroup ft_nim
+    au!
+    au Filetype nim setlocal shiftwidth=2 softtabstop=2
 augroup end
 
 " }}}
 " Extras {{{
 au FileType xdefaults setlocal commentstring=\!%s
-" }}}
-
-" }}}
-" Mini Plugins ------------------------------- {{{
-
-" Tab or Complete {{{
-
-""" Used when no completion plugin is available.
-""" When pressing the tab key, decide if it's needed to complete the current word, or else simply insert the tab key.
-""" There is a mapping in the Mappings section for this.
-
-function! TabOrComplete(mode)
-    if (col(".") > 1) && !(strcharpart(getline("."), col(".") - 2, 1) =~ '\v[ \t]')
-        if (a:mode == 0)
-            return "\<C-P>"
-        elseif (a:mode == 1)
-            return "\<C-N>"
-        endif
-    else 
-        return "\<Tab>"
-    endif
-endfunction
-
-" }}}
-" (Not Implemented) Auto-pair {{{
-
-""" Checks if it's a good idea to insert a matching ')' for '(' and similars.
-" function PairNeeded()
-" 
-" end
-
 " }}}
 
 " }}}
@@ -234,42 +231,48 @@ set wrap
 set cursorline
 set showcmd
 set complete=.,w,b,u,t
-" set completeopt=longest,menuone
 set completeopt-=preview
 set completeopt+=menuone,noselect
-set shortmess+=c
+set shortmess+=atcI
 set belloff+=ctrlg
 filetype plugin indent on
 
 " Listchars
 set listchars=tab:»\ 
-set listchars+=space:·
-set listchars+=extends:%
-set listchars+=precedes:%
-set listchars+=eol:$,
-set listchars+=trail:~
+" set listchars+=space:·
+" set listchars+=extends:%
+" set listchars+=precedes:%
+" set listchars+=eol:$,
+" set listchars+=trail:~
 
 " Theme-related
 syntax on
 set background=dark
-if !exists("/sdcard") | colorscheme onedark | endif
+" if !exists("/sdcard") | colorscheme onedark | endif
+colorscheme nord
 
 " Indentation
-set tabstop=4 shiftwidth=4
-set softtabstop=4
-set expandtab
-set smarttab
+set tabstop=8 " For tab characters
+set shiftwidth=4 softtabstop=4
+set expandtab smarttab
 
 " Fold Expr
 set foldtext=MyFoldText()
 
-" Enable RGB colors {{{
-set termguicolors
+let &t_ZH = "\<Esc>[3m"
+let &t_ZR = "\<Esc>[23m"
 
-if !has('nvim') && $TERM ==# 'screen-256color'
-    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-endif
+" Enable RGB colors {{{
+" if exists('+termguicolors')
+"   let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
+"   let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
+"   set termguicolors
+" endif
+
+" if !has('nvim') && $TERM ==# 'screen-256color'
+"     let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+"     let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+" endif
 " }}}
 
 " }}}
@@ -292,7 +295,7 @@ endfunction " }}}
 function! MyFoldText() " {{{
     let l:tab_char = strpart(' ', shiftwidth())
     let l:line_contents = substitute(getline(v:foldstart), '\t', l:tab_char, 'g')
-    let l:line_contents = substitute(l:line_contents, '{{{', '', 'g') " Remove fold marker
+    let l:line_contents = substitute(l:line_contents, '{{{', '', 'g') " Remove fold marker }}}
 
     let l:numbers_width = &foldcolumn + &number * &numberwidth
     let l:window_width = winwidth(0) - numbers_width - 1
@@ -304,8 +307,6 @@ function! MyFoldText() " {{{
 
     return l:line_contents . repeat(l:void_char, l:void_size) . l:folded_lines_number . 'l   '
 endfunction " }}}
-
-" }}}
 function! EditNote(filename) " {{{
     let l:new_filename = substitute(a:filename, ' ', '-', 'g')
     let l:new_filename = substitute(l:new_filename, '.*', '\L&', 'g')
@@ -320,8 +321,22 @@ function! EditNote(filename) " {{{
         echo "Not found: '~/projects/personal/wiki'. Please create said directory."
     endif
 endfunction " }}}
-function! MarkdownCompile(file) " {{{
-    exec "!cmark '" . file . "' | html-wrapper > /tmp/markdown-temp"
+function! AddBookmark(letter, path) " {{{
+    execute 'nnoremap <silent> <Leader>e' . a:letter . ' :e ' . a:path . '<CR>'
+endfunction " }}}
+function! TabOrComplete(mode) " {{{
+    """ Used when no completion plugin is available.
+    """ When pressing the tab key, decide if it's needed to complete the current word, or else simply insert the tab key.
+    """ There is a mapping in the Mappings section for this.
+    if (col(".") > 1) && !(strcharpart(getline("."), col(".") - 2, 1) =~ '\v[ \t]')
+        if (a:mode == 0)
+            return "\<C-P>"
+        elseif (a:mode == 1)
+            return "\<C-N>"
+        endif
+    else 
+        return "\<Tab>"
+    endif
 endfunction " }}}
 
 " }}}
@@ -337,6 +352,8 @@ set timeoutlen=1000 ttimeoutlen=0
 " Mouse Wheel Scrolling
 map <ScrollWheelUp> 15<C-Y>
 map <ScrollWheelDown> 15<C-E>
+map <RightMouse> <nop>
+map <LeftMouse> <nop>
 
 " Copy to X register
 " How this works: the other keybindings usually work; but, if they don't exist or the timeout ends, <Leader> will translate to "+.
@@ -396,12 +413,15 @@ nnoremap <silent> <M-o> :Clap grep<CR>
 " Quick character insert
 inoremap <C-g>` ```<CR>```<Up><End><CR>
 
+" NnnPicker
+nnoremap <leader>n :NnnPicker '%:p:h'<CR>
+
 " }}}
 " Quick Editing ------------------------------ {{{
 
-nnoremap <silent> <Leader>ev :e $MYVIMRC<CR>
-nnoremap <silent> <Leader>et :e ~/projects/personal/todo/todo.tq<CR>
-nnoremap <silent> <Leader>ex :e ~/.tmux.conf<CR>
-nnoremap <silent> <Leader>es :e ~/projects/dotfiles/sync<CR>
+if at_home
+    call AddBookmark('v', '$MYVIMRC')
+    call AddBookmark('s', '~/projects/dotfiles/sync')
+endif
 
 " }}}

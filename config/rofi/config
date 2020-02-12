@@ -3,7 +3,6 @@ rofi.modi: combi
 rofi.width: 1000
 rofi.lines: 20
 rofi.font: Cascadia Code 13
-rofi.theme: /usr/share/rofi/themes/gruvbox-dark-soft.rasi
 rofi.show-icons: false
 rofi.combi-modi: drun,run
 rofi.kb-move-char-back: Left
@@ -25,3 +24,5 @@ rofi.bw: 0
 rofi.matching: normal
 ! "Scrolling method. (0: Page, 1: Centered)" Set from: Commandline
 rofi.scroll-method: 1
+
+rofi.theme: /usr/share/rofi/themes/android_notification.rasi

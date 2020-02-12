@@ -1,3 +1,5 @@
+# -*- origami-fold-style: triple-braces -*-
+# vim: foldmethod=marker
 # i3 (v4.0) config file
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
 
@@ -21,40 +23,14 @@ set $ws8   "8"
 set $ws9   "9"
 set $ws10 "10"
 
-# }}}
-# Mappings {{{
-
-# Commands {{{
-
-# Start a Terminal
-bindsym $mod+Return exec st -t "Suckless Terminal"
-
-# Notes
-bindsym $mod+n exec st -t "Note" -e "edn"
-
-# Rofi
-bindsym $mod+space exec --no-startup-id lnc
-
-# Show power menu (made by me :P)
-bindsym $mod+Shift+o exec "env st-popup pow"
-
-# Editor!
-bindsym $mod+m exec "emacs-ttyorgui emacs"
-
-# Pulse Audio controls
-bindsym XF86AudioLowerVolume exec --no-startup-id amixer set Master 5%-
-bindsym XF86AudioRaiseVolume exec --no-startup-id amixer set Master 5%+
-bindsym XF86AudioMute exec --no-startup-id amixer -D pulse set Master 1+ toggle
-
-# Media player key bindings
-bindsym XF86AudioPlay exec playerctl pause
-bindsym XF86AudioNext exec playerctl next
-bindsym XF86AudioPrev exec playerctl previous
-
-# Brightness key bindings
-bindsym XF86MonBrightnessUp exec xbacklight -inc 10
-bindsym XF86MonBrightnessDown exec xbacklight -dec 10
-#bindsym XF86PowerOff exec "env st-popup pow"
+# Colors
+set $bg       #2e3440
+set $fg       #d8dee9
+set $bri_bg   #4c566a
+set $drk_fg   #d8dee9
+set $blue     #81a1c1
+set $red      #bf616a
+set $yellow   #ebcb8b
 
 # }}}
 # General {{{
@@ -107,6 +83,9 @@ bindsym $mod+Shift+space floating toggle
 # change focus between tiling / floating windows
 bindsym $mod+p focus mode_toggle
 
+# sticky!
+bindsym $mod+o sticky toggle
+
 # switch to workspace
 bindsym $mod+1 workspace $ws1
 bindsym $mod+2 workspace $ws2
@@ -137,10 +116,6 @@ bindsym $mod+Shift+0 move container to workspace $ws10
 bindsym $mod+r mode "resize"
 
 mode "resize" {
-    # Pressing left will shrink the window’s width.
-    # Pressing right will grow the window’s width.
-    # Pressing up will shrink the window’s height.
-    # Pressing down will grow the window’s height.
     bindsym h resize shrink width 10 px or 10 ppt
     bindsym j resize grow height 10 px or 10 ppt
     bindsym k resize shrink height 10 px or 10 ppt
@@ -157,8 +132,6 @@ mode "resize" {
 }
 
 # }}}
-
-# }}}
 # Bar {{{
 
 bar {
@@ -168,15 +141,15 @@ bar {
     position top
 
     colors {
-        background #282c34
-        statusline #abb2bf
-        separator  #383c44
+        background  $bg
+        statusline  $fg
+        separator   $bri_bg
         ################## Border  Back    Text
-        focused_workspace  #3b84c0 #3b84c0 #282c34
-        active_workspace   #3b84c0 #3b84c0 #282c34
-        inactive_workspace #282c34 #282c34 #abb2bf
-        urgent_workspace   #e06c75 #e06c75 #282c34
-        binding_mode       #d19a66 #d19a66 #282c34
+        focused_workspace  $blue   $blue   $bg
+        active_workspace   $blue   $blue   $bg
+        inactive_workspace $bg     $bg     $fg
+        urgent_workspace   $red    $red    $bg
+        binding_mode       $yellow $yellow $bg
         ##########################################
     }
 }
@@ -186,31 +159,20 @@ bar {
 
 # Window decoration colors
 ####################### Border  Backgr. Text    Indict.
-client.placeholder      #5c6370 #5c6370 #282c34 #5c6370
-client.background       #3b84c0 #3b84c0 #282c34 #3b84c0
-client.focused          #3b84c0 #3b84c0 #282c34 #3b84c0
-client.unfocused        #282c34 #282c34 #abb2bf #282c34
-client.focused_inactive #abb2bf #abb2bf #282c34 #abb2bf
-client.urgent           #e06c75 #e06c75 #282c34 #e06c75
+client.placeholder      $bri_bg $bri_bg $bg     $bri_bg
+client.background       $blue   $blue   $bg     $blue
+client.focused          $blue   $blue   $bg     $blue
+client.unfocused        $bg     $bg     $drk_fg $bg
+client.focused_inactive $drk_fg $drk_fg $bg     $drk_fg
+client.urgent           $red    $red    $bg     $red
 #######################################################
 
 # }}}
 # General Options & Startup Commands {{{
 
 focus_follows_mouse no
-exec --no-startup-id xset r rate 400 35
-exec --no-startup-id compton -b
-exec --no-startup-id xsetroot -cursor_name left_ptr &
-exec --no-startup-id ~/.local/bin/quick-check
-exec_always --no-startup-id exec bash $HOME/.fehbg
-exec --no-startup-id xinput set-prop 16 323 1 # Touchpad: tap to click
-exec --no-startup-id xinput set-prop 16 305 1 # Touchpad: natural scrolling
-
-# Applets
-exec --no-startup-id nm-applet
-
-# Systemd: disable power key
-exec --no-startup-id systemd-inhibit --what=handle-power-key sleep infinity
+exec --no-startup-id ~/.local/bin/my-init 1
+exec_always --no-startup-id ~/.local/bin/my-init
 
 # }}}
 # Rules {{{
@@ -222,3 +184,5 @@ for_window [class="^.*"] border pixel 0
 for_window [title="GLFW.jl"] floating enable
 
 # }}}
+
+gaps inner 10

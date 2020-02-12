@@ -1,0 +1,281 @@
+# -*- origami-fold-style: triple-braces -*-
+# vim: foldmethod=marker
+# Partially stolen from https://github.com/LukeSmithxyz/voidrice and my own bashrc
+
+# Backend functions {{{
+## Functions that usually aren't used only on the shell setup.
+
+## Silently source a file, if it exists.
+source-maybe() { # {{{
+    if [ -f "${1}" ]; then
+	source "${1}"
+    else
+	return 1
+    fi
+}
+# }}}
+
+## If ${1} is not in ${PATH}, append to it.
+## Exit codes:
+## 1 => Invalid arguments;
+## 2 => ${1} already exists on ${PATH};
+path-maybe() { # {{{
+    [ $# != 1 ] && return 1
+
+    if [[ ":${PATH}:" == *"${1}"* ]]; then
+	return 2
+    else
+	export PATH="${PATH:+"${PATH}:"}${1}"
+    fi
+}
+# }}}
+
+## Check if a tmux session is attached.
+tmux-attached() { # {{{
+    if [ $# = 1 ]; then
+	tmux ls | grep "^${1}.*(attached)\$" &>/dev/null
+    else
+	echo -e '\e[1m\e[34mUsage:\e[m ${0} SESSION-NAME'
+	return 1
+    fi
+} # }}}
+
+## Start a tmux session or reattach to it.
+tmux-session() { # {{{
+    if [[ -n "$1" ]]; then
+	if tmux has -t="$1" &>/dev/null; then
+	    tmux attach -t "$1"
+	else
+	    tmux new-session -s "$1" \; source-file "${HOME}/.local/lib/tmux-sessions/$1.proj" \; $2
+	fi
+    else
+	echo -e '\e[1m\e[34mUsage:\e[m ${0} SESSION-NAME <optional-command>'
+    fi
+} # }}}
+
+## Get the current git branch.
+git-branch() { # {{{
+    local branch="$(git symbolic-ref --short -q HEAD 2>/dev/null)"
+    if [ -n "${branch}" ]; then
+	echo "${branch}"
+    else
+	return 1
+    fi
+} # }}}
+
+## Gets a random alphanumeric string matching [0-9a-z]{$1}.
+## $1 => The amount of digits.
+random-string() { # {{{
+    cat /dev/urandom | tr -dc 'a-z0-9' | fold -w ${1:-8} | head -n 1
+} # }}}
+
+# }}}
+# First Steps {{{
+
+if [ "${SHELL_FIRST:-0}" = 0 ]; then
+    SHELL_FIRST="$(date)"
+
+    # Defer to a shell inside tmux, if not attached yet.
+    if [ -t 1 ]; then
+	if [ -z "${TMUX}" ]; then
+            exec tmux new -s $(random-string 4)
+	fi
+    fi
+fi
+
+
+# }}}
+# Exports {{{
+
+export KEYTIMEOUT=1
+export TERM=xterm-256color
+
+export PROJECTS="${HOME}/projects"
+export DOTFILES="${PROJECTS}/dotfiles"
+
+export EDITOR="nvim"
+export TERMINAL="alacritty"
+export BROWSER="qutebrowser"
+export PAGER="bat"
+
+export BAT_THEME="base16"
+export GOPATH="${HOME}/.cache/go"
+
+export FZF_DEFAULT_OPTS='
+  --color fg:#D8DEE9,bg:-1,hl:#A3BE8C,fg+:#D8DEE9,bg+:#434C5E,hl+:#A3BE8C
+  --color pointer:#BF616A,info:#4C566A,spinner:#4C566A,header:#4C566A,prompt:#81A1C1,marker:#EBCB8B
+'
+
+# }}}
+# Plugins and Extensions {{{
+
+autoload -U colors && colors
+
+# Completion
+autoload -U compinit
+zstyle ':completion:*' menu select
+zmodload zsh/complist
+compinit
+_comp_options+=(globdots) # Include hidden files in autocomplete
+
+# Load some extra files
+source-maybe "${DOTFILES}/config/zsh/fzf-completion.zsh"
+source-maybe "${DOTFILES}/config/zsh/fzf-keybindings.zsh"
+bindkey '^R' fzf-history-widget # Not working inside the scripts above. confusing...
+
+# }}}
+# Prompt {{{
+
+if [ "$(uname -o)" = "Android" ]; then
+    PS1="%B%{$fg[green]%}%{$fg[magenta]%}%~%{$fg[green]%}%{$reset_color%}%b "
+else
+    PS1="%B%{$fg[green]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[magenta]%}%~%{$fg[green]%}]%{$reset_color%}%b "
+fi
+
+# }}}
+# Vim bindings and cursor {{{
+
+# Use vim keys in tab complete menu
+bindkey -M menuselect 'h' vi-backward-char
+bindkey -M menuselect 'k' vi-up-line-or-history
+bindkey -M menuselect 'l' vi-forward-char
+bindkey -M menuselect 'j' vi-down-line-or-history
+bindkey -v '^?' backward-delete-char
+
+# Change cursor shape for different vi modes
+zle-keymap-select() { # {{{
+    if [[ ${KEYMAP} == vicmd ]] ||
+	   [[ $1 = 'block' ]]; then
+	echo -ne '\e[1 q'
+
+    elif [[ ${KEYMAP} == main ]] ||
+	     [[ ${KEYMAP} == viins ]] ||
+	     [[ ${KEYMAP} = '' ]] ||
+	     [[ $1 = 'beam' ]]; then
+	echo -ne '\e[5 q'
+    fi
+} # }}}
+zle-line-init() { # {{{
+    zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
+    echo -ne "\e[5 q"
+} # }}}
+
+zle -N zle-keymap-select
+zle -N zle-line-init
+
+# Use beam shape cursor on startup.
+echo -ne '\e[5 q'
+# Use beam shape cursor for each new prompt.
+preexec() { echo -ne '\e[5 q' ;}
+
+# }}}
+# Bindings {{{
+
+# Use lf to switch directories and bind it to ctrl-o
+lfcd () {
+    tmp="$(mktemp)"
+    lf -last-dir-path="$tmp" "$@"
+    if [ -f "$tmp" ]; then
+	dir="$(cat "$tmp")"
+	rm -f "$tmp"
+	if [ -d "$dir" ]; then
+	    if [ "$dir" != "$(pwd)" ]; then
+		cd "$dir"
+	    fi
+	fi
+    fi
+}
+bindkey -s '^O' '^Ulfcd\n'
+
+# }}}
+# User functions {{{
+## Functions that were designed to be used in the shell.
+
+rl() { source "${ZDOTDIR:-"${HOME}"}/.zshrc"; }
+sy() { "${DOTFILES}/sync"; }
+vp() { (cd "${PERSONAL}" && vi); }
+
+rd() {
+    local CHOICEPATH="${HOME}/persist/articles"
+    local CHOICE="$(ls "${CHOICEPATH}" | grep '\.html$' | fzf)"
+    open "${CHOICEPATH}/${CHOICE}" &
+}
+
+# }}}
+# Sourcing {{{
+
+source-maybe "${HOME}/.zshrc.local"
+path-maybe "${HOME}/.local/bin"
+path-maybe "${HOME}/.cache/go"
+path-maybe "/opt/bin"
+path-maybe "${HOME}/.nimble/bin"
+
+# }}}
+# Aliases {{{
+
+alias ls='ls --color=auto'
+alias la='ls -A'
+alias ll='ls -alF'
+
+alias t='task'
+alias tl='t ls'
+alias tt='t due:today or sched:today or +OVERDUE'
+alias to='t due:tomorrow or sched:tomorrow'
+alias t-s='t pro:school'
+alias tsh='tasksh'
+
+alias du='du -shc'
+
+alias py3='python3'
+alias p3='python3'
+alias jl='julia'
+alias r='ranger'
+alias nm='neomutt'
+alias wk='br ~/wiki'
+
+alias vim='nvim' vi='nvim'
+alias emacs='emacs-plus emacs'
+alias ec='emacs-plus emacsclient'
+
+alias cp-sync='cp -ur'
+
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# }}}
+# Settings {{{
+
+# History
+HISTFILE=~/.zhistory
+HISTSIZE=SAVEHIST=10000
+setopt sharehistory
+setopt extendedhistory
+
+# less
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+export LESS_TERMCAP_mb=$'\e[1;31m'     # begin bold
+export LESS_TERMCAP_md=$'\e[1;35m'     # begin blink
+export LESS_TERMCAP_me=$'\e[0m'        # reset bold/blink
+export LESS_TERMCAP_so=$'\e[33m'       # begin reverse video
+export LESS_TERMCAP_se=$'\e[0m'        # reset reverse video
+export LESS_TERMCAP_us=$'\e[1;32m'     # begin underline
+export LESS_TERMCAP_ue=$'\e[0m'        # reset underline
+
+# ls; dir
+test -r "${DOTFILES}/config/dircolors" \
+                && eval "$(dircolors -b "${DOTFILES}/config/dircolors")" \
+                || eval "$(dircolors -b)"
+
+# GCC
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+# }}}
+# Post Processing {{{
+
+if ! source-maybe /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh; then
+    source-maybe /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 
+fi
+source-maybe /home/yohanan/.config/broot/launcher/bash/br
+
+# }}}
