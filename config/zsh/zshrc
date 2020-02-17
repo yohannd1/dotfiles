@@ -100,7 +100,7 @@ export DOTFILES="${PROJECTS}/dotfiles"
 export EDITOR="nvim"
 export TERMINAL="alacritty"
 export BROWSER="qutebrowser"
-export PAGER="/bin/sh -c 'col -b | nvim -c PagerMode -'"
+export PAGER="less"
 export MANPAGER="/bin/sh -c 'col -b | nvim -c PagerMode -'"
 
 export BAT_THEME="base16"
