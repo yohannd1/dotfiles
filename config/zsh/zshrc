@@ -73,14 +73,25 @@ random-string() { # {{{
     cat /dev/urandom | tr -dc 'a-z0-9' | fold -w ${1:-8} | head -n 1
 } # }}}
 
+## Check if shell is interactive
+is_interactive() { [[ $- == *i* ]]; }
+
 # }}}
 # First Steps {{{
 
-if [ "${SHELL_FIRST:-0}" = 0 ]; then
+# is this an interactive shell?
+if is_interactive; then
+    # Set up SSH key server
+    if [[ -x /usr/bin/keychain ]]; then
+        eval "$(keychain --eval --ignore-missing ~/.ssh/id_rsa 2>/dev/null)"
+    fi
+fi
+
+if [ -z "${SHELL_FIRST}" ]; then
     SHELL_FIRST="$(date)"
 
     # Defer to a shell inside tmux, if not attached yet.
-    if [ -t 1 ] && [ -n "${DISPLAY}" ]; then
+    if is_interactive && [ -n "${DISPLAY}" ]; then
 	if [ -z "${TMUX}" ]; then
             exec tmux new -s $(random-string 4)
 	fi
