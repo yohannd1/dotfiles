@@ -1,3 +1,0 @@
-#!/bin/sh
-# Rofi config is already set up on another file.
-rofi -show combi

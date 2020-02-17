@@ -1,13 +1,23 @@
 #!/bin/sh
-
 # Markdown Preview
 
 [ -f "${1}" ] || exit 1
 [ $# = 1 ] || exit 1
 
-FILE=$(mktemp)
-mv "${FILE}" "${FILE}.html"
-FILE="${FILE}.html"
+# Experimental: delete files after other run
+
+for garbage in /tmp/md-export-*.html; do
+    if [ -f "${garbage}" ]; then
+        echo "Garbage collection: ${garbage}"
+        rm "${garbage}"
+    fi
+done
+
+# The main code
+
+TEMP=$(mktemp)
+FILE="/tmp/md-export$(echo "${TEMP}" | sed 's/\///g; s/tmp//g').html"
+mv "${TEMP}" "${FILE}"
 md-compile "${1}" > "${FILE}"
 
 "${BROWSER}" "${FILE}"
