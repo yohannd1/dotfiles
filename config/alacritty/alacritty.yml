@@ -12,12 +12,16 @@ font:
   normal:
     family: Cascadia Code
     style: Regular
+
   bold:
     family: Cascadia Code
     style: Bold
+
   italic:
     family: Cascadia Code
     style: Italic
+
+  size: 10.5
 
 colors:
   primary:

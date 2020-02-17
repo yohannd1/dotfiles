@@ -10,6 +10,7 @@ rule.precedence.color=deleted,completed,active,keyword.,tag.,project.,overdue,du
 # "next" Report {{{
 
 # Sorting and Filtering
+# report.next.sort=tags-,scheduled+,due+,urgency-
 report.next.sort=scheduled+,due+,urgency-
 report.next.filter=status:pending limit:page -hold
 

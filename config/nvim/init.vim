@@ -22,17 +22,11 @@ let g:at_home = isdirectory(expand('~/projects/dotfiles')) || $DOTFILES != ""
 " }}}
 " Plugin Setup ------------------------------- {{{
 
-" ft. Pathogen
 let g:pathogen_disabled = []
-if has("python3")
-    call add(g:pathogen_disabled, "VimCompletesMe")
-else
-    call add(g:pathogen_disabled, "deoplete.nvim")
-endif
-if isdirectory('C:\')
-    call add(g:pathogen_disabled, "nvim-nim") " Compatibility issues
-endif
-if !executable("nnn") | call add(g:pathogen_disabled, "nnn.vim") | endif
+call add(g:pathogen_disabled, has("python3") ? "VimCompletesMe" : "deoplete.nvim")
+call add(g:pathogen_disabled, executable("nim") ? "" : "nvim-nim")
+call add(g:pathogen_disabled, executable("nnn") ? "" : "nnn.vim")
+
 call pathogen#infect()
 
 " }}}
@@ -58,6 +52,10 @@ let g:vim_markdown_frontmatter = 1
 let g:vim_markdown_folding_style_pythonic = 1
 let g:vim_markdown_override_foldtext = 0
 let g:vim_markdown_no_extensions_in_markdown = 1
+
+" CtrlP
+let g:ctrlp_map = '<C-p>'
+let g:ctrlp_cmd = 'CtrlPBuffer'
 
 " }}}
 " GUI Options -------------------------------- {{{
@@ -174,7 +172,9 @@ augroup end
 augroup ft_markdown
     au!
     au FileType markdown setlocal textwidth=72
+    au FileType markdown command! -buffer Compile call SpawnTerminal("md-compile " . expand("%") . " > ~/" . expand("%:t:r") . "+" . strftime("%Y%m%d") . ".html")
     au FileType markdown RunfileCommand "md-preview" "%"
+    au FileType markdown nnoremap <silent> <Leader>df :TableFormat<CR>
 augroup end
 
 " }}}
@@ -191,6 +191,7 @@ augroup end
 augroup ft_nim
     au!
     au Filetype nim setlocal shiftwidth=2 softtabstop=2
+    au FileType nim RunfileCommand nim c -r "%"
 augroup end
 
 " }}}
@@ -208,6 +209,7 @@ command! -nargs=0 OpenWORD call OpenWORD()
 command! -nargs=* RunfileCommand let b:runfile_command = join([<f-args>], ' ') " Remember to quote '%' for better performance when using this.
 command! -nargs=* EditNote call EditNote(join([<f-args>], ' '))
 command! -nargs=0 RunFile call RunFile()
+command! -nargs=0 PagerMode call PagerMode()
 
 cnoreabbrev rl Reload
 
@@ -248,8 +250,8 @@ set listchars=tab:»\
 " Theme-related
 syntax on
 set background=dark
-" if !exists("/sdcard") | colorscheme onedark | endif
-colorscheme nord
+silent! colorscheme desert
+silent! colorscheme nord
 
 " Indentation
 set tabstop=8 " For tab characters
@@ -278,14 +280,17 @@ let &t_ZR = "\<Esc>[23m"
 " }}}
 " Functions ---------------------------------- {{{
 
+function! SpawnTerminal(command) " {{{
+    let l:command_string = "terminal " . a:command
+    split | exec "normal! \<C-w>j"
+    exec l:command_string
+    normal! i
+endfunction " }}}
 function! RunFile() " {{{
     if !exists("b:runfile_command")
         echo "[RunFile()]: error: `b:runfile_command` not defined."
     else
-        let l:command_string = "terminal " . b:runfile_command
-        split | exec "normal! \<C-w>j"
-        exec l:command_string
-        normal! i
+        call SpawnTerminal(b:runfile_command)
     endif
 endfunction " }}}
 function! OpenWORD() " {{{
@@ -337,6 +342,17 @@ function! TabOrComplete(mode) " {{{
     else 
         return "\<Tab>"
     endif
+endfunction " }}}
+function! PagerMode() " {{{
+    setlocal ft=man ts=8 nomod nolist noma timeoutlen=0 nocursorline
+    nnoremap <buffer> <silent> d <C-d>
+    nnoremap <buffer> <silent> u <C-u>
+    nnoremap <buffer> <silent> f <C-f>
+    nnoremap <buffer> <silent> b <C-b>
+    nnoremap <buffer> <silent> q :q<CR>
+    nnoremap <buffer> <silent> j <C-e>
+    nnoremap <buffer> <silent> k <C-y>
+    normal M
 endfunction " }}}
 
 " }}}
@@ -404,11 +420,6 @@ vnoremap / /\v
 
 " Insert today's date
 inoremap <silent> <C-l> <C-r>=strftime("20%y-%m-%d")<CR>
-
-" Clap!
-nnoremap <silent> <C-p> :Clap buffers<CR>
-nnoremap <silent> <C-o> :Clap files<CR>
-nnoremap <silent> <M-o> :Clap grep<CR>
 
 " Quick character insert
 inoremap <C-g>` ```<CR>```<Up><End><CR>

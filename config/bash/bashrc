@@ -1,4 +1,9 @@
 # Temporary measure: Launch zsh if it's a TTY
-if [ -t 1 ]; then exec zsh; fi
+if [ -t 1 ]; then
+	type zsh 2>/dev/null >/dev/null &&
+		exec zsh
+fi
+PS1='[\u@\h]\$ '
+PS2='  '
 
 source /home/yohanan/.config/broot/launcher/bash/br

@@ -2,10 +2,8 @@
 # -*- origami-fold-style: triple-braces -*-
 # vim: foldmethod=marker
 
-# TODO: search for broken symlinks in some directories (.local, .config) and ask to the user if they want to remove it;
-# TODO: at welcome_agree, show a resume of everything that will be done and where the ${DOTFILES} are.
-
 exists() { command -v "${1}" >/dev/null 2>&1; }
+is_android() { [ "$(uname -o)" = "Android" ]; }
 
 # CONSTANTS {{{
 
@@ -111,7 +109,8 @@ link_files() {
     lf_config "alacritty" "${HOME}/.config/alacritty"
 
     # File links
-    lf_config "compton.conf" "${HOME}/.config/compton.conf"
+    lf_config "picom" "${HOME}/.config/picom"
+    lf_config "broot" "${HOME}/.config/broot"
     lf_config "bash/bashrc" "${HOME}/.bashrc"
     lf_config "gitconfig" "${HOME}/.gitconfig"
     lf_config "gitignore" "${HOME}/.gitignore"
@@ -121,10 +120,10 @@ link_files() {
     lf_config "emacs/code" "${HOME}/.emacs.d/code"
     lf_config "xresources" "${HOME}/.Xresources"
     lf_config "taskwarrior/taskrc" "${HOME}/.taskrc"
-    lf_config "zsh/zshrc" "${HOME}/.zshrc"
+    lf_config "zsh/zshrc" "${HOME}/.config/zsh/.zshrc"
 
     # Glob directories.
-    lf_glob "${DOTFILES}/config/vscode" "${HOME}/.config/Code/User"
+    # lf_glob "${DOTFILES}/config/vscode" "${HOME}/.config/Code/User"
     lf_glob "${DOTFILES}/config/nvim" "${HOME}/.config/nvim"
     lf_glob "${DOTFILES}/local/bin" "${HOME}/.local/bin"
     lf_glob "${DOTFILES}/local/lib" "${HOME}/.local/lib"
@@ -134,6 +133,24 @@ link_files() {
 
     echo " done."
 }
+
+gc_symlinks() { # {{{
+    [ $# = 0 ] && exit 1
+    while [ $# != 0 ]; do
+        find "${1}" -maxdepth 1 |
+            while read file; do
+                if file "${file}" | grep -q "^${file}: broken symbolic link"; then
+                    echo -n "Removing broken symlink: ${file}..."
+                    if rm -rf "${file}"; then
+                        echo " done."
+                    else
+                        echo " failed."
+                    fi
+                fi
+            done
+        shift
+    done
+} # }}}
 
 # }}}
 # NEOVIM PLUGINS {{{
@@ -165,10 +182,10 @@ gc_vimplugins() { # {{{
             : # File is on the plugin list
         else
             plugin_path="${HOME}/.cache/vim-plugins/${plugin}"
-            if file "${plugin_path}" | grep -q '^'"${plugin_path}"': symbolic link to .*$'; then
+            if file "${plugin_path}" | grep -q '^'"${plugin_path}"': symbolic link'; then
                 : # File is symlink
             else
-                echo -n "Removing disabled plugin: ${plugin}..."
+                echo -n "Removing disabled plugin ${plugin}..."
                 if rm -rf "${plugin_path}"; then
                     echo " done."
                 else
@@ -192,6 +209,7 @@ setup_vimplugins() {
     # ivp "vim-markdown-folding" "https://github.com/masukomi/vim-markdown-folding"
     # ivp "onedark.vim" "https://github.com/joshdick/onedark.vim"
     # ivp "ion-vim@yohanandiamond" "https://gitlab.redox-os.org/YohananDiamond/ion-vim" # I'm already having this one locally.
+    # ivp "vim-clap" "https://github.com/liuchengxu/vim-clap"
     ivp "deoplete.nvim" "https://github.com/Shougo/deoplete.nvim"
     ivp "vim-toml" "https://github.com/cespare/vim-toml"
     ivp "vim-surround" "https://github.com/tpope/vim-surround"
@@ -200,7 +218,7 @@ setup_vimplugins() {
     ivp "jsonc.vim" "https://github.com/neoclide/jsonc.vim"
     ivp "lightline.vim" "https://github.com/itchyny/lightline.vim"
     ivp "yats.vim" "https://github.com/HerringtonDarkholme/yats.vim"
-    ivp "vim-clap" "https://github.com/liuchengxu/vim-clap"
+    ivp "ctrlp.vim" "https://github.com/ctrlpvim/ctrlp.vim"
     ivp "emmet-vim" "https://github.com/mattn/emmet-vim"
     ivp "vim-hy" "https://github.com/hylang/vim-hy"
     ivp "vim-fsharp" "https://github.com/fsharp/vim-fsharp"
@@ -212,6 +230,7 @@ setup_vimplugins() {
     ivp "tabular" "https://github.com/godlygeek/tabular"
     ivp "vim-markdown" "https://github.com/plasticboy/vim-markdown"
     ivp "nnn.vim" "https://github.com/mcchrish/nnn.vim"
+    ivp "lexima.vim" "https://github.com/cohama/lexima.vim"
 }
 
 # }}}
@@ -220,5 +239,6 @@ welcome_agree
 link_files
 setup_vimplugins
 gc_vimplugins
+gc_symlinks "${HOME}/.local/"{bin,lib,share}
 
 echo "   [ END ]"

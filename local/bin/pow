@@ -1,67 +1,99 @@
 #!/bin/sh
-# Initial Source: https://faq.i3wm.org/question/239/how-do-i-suspendlockscreen-and-logout.1.html
+# vim: foldmethod=marker
 
-LOCK_COLOR="555555"
+# Power Off Commands
+# Currently only works properly under Xorg + Systemd + i3
 
-match_arg() {
-    case "${1}" in
-        "lock")
-            do_lock
+# Settings
+I3LOCK_COLOR="555555"
+OPTIONS=$'lock\nlogout\nsuspend\nhibernate\nreboot\nshutdown'
+
+# Check if all dependencies are available
+check_dependencies() { # {{{
+    for dependency in dmenu xdg-screensaver systemctl notify-send; do
+        type "${dependency}" >/dev/null ||
+            exit 127
+    done
+} # }}}
+
+# Match arguments
+match_args() { # {{{
+    case $# in
+        0)
+            local f="$(fuzzy_match)"
+            if [ -n "$f" ]; then
+                match_args "$f"
+            else
+                show_help
+            fi
             ;;
-        "logout")
-            do_logout
+
+        1)
+            case "${1}" in
+                lock) ;;
+                logout) ;;
+                suspend) ;;
+                hibernate) ;;
+                reboot) ;;
+                shutdown) ;;
+                *)
+                    show_help
+                    ;;
+            esac
+            eval "action_${1}"
             ;;
-        "suspend")
-            do_suspend
-            ;;
-        "hibernate")
-            do_hibernate
-            ;;
-        "reboot")
-            do_reboot
-            ;;
-        "shutdown")
-            do_shutdown
-            ;;
+
         *)
-            return 1
+            show_help
             ;;
     esac
-}
+} # }}}
 
-do_fuzzy() {
-    choices="$(echo "lock;logout;suspend;hibernate;reboot;shutdown" | sed 's|\;|\n|g')"
-    choice="$(echo "${choices}" | dmenu -l 0)"
-    echo "${choice}"
-}
+# Fuzzy matching
+fuzzy_match() { # {{{
+    echo "${OPTIONS}" | dmenu ||
+        return 1
+} # }}}
 
-do_showhelp() {
-    echo "Usage: $0 {lock|logout|suspend|hibernate|reboot|shutdown}"
-    echo "Fuzzy: $0"
+# Help
+show_help() { # {{{
+    echo "$(basename "$0"): a simple power menu for i3 and systemd."
+    echo ""
+    echo "Allowed options:"
+    echo "${OPTIONS}" |
+        while read line; do
+            echo "  ${line}"
+        done
+    echo ""
+    echo "If no argument is specified, a dmenu pop-up is shown."
     exit 2
-}
+} # }}}
 
-do_lock() {
-    xdg-screensaver lock ||
-        i3lock -c "$LOCK_COLOR"
-}
-
-do_hibernate() {
-    notify-send -u low "Hibernating currently disabled. Sorry."
-    exit 1
-}
-
-do_logout() { i3-msg exit; }
-do_suspend() { do_lock && systemctl suspend; }
-do_reboot() { systemctl reboot; }
-do_shutdown() { systemctl poweroff; }
-
-match_arg "${1}"
-if [ $? = 0 ]; then
-    exit 0
-else
-    match_arg "$(do_fuzzy)"
-    if ! [ $? = 0 ]; then
-        do_showhelp
+# Actions
+action_lock() { # {{{
+    xdg-screensaver lock 2>/dev/null ||
+        i3lock -c "${I3LOCK_COLOR}"
+} # }}}
+action_logout() { # {{{
+    i3-msg exit
+} # }}}
+action_suspend() { # {{{
+    if action_lock; then
+        systemctl suspend
+    else
+        notify-send "Failed to suspend." -u critical
     fi
-fi
+} # }}}
+action_hibernate() { # {{{
+    echo "Hibernate: currently disabled."
+    return 3
+} # }}}
+action_reboot() { # {{{
+    systemctl reboot
+} # }}}
+action_shutdown() { # {{{
+    systemctl poweroff
+} # }}}
+
+check_dependencies
+match_args $@
