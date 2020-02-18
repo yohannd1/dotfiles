@@ -75,6 +75,8 @@ random-string() { # {{{
 
 ## Check if shell is interactive
 is_interactive() { [[ $- == *i* ]]; }
+is_android() { [ "$(uname -o)" = Android ]; }
+is_display() { [ -n "${DISPLAY}" ]; }
 
 # }}}
 # First Steps {{{
@@ -91,7 +93,7 @@ if [ -z "${SHELL_FIRST}" ]; then
     SHELL_FIRST="$(date)"
 
     # Defer to a shell inside tmux, if not attached yet.
-    if is_interactive && [ -n "${DISPLAY}" ]; then
+    if is_interactive && (is_display || is_android); then
 	if [ -z "${TMUX}" ]; then
             exec tmux new -s $(random-string 4)
 	fi
@@ -317,3 +319,4 @@ source-maybe "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highligh
 source-maybe "${HOME}/.config/broot/launcher/bash/br"
 
 # }}}
+: # Assert first prompt doesn't show any non-zero return value
