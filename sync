@@ -112,6 +112,7 @@ link_files() {
         lf_config "qutebrowser/config.py" "${HOME}/.config/qutebrowser/config.py"
         lf_config "xresources" "${HOME}/.Xresources"
     fi
+    lf_config "dircolors" "${HOME}/.config/dircolors"
     lf_config "zsh/zshrc" "${HOME}/.config/zsh/.zshrc"
     lf_config "kak" "${HOME}/.config/kak"
     lf_config "gitconfig" "${HOME}/.gitconfig"
