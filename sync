@@ -234,6 +234,8 @@ setup_vimplugins() {
     ivp "vim-markdown" "https://github.com/plasticboy/vim-markdown"
     ivp "nnn.vim" "https://github.com/mcchrish/nnn.vim"
     ivp "lexima.vim" "https://github.com/cohama/lexima.vim"
+
+    lf "${HOME}/.cache/vim-plugins" "${HOME}/.config/nvim/bundle"
 }
 
 # }}}
