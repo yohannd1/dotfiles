@@ -119,6 +119,7 @@ export GOPATH="${HOME}/.cache/go"
 export CARGO_HOME="${HOME}/.cache/cargo"
 export RUSTUP_HOME="${HOME}/.cache/rustup"
 export ZDOTDIR="${HOME}/.config/zsh"
+export TASKRC="${HOME}/.config/taskwarrior/taskrc"
 
 export FZF_DEFAULT_OPTS='
   --color=16

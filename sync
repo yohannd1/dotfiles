@@ -98,33 +98,35 @@ link_files() {
     echo -n "   [ NOW ] Symlinking files..."
 
     # Directories
-    lf_config "bspwm" "${HOME}/.config/bspwm"
-    lf_config "i3" "${HOME}/.config/i3"
-    lf_config "polybar" "${HOME}/.config/polybar"
-    lf_config "sxhkd" "${HOME}/.config/sxhkd"
-    lf_config "termux" "${HOME}/.termux"
+    if is_android; then
+        lf_config "termux" "${HOME}/.termux"
+    else
+        lf_config "bspwm" "${HOME}/.config/bspwm"
+        lf_config "i3" "${HOME}/.config/i3"
+        lf_config "polybar" "${HOME}/.config/polybar"
+        lf_config "sxhkd" "${HOME}/.config/sxhkd"
+        lf_config "alacritty" "${HOME}/.config/alacritty"
+        # lf_config "rofi" "${HOME}/.config/rofi"
+        lf_config "dunst" "${HOME}/.config/dunst"
+        lf_config "picom" "${HOME}/.config/picom"
+        lf_config "qutebrowser/config.py" "${HOME}/.config/qutebrowser/config.py"
+        lf_config "xresources" "${HOME}/.Xresources"
+    fi
+    lf_config "zsh/zshrc" "${HOME}/.config/zsh/.zshrc"
     lf_config "kak" "${HOME}/.config/kak"
-    lf_config "vifm" "${HOME}/.config/vifm"
-    lf_config "rofi" "${HOME}/.config/rofi"
-    lf_config "alacritty" "${HOME}/.config/alacritty"
-
-    # File links
-    lf_config "picom" "${HOME}/.config/picom"
-    lf_config "broot" "${HOME}/.config/broot"
-    lf_config "bash/bashrc" "${HOME}/.bashrc"
     lf_config "gitconfig" "${HOME}/.gitconfig"
     lf_config "gitignore" "${HOME}/.gitignore"
+    lf_config "broot" "${HOME}/.config/broot"
+    lf_config "bash/bashrc" "${HOME}/.bashrc"
     lf_config "inputrc" "${HOME}/.inputrc"
     lf_config "tmux.conf" "${HOME}/.tmux.conf"
-    lf_config "emacs/init.el" "${HOME}/.emacs.d/init.el"
-    lf_config "emacs/code" "${HOME}/.emacs.d/code"
-    lf_config "xresources" "${HOME}/.Xresources"
-    lf_config "taskwarrior/taskrc" "${HOME}/.taskrc"
-    lf_config "zsh/zshrc" "${HOME}/.config/zsh/.zshrc"
+    lf_config "taskwarrior" "${HOME}/.config/taskwarrior"
+    # lf_config "vifm" "${HOME}/.config/vifm"
 
     # Glob directories.
     # lf_glob "${DOTFILES}/config/vscode" "${HOME}/.config/Code/User"
     lf_glob "${DOTFILES}/config/nvim" "${HOME}/.config/nvim"
+    lf_glob "${DOTFILES}/config/emacs" "${HOME}/.emacs.d"
     lf_glob "${DOTFILES}/local/bin" "${HOME}/.local/bin"
     lf_glob "${DOTFILES}/local/lib" "${HOME}/.local/lib"
     lf_glob "${DOTFILES}/local/share" "${HOME}/.local/share"

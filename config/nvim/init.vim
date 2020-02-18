@@ -1,17 +1,6 @@
 " Vim / NeoVim Configuration
 " Mantainer: YohananDiamond
 
-" Welcome! ----------------------------------- {{{ 
-
-" Welcome to my vim config!
-
-" Special thanks to these people:
-" - Steve Losh, for that gigantic vimrc he made (I'll put the link here later);
-
-" Some reminders for myself:
-" To see all map modes, :h map-overview
-
-" }}}
 " Preparations ------------------------------- {{{
 
 let g:VIM_CONFIG = resolve(expand("<sfile>:p:h"))

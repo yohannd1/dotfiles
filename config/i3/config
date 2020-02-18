@@ -12,8 +12,8 @@ set $mod Mod4
 set $alt Mod1
 
 # Define names for default workspaces for which we configure key bindings later on.
-set $ws1   "1"
-set $ws2   "2"
+set $ws1   "1: cmd"
+set $ws2   "2: www"
 set $ws3   "3"
 set $ws4   "4"
 set $ws5   "5"
@@ -45,7 +45,7 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 
 # Kill focused window
-bindsym $mod+Shift+q kill
+bindsym $mod+q kill
 
 # Change focus and move windows
 bindsym $mod+h focus left
@@ -182,6 +182,9 @@ for_window [class="^.*"] border pixel 0
 
 # Temp Rules (for specific windows that I found problems)
 for_window [title="GLFW.jl"] floating enable
+
+assign [class="firefox"] $ws2
+assign [class="qutebrowser"] $ws2
 
 # }}}
 
