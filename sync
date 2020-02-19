@@ -204,15 +204,9 @@ setup_vimplugins() {
 
     if ! [ -r ~/.cache/vim-plugins ]; then
         mkdir -p ~/.cache/vim-plugins/
-        ln -s ~/.cache/vim-plugins "${DOTFILES}/config/nvim/bundle"
     fi
 
-    # ivp "delimitMate" "https://github.com/Raimondi/delimitMate"
-    # ivp "SimpylFold" "https://github.com/tmhedberg/SimpylFold"
-    # ivp "vim-markdown-folding" "https://github.com/masukomi/vim-markdown-folding"
-    # ivp "onedark.vim" "https://github.com/joshdick/onedark.vim"
-    # ivp "ion-vim@yohanandiamond" "https://gitlab.redox-os.org/YohananDiamond/ion-vim" # I'm already having this one locally.
-    # ivp "vim-clap" "https://github.com/liuchengxu/vim-clap"
+    ivp "ion-vim@yohanandiamond" "https://gitlab.redox-os.org/YohananDiamond/ion-vim"
     ivp "deoplete.nvim" "https://github.com/Shougo/deoplete.nvim"
     ivp "vim-toml" "https://github.com/cespare/vim-toml"
     ivp "vim-surround" "https://github.com/tpope/vim-surround"

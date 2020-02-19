@@ -218,8 +218,9 @@ fh() { # {{{
 } # }}}
 
 # Actual binding
-bindkey -s '^O' '^Ulfcd\n'
-bindkey -s '^R' '^Ufh\n'
+bindkey -s '^O' '\e0Di lfcd\n'
+bindkey -s '^R' '\e0Di fh\n'
+# bindkey -s '\ep' '\e0Di cd ..\n\e pi'
 
 # }}}
 # User functions {{{

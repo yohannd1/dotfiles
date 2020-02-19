@@ -1,5 +1,7 @@
 #!/bin/sh
+
 # Markdown Preview
+# Using bash instead of sh because I need the disown command
 
 [ -f "${1}" ] || exit 1
 [ $# = 1 ] || exit 1
@@ -20,4 +22,4 @@ FILE="/tmp/md-export$(echo "${TEMP}" | sed 's/\///g; s/tmp//g').html"
 mv "${TEMP}" "${FILE}"
 md-compile "${1}" > "${FILE}"
 
-"${BROWSER}" "${FILE}"
+open "${FILE}"
