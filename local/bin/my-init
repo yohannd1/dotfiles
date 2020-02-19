@@ -11,10 +11,11 @@ if [ "${1}" = 1 ]; then
     systemd-inhibit --what=handle-power-key sleep infinity &
 
     # Programs
-    picom -b &
     nm-applet &
+    picom -b &
     sxhkd &
+    dunst &
     ~/.local/bin/recurring-check &
 fi
 
-"${HOME}/.fehbg" &
+"${HOME}/.local/bin/fehbg" &
