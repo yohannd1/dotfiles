@@ -6,6 +6,7 @@
 let g:VIM_CONFIG = resolve(expand("<sfile>:p:h"))
 let $MYVIMRC = g:VIM_CONFIG . "/init.vim"
 let g:is_windows = isdirectory('C:\') ? 1 : 0
+let g:is_android = isdirectory('/sdcard') ? 1 : 0
 let g:at_home = isdirectory(expand('~/projects/dotfiles')) || $DOTFILES != ""
 
 " }}}
@@ -17,9 +18,6 @@ call add(g:pathogen_disabled, executable("nim") ? "" : "nvim-nim")
 call add(g:pathogen_disabled, executable("nnn") ? "" : "nnn.vim")
 
 call pathogen#infect()
-
-" }}}
-" Plugin Settings ---------------------------- {{{
 
 " Deoplete
 let g:deoplete#enable_at_startup = 1
@@ -355,10 +353,13 @@ vmap <Space> <Leader>
 set timeoutlen=1000 ttimeoutlen=0
 
 " Mouse Wheel Scrolling
-map <ScrollWheelUp> 15<C-Y>
-map <ScrollWheelDown> 15<C-E>
-map <RightMouse> <nop>
-map <LeftMouse> <nop>
+if is_android
+else
+    map <ScrollWheelUp> 15<C-Y>
+    map <ScrollWheelDown> 15<C-E>
+    map <RightMouse> <nop>
+    map <LeftMouse> <nop>
+endif
 
 " Copy to X register
 " How this works: the other keybindings usually work; but, if they don't exist or the timeout ends, <Leader> will translate to "+.
