@@ -241,9 +241,8 @@ wpp() {
         br "${dir}"
     }
 
-wpc() {
-    br "${DOTFILES}"
-}
+wpc() { br "${DOTFILES}"; }
+wpd() { br "${HOME}/persist/docs"; }
 
 # }}}
 # Sourcing {{{
@@ -289,6 +288,8 @@ alias cp-sync='cp -ur'
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
+
+alias vless="/bin/sh -c 'col -b | nvim -c PagerMode -'"
 
 # }}}
 # Settings {{{
