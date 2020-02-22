@@ -24,13 +24,17 @@ set $ws9   "9"
 set $ws10 "10"
 
 # Colors
-set $bg       #2e3440
-set $fg       #d8dee9
-set $bri_bg   #4c566a
-set $drk_fg   #d8dee9
-set $blue     #81a1c1
-set $red      #bf616a
-set $yellow   #ebcb8b
+set $c0 #282828
+set $c1 #9D0006
+set $c2 #79740E
+set $c3 #B57614
+set $c4 #076678
+set $c5 #8F3F71
+set $c6 #427B58
+set $c7 #FBF1C7
+
+# Bold colors
+set $bc0 #32302F
 
 # }}}
 # General {{{
@@ -141,16 +145,16 @@ bar {
     position top
 
     colors {
-        background  $bg
-        statusline  $fg
-        separator   $bri_bg
-        ################## Border  Back    Text
-        focused_workspace  $blue   $blue   $bg
-        active_workspace   $blue   $blue   $bg
-        inactive_workspace $bg     $bg     $fg
-        urgent_workspace   $red    $red    $bg
-        binding_mode       $yellow $yellow $bg
-        ##########################################
+        background  $c0
+        statusline  $c7
+        separator   $bc0
+
+        # Border, back, text
+        focused_workspace  $c3 $c3 $c0
+        active_workspace   $c3 $c3 $c0
+        inactive_workspace $c0 $c0 $c7
+        urgent_workspace   $c1 $c1 $c0
+        binding_mode       $c4 $c4 $c0
     }
 }
 
@@ -159,12 +163,12 @@ bar {
 
 # Window decoration colors
 ####################### Border  Backgr. Text    Indict.
-client.placeholder      $bri_bg $bri_bg $bg     $bri_bg
-client.background       $blue   $blue   $bg     $blue
-client.focused          $blue   $blue   $bg     $blue
-client.unfocused        $bg     $bg     $drk_fg $bg
-client.focused_inactive $drk_fg $drk_fg $bg     $drk_fg
-client.urgent           $red    $red    $bg     $red
+client.placeholder      $bc0 $bc0 $c0     $bc0
+client.background       $c3   $c3   $c0     $c3
+client.focused          $c3   $c3   $c0     $c3
+client.unfocused        $c0     $c0     $drk_fg $c0
+client.focused_inactive $drk_fg $drk_fg $c0     $drk_fg
+client.urgent           $red    $red    $c0     $red
 #######################################################
 
 # }}}

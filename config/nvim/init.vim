@@ -24,7 +24,7 @@ let g:deoplete#enable_at_startup = 1
 
 " Lightline
 let g:lightline = {
-      \ 'colorscheme': 'nord',
+      \ 'colorscheme': 'gruvbox',
       \ 'active': {
       \   'left': [[ 'mode', 'paste' ], [ 'readonly', 'filename' ]],
       \ },
@@ -187,6 +187,14 @@ augroup ft_nim
 augroup end
 
 " }}}
+" Common Lisp {{{
+
+augroup ft_lisp
+    au!
+    au FileType lisp RunfileCommand clisp "%"
+augroup end
+
+" }}}
 " Extras {{{
 au FileType xdefaults setlocal commentstring=\!%s
 " }}}
@@ -243,7 +251,7 @@ set listchars=tab:»\
 syntax on
 set background=dark
 silent! colorscheme desert
-silent! colorscheme nord
+silent! colorscheme gruvbox
 
 " Indentation
 set tabstop=8 " For tab characters
@@ -255,19 +263,6 @@ set foldtext=MyFoldText()
 
 let &t_ZH = "\<Esc>[3m"
 let &t_ZR = "\<Esc>[23m"
-
-" Enable RGB colors {{{
-" if exists('+termguicolors')
-"   let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
-"   let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
-"   set termguicolors
-" endif
-
-" if !has('nvim') && $TERM ==# 'screen-256color'
-"     let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-"     let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-" endif
-" }}}
 
 " }}}
 " Functions ---------------------------------- {{{

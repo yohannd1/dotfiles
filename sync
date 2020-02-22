@@ -230,6 +230,7 @@ setup_vimplugins() {
     ivp "nnn.vim" "https://github.com/mcchrish/nnn.vim"
     ivp "lexima.vim" "https://github.com/cohama/lexima.vim"
     ivp "emmet-vim" "https://github.com/mattn/emmet-vim"
+    ivp "gruvbox" "https://github.com/morhetz/gruvbox"
 
     lf "${HOME}/.cache/nvim-plugs" "${HOME}/.config/nvim/bundle"
 }
