@@ -1,4 +1,5 @@
 ;; -*- origami-fold-style: triple-braces -*-
+;; vim: foldmethod=marker
 ;;; YohananDiamond's barely alive init.el file.
 
 (defvar my/init-amount -1
@@ -88,7 +89,6 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
   :ensure t)
 ;; }}}
 ;; Rainbow Delimiters {{{
-;; TODO: Fix this (it doesn't seem to work at startup)
 (use-package rainbow-delimiters
   :ensure t
   :config
@@ -101,7 +101,6 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
   (global-auto-complete-mode))
 ;; }}}
 ;; Helm {{{
-;; TODO: Actually use this
 (use-package helm
   :ensure t)
 ;; }}}

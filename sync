@@ -123,6 +123,8 @@ link_files() {
     lf_config "inputrc" "${HOME}/.inputrc"
     lf_config "tmux.conf" "${HOME}/.tmux.conf"
     lf_config "taskwarrior" "${HOME}/.config/taskwarrior"
+    lf_config "xinitrc" "${HOME}/.xinitrc"
+    lf_config "xprofile" "${HOME}/.xprofile"
     # lf_config "vifm" "${HOME}/.config/vifm"
 
     # Glob directories.

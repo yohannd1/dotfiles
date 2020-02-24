@@ -244,6 +244,7 @@ wpp() {
 
 wpc() { br "${DOTFILES}"; }
 wpd() { br "${HOME}/persist/docs"; }
+gtd() { [ $# = 1 ] && grep "$(sed "s/_/:/g" <<<"TODO_")" $(find "${1}" -type f); }
 
 # }}}
 # Sourcing {{{

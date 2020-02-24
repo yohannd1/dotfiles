@@ -5,7 +5,7 @@
 # Currently only works properly under Xorg + Systemd + i3
 
 # Settings
-I3LOCK_COLOR="555555"
+I3LOCK_COLOR="282828"
 OPTIONS=$'lock\nlogout\nsuspend\nhibernate\nreboot\nshutdown'
 
 # Check if all dependencies are available

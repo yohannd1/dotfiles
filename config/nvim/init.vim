@@ -43,8 +43,8 @@ let g:vim_markdown_new_list_item_indent = 0
 let g:vim_markdown_auto_insert_bullets = 0
 
 " CtrlP
-let g:ctrlp_map = '<C-p>'
-let g:ctrlp_cmd = 'CtrlPBuffer'
+let g:ctrlp_map = '<C-o>'
+let g:ctrlp_cmd = 'CtrlP'
 
 " Emmet
 let g:user_emmet_leader_key='<C-c>'
@@ -416,6 +416,9 @@ inoremap <C-g>` ```<CR>```<Up><End><CR>
 
 " NnnPicker
 nnoremap <leader>n :NnnPicker '%:p:h'<CR>
+
+" CtrlP
+nnoremap <silent> <C-p> :CtrlPBuffer<CR>
 
 " }}}
 " Quick Editing ------------------------------ {{{

@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# This file is ran when starting an X server.
+# [Partially stolen from Lukesmithxyz/voidrice]
+
+# Source xprofile,
+[ -f ~/.xprofile ] && . ~/.xprofile
+
+# Keymap settings
+setxkbmap -layout br
+
+case "${WM}" in
+    i3)
+        exec i3
+        ;;
+    *)
+        echo "Window manager '${WM}': not yet supported."
+        exit 1
+        ;;
+esac
