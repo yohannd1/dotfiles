@@ -39,10 +39,10 @@ def read_file(path: str):
     return contents
 
 def get_battery_level():
-    return read_file("/sys/class/power_supply/BAT0/capacity")
+    return int(read_file("/sys/class/power_supply/BAT0/capacity"))
 
 def send_notify(message: str, level: str = "normal"):
-    subprocess.Pipe(["notify-send", message, "-u", level])
+    subprocess.Popen(["notify-send", message, "-u", level])
 
 # Main loop
 notify = None
@@ -51,12 +51,12 @@ while True:
 
     if (notify != "LOW") and (battery_level <= 20):
         notify = "LOW"
-        send_notify(f"Battery is low: {battery_level}", "critical")
+        send_notify(f"Battery is low! ({battery_level:02d}%)", "critical")
     if (notify != "HIGH") and (battery_level >= 90):
         notify = "HIGH"
-        send_notify(f"Battery is close to full: {battery_level}", "low")
+        send_notify(f"Battery is close to full! ({battery_level:02d}%)", "low")
     if (notify != "MAX") and (battery_level == 100):
         notify = "MAX"
-        send_notify(f"Battery is full: {battery_level}")
+        send_notify(f"Battery is full! ({battery_level:02d}%)")
 
     time.sleep(60)

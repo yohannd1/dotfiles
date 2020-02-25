@@ -195,6 +195,14 @@ augroup ft_lisp
 augroup end
 
 " }}}
+" Haskell {{{
+
+augroup ft_haskell
+    au!
+    au FileType haskell setlocal tabstop=2 shiftwidth=2
+augroup end
+
+" }}}
 " Extras {{{
 au FileType xdefaults setlocal commentstring=\!%s
 " }}}
