@@ -2,10 +2,14 @@
 
 # Commands to run on the start of the startup.
 
+# Environent variable
+cfg-export
+
 # Daemons & applets
 picom -b & # Compositor
 dunst & # Notification daemon
 nm-applet & # Network manager on tray
+blueman-applet & # Bluetooth
 sxhkd & # Simple X Hotkey Daemon
 
 # Configuration
@@ -13,7 +17,9 @@ systemd-inhibit --what=handle-power-key sleep infinity & # Disable power button
 xset r rate 400 35 & # Speed up xrate
 xinput set-prop 16 325 1 & # Touchpad: tap to click
 xinput set-prop 16 307 1 & # Touchpad: natural scrolling
+setxkbmap -layout br & # Keyboard layout
+
 
 # Scripts
 setbg & # Set background
-# TODO: recurring check
+cfg-recur & # Battery check & etc.

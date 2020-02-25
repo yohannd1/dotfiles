@@ -175,7 +175,6 @@ client.urgent           $red    $red    $c0     $red
 # General Options & Startup Commands {{{
 
 focus_follows_mouse no
-exec --no-startup-id ~/.local/bin/my-init 1
 exec_always --no-startup-id ~/.local/bin/my-init
 
 # }}}

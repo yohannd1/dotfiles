@@ -6,15 +6,14 @@
 # Source xprofile,
 [ -f ~/.xprofile ] && . ~/.xprofile
 
-# Keymap settings
-setxkbmap -layout br
-
 case "${WM}" in
     i3)
         exec i3
         ;;
     *)
         echo "Window manager '${WM}': not yet supported."
-        exit 1
+        type i3 2>/dev/null >/dev/null &&
+            i3 ||
+            exit $?
         ;;
 esac

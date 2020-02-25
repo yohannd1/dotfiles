@@ -1,0 +1,62 @@
+#!/usr/bin/env python3
+# vim: foldmethod=marker
+
+# Some checks to run in the background.
+# "Why is this in python?" -> because it looked trash in sh syntax. :v
+
+# Old code {{{
+##!/bin/sh
+
+## Initial variables
+#notified_low=
+#notified_full=
+
+#while sleep 30; do
+#    # Supports only one battery, for now.
+#    battery_level="$(cat /sys/class/power_supply/BAT0/capacity)"
+#    if [ "${battery_level}" = 20 ] || [ "${battery_level}" -lt 20 ]; then
+#        [ -z "${notified_low}" ] && notify-send -u critical "Battery low! :: ${battery_level}%"
+#        notified_low=done
+#    else
+#        notified_low=
+#        if [ "${battery_level}" = 90 ] || [ "${battery_level}" -gt 90 ]; then
+#            [ -z "${notified_full}" ] && notify-send "Battery is almost charged! :: ${battery_level}%"
+#            notified_full=done
+#        else
+#            notified_full=
+#        fi
+#    fi
+#done
+# }}}
+
+import subprocess
+import time
+
+def read_file(path: str):
+    contents = None
+    with open(path, "r") as f:
+        contents = f.read()
+    return contents
+
+def get_battery_level():
+    return read_file("/sys/class/power_supply/BAT0/capacity")
+
+def send_notify(message: str, level: str = "normal"):
+    subprocess.Pipe(["notify-send", message, "-u", level])
+
+# Main loop
+notify = None
+while True:
+    battery_level = get_battery_level()
+
+    if (notify != "LOW") and (battery_level <= 20):
+        notify = "LOW"
+        send_notify(f"Battery is low: {battery_level}", "critical")
+    if (notify != "HIGH") and (battery_level >= 90):
+        notify = "HIGH"
+        send_notify(f"Battery is close to full: {battery_level}", "low")
+    if (notify != "MAX") and (battery_level == 100):
+        notify = "MAX"
+        send_notify(f"Battery is full: {battery_level}")
+
+    time.sleep(60)

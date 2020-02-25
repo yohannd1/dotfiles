@@ -85,7 +85,7 @@ augroup end
 
 augroup ft_rust
     au!
-    au FileType rust RunfileCommand RUST_BACKTRACE=1 cargo run "%"
+    au FileType rust RunfileCommand cargo run "%"
     au FileType rust set foldmethod=syntax
 augroup end 
 
