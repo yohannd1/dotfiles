@@ -1,0 +1,7 @@
+# vim: ft=sh
+
+# Shell Profile
+# Is ran at the start of the system.
+
+# Load environment variables.
+source ~/.local/lib/cfg-export.sh

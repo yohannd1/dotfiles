@@ -16,6 +16,7 @@ export CARGO_HOME="${HOME}/.cache/cargo"
 export RUSTUP_HOME="${HOME}/.cache/rustup"
 export ZDOTDIR="${HOME}/.config/zsh"
 export TASKRC="${HOME}/.config/taskwarrior/taskrc"
+export WINEPREFIX="${HOME}/.cache/wine"
 
 export FZF_DEFAULT_OPTS='--color=16 --height 60% --layout=reverse --border'
 export BAT_THEME="base16"
