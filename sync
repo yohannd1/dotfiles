@@ -112,6 +112,11 @@ link_files() {
         lf_config "picom" "${HOME}/.config/picom"
         lf_config "qutebrowser/config.py" "${HOME}/.config/qutebrowser/config.py"
         lf_config "xresources" "${HOME}/.Xresources"
+        lf_config "taskwarrior" "${HOME}/.config/taskwarrior"
+        lf_config "xinitrc" "${HOME}/.xinitrc"
+        lf_config "xprofile" "${HOME}/.xprofile"
+        lf_config "profile" "${HOME}/.profile"
+        lf_config "profile" "${HOME}/.zprofile"
     fi
     lf_config "dircolors" "${HOME}/.config/dircolors"
     lf_config "zsh/zshrc" "${HOME}/.config/zsh/.zshrc"
@@ -122,11 +127,6 @@ link_files() {
     lf_config "bash/bashrc" "${HOME}/.bashrc"
     lf_config "inputrc" "${HOME}/.inputrc"
     lf_config "tmux.conf" "${HOME}/.tmux.conf"
-    lf_config "taskwarrior" "${HOME}/.config/taskwarrior"
-    lf_config "xinitrc" "${HOME}/.xinitrc"
-    lf_config "xprofile" "${HOME}/.xprofile"
-    lf_config "profile" "${HOME}/.profile"
-    lf_config "profile" "${HOME}/.zprofile"
     # lf_config "vifm" "${HOME}/.config/vifm"
 
     # Glob directories.
@@ -235,6 +235,7 @@ setup_vimplugins() {
     ivp "lexima.vim" "https://github.com/cohama/lexima.vim"
     ivp "emmet-vim" "https://github.com/mattn/emmet-vim"
     ivp "gruvbox" "https://github.com/morhetz/gruvbox"
+    ivp "vim-racket" "https://github.com/wlangstroth/vim-racket"
 
     lf "${HOME}/.cache/nvim-plugs" "${HOME}/.config/nvim/bundle"
 }

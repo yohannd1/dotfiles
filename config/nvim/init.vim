@@ -203,6 +203,14 @@ augroup ft_haskell
 augroup end
 
 " }}}
+" Racket {{{
+
+augroup ft_racket
+    au!
+    au FileType racket RunfileCommand racket "%"
+augroup end
+
+" }}}
 " Extras {{{
 au FileType xdefaults setlocal commentstring=\!%s
 " }}}
