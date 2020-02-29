@@ -25,9 +25,11 @@ super + shift + o
 
 # Print Screen
 Print
-    flameshot screen -c
+    flamedash fullc
 super + Print
-    flameshot gui
+    flamedash gui
+ctrl + Print
+    flamedash full
 
 # Restart Compton
 super + alt + c

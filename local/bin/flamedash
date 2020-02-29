@@ -1,0 +1,32 @@
+#!/bin/sh
+
+[ $# -gt 1 ] && exit 1
+
+if ! type flameshot >/dev/null 2>/dev/null; then
+    notify-send "[flamedash]: Command \`flameshot\` not found. Please make sure it is on your PATH."
+fi
+
+SC_FOLDER="${HOME}/photos/screenshots/$(date +%Y-%m)"
+
+if ! mkdir -p "${SC_FOLDER}"; then
+    notify-send "[flamedash]: Could not make directory \"${SC_FOLDER}\"."
+    exit 1
+fi
+
+case "${1}" in
+    "")
+        flameshot gui -p "${SC_FOLDER}"
+        ;;
+    gui)
+        flameshot gui -p "${SC_FOLDER}"
+        ;;
+    full)
+        flameshot full -p "${SC_FOLDER}"
+        ;;
+    fullc)
+        flameshot full -c
+        ;;
+    *)
+        echo "Invalid command."
+        ;;
+esac

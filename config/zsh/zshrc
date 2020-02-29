@@ -73,6 +73,28 @@ function random-string { # {{{
     cat /dev/urandom | tr -dc 'a-z0-9' | fold -w ${1:-8} | head -n 1
 } # }}}
 
+## Sets up the tty coloring.
+function setup-tty { # {{{
+    echo -en "\e]P0282828" # Black
+    echo -en "\e]P19D0006" # Red
+    echo -en "\e]P279740E" # Green
+    echo -en "\e]P3B57614" # Yellow
+    echo -en "\e]P4076678" # Blue
+    echo -en "\e]P58F3F71" # Magenta
+    echo -en "\e]P6427B58" # Cyan
+    echo -en "\e]P7FBF1C7" # White
+    echo -en "\e]P832302F" # Bright Black
+    echo -en "\e]P9FB4934" # Bright Red
+    echo -en "\e]PAB8BB26" # Bright Green
+    echo -en "\e]PBFABD2F" # Bright Yellow
+    echo -en "\e]PC83A598" # Bright Blue
+    echo -en "\e]PDD3869B" # Bright Magenta
+    echo -en "\e]PE8EC07C" # Bright Cyan
+    echo -en "\e]PFFBF1C7" # "Bright White"
+    echo -en "\e[?16;2;112c" # Change cursor to block
+    clear # Redraw screen
+} # }}}
+
 ## Check if shell is interactive
 is_interactive() { [[ $- == *i* ]]; }
 is_android() { [ "$(uname -o)" = Android ]; }
@@ -97,6 +119,9 @@ if is_interactive; then
     if [[ -x /usr/bin/keychain ]]; then
         eval "$(keychain --eval --ignore-missing ~/.ssh/id_rsa 2>/dev/null)"
     fi
+
+    # tty coloring
+    ! is_display && ! is_android && setup-tty
 fi
 
 if [ -z "${SHELL_FIRST}" ]; then

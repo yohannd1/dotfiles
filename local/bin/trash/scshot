@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if ! type scrot >/dev/null 2>/dev/null; then
+    echo "Command \`scrot\` not found. Please make sure it is on your PATH."
+fi
+
+SCROT_FOLDER="${HOME}/photos/screenshots/$(date +%Y-%m)"
+
+if mkdir -p "${SCROT_FOLDER}" && scrot -s "${SCROT_FOLDER}/scrot-%Y-%m-%d-%T-null.png"; then
+    notify-send "Screenshot taken."
+else
+    notify-send "Screenshot not taken." -u "critical"
+fi
