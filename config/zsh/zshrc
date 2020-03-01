@@ -107,6 +107,7 @@ path-maybe "${HOME}/.local/bin"
 path-maybe "${HOME}/.cache/go"
 path-maybe "${CARGO_HOME}/bin"
 path-maybe "/opt/bin"
+path-maybe "$(ruby -e "puts Gem.user_dir")/bin"
 
 source-maybe "${HOME}/.local/lib/cfg-export.sh"
 

@@ -187,6 +187,14 @@ augroup ft_nim
 augroup end
 
 " }}}
+" Ruby {{{
+
+augroup ft_ruby
+    au!
+    au FileType ruby RunfileCommand ruby "%"
+augroup end
+
+" }}}
 " Common Lisp {{{
 
 augroup ft_lisp
