@@ -36,7 +36,7 @@ let g:nnn#layout = { 'left': '~20%' }
 
 " vim-markdown
 let g:vim_markdown_frontmatter = 1
-let g:vim_markdown_folding_style_pythonic = 1
+let g:vim_markdown_folding_style_pythonic = 0
 let g:vim_markdown_override_foldtext = 0
 let g:vim_markdown_no_extensions_in_markdown = 1
 let g:vim_markdown_new_list_item_indent = 0
@@ -163,7 +163,7 @@ augroup end
 
 augroup ft_markdown
     au!
-    au FileType markdown setlocal textwidth=72
+    au FileType markdown setlocal textwidth=72 nofoldenable
     au FileType markdown command! -buffer Compile call SpawnTerminal("md-compile " . expand("%") . " > ~/" . expand("%:t:r") . "." . strftime("%Y-%m-%d") . ".html")
     au FileType markdown RunfileCommand "md-preview" "%"
     au FileType markdown nnoremap <silent> <Leader>df :TableFormat<CR>
