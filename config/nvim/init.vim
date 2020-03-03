@@ -290,7 +290,7 @@ let &t_ZR = "\<Esc>[23m"
 
 augroup meta_terminal
     au!
-    au TermOpen * setlocal nonumber norelativenumber nocursorline
+    au TermOpen * setlocal norelativenumber nocursorline
 augroup end
 
 " }}}
