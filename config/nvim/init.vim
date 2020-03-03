@@ -288,6 +288,11 @@ set foldtext=MyFoldText()
 let &t_ZH = "\<Esc>[3m"
 let &t_ZR = "\<Esc>[23m"
 
+augroup meta_terminal
+    au!
+    au TermOpen * setlocal nonumber norelativenumber nocursorline
+augroup end
+
 " }}}
 " Functions ---------------------------------- {{{
 
@@ -403,7 +408,7 @@ nnoremap <silent> <S-Tab> zm
 
 " Escape terminal in nvim
 tnoremap <silent> <Esc> <C-\><C-n>
-tnoremap <silent> <Leader><Esc> <Esc>
+tnoremap <silent> <C-w><Esc> <Esc>
 tnoremap <silent> <C-w>h <C-\><C-n><C-w>h
 tnoremap <silent> <C-w>j <C-\><C-n><C-w>j
 tnoremap <silent> <C-w>k <C-\><C-n><C-w>k
@@ -443,6 +448,9 @@ nnoremap <leader>n :NnnPicker '%:p:h'<CR>
 
 " CtrlP
 nnoremap <silent> <C-p> :CtrlPBuffer<CR>
+
+" Terminal Spawner
+nnoremap <leader>K :call SpawnTerminal("")<CR>
 
 " }}}
 " Quick Editing ------------------------------ {{{

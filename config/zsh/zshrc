@@ -110,6 +110,7 @@ path-maybe "/opt/bin"
 path-maybe "$(ruby -e "puts Gem.user_dir")/bin"
 
 source-maybe "${HOME}/.local/lib/cfg-export.sh"
+source-maybe "${HOME}/persist/local/share/zshrc.personal"
 
 # }}}
 # First Steps {{{
