@@ -242,7 +242,7 @@ wpp() {
         dir="$(find . -maxdepth 1 -type d | sed 's/^.\///g' | grep '[^.]' | fzf)" &&
         cd "${dir}" &&
         br
-    }
+}
 
 wpc() { br "${DOTFILES}"; }
 wpd() { br "${HOME}/persist/docs"; }
