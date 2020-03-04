@@ -1,0 +1,48 @@
+#!/bin/sh
+
+show_help() {
+    echo "<Help not implemented yet>"
+    exit 1
+}
+
+case $# in
+    0)
+        repo_dir="${PWD}"
+        ;;
+    1)
+        repo_dir="${1}"
+        ;;
+    *)
+        echo "$0: invalid amount of args."
+        show_help
+        ;;
+esac
+
+if (cd "${repo_dir}" && git status -sb); then
+    echo "What do you want to do?"
+    while [ -z "${EXIT}" ]; do
+        echo "Commands: [d]iff, [a]dd-commit, []exit"
+        echo -n "=> "
+        read input
+        case "${input}" in
+            d)
+                git add .
+                git diff HEAD
+                ;;
+            a)
+                git add . &&
+                    if git commit; then
+                        EXIT=0
+                    else
+                        git reset .
+                    fi
+                ;;
+            "") EXIT=1 ;;
+            "") clear ;;
+            *) echo "Invalid command." ;;
+        esac
+    done
+    exit "${EXIT}"
+else
+    exit 1
+fi

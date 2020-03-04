@@ -223,7 +223,6 @@ fh() { # {{{
 # Actual binding
 bindkey -s '^O' '\e0Di lfcd\n'
 bindkey -s '^R' '\e0Di fh\n'
-# bindkey -s '\ep' '\e0Di cd ..\n\e pi'
 
 # }}}
 # User functions {{{
@@ -275,6 +274,7 @@ alias jl='julia'
 alias r='ranger'
 alias nm='neomutt'
 alias wk='br ~/wiki'
+alias G='git-check'
 
 alias vim='nvim' vi='nvim'
 alias emacs='emacs-plus emacs'
