@@ -21,7 +21,7 @@ esac
 if (cd "${repo_dir}" && git status -sb); then
     echo "What do you want to do?"
     while [ -z "${EXIT}" ]; do
-        echo "Commands: [d]iff, [a]dd-commit, []exit"
+        echo "Commands: [d]iff, [a]dd-commit, [p]ull, pu[s]h, [f]etch, []exit"
         echo -n "=> "
         read input
         case "${input}" in
@@ -31,12 +31,12 @@ if (cd "${repo_dir}" && git status -sb); then
                 ;;
             a)
                 git add . &&
-                    if git commit; then
-                        EXIT=0
-                    else
-                        git reset .
-                    fi
+                    git commit ||
+                    git reset .
                 ;;
+            p) git pull ;;
+            s) git push ;;
+            f) git fetch ;;
             "") EXIT=1 ;;
             "") clear ;;
             *) echo "Invalid command." ;;
