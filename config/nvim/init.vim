@@ -56,7 +56,7 @@ if has('gui_running')
     set guioptions=agit
 
     let &guifont = is_windows
-        \ ? 'Fixedsys 9,Ubuntu Mono 12,Fira Code 10.5,Cascadia Code 10.5,Consolas 12,Monospace 12'
+        \ ? 'Fixedys:h9'
         \ : 'Cascadia Code 10.5,Fira Code 10.5,Ubuntu Mono 12,Consolas 12,Monospace 12'
 endif
 
@@ -163,7 +163,7 @@ augroup end
 
 augroup ft_markdown
     au!
-    au FileType markdown setlocal textwidth=72 nofoldenable
+    au FileType markdown setlocal textwidth=72 nofoldenable noautoindent
     au FileType markdown command! -buffer Compile call SpawnTerminal("md-compile " . expand("%") . " > ~/" . expand("%:t:r") . "." . strftime("%Y-%m-%d") . ".html")
     au FileType markdown RunfileCommand "md-preview" "%"
     au FileType markdown nnoremap <silent> <Leader>df :TableFormat<CR>
@@ -220,7 +220,9 @@ augroup end
 
 " }}}
 " Extras {{{
+
 au FileType xdefaults setlocal commentstring=\!%s
+
 " }}}
 
 " }}}
@@ -455,9 +457,10 @@ nnoremap <leader>K :call SpawnTerminal("")<CR>
 " }}}
 " Quick Editing ------------------------------ {{{
 
+call AddBookmark('v', '$MYVIMRC')
 if at_home
-    call AddBookmark('v', '$MYVIMRC')
     call AddBookmark('s', '~/projects/dotfiles/sync')
 endif
 
 " }}}
+" TODO: RunfileCommand for Windows vs Linux, and on the windows one choose a shell (batch or PowerShell), load the PATH, and finally runs the command.
