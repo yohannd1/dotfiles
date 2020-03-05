@@ -236,6 +236,7 @@ setup_vimplugins() {
     ivp "emmet-vim" "https://github.com/mattn/emmet-vim"
     ivp "gruvbox" "https://github.com/morhetz/gruvbox"
     ivp "vim-racket" "https://github.com/wlangstroth/vim-racket"
+    ivp "vim-auto-popmenu" "https://github.com/skywind3000/vim-auto-popmenu"
 
     lf "${HOME}/.cache/nvim-plugs" "${HOME}/.config/nvim/bundle"
 }

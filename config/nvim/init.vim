@@ -13,7 +13,7 @@ let g:at_home = isdirectory(expand('~/projects/dotfiles')) || $DOTFILES != ""
 " Plugin Setup ------------------------------- {{{
 
 let g:pathogen_disabled = []
-call add(g:pathogen_disabled, has("python3") ? "VimCompletesMe" : "deoplete.nvim")
+call add(g:pathogen_disabled, has("python3") ? "vim-auto-popmenu" : "deoplete.nvim")
 call add(g:pathogen_disabled, executable("nim") ? "" : "nvim-nim")
 call add(g:pathogen_disabled, executable("nnn") ? "" : "nnn.vim")
 
@@ -21,6 +21,9 @@ call pathogen#infect()
 
 " Deoplete
 let g:deoplete#enable_at_startup = 1
+
+" vim-auto-popmenu
+let g:apc_enable_ft = {'*': 1}
 
 " Lightline
 let g:lightline = {

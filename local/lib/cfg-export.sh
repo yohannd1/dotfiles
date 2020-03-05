@@ -11,6 +11,8 @@ export PAGER="less"
 export MANPAGER="/bin/sh -c 'col -b | nvim -c PagerMode -'"
 
 export XDG_CONFIG_HOME="${HOME}/.config"
+export XDG_DOWNLOAD_DIR="$HOME/inbox"
+
 export GOPATH="${HOME}/.cache/go"
 export CARGO_HOME="${HOME}/.cache/cargo"
 export RUSTUP_HOME="${HOME}/.cache/rustup"
