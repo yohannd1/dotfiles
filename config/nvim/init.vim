@@ -15,7 +15,6 @@ let g:at_home = isdirectory(expand('~/projects/dotfiles')) || $DOTFILES != ""
 let g:pathogen_disabled = []
 call add(g:pathogen_disabled, has("python3") ? "vim-auto-popmenu" : "deoplete.nvim")
 call add(g:pathogen_disabled, executable("nim") ? "" : "nvim-nim")
-call add(g:pathogen_disabled, executable("nnn") ? "" : "nnn.vim")
 
 call pathogen#infect()
 
@@ -32,10 +31,6 @@ let g:lightline = {
       \   'left': [[ 'mode', 'paste' ], [ 'readonly', 'filename' ]],
       \ },
   \ }
-
-" nnn.vim
-let g:nnn#set_default_mappings = 0
-let g:nnn#layout = { 'left': '~20%' }
 
 " vim-markdown
 let g:vim_markdown_frontmatter = 1

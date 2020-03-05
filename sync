@@ -231,7 +231,6 @@ setup_vimplugins() {
     ivp "nvim-nim" "https://github.com/baabelfish/nvim-nim"
     ivp "tabular" "https://github.com/godlygeek/tabular"
     ivp "vim-markdown" "https://github.com/plasticboy/vim-markdown"
-    ivp "nnn.vim" "https://github.com/mcchrish/nnn.vim"
     ivp "lexima.vim" "https://github.com/cohama/lexima.vim"
     ivp "emmet-vim" "https://github.com/mattn/emmet-vim"
     ivp "gruvbox" "https://github.com/morhetz/gruvbox"
