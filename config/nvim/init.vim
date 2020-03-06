@@ -235,10 +235,6 @@ command! -nargs=1 RfileCmdWin let b:runfile_command_win = eval(<f-args>)
 command! -nargs=* EditNote call EditNote(join([<f-args>], ' '))
 command! -nargs=0 RunFile call RunFile()
 command! -nargs=0 PagerMode call PagerMode()
-" Old {{{
-" command! -nargs=* RunfileCommand let b:runfile_command = join([<f-args>], ' ') " Remember to quote '%' for better performance when using this.
-" command! -nargs=* RunfileCommandWin let b:runfile_command_win = join([<f-args>], ' ') " Remember to quote '%' for better performance when using this.
-" }}}
 
 cnoreabbrev rl Reload
 
@@ -322,10 +318,6 @@ function! RunFile() " {{{
         endif
     endif
 endfunction " }}}
-function! OpenWORD() " {{{
-    let l:WORD = expand("<cWORD>")
-    exec "!xdg-open " . l:WORD . " &"
-endfunction " }}}
 function! MyFoldText() " {{{
     let l:tab_char = strpart(' ', shiftwidth())
     let l:line_contents = substitute(getline(v:foldstart), '\t', l:tab_char, 'g')
@@ -340,20 +332,6 @@ function! MyFoldText() " {{{
     let l:void_char = '·'
 
     return l:line_contents . repeat(l:void_char, l:void_size) . l:folded_lines_number . 'l   '
-endfunction " }}}
-function! EditNote(filename) " {{{
-    let l:new_filename = substitute(a:filename, ' ', '-', 'g')
-    let l:new_filename = substitute(l:new_filename, '.*', '\L&', 'g')
-    let l:new_filename = substitute(l:new_filename, '\v(!|/)', '', 'g')
-    if isdirectory(expand("~/projects/personal/wiki"))
-        if (l:new_filename != "")
-            exec "e ~/projects/personal/wiki/" . l:new_filename . ".md"
-        else
-            echo "... No arguments provided."
-        endif
-    else
-        echo "Not found: '~/projects/personal/wiki'. Please create said directory."
-    endif
 endfunction " }}}
 function! AddBookmark(letter, path) " {{{
     execute 'nnoremap <silent> <Leader>e' . a:letter . ' :e ' . a:path . '<CR>'
@@ -472,5 +450,30 @@ call AddBookmark('v', '$MYVIMRC')
 if at_home
     call AddBookmark('s', '~/projects/dotfiles/sync')
 endif
+
+" }}}
+" Old Code ----------------------------------- {{{
+
+" function! EditNote(filename) " {{{
+"     let l:new_filename = substitute(a:filename, ' ', '-', 'g')
+"     let l:new_filename = substitute(l:new_filename, '.*', '\L&', 'g')
+"     let l:new_filename = substitute(l:new_filename, '\v(!|/)', '', 'g')
+"     if isdirectory(expand("~/projects/personal/wiki"))
+"         if (l:new_filename != "")
+"             exec "e ~/projects/personal/wiki/" . l:new_filename . ".md"
+"         else
+"             echo "... No arguments provided."
+"         endif
+"     else
+"         echo "Not found: '~/projects/personal/wiki'. Please create said directory."
+"     endif
+" endfunction " }}}
+" function! OpenWORD() " {{{
+"     let l:WORD = expand("<cWORD>")
+"     exec "!xdg-open " . l:WORD . " &"
+" endfunction " }}}
+
+" command! -nargs=* RunfileCommand let b:runfile_command = join([<f-args>], ' ') " Remember to quote '%' for better performance when using this.
+" command! -nargs=* RunfileCommandWin let b:runfile_command_win = join([<f-args>], ' ') " Remember to quote '%' for better performance when using this.
 
 " }}}
