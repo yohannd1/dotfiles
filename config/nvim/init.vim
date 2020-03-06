@@ -83,7 +83,7 @@ augroup end
 
 augroup ft_rust
     au!
-    au FileType rust RunfileCommand cargo run "%"
+    au FileType rust RfileCmd "cargo run"
     au FileType rust set foldmethod=syntax
 augroup end 
 
@@ -93,7 +93,7 @@ augroup end
 augroup ft_julia
     au!
     au BufNewFile,BufRead,BufEnter *.jl set filetype=julia
-    au FileType julia RunfileCommand julia "%"
+    au FileType julia RfileCmd "julia '%'"
 augroup end 
 
 " }}}
@@ -102,7 +102,7 @@ augroup end
 augroup ft_clojure
     au!
     au BufNewFile,BufRead,BufEnter *.clj set filetype=clojure
-    au FileType clojure RunfileCommand clojure "%"
+    au FileType clojure RfileCmd "clojure '%'"
 augroup end
 
 " }}}
@@ -110,7 +110,7 @@ augroup end
 
 augroup ft_vim
     au!
-    au FileType vim RunfileCommand nvim -u "%"
+    au FileType vim RfileCmd "nvim -u '%'"
     au FileType vim setlocal foldmethod=marker foldmarker={{{,}}}
 augroup end
 
@@ -119,7 +119,7 @@ augroup end
 
 augroup ft_python
     au!
-    au FileType python RunfileCommand python3 "%"
+    au FileType python RfileCmd "python3 '%'"
 augroup end
 
 " }}}
@@ -127,7 +127,7 @@ augroup end
 
 augroup ft_hy
     au!
-    au FileType hy RunfileCommand hy "%"
+    au FileType hy RfileCmd "hy '%'"
     au FileType hy setlocal tabstop=2 shiftwidth=2
 augroup end
 
@@ -138,7 +138,7 @@ augroup ft_fsharp
     au!
     " To be honest I wanted to compile to the .exe and run it... sadly I can't
     " without writing some substitutions script and I'm too lazy.
-    au FileType fsharp RunfileCommand fsharpi "%"
+    au FileType fsharp RfileCmd "fsharpi '%'"
 augroup end
 
 " }}}
@@ -146,7 +146,7 @@ augroup end
 
 augroup ft_lua
     au!
-    au FileType lua RunfileCommand lua "%"
+    au FileType lua RfileCmd "lua '%'"
 augroup end
 
 " }}}
@@ -163,7 +163,7 @@ augroup ft_markdown
     au!
     au FileType markdown setlocal textwidth=72 nofoldenable noautoindent
     au FileType markdown command! -buffer Compile call SpawnTerminal("md-compile " . expand("%") . " > ~/" . expand("%:t:r") . "." . strftime("%Y-%m-%d") . ".html")
-    au FileType markdown RunfileCommand "md-preview" "%"
+    au FileType markdown RfileCmd "md-preview '%'"
     au FileType markdown nnoremap <silent> <Leader>df :TableFormat<CR>
 augroup end
 
@@ -181,7 +181,7 @@ augroup end
 augroup ft_nim
     au!
     au Filetype nim setlocal shiftwidth=2 softtabstop=2
-    au FileType nim RunfileCommand nim c -r "%"
+    au FileType nim RfileCmd "nim c -r '%'"
 augroup end
 
 " }}}
@@ -189,7 +189,7 @@ augroup end
 
 augroup ft_ruby
     au!
-    au FileType ruby RunfileCommand ruby "%"
+    au FileType ruby RfileCmd "ruby '%'"
 augroup end
 
 " }}}
@@ -197,7 +197,7 @@ augroup end
 
 augroup ft_lisp
     au!
-    au FileType lisp RunfileCommand clisp "%"
+    au FileType lisp RfileCmd "clisp '%'"
 augroup end
 
 " }}}
@@ -213,7 +213,7 @@ augroup end
 
 augroup ft_racket
     au!
-    au FileType racket RunfileCommand racket "%"
+    au FileType racket RfileCmd "racket '%'"
 augroup end
 
 " }}}
@@ -230,10 +230,15 @@ command! -nargs=0 Reload source $MYVIMRC
 command! -nargs=0 WhitespaceMode set list!
 command! -nargs=0 WrapMode set wrap!
 command! -nargs=0 OpenWORD call OpenWORD()
-command! -nargs=* RunfileCommand let b:runfile_command = join([<f-args>], ' ') " Remember to quote '%' for better performance when using this.
+command! -nargs=1 RfileCmd let b:runfile_command = eval(<f-args>)
+command! -nargs=1 RfileCmdWin let b:runfile_command_win = eval(<f-args>)
 command! -nargs=* EditNote call EditNote(join([<f-args>], ' '))
 command! -nargs=0 RunFile call RunFile()
 command! -nargs=0 PagerMode call PagerMode()
+" Old {{{
+" command! -nargs=* RunfileCommand let b:runfile_command = join([<f-args>], ' ') " Remember to quote '%' for better performance when using this.
+" command! -nargs=* RunfileCommandWin let b:runfile_command_win = join([<f-args>], ' ') " Remember to quote '%' for better performance when using this.
+" }}}
 
 cnoreabbrev rl Reload
 
@@ -303,10 +308,18 @@ function! SpawnTerminal(command) " {{{
     normal! i
 endfunction " }}}
 function! RunFile() " {{{
-    if !exists("b:runfile_command")
-        echo "[RunFile()]: error: `b:runfile_command` not defined."
+    if g:is_windows
+        if !exists("b:runfile_command_win")
+            echo "[RunFile()]: `b:runfile_command_win` not defined."
+        else
+            call SpawnTerminal(b:runfile_command_win)
+        endif
     else
-        call SpawnTerminal(b:runfile_command)
+        if !exists("b:runfile_command")
+            echo "[RunFile()]: `b:runfile_command` not defined."
+        else
+            call SpawnTerminal(b:runfile_command)
+        endif
     endif
 endfunction " }}}
 function! OpenWORD() " {{{
@@ -461,4 +474,3 @@ if at_home
 endif
 
 " }}}
-" TODO: RunfileCommand for Windows vs Linux, and on the windows one choose a shell (batch or PowerShell), load the PATH, and finally runs the command.

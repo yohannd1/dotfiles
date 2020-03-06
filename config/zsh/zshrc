@@ -237,11 +237,15 @@ rd() {
     open "${CHOICEPATH}/${CHOICE}" &
 }
 
-wpp() {
-    cd ~/projects &&
-        dir="$(find . -maxdepth 1 -type d | sed 's/^.\///g' | grep '[^.]' | fzf)" &&
-        cd "${dir}" &&
-        br
+wpj() {
+    local folders="$(find "${HOME}/projects" -mindepth 1 -maxdepth 1 -type d | sed 's/^.*\///g' | grep '[^.]')"
+    local choice="$(fzf <<<"${folders}")"
+    if [ -n "${choice}" ]; then
+        cd "${HOME}/projects/${choice}" &&
+            br
+    else
+        return 1
+    fi
 }
 
 wpc() { br "${DOTFILES}"; }
@@ -262,8 +266,6 @@ if ! is_android; then
     alias to='t due:tomorrow or sched:tomorrow'
     alias t-s='t pro:school'
     alias tsh='tasksh'
-
-    alias mt='menu-mount' umt='menu-umount'
 fi
 
 alias du='du -shc'
