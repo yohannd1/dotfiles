@@ -1,25 +1,21 @@
 #!/bin/sh
 
 # Markdown Preview
-# Using bash instead of sh because I need the disown command
-
-[ -f "${1}" ] || exit 1
 [ $# = 1 ] || exit 1
+[ -f "${1}" ] || exit 1
 
-# Experimental: delete files after other run
-
-for garbage in /tmp/md-export-*.html; do
+# Delete files on future runs
+for garbage in /tmp/md-export.*.html; do
     if [ -f "${garbage}" ]; then
-        echo "Garbage collection: ${garbage}"
+        # echo "Garbage collection: ${garbage}"
         rm "${garbage}"
     fi
 done
 
 # The main code
-
 TEMP=$(mktemp)
 FILE="/tmp/md-export$(echo "${TEMP}" | sed 's/\///g; s/tmp//g').html"
 mv "${TEMP}" "${FILE}"
-md-compile "${1}" > "${FILE}"
-
-open "${FILE}"
+md-compile "${1}" > "${FILE}" &&
+    echo "Compiled to: ${FILE}" &&
+    open "${FILE}"
