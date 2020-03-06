@@ -217,6 +217,14 @@ augroup ft_racket
 augroup end
 
 " }}}
+" Scribble {{{
+
+augroup ft_scribble
+    au!
+    au BufNewFile,BufRead,BufEnter *.scrbl set filetype=scribble
+augroup end
+
+" }}}
 " Extras {{{
 
 au FileType xdefaults setlocal commentstring=\!%s
@@ -442,6 +450,11 @@ nnoremap <silent> <C-p> :CtrlPBuffer<CR>
 
 " Terminal Spawner
 nnoremap <leader>K :call SpawnTerminal("")<CR>
+
+if exists(":Tabularize")
+    nnoremap <Leader>d: :Tabularize /:\zs<CR>
+    vnoremap <Leader>d: :Tabularize /:\zs<CR>
+endif
 
 " }}}
 " Quick Editing ------------------------------ {{{
