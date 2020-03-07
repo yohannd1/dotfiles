@@ -1,5 +1,6 @@
 " Vim / NeoVim Configuration
 " Mantainer: YohananDiamond
+" vim: foldmethod=marker
 
 " Preparations ------------------------------- {{{
 
@@ -159,12 +160,18 @@ augroup end
 " }}}
 " Markdown {{{
 
+command! MarkdownMetadata exec "normal ggO---\<CR>created: ".strftime("%Y-%m-%d")."\<CR>---\<CR>\<Esc>2k:Tabularize /:\\zs\<Esc>3j"
+command! MarkdownCompile call SpawnTerminal("md-compile " . expand("%") . " > ~/" . expand("%:t:r") . "." . strftime("%Y-%m-%d") . ".html")
+
 augroup ft_markdown
     au!
     au FileType markdown setlocal textwidth=72 nofoldenable noautoindent
-    au FileType markdown command! -buffer Compile call SpawnTerminal("md-compile " . expand("%") . " > ~/" . expand("%:t:r") . "." . strftime("%Y-%m-%d") . ".html")
     au FileType markdown RfileCmd "md-preview '%'"
-    au FileType markdown nnoremap <silent> <Leader>df :TableFormat<CR>
+    au FileType markdown nnoremap <Leader>df :TableFormat<CR>
+    au FileType markdown nnoremap <Leader>d: vip:Tabularize /:\zs<CR>
+    au FileType markdown vnoremap <Leader>d: :Tabularize /:\zs<CR>
+    au FileType markdown nnoremap <Leader>dm :MarkdownMetadata<CR>
+    au FileType markdown setlocal tabstop=2 shiftwidth=2
 augroup end
 
 " }}}
@@ -399,7 +406,9 @@ nnoremap <silent> <Leader>l :noh<CR>
 
 " Use ç (from Portuguese/Brazilian keyboard) on normal mode for entering the command mode.
 nnoremap ç :
-nnoremap Ç q:i
+vnoremap ç :
+nnoremap Ç q:A
+vnoremap Ç q:A
 
 " Folding Commands
 nnoremap <silent> <Tab> za
@@ -442,19 +451,11 @@ inoremap <silent> <C-l> <C-r>=strftime("20%y-%m-%d")<CR>
 " Quick character insert
 inoremap <C-g>` ```<CR>```<Up><End><CR>
 
-" NnnPicker
-nnoremap <leader>n :NnnPicker '%:p:h'<CR>
-
 " CtrlP
 nnoremap <silent> <C-p> :CtrlPBuffer<CR>
 
 " Terminal Spawner
 nnoremap <leader>K :call SpawnTerminal("")<CR>
-
-if exists(":Tabularize")
-    nnoremap <Leader>d: :Tabularize /:\zs<CR>
-    vnoremap <Leader>d: :Tabularize /:\zs<CR>
-endif
 
 " }}}
 " Quick Editing ------------------------------ {{{

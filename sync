@@ -117,6 +117,7 @@ link_files() {
         lf_config "xprofile" "${HOME}/.xprofile"
         lf_config "profile" "${HOME}/.profile"
         lf_config "profile" "${HOME}/.zprofile"
+        lf_config "zathura" "${HOME}/.config/zathura"
     fi
     lf_config "dircolors" "${HOME}/.config/dircolors"
     lf_config "zsh/zshrc" "${HOME}/.config/zsh/.zshrc"
