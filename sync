@@ -139,6 +139,9 @@ link_files() {
     lf_glob "${DOTFILES}/local/share" "${HOME}/.local/share"
     lf_glob "${HOME}/persist/local/bin" "${HOME}/.local/bin"
     lf_glob "${HOME}/persist/local/share" "${HOME}/.local/share"
+    for x in {2..3}; do
+        lf_glob "${DOTFILES}/config/gtk-${x}.0" "${HOME}/.config/gtk-${x}.0"
+    done
 
     echo " done."
 }
