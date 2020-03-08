@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 # [Stolen and slightly modified from Lukesmithxyz/voidrice]
 # Gives a dmenu prompt to mount unmounted drives and Android phones. If

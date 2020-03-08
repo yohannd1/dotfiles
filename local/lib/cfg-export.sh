@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 # I think this file is better sourced.
 
 export PROJECTS="${HOME}/projects"

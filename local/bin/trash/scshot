@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 if ! type scrot >/dev/null 2>/dev/null; then
     echo "Command \`scrot\` not found. Please make sure it is on your PATH."

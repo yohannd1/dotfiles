@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 # A simple script to sync some things from my USB station (local to actual USB)
 # I still have to explain this.

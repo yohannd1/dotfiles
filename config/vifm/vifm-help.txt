@@ -5677,7 +5677,7 @@ Automatic FUSE mounts
 
        Example `mount-avfs` helper script:
 
-	 #!/bin/sh
+	 #!/usr/bin/env sh
 
 	 dest=$1
 	 file=$2
