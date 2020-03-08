@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # -*- origami-fold-style: triple-braces -*-
 # vim: foldmethod=marker
 
