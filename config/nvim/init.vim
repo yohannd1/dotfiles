@@ -11,21 +11,28 @@ let g:is_android = isdirectory('/sdcard') ? 1 : 0
 let g:at_home = isdirectory(expand('~/projects/dotfiles')) || $DOTFILES != ""
 
 " }}}
-" Plugin Setup ------------------------------- {{{
+" Plugin Config ------------------------------ {{{
+
+" Pathogen {{{
 
 let g:pathogen_disabled = []
 call add(g:pathogen_disabled, has("python3") ? "vim-auto-popmenu" : "deoplete.nvim")
 call add(g:pathogen_disabled, executable("nim") ? "" : "nvim-nim")
-
 call pathogen#infect()
 
-" Deoplete
+" }}}
+" Deoplete {{{
+
 let g:deoplete#enable_at_startup = 1
 
-" vim-auto-popmenu
+" }}}
+" Vim Auto Popmenu {{{
+
 let g:apc_enable_ft = {'*': 1}
 
-" Lightline
+" }}}
+" Lightline {{{
+
 let g:lightline = {
       \ 'colorscheme': 'gruvbox',
       \ 'active': {
@@ -33,7 +40,9 @@ let g:lightline = {
       \ },
   \ }
 
-" vim-markdown
+" }}}
+" Vim Markdown {{{
+
 let g:vim_markdown_frontmatter = 1
 let g:vim_markdown_folding_style_pythonic = 0
 let g:vim_markdown_override_foldtext = 0
@@ -41,23 +50,18 @@ let g:vim_markdown_no_extensions_in_markdown = 1
 let g:vim_markdown_new_list_item_indent = 0
 let g:vim_markdown_auto_insert_bullets = 0
 
-" CtrlP
+" }}}
+" CtrlP {{{
+
 let g:ctrlp_map = '<C-o>'
 let g:ctrlp_cmd = 'CtrlP'
 
-" Emmet
+" }}}
+" Emmet {{{
+
 let g:user_emmet_leader_key='<C-c>'
 
 " }}}
-" GUI Options -------------------------------- {{{
-
-if has('gui_running')
-    set guioptions=agit
-
-    let &guifont = is_windows
-        \ ? 'Fixedys:h9'
-        \ : 'Cascadia Code 10.5,Fira Code 10.5,Ubuntu Mono 12,Consolas 12,Monospace 12'
-endif
 
 " }}}
 " Filetype Config ---------------------------- {{{
@@ -239,6 +243,17 @@ au FileType xdefaults setlocal commentstring=\!%s
 " }}}
 
 " }}}
+" GUI Options -------------------------------- {{{
+
+if has('gui_running')
+    set guioptions=agit
+
+    let &guifont = is_windows
+        \ ? 'Fixedys:h9'
+        \ : 'Cascadia Code 10.5,Fira Code 10.5,Ubuntu Mono 12,Consolas 12,Monospace 12'
+endif
+
+" }}}
 " Commands ----------------------------------- {{{
 
 command! -nargs=0 Reload source $MYVIMRC
@@ -285,7 +300,7 @@ set listchars=tab:»\
 " set listchars+=extends:%
 " set listchars+=precedes:%
 " set listchars+=eol:$,
-" set listchars+=trail:~
+set listchars+=trail:~
 
 " Theme-related
 syntax on
