@@ -313,7 +313,11 @@ set listchars+=trail:~
 
 " Theme-related
 syntax on
-set background=dark
+if is_windows
+    set background=dark
+else
+    set background=light
+endif
 silent! colorscheme desert
 silent! colorscheme gruvbox
 

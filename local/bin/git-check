@@ -19,6 +19,7 @@ case $# in
 esac
 
 if (cd "${repo_dir}" && git status -sb); then
+    echo -e '\033[2 q'
     while [ -z "${EXIT}" ]; do
         echo -e "\e[33mCommands:\e[m [d]iff, [a]dd-commit, [p]ull, pu[s]h, [f]etch, [l]og, []exit"
         echo -n "       :: "
