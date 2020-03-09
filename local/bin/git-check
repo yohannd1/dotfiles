@@ -1,21 +1,9 @@
-#!/usr/bin/env sh
-
-show_help() {
-    echo "<Help not implemented yet>"
-    exit 1
-}
+#!/usr/bin/env bash
 
 case $# in
-    0)
-        repo_dir="${PWD}"
-        ;;
-    1)
-        repo_dir="${1}"
-        ;;
-    *)
-        echo "$0: invalid amount of args."
-        show_help
-        ;;
+    0) repo_dir="${PWD}" ;;
+    1) repo_dir="${1}" ;;
+    *) echo "$0: invalid amount of args." ;;
 esac
 
 if (cd "${repo_dir}" && git status -sb); then
