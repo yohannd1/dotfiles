@@ -242,6 +242,7 @@ wpj() {
     local choice="$(fzf <<<"${folders}")"
     if [ -n "${choice}" ]; then
         cd "${HOME}/projects/${choice}" &&
+            type br >/dev/null 2>/dev/null &&
             br
     else
         return 1

@@ -251,6 +251,6 @@ welcome_agree
 link_files
 setup_vimplugins
 gc_vimplugins
-gc_symlinks "${HOME}/.local/"{bin,lib,share}
+gc_symlinks ~/.local/{bin,lib,share}
 
 echo "   [ END ]"
