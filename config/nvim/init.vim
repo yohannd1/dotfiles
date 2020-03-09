@@ -184,6 +184,15 @@ augroup end
 augroup ft_c
     au!
     au BufNewFile,BufRead,BufEnter *.fx set filetype=c
+    au FileType c RfileCmd "gcc '%' && { ./a.out; rm ./a.out; }"
+augroup end
+
+" }}}
+" C++ {{{
+
+augroup ft_cpp
+    au!
+    au FileType cpp RfileCmd "g++ '%' && { ./a.out; rm ./a.out; }"
 augroup end
 
 " }}}
@@ -506,3 +515,6 @@ endif
 " command! -nargs=* RunfileCommandWin let b:runfile_command_win = join([<f-args>], ' ') " Remember to quote '%' for better performance when using this.
 
 " }}}
+
+" TODO: detect cargo data or makefiles and change the runfile command
+" accordingly
