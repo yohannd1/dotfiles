@@ -19,10 +19,9 @@ case $# in
 esac
 
 if (cd "${repo_dir}" && git status -sb); then
-    echo "What do you want to do?"
     while [ -z "${EXIT}" ]; do
-        echo "Commands: [d]iff, [a]dd-commit, [p]ull, pu[s]h, [f]etch, []exit"
-        echo -n "=> "
+        echo -e "\e[33mCommands:\e[m [d]iff, [a]dd-commit, [p]ull, pu[s]h, [f]etch, [l]og, []exit"
+        echo -n "       :: "
         read input
         case "${input}" in
             d)
@@ -34,6 +33,7 @@ if (cd "${repo_dir}" && git status -sb); then
                     git commit ||
                     git reset .
                 ;;
+            l) git log --all --oneline ;;
             p) git pull ;;
             s) git push ;;
             f) git fetch ;;
@@ -46,3 +46,6 @@ if (cd "${repo_dir}" && git status -sb); then
 else
     exit 1
 fi
+
+# TODO: temp-cd to the git repo's root directory to perform the add.
+# TODO: find a way to choose which files to add.
