@@ -1,0 +1,67 @@
+# vim: ft=conf foldmethod=marker
+
+# Restarting {{{
+
+# Make sxhkd reload the config
+super + alt + r; s
+    pkill -USR1 -x sxhkd
+    notify-send "shkd restarted."
+
+# Restart Picom
+super + alt + r; c
+    pkill picom; picom -b
+    notify-send "picom restarted."
+
+# }}}
+# Programs {{{
+
+# Terminal
+super + Return
+    $TERMINAL
+
+# Program Launcher
+super + space
+    dmenu_run -l 0
+
+# Power Menu
+super + shift + o
+    pow
+
+# Print Screen
+Print
+    flamedash fullc
+super + Print
+    flamedash gui
+ctrl + Print
+    flamedash full
+
+# }}}
+# Extra Keys {{{
+
+# Audio
+XF86AudioLowerVolume
+    amixer set Master 5%-
+XF86AudioRaiseVolume
+    amixer set Master 5%+
+XF86AudioMute
+    amixer -D pulse set Master 1+ toggle
+
+# Media Player
+XF86AudioPlay
+    playerctl pause
+XF86AudioNext
+    playerctl next
+XF86AudioPrev
+    playerctl previous
+
+# Brightness
+XF86MonBrightnessDown
+    xbacklight -dec 5
+XF86MonBrightnessUp
+    xbacklight -inc 5
+
+# Power
+XF86PowerOff
+    echo Void # Disabled.
+
+# }}}

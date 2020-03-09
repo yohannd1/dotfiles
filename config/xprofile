@@ -10,7 +10,10 @@ picom -b & # Compositor
 dunst & # Notification daemon
 nm-applet & # Network manager on tray
 blueman-applet & # Bluetooth
-sxhkd & # Simple X Hotkey Daemon
+case "${WM}" in # Simple X Hotkey Daemon
+    bspwm) start-sxhkd standard bspwm & ;;
+    *) start-sxhkd standard & ;;
+esac
 flameshot & # Screenshot app
 type dropbox >/dev/null 2>/dev/null &&
     dropbox start & # Dropbox sync daemon

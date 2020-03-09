@@ -1,4 +1,3 @@
-#!/usr/bin/env sh
 # I think this file is better sourced.
 
 export PROJECTS="${HOME}/projects"
@@ -25,4 +24,4 @@ export BAT_THEME="base16"
 
 export KEYTIMEOUT=1
 export TERM="xterm-256color"
-export WM="i3"
+export WM="bspwm"

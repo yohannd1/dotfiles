@@ -75,7 +75,15 @@ action_lock() { # {{{
         i3lock -c "${I3LOCK_COLOR}"
 } # }}}
 action_logout() { # {{{
-    i3-msg exit
+    case "${WM}" in
+        i3) i3-msg exit ;;
+        bspwm) bspc quit ;;
+        *)
+            local msg="Unknown WM. Please register it in the file source code."
+            echo "$msg"
+            notify-send "$msg" -u critical
+            ;;
+    esac
 } # }}}
 action_suspend() { # {{{
     if action_lock; then

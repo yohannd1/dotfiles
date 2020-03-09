@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+
+# A script to start up polybar.
+
+for prog in polybar mktemp; do
+    if ! type "${prog}" 2>/dev/null >/dev/null; then
+        echo "${prog} not found on PATH."
+        exit 1
+    fi
+done
+
+# Make temp file
+TMP="$(mktemp)"
+LOGFILE="${TMP}.polybar"
+
+# Terminate already running polybar instances
+killall -q polybar
+
+# Wait until the processes have been shut down
+while pgrep -u $UID -x polybar >/dev/null; do
+    sleep 1
+done
+
+# Launch polybar
+polybar main > "${LOGFILE}"
