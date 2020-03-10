@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+
+# A script to find and load articles.
+# Works better with fuzzy finders.
+
+case $# in
+    0) CHOICE_PATH=~/persist/docs/articles ;;
+    1) CHOICE_PATH="$1" ;;
+    *) 
+        echo "$(basename "$0"): invalid amount of arguments."
+        exit 1
+        ;;
+esac
+
+exists() {
+    [ $# = 1 ] || return 2
+    type "$1" >/dev/null 2>/dev/null
+}
+
+if exists "dmenu"; then
+    choose() { dmenu -l 5 <<<"$1"; }
+elif exists "fzf"; then
+    choose() { fzf <<<"$1"; }
+else
+    echo "No valid fuzzy finder found."
+    echo "The valid ones are: dmenu, fzf"
+    exit 1
+fi
+
+cd "$CHOICE_PATH" || exit 1
+choose "$(find . -mindepth 1 -maxdepth 1 | sed 's/^\.\///g' | grep '\.html$')" | xargs -I {} open {}

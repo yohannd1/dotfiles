@@ -307,12 +307,6 @@ W() { # {{{
     esac
 } # }}}
 
-rd() {
-    local CHOICEPATH="${HOME}/persist/articles"
-    local CHOICE="$(ls "${CHOICEPATH}" | grep '\.html$' | fzf)"
-    open "${CHOICEPATH}/${CHOICE}" &
-}
-
 gtd() { [ $# = 1 ] && grep "$(sed "s/_/:/g" <<<"TODO_")" $(find "${1}" -type f); }
 
 # }}}
@@ -327,13 +321,12 @@ if ! is_android; then
     alias tl='t ls'
     alias tt='t due:today or sched:today or +OVERDUE'
     alias to='t due:tomorrow or sched:tomorrow'
-    alias t-s='t pro:school'
+    alias t-s='t pro:School'
     alias tsh='tasksh'
 fi
 
 alias du='du -shc'
 
-alias py3='python3'
 alias p3='python3'
 alias jl='julia'
 alias nm='neomutt'
