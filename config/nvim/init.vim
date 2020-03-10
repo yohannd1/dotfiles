@@ -1,7 +1,8 @@
-" NeoVim Configuration
-" This doesn't work with Vim anymore, since I don't think it's worth it to
-" mantain.
+" NeoVim Configuration File
 " Author: YohananDiamond
+"
+" Note that this config file does not work properly with Vim, due to having
+" NeoVim-specific things.
 
 " Functions ---------------------------------- {{{
 
@@ -74,6 +75,7 @@ function! StartupCD(...) " {{{
         if isdirectory(dir)
             echom "Entering " . dir . "..."
             exec "cd " . dir
+            break
         endif
     endfor
 endfunction " }}}
@@ -494,7 +496,6 @@ nnoremap ç :
 vnoremap ç :
 nnoremap Ç q:A
 vnoremap Ç q:A
-
 " Folding Commands
 nnoremap <silent> <Tab> za
 nnoremap <silent> <S-Tab> zm
