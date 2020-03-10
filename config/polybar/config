@@ -43,7 +43,6 @@ font-2 = siji:pixelsize=10;1
 modules-left = bspwm i3
 modules-center = xwindow
 modules-right = wlan memory cpu eth battery alsa date
-; modules-right = filesystem xbacklight alsa pulseaudio xkeyboard memory cpu wlan eth battery temperature date powermenu
 
 tray-position = right
 tray-padding = 2
@@ -208,7 +207,7 @@ card = intel_backlight
 ;; {{{
 type = internal/cpu
 interval = 2
-format-prefix = "CPU: "
+format-prefix = "ﲯ "
 format-prefix-foreground = ${colors.foreground-alt}
 format-underline = #f90000
 label = %percentage:2%%
@@ -218,7 +217,7 @@ label = %percentage:2%%
 ;; {{{
 type = internal/memory
 interval = 2
-format-prefix = "M: "
+format-prefix = "M "
 format-prefix-foreground = ${colors.foreground-alt}
 format-underline = #4bffdc
 label = %percentage_used%%
@@ -240,11 +239,11 @@ format-disconnected =
 ; label-disconnected = %ifname% disconnected
 ; label-disconnected-foreground = ${colors.foreground-alt}
 
-ramp-signal-0 = 
-ramp-signal-1 = 
-ramp-signal-2 = 
-ramp-signal-3 = 
-ramp-signal-4 = 
+ramp-signal-0 = ﬉
+ramp-signal-1 = ﬉
+ramp-signal-2 = ﬉
+ramp-signal-3 = ﬉
+ramp-signal-4 = ﬉
 ramp-signal-foreground = ${colors.foreground-alt}
 ;; }}}
 
@@ -319,12 +318,12 @@ type = internal/alsa
 
 format-volume = <label-volume>
 ; format-volume = <label-volume> <bar-volume>
-label-volume = VOL %percentage%%
+label-volume =  %percentage%%
 label-volume-foreground = ${root.foreground}
 format-volume-underline = #0a6cf5
-format-muted-prefix = " "
+format-muted-prefix = "ﱝ "
 format-muted-foreground = ${colors.foreground-alt}
-label-muted = "VOL Muted"
+label-muted = "(Muted)"
 
 bar-volume-width = 10
 bar-volume-foreground-0 = #55aa55
@@ -361,20 +360,20 @@ format-full-prefix = " "
 format-full-prefix-foreground = ${colors.foreground-alt}
 format-full-underline = ${self.format-charging-underline}
 
-ramp-capacity-0 = 
-ramp-capacity-1 = 
-ramp-capacity-2 = 
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
 ramp-capacity-foreground = ${colors.foreground-alt}
 
-animation-charging-0 = 
-animation-charging-1 = 
-animation-charging-2 = 
+animation-charging-0 = 
+animation-charging-1 = 
+animation-charging-2 = 
 animation-charging-foreground = ${colors.foreground-alt}
 animation-charging-framerate = 750
 
-animation-discharging-0 = 
-animation-discharging-1 = 
-animation-discharging-2 = 
+animation-discharging-0 = 
+animation-discharging-1 = 
+animation-discharging-2 = 
 animation-discharging-foreground = ${colors.foreground-alt}
 animation-discharging-framerate = 750
 ;; }}}
