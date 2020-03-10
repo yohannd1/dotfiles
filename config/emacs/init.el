@@ -170,7 +170,7 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
   (if (display-graphic-p)
       (progn
 	(load-theme my/theme-gui t)
-	(set-frame-font "Cascadia Code 11" nil t))
+	(set-frame-font "Delugia Nerd Font 11" nil t))
     (progn
       (load-theme my/theme-term t))))
 

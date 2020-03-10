@@ -36,7 +36,7 @@ padding-right = 0
 module-margin-left = 2
 module-margin-right = 0
 
-font-0 = Cascadia Code:pixelsize=10;1
+font-0 = Delugia Nerd Font:pixelsize=10;1
 font-1 = unifont:fontformat=truetype:size=8:antialias=false;0
 font-2 = siji:pixelsize=10;1
 
