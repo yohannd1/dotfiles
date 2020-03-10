@@ -18,7 +18,13 @@ exists() {
 }
 
 if exists "dmenu"; then
-    choose() { dmenu -l 5 <<<"$1"; }
+    if [ -n "${DISPLAY}" ]; then
+        choose() { dmenu -l 5 <<<"$1"; }
+    else
+        echo "dmenu was detected, but won't be used due to display not being found."
+        exists "fzf" &&
+            choose() { fzf <<<"$1"; }
+    fi
 elif exists "fzf"; then
     choose() { fzf <<<"$1"; }
 else
@@ -27,5 +33,13 @@ else
     exit 1
 fi
 
+if [ -z "${DISPLAY}" ] && exists "w3m"; then
+    browse() { w3m $@; }
+else
+    browse() { open $@; }
+fi
+
+
 cd "$CHOICE_PATH" || exit 1
-choose "$(find . -mindepth 1 -maxdepth 1 | sed 's/^\.\///g' | grep '\.html$')" | xargs -I {} open {}
+CHOICE="$(choose "$(find . -mindepth 1 -maxdepth 1 | sed 's/^\.\///g' | grep '\.html$')")" && browse "$CHOICE"
+
