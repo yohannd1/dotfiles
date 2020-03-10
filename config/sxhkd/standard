@@ -35,6 +35,12 @@ super + Print
 ctrl + Print
     flamedash full
 
+# Mounting (yes I stole it from Luke)
+super + F10
+    menu-mount
+super + shift + F10
+    menu-umount
+
 # }}}
 # Extra Keys {{{
 

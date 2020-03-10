@@ -10,7 +10,7 @@ for prog in rsync; do
     fi
 done
 
-USB_STATION=/mnt/usb1/usb-station
+USB_STATION="${USB_STATION:-/mnt/usb-main/usb-station}"
 rsync -rtvuc "${DOTFILES}/config/nvim/init.vim" "${USB_STATION}/config/nvim/init.vim"
 rsync -rtvuc --delete "${DOTFILES}/config/nvim/autoload/" "${USB_STATION}/config/nvim/autoload"
 rsync -rtvuc --delete "${HOME}/.cache/nvim-plugs/" "${USB_STATION}/config/nvim/bundle"

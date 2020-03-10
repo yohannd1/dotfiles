@@ -1,14 +1,106 @@
-" Vim / NeoVim Configuration
-" Mantainer: YohananDiamond
-" vim: foldmethod=marker
+" NeoVim Configuration
+" This doesn't work with Vim anymore, since I don't think it's worth it to
+" mantain.
+" Author: YohananDiamond
 
-" Preparations ------------------------------- {{{
+" Functions ---------------------------------- {{{
+
+function! SpawnTerminal(command) " {{{
+    let l:command_string = "terminal " . a:command
+    split | exec "normal! \<C-w>j"
+    exec l:command_string
+    normal! i
+endfunction " }}}
+function! RunFile() " {{{
+    if g:is_windows
+        if !exists("b:runfile_command_win")
+            echo "[RunFile()]: `b:runfile_command_win` not defined."
+        else
+            call SpawnTerminal(b:runfile_command_win)
+        endif
+    else
+        if !exists("b:runfile_command")
+            echo "[RunFile()]: `b:runfile_command` not defined."
+        else
+            call SpawnTerminal(b:runfile_command)
+        endif
+    endif
+endfunction " }}}
+function! MyFoldText() " {{{
+    let l:tab_char = strpart(' ', shiftwidth())
+    let l:line_contents = substitute(getline(v:foldstart), '\t', l:tab_char, 'g')
+    let l:line_contents = substitute(l:line_contents, '{{{', '', 'g') " Remove fold marker }}}
+
+    let l:numbers_width = &foldcolumn + &number * &numberwidth
+    let l:window_width = winwidth(0) - numbers_width - 1
+    let l:folded_lines_number = v:foldend - v:foldstart
+
+    let l:line_contents = strpart(l:line_contents, 0, l:window_width - 2 - len(l:folded_lines_number))
+    let l:void_size = l:window_width - len(l:line_contents) - len(folded_lines_number)
+    let l:void_char = '·'
+
+    return l:line_contents . repeat(l:void_char, l:void_size) . l:folded_lines_number . 'l   '
+endfunction " }}}
+function! AddBookmark(letter, path) " {{{
+    execute 'nnoremap <silent> <Leader>e' . a:letter . ' :e ' . a:path . '<CR>'
+endfunction " }}}
+function! TabOrComplete(mode) " {{{
+    """ Used when no completion plugin is available.
+    """ When pressing the tab key, decide if it's needed to complete the current word, or else simply insert the tab key.
+    """ There is a mapping in the Mappings section for this.
+    if (col(".") > 1) && !(strcharpart(getline("."), col(".") - 2, 1) =~ '\v[ \t]')
+        if (a:mode == 0)
+            return "\<C-P>"
+        elseif (a:mode == 1)
+            return "\<C-N>"
+        endif
+    else 
+        return "\<Tab>"
+    endif
+endfunction " }}}
+function! PagerMode() " {{{
+    setlocal ft=man ts=8 nomod nolist noma timeoutlen=0 nocursorline
+    nnoremap <buffer> <silent> d <C-d>
+    nnoremap <buffer> <silent> u <C-u>
+    nnoremap <buffer> <silent> f <C-f>
+    nnoremap <buffer> <silent> b <C-b>
+    nnoremap <buffer> <silent> q :q<CR>
+    nnoremap <buffer> <silent> j <C-e>
+    nnoremap <buffer> <silent> k <C-y>
+    normal M
+endfunction " }}}
+function! StartupCD(...) " {{{
+    for dir in a:000
+        if isdirectory(dir)
+            echom "Entering " . dir . "..."
+            exec "cd " . dir
+        endif
+    endfor
+endfunction " }}}
+function! PathAppend(...) " {{{
+    " Appends to Vim's PATH.
+    " Good for subshells, specially on Windows.
+    for dir in a:000
+        if stridx($PATH, dir) == -1
+            let $PATH .= (is_windows ? ";" : ":") . dir
+        endif
+    endfor
+endfunction " }}}
+
+" }}}
+" Prelude ------------------------------------ {{{
 
 let g:VIM_CONFIG = resolve(expand("<sfile>:p:h"))
 let $MYVIMRC = g:VIM_CONFIG . "/init.vim"
+let $MYGVIMRC = g:VIM_CONFIG . "/ginit.vim"
 let g:is_windows = isdirectory('C:\') ? 1 : 0
 let g:is_android = isdirectory('/sdcard') ? 1 : 0
 let g:at_home = isdirectory(expand('~/projects/dotfiles')) || $DOTFILES != ""
+
+if is_windows
+    call StartupCD('E:\usb-station\home', '..\..\..\home', $HOME)
+    call PathAppend('C:\Program Files (x86)\CodeBlocks\MinGW\bin')
+endif
 
 " }}}
 " Plugin Config ------------------------------ {{{
@@ -60,6 +152,21 @@ let g:ctrlp_cmd = 'CtrlP'
 " Emmet {{{
 
 let g:user_emmet_leader_key='<C-c>'
+
+" }}}
+" Netrw {{{
+
+let g:netrw_banner = 0
+let g:netrw_winsize = 25
+let g:netrw_browse_split = 4
+let g:netrw_liststyle = 3
+let g:netrw_altv = 1
+
+" }}}
+" Gruvbox {{{
+
+let g:gruvbox_bold = 0
+let g:gruvbox_italics = 0
 
 " }}}
 
@@ -185,6 +292,15 @@ augroup ft_c
     au!
     au BufNewFile,BufRead,BufEnter *.fx set filetype=c
     au FileType c RfileCmd "gcc '%' && { ./a.out; rm ./a.out; }"
+
+    if is_windows
+        au FileType c RfileCmdWin printf('%s -Command gcc \"%%\" \"%s\" && %s; rm %s',
+                                         \ 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe', 
+                                         \ $HOME . '\tmp_output.exe',
+                                         \ $HOME . '\tmp_output.exe',
+                                         \ $HOME . '\tmp_output.exe',
+                                         \ )
+    endif
 augroup end
 
 " }}}
@@ -193,7 +309,17 @@ augroup end
 augroup ft_cpp
     au!
     au FileType cpp RfileCmd "g++ '%' && { ./a.out; rm ./a.out; }"
+
+    if is_windows
+        au FileType cpp RfileCmdWin printf('%s -Command g++ \"%%\" \"%s\" && %s; rm %s',
+                                         \ 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe', 
+                                         \ $HOME . '\tmp_output.exe',
+                                         \ $HOME . '\tmp_output.exe',
+                                         \ $HOME . '\tmp_output.exe',
+                                         \ )
+    endif
 augroup end
+
 
 " }}}
 " Nim {{{
@@ -245,6 +371,15 @@ augroup ft_scribble
 augroup end
 
 " }}}
+" HTML {{{
+
+augroup ft_html
+    au!
+    au FileType html RfileCmdWin "start %"
+    au FileType html RfileCmd ($BROWSER . " '%'")
+augroup end
+
+" }}}
 " Extras {{{
 
 au FileType xdefaults setlocal commentstring=\!%s
@@ -252,20 +387,9 @@ au FileType xdefaults setlocal commentstring=\!%s
 " }}}
 
 " }}}
-" GUI Options -------------------------------- {{{
-
-if has('gui_running')
-    set guioptions=agit
-
-    let &guifont = is_windows
-        \ ? 'Fixedys:h9'
-        \ : 'Cascadia Code 10.5,Fira Code 10.5,Ubuntu Mono 12,Consolas 12,Monospace 12'
-endif
-
-" }}}
 " Commands ----------------------------------- {{{
 
-command! -nargs=0 Reload source $MYVIMRC
+command! -nargs=0 Reload source $MYVIMRC | if exists("g:GuiLoaded") && g:GuiLoaded && exists("$MYGVIMRC") | source $MYGVIMRC | endif
 command! -nargs=0 WhitespaceMode set list!
 command! -nargs=0 WrapMode set wrap!
 command! -nargs=0 OpenWORD call OpenWORD()
@@ -280,7 +404,13 @@ cnoreabbrev rl Reload
 " }}}
 " Settings ----------------------------------- {{{
 
+" Language-related
 set encoding=utf-8
+set langmenu=en_US
+let $LANG = 'en_US'
+source $VIMRUNTIME/delmenu.vim
+source $VIMRUNTIME/menu.vim
+
 set hidden " Prevent quitting vim with :q when any buffer is unsaved
 set backspace=indent,eol,start
 set laststatus=2 " Enable status bar
@@ -313,13 +443,9 @@ set listchars+=trail:~
 
 " Theme-related
 syntax on
-if is_windows
-    set background=dark
-else
-    set background=light
-endif
 silent! colorscheme desert
 silent! colorscheme gruvbox
+let &background = is_windows ? "light" : "dark"
 
 " Indentation
 set tabstop=8 " For tab characters
@@ -338,74 +464,6 @@ augroup meta_terminal
 augroup end
 
 " }}}
-" Functions ---------------------------------- {{{
-
-function! SpawnTerminal(command) " {{{
-    let l:command_string = "terminal " . a:command
-    split | exec "normal! \<C-w>j"
-    exec l:command_string
-    normal! i
-endfunction " }}}
-function! RunFile() " {{{
-    if g:is_windows
-        if !exists("b:runfile_command_win")
-            echo "[RunFile()]: `b:runfile_command_win` not defined."
-        else
-            call SpawnTerminal(b:runfile_command_win)
-        endif
-    else
-        if !exists("b:runfile_command")
-            echo "[RunFile()]: `b:runfile_command` not defined."
-        else
-            call SpawnTerminal(b:runfile_command)
-        endif
-    endif
-endfunction " }}}
-function! MyFoldText() " {{{
-    let l:tab_char = strpart(' ', shiftwidth())
-    let l:line_contents = substitute(getline(v:foldstart), '\t', l:tab_char, 'g')
-    let l:line_contents = substitute(l:line_contents, '{{{', '', 'g') " Remove fold marker }}}
-
-    let l:numbers_width = &foldcolumn + &number * &numberwidth
-    let l:window_width = winwidth(0) - numbers_width - 1
-    let l:folded_lines_number = v:foldend - v:foldstart
-
-    let l:line_contents = strpart(l:line_contents, 0, l:window_width - 2 - len(l:folded_lines_number))
-    let l:void_size = l:window_width - len(l:line_contents) - len(folded_lines_number)
-    let l:void_char = '·'
-
-    return l:line_contents . repeat(l:void_char, l:void_size) . l:folded_lines_number . 'l   '
-endfunction " }}}
-function! AddBookmark(letter, path) " {{{
-    execute 'nnoremap <silent> <Leader>e' . a:letter . ' :e ' . a:path . '<CR>'
-endfunction " }}}
-function! TabOrComplete(mode) " {{{
-    """ Used when no completion plugin is available.
-    """ When pressing the tab key, decide if it's needed to complete the current word, or else simply insert the tab key.
-    """ There is a mapping in the Mappings section for this.
-    if (col(".") > 1) && !(strcharpart(getline("."), col(".") - 2, 1) =~ '\v[ \t]')
-        if (a:mode == 0)
-            return "\<C-P>"
-        elseif (a:mode == 1)
-            return "\<C-N>"
-        endif
-    else 
-        return "\<Tab>"
-    endif
-endfunction " }}}
-function! PagerMode() " {{{
-    setlocal ft=man ts=8 nomod nolist noma timeoutlen=0 nocursorline
-    nnoremap <buffer> <silent> d <C-d>
-    nnoremap <buffer> <silent> u <C-u>
-    nnoremap <buffer> <silent> f <C-f>
-    nnoremap <buffer> <silent> b <C-b>
-    nnoremap <buffer> <silent> q :q<CR>
-    nnoremap <buffer> <silent> j <C-e>
-    nnoremap <buffer> <silent> k <C-y>
-    normal M
-endfunction " }}}
-
-" }}}
 " General Mappings --------------------------- {{{
 
 " Leader Key
@@ -416,8 +474,7 @@ vmap <Space> <Leader>
 set timeoutlen=1000 ttimeoutlen=0
 
 " Mouse Wheel Scrolling
-if is_android
-else
+if !is_android
     map <ScrollWheelUp> 15<C-Y>
     map <ScrollWheelDown> 15<C-E>
     map <RightMouse> <nop>
@@ -484,6 +541,12 @@ nnoremap <silent> <C-p> :CtrlPBuffer<CR>
 
 " Terminal Spawner
 nnoremap <leader>K :call SpawnTerminal("")<CR>
+
+" View messages history
+nnoremap <leader>m :messages<CR>
+
+" Netrw for browsing when wanted
+nnoremap <silent> <leader>= :Vexplore<CR>
 
 " }}}
 " Quick Editing ------------------------------ {{{
