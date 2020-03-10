@@ -231,29 +231,46 @@ bindkey -s '^R' '\e0Di fh\n'
 rl() { source "${ZDOTDIR:-"${HOME}"}/.zshrc"; }
 sy() { "${DOTFILES}/sync"; }
 
-rd() {
-    local CHOICEPATH="${HOME}/persist/articles"
-    local CHOICE="$(ls "${CHOICEPATH}" | grep '\.html$' | fzf)"
-    open "${CHOICEPATH}/${CHOICE}" &
-}
-
-wpj() {
-    local folders="$(find "${HOME}/projects" -mindepth 1 -maxdepth 1 -type d | sed 's/^.*\///g' | grep '[^.]')"
-    local choice="$(fzf <<<"${folders}")"
-    if [ -n "${choice}" ]; then
-        cd "${HOME}/projects/${choice}" &&
-            type broot >/dev/null 2>/dev/null &&
-            br
-    else
+dir-action() { # {{{
+    [ $# != 1 ] && return 1
+    local dir="$(realpath -m "$1")"
+    [ -r "${dir}" ] || {
+        printf "Invalid directory: %s\n" "${dir}"
         return 1
+    }
+
+    echo -en '\033[2 q'
+    printf "\e[33mDirectory of choice:\e[m %s\n" "${dir}"
+
+    while [ -z "${EXIT}" ]; do
+        printf "\e[33mCommands:\e[m [c]d, [b]root, [n]nn, [g]it-check, [q]uit\n"
+        printf "       λ> "
+        read -k1 ch
+        printf "\n"
+
+        case "${ch}" in
+            c) cd "${dir}"; local EXIT=1 ;;
+            b) br "${dir}"; local EXIT=1 ;;
+            n) n "${dir}"; local EXIT=1 ;;
+            g) (cd "${dir}"
+                git-check) ;;
+            "") clear ;;
+            ) local EXIT=1 ;;
+            q) local EXIT=1 ;;
+            "") local EXIT=1 ;;
+            $'\n') local EXIT=1 ;;
+            *) echo "Invalid option: \"${ch}\"." ;;
+        esac
+    done
+} # }}}
+select-project() { # {{{
+    local projects="$(find ~/projects -mindepth 1 -maxdepth 1 -type d | sed 's/^.*\///g')"
+    local choice="$(fzf <<<"$projects")"
+    if [ -n "$choice" ]; then
+        echo "${HOME}/projects/$choice"
     fi
-}
-
-wpc() { br "${DOTFILES}"; }
-wpd() { br "${HOME}/persist/docs"; }
-gtd() { [ $# = 1 ] && grep "$(sed "s/_/:/g" <<<"TODO_")" $(find "${1}" -type f); }
-
-n() {
+} # }}}
+n() { # {{{
     # Block nesting of nnn in subshells
     if [ -n $NNNLVL ] && [ "${NNNLVL:-0}" -ge 1 ]; then
         echo "nnn is already running"
@@ -266,19 +283,37 @@ n() {
     # NOTE: NNN_TMPFILE is fixed, should not be modified
     NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
 
-    # Unmask ^Q (, ^V etc.) (if required, see `stty -a`) to Quit nnn
-    # stty start undef
-    # stty stop undef
-    # stty lwrap undef
-    # stty lnext undef
-
     nnn "$@"
 
     if [ -f "$NNN_TMPFILE" ]; then
             . "$NNN_TMPFILE"
             rm -f "$NNN_TMPFILE" > /dev/null
     fi
+} # }}}
+W() { # {{{
+    [ $# != 1 ] && return 1
+    case "$1" in
+        p)
+            local c="$(select-project)"
+            if [ -n "$c" ]; then
+                dir-action "$c"
+            else
+                return 1
+            fi
+            ;;
+        d) dir-action "${DOTFILES}" ;;
+        k) dir-action "${WIKI:-"${HOME}/wiki"}" ;;
+        *) echo "?"; return 1 ;;
+    esac
+} # }}}
+
+rd() {
+    local CHOICEPATH="${HOME}/persist/articles"
+    local CHOICE="$(ls "${CHOICEPATH}" | grep '\.html$' | fzf)"
+    open "${CHOICEPATH}/${CHOICE}" &
 }
+
+gtd() { [ $# = 1 ] && grep "$(sed "s/_/:/g" <<<"TODO_")" $(find "${1}" -type f); }
 
 # }}}
 # Aliases {{{
@@ -301,14 +336,13 @@ alias du='du -shc'
 alias py3='python3'
 alias p3='python3'
 alias jl='julia'
-alias r='ranger'
 alias nm='neomutt'
 alias wk='br ~/wiki'
 alias G='git-check'
 
 alias vim='nvim' vi='nvim'
-alias emacs='emacs-plus emacs'
-alias ec='emacs-plus emacsclient'
+# alias emacs='emacs-plus emacs'
+# alias ec='emacs-plus emacsclient'
 
 alias cp-sync='cp -ur'
 

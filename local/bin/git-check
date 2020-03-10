@@ -7,12 +7,13 @@ case $# in
 esac
 
 if (cd "${repo_dir}" && git status -sb); then
+    cd "${repo_dir}" 2>/dev/null
     echo -e '\033[2 q'
     while [ -z "${EXIT}" ]; do
-        echo -e "\e[33mCommands:\e[m [d]iff, [a]dd-commit, [p]ull, pu[s]h, [f]etch, [l]og, []exit"
-        echo -n "       :: "
-        read input
-        case "${input}" in
+        echo -e "\e[33mCommands:\e[m [d]iff, [a]dd-commit, [p]ull, pu[s]h, [f]etch, [l]og, [q]uit"
+        printf "       λ> "
+        read -n1 ch
+        case "${ch}" in
             d)
                 git add .
                 git diff HEAD
@@ -27,8 +28,10 @@ if (cd "${repo_dir}" && git status -sb); then
             s) git push ;;
             f) git fetch ;;
             "") EXIT=1 ;;
+            q) EXIT=1 ;;
+            ) EXIT=1 ;;
             "") clear ;;
-            *) echo "Invalid command." ;;
+            *) echo "Invalid option: \"${ch}\"." ;;
         esac
     done
     exit "${EXIT}"
