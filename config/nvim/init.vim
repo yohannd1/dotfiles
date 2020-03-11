@@ -489,7 +489,7 @@ nnoremap <silent> <Leader> "+
 vnoremap <silent> <Leader> "+
 
 " Clear search query
-nnoremap <silent> <Leader>l :noh<CR>
+nnoremap <silent> <Esc> :noh<CR>
 
 " Use ç (from Portuguese/Brazilian keyboard) on normal mode for entering the command mode.
 nnoremap ç :
