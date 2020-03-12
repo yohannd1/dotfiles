@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+bspc subscribe node_state | while read event
+do
+    grep -q 'fullscreen on$' <<<"$event" && {
+        polybar-msg cmd hide
+    }
+    grep -q 'fullscreen off$' <<<"$event" && {
+        polybar-msg cmd show
+    }
+done

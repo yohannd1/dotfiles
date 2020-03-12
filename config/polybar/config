@@ -19,7 +19,7 @@ height = 27
 ; offset-x = 1%
 ; offset-y = 1%
 radius = 0.0
-fixed-center = false
+fixed-center = true
 
 background = ${colors.background}
 foreground = ${colors.foreground}
@@ -36,12 +36,14 @@ padding-right = 0
 module-margin-left = 2
 module-margin-right = 0
 
+enable-ipc = true
+
 font-0 = Delugia Nerd Font:pixelsize=10;1
 font-1 = unifont:fontformat=truetype:size=8:antialias=false;0
 font-2 = siji:pixelsize=10;1
 
-modules-left = bspwm i3
-modules-center = xwindow
+modules-left = bspwm i3 xwindow
+modules-center = 
 modules-right = wlan memory cpu eth battery alsa date
 
 tray-position = right

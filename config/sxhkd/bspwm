@@ -5,7 +5,6 @@
 # Restart Polybar
 super + alt + r; p
     start-polybar
-    notify-send "Polybar restarted."
 
 # }}}
 # Bspwm {{{
@@ -13,7 +12,6 @@ super + alt + r; p
 # Restart bspwm
 super + shift + r
     bspc wm -r
-    notify-send "bspwm restarted."
 
 # Close and kill window
 super + {_,alt + }q
