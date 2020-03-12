@@ -110,7 +110,8 @@ endif
 " Pathogen {{{
 
 let g:pathogen_disabled = []
-call add(g:pathogen_disabled, has("python3") ? "vim-auto-popmenu" : "deoplete.nvim")
+" call add(g:pathogen_disabled, has("python3") ? "vim-auto-popmenu" : "deoplete.nvim")
+call add(g:pathogen_disabled, "deoplete.nvim")
 call add(g:pathogen_disabled, executable("nim") ? "" : "nvim-nim")
 call pathogen#infect()
 
@@ -338,6 +339,7 @@ augroup end
 augroup ft_ruby
     au!
     au FileType ruby RfileCmd "ruby '%'"
+    au FileType ruby set foldmethod=syntax
 augroup end
 
 " }}}
