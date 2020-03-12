@@ -34,7 +34,7 @@ if (cd "${repo_dir}" && git status -sb); then
             *) echo "Invalid option: \"${ch}\"." ;;
         esac
     done
-    exit "${EXIT}"
+    echo; exit "${EXIT}"
 else
     exit 1
 fi
