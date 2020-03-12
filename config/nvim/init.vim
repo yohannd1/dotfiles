@@ -136,7 +136,7 @@ let g:lightline = {
   \ }
 
 " }}}
-" Vim Markdown {{{
+" Markdown {{{
 
 let g:vim_markdown_frontmatter = 1
 let g:vim_markdown_folding_style_pythonic = 0
@@ -280,12 +280,12 @@ command! MarkdownCompile call SpawnTerminal("md-compile " . expand("%") . " > ~/
 augroup ft_markdown
     au!
     au FileType markdown setlocal textwidth=72 nofoldenable noautoindent
+    au FileType markdown setlocal tabstop=2 shiftwidth=2
     au FileType markdown RfileCmd "md-preview '%'"
     au FileType markdown nnoremap <Leader>df :TableFormat<CR>
     au FileType markdown nnoremap <Leader>d: vip:Tabularize /:\zs<CR>
     au FileType markdown vnoremap <Leader>d: :Tabularize /:\zs<CR>
     au FileType markdown nnoremap <Leader>dm :MarkdownMetadata<CR>
-    au FileType markdown setlocal tabstop=2 shiftwidth=2
 augroup end
 
 " }}}
