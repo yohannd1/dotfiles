@@ -109,7 +109,7 @@ path-maybe "${CARGO_HOME}/bin"
 path-maybe "/opt/bin"
 path-maybe "$(ruby -e "puts Gem.user_dir")/bin"
 
-source-maybe "${HOME}/.local/lib/cfg-export.sh"
+source-maybe "${HOME}/.local/lib/env-vars.sh"
 source-maybe "${HOME}/persist/local/share/zshrc.personal"
 
 # }}}
@@ -354,7 +354,7 @@ HISTSIZE=SAVEHIST=10000
 setopt sharehistory
 setopt extendedhistory
 
-# less
+# Less
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 export LESS_TERMCAP_mb=$'\e[1;31m'     # begin bold
 export LESS_TERMCAP_md=$'\e[1;35m'     # begin blink
@@ -364,9 +364,9 @@ export LESS_TERMCAP_se=$'\e[0m'        # reset reverse video
 export LESS_TERMCAP_us=$'\e[1;32m'     # begin underline
 export LESS_TERMCAP_ue=$'\e[0m'        # reset underline
 
-# ls; dir
-if [ -r "${HOME}/.config/dircolors" ]; then
-    eval "$(dircolors -b "${HOME}/.config/dircolors")"
+# Dircolors
+if [ -r ~/.local/share/dircolors ]; then
+    eval "$(dircolors -b ~/.local/share/dircolors)"
 fi
 
 # GCC

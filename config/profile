@@ -1,7 +1,7 @@
-# vim: ft=sh
+#!/usr/bin/env sh
 
 # Shell Profile
-# Is ran at the start of the system.
+# This is ran at login on a TTY.
 
 # Load environment variables.
-source ~/.local/lib/cfg-export.sh
+source ~/.local/lib/env-vars.sh

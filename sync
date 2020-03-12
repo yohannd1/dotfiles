@@ -1,257 +1,297 @@
 #!/usr/bin/env bash
-# -*- origami-fold-style: triple-braces -*-
 # vim: foldmethod=marker
+# -*- origami-fold-style: triple-braces -*-
 
-exists() { command -v "${1}" >/dev/null 2>&1; }
+# Library {{{
+
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
 is_android() { [ "$(uname -o)" = "Android" ]; }
 
-# CONSTANTS {{{
+# Installing Dotfiles
+install_dotfiles() { # {{{
+  if [ -r "$DOTFILES" ]; then
+    echo "There is already a folder in $DOTFILES. If you want to install, manually remove said folder."
+  else
+    printf "SSH or HTTPS? [S/h] "
+    read choice
+    if [ "$choice" = S ] || [ "$choice" = s ]; then
+      git clone "$DOTFILES_URL_SSH" "$DOTFILES"
+    else
+      git clone "$DOTFILES_URL_HTTPS" "$DOTFILES"
+    fi
+  fi
+} # }}}
+
+# Symlinking Utilities
+lf() { # {{{
+  if [ $# != 2 ]; then
+    echo "lf: not enough arguments."
+    return 1
+  fi
+
+  # Create a file $POINTER, that points to $ADDRESS
+  # Yes, I'm using C (ish) terminology.
+  local ADDRESS="$1"
+  local POINTER="$2"
+
+  mkdir -p "$(dirname "$POINTER")" ||
+    return 1
+
+  if [ -e "$POINTER" ] || [ -L "$POINTER" ]; then
+    if [ -z "$NO_BACKUP" ]; then
+      local BACKUP_FOLDER="$BACKUP_DIR/$(dirname "${POINTER#?}")"
+      mkdir -p "$BACKUP_FOLDER"
+      if ! mv "$POINTER" -t "$BACKUP_FOLDER"; then
+        echo "  Error symlinking *'$POINTER' -> &'$ADDRESS'"
+        return 1
+      fi
+    fi
+  else
+    echo "  New file: *'$POINTER' -> &'$ADDRESS'"
+  fi
+
+  ln -s "$ADDRESS" "$POINTER" ||
+    echo "  Error symlinking *'$POINTER' -> &'$ADDRESS'"
+} # }}}
+lfglob() { # {{{
+  if [ $# != 2 ]; then
+    echo "lfglob: not enough arguments"
+    return 1
+  fi
+
+  local GLOB_FOLDER="$1"
+  local TARGET_FOLDER="$2"
+
+  find "$GLOB_FOLDER" -mindepth 1 -maxdepth 1 |
+    while read glob_file; do
+      local ADDRESS="$(realpath "$glob_file")"
+      local POINTER="$TARGET_FOLDER/$(basename "$glob_file")"
+
+      lf "$ADDRESS" "$POINTER"
+    done 
+} # }}}
+lfconf() { # {{{
+  if [ $# != 2 ]; then
+    echo "lfconf: not enough arguments"
+    return 1
+  fi
+
+  local ADDRESS="$DOTFILES/config/$1"
+  local POINTER="$2"
+
+  lf "$ADDRESS" "$POINTER"
+} # }}}
+lflocal() { # {{{
+  if [ $# != 2 ]; then
+    echo "link: not enough arguments."
+    return 1
+  fi
+
+  local ADDRESS="$HOME/persist/local/$1"
+  local POINTER="$2"
+
+  lf "$ADDRESS" "$POINTER"
+} # }}}
+
+# NeoVim Plugin Management
+ip() { # {{{
+  if [ $# != 2 ]; then
+    echo "ip: not enough arguments"
+    return 1
+  fi
+
+  local PLNAME="$1"
+  local ORIGIN="$2"
+  local PLUG_PATH="$NVIM_PLUGS_FOLDER/$PLNAME"
+
+  if ! [ -e "$PLUG_PATH" ] || [ -L "$PLUG_PATH" ]; then
+    git clone "$ORIGIN" "$PLUG_PATH"
+  fi
+
+  if [ $? = 0 ]; then
+    if [ -z "$ARR_NVIM_PLUGS" ]; then
+      ARR_NVIM_PLUGS="$PLNAME"
+    else
+      ARR_NVIM_PLUGS="$ARR_NVIM_PLUGS:$PLNAME"
+    fi
+  fi
+} # }}}
+
+# }}}
+# Config {{{
 
 DOTFILES_URL_HTTPS="https://github.com/YohananDiamond/dotfiles"
 DOTFILES_URL_SSH="git@github.com:yohanandiamond/dotfiles"
 DOTFILES="${HOME}/projects/dotfiles"
-BACKUP_DIR="${HOME}/.cache/dotfiles-symlink-backup/$(date '+%Y-%m-%d.%H:%M').$(shuf -i 0-99 -n 1)"
+BACKUP_DIR="${HOME}/.cache/symlink-backup/dotfiles.$(date '+%Y-%m-%d.%H.%M').$(shuf -i 0-99 -n 1)"
+
+PROGRAM_NAME="$(basename "$0")"
+NVIM_PLUGS_FOLDER="${NVIM_PLUGS_FOLDER:-"$HOME/.cache/nvim-plugs"}"
 
 # }}}
-# PROMPTS {{{
 
-welcome_agree() {
-    if ! [ -r "${DOTFILES}" ]; then
-        echo "Welcome to YohananDiamond's Dotfiles Setup!"
-        echo "This is a personal script of mine that links some config files I have."
-        echo "No packages are installed here, only config symlinking is done."
-        echo "Although I've implemented a backup system for preventing problems with losing the files, I can't assure it will actually work properly."
-        read -p "Do you want to proceed with installation? [y/N] " answer
-        [ "${answer}" != "y" ] && exit 1
-        check_and_clone
-    fi
-}
+# Check if dotfiles are installed {{{
 
-check_and_clone() {
-    # Is this even useful for me? I have no idea.
-    if ! [ -r "${DOTFILES}" ]; then
-        echo "There is no folder at '${DOTFILES}'. Would you like to clone the repository?"
-        echo "If you choose not to do so, the program will be terminated."
-        read -p "Choice [Y/n]: " answer
-        [ "${answer}" == "n" ] && exit 1
-        read -p "Would you like to clone via SSH or HTTPS? [S/h]: " answer
-        if [ "${answer}" == "h" ]; then
-            git clone ${DOTFILES_URL_HTTPS} ${DOTFILES} || exit $?
-        else
-            git clone ${DOTFILES_URL_SSH} ${DOTFILES} || exit $?
-        fi
-    fi
-}
-
-# }}}
-# SYMLINKING {{{
-
-lf() {
-    ### Create a symlink file pointing to another, with some extra checks.
-    ### $1 => Original File: where $2 points to.
-    ### $2 => New File: will be created and point to $1. Full paths are recommended.
-    if [ $# != 2 ]; then
-        echo "lf: not enough arguments"
-        return 1
-    fi
-
-    local ORIGINAL_FILE="${1}"
-    local NEW_FILE="${2}"
-
-    mkdir -p "$(dirname "${NEW_FILE}")"
-
-    # Check if ${NEW_FILE} exists and then backup it.
-    if [ -e "${NEW_FILE}" ] || [ -L "${NEW_FILE}" ]; then
-        local BACKUP_FILE_PATH="${BACKUP_DIR}/$(dirname "${NEW_FILE#?}")"
-        mkdir -p "${BACKUP_FILE_PATH}"
-        mv "${NEW_FILE}" -t "${BACKUP_FILE_PATH}"
-    fi
-
-    ln -s "${ORIGINAL_FILE}" "${NEW_FILE}" \
-        || echo "The error above ocurred while symlinking '${ORIGINAL_FILE}' -> '${NEW_FILE}'"
-}
-
-lf_glob() {
-    ### Globs all files in the specified folder and symlink then to the target folder.
-    ### $1 => Original Folder: the files generated from $2 point to the ones here.
-    ### $2 => New Folder: the new files will be created here and will point to $1. Full paths are recommended.
-    [ -z "${1}" ] || [ -z "${2}" ] && echo "lf_glob: not enough arguments" && return 1
-
-    # TODO: find alternative to * that supports hidden files.
-    [ -n "$(ls "${1}" 2>/dev/null)" ] && \
-        for globfile in "${1}"/*; do
-            lf "${globfile}" "${2}/$(basename "${globfile}")"
-        done
-    }
-
-lf_config() {
-    ### Acts the same as lf, but the original file is rooted on the dotfiles "config" folder.
-    ### $1 => Same as [lf/$1], but roots on ${DOTFILES}/config
-    ### $2 => Same as [lf/$2]
-    [ -z "${1}" ] || [ -z "${2}" ] && echo "lf_config: not enough arguments" && return 1
-    lf "${DOTFILES}/config/${1}" "${2}"
-}
-
-link_files() {
-    ### Uses the lf functions above to link all configs.
-    ### No arguments are used.
-
-    echo -n "   [ NOW ] Symlinking files..."
-
-    # Directories
-    if is_android; then
-        lf_config "termux" "${HOME}/.termux"
+if [ -z "$NO_INSTALL_CHECK" ]; then
+  if ! [ -r "$DOTFILES" ]; then
+    cat <<EOF
+Welcome to YohananDiamond's Dotfiles Setup!
+This is a personal script I've made that links some config files I have.
+No packages are installed here yet - only dotfiles cloning and config symlinking is done.
+Although I've implemented a backup system for preventing problems with losing the files, I can't assure it will actually work properly.
+EOF
+    printf "Do you wish to proceed? [y/N] "
+    read option
+    if [ "$option" = "y" ] || [ "$option" = "Y"]; then
+      install_dotfiles
     else
-        lf_config "bspwm" "${HOME}/.config/bspwm"
-        lf_config "i3" "${HOME}/.config/i3"
-        lf_config "polybar" "${HOME}/.config/polybar"
-        lf_config "sxhkd" "${HOME}/.config/sxhkd"
-        lf_config "alacritty" "${HOME}/.config/alacritty"
-        # lf_config "rofi" "${HOME}/.config/rofi"
-        lf_config "dunst" "${HOME}/.config/dunst"
-        lf_config "picom" "${HOME}/.config/picom"
-        lf_config "qutebrowser/config.py" "${HOME}/.config/qutebrowser/config.py"
-        lf_config "xresources" "${HOME}/.Xresources"
-        lf_config "taskwarrior" "${HOME}/.config/taskwarrior"
-        lf_config "xinitrc" "${HOME}/.xinitrc"
-        lf_config "xprofile" "${HOME}/.xprofile"
-        lf_config "profile" "${HOME}/.profile"
-        lf_config "profile" "${HOME}/.zprofile"
-        lf_config "zathura" "${HOME}/.config/zathura"
+      exit 2
     fi
-    lf_config "dircolors" "${HOME}/.config/dircolors"
-    lf_config "zsh/zshrc" "${HOME}/.config/zsh/.zshrc"
-    lf_config "kak" "${HOME}/.config/kak"
-    lf_config "gitconfig" "${HOME}/.gitconfig"
-    lf_config "gitignore" "${HOME}/.gitignore"
-    lf_config "broot" "${HOME}/.config/broot"
-    lf_config "bash/bashrc" "${HOME}/.bashrc"
-    lf_config "inputrc" "${HOME}/.inputrc"
-    lf_config "tmux.conf" "${HOME}/.tmux.conf"
-    # lf_config "vifm" "${HOME}/.config/vifm"
-
-    # Glob directories.
-    # lf_glob "${DOTFILES}/config/vscode" "${HOME}/.config/Code/User"
-    lf_glob "${DOTFILES}/config/nvim" "${HOME}/.config/nvim"
-    lf_glob "${DOTFILES}/config/emacs" "${HOME}/.emacs.d"
-    lf_glob "${DOTFILES}/local/bin" "${HOME}/.local/bin"
-    lf_glob "${DOTFILES}/local/lib" "${HOME}/.local/lib"
-    lf_glob "${DOTFILES}/local/share" "${HOME}/.local/share"
-    lf_glob "${HOME}/persist/local/bin" "${HOME}/.local/bin"
-    lf_glob "${HOME}/persist/local/share" "${HOME}/.local/share"
-    for x in {2..3}; do
-        lf_glob "${DOTFILES}/config/gtk-${x}.0" "${HOME}/.config/gtk-${x}.0"
-    done
-
-    echo " done."
-}
-
-gc_symlinks() { # {{{
-    [ $# = 0 ] && exit 1
-    while [ $# != 0 ]; do
-        find "${1}" -maxdepth 1 |
-            while read file; do
-                if file "${file}" | grep -q "^${file}: broken symbolic link"; then
-                    echo -n "Removing broken symlink: ${file}..."
-                    if rm -rf "${file}"; then
-                        echo " done."
-                    else
-                        echo " failed."
-                    fi
-                fi
-            done
-        shift
-    done
-} # }}}
+  fi
+fi
 
 # }}}
-# NEOVIM PLUGINS {{{
+# Config Files {{{
 
-## "ivp" -> Install Vim Plugin
-## $1 => Destination Folder name (in ~/.cache/nvim-plugs/)
-## $2 => Repository address
-## Git-clones the repository ($2) to the nvim-plugs folder.
-ivp() { # {{{
-    if [ $# != 2 ]; then
-        echo "ivp: not enough arguments" && return 1
-    fi
+if [ -z "$NO_CONFIG_LINK" ]; then
+  echo "+ Symlinking files..."
 
-    if ! (grep -q '^.*:$' <<<"${VIM_PLUGINS}" || grep -q '^$' <<<"${VIM_PLUGINS}"); then
-            VIM_PLUGINS="${VIM_PLUGINS}:"
-    fi
-    VIM_PLUGINS="${VIM_PLUGINS}${1}"
+  if is_android; then
+    lfconf "termux" ~/.termux
+  else
+    # Startup-related configuration
+    lfconf "xorg/xresources" ~/.Xresources
+    lfconf "xorg/xinitrc" ~/.xinitrc
+    lfconf "xorg/xprofile" ~/.xprofile
+    lfconf "profile" ~/.profile
+    lfconf "profile" ~/.zprofile
 
-    [ -e "${HOME}/.cache/nvim-plugs/${1}" ] && return 0 # Exit sucessfully if plugin already exists.
-    git clone "${2}" "${HOME}/.cache/nvim-plugs/${1}"
-} # }}}
+    # Window Manager configuration
+    lfconf "bspwm" ~/.config/bspwm
+    lfconf "polybar" ~/.config/polybar
+    lfconf "sxhkd" ~/.config/sxhkd
+    lfconf "alacritty" ~/.config/alacritty
+    lfconf "dunst" ~/.config/dunst
+    lfconf "picom" ~/.config/picom
 
-## A "garbage collection" for vim plugins
-gc_vimplugins() { # {{{
-    PLUGINS="$(ls ~/.cache/nvim-plugs)"
-    echo "${PLUGINS}" | while read plugin; do
-    if (echo "${VIM_PLUGINS}" | grep -q '^'"${plugin}"':.*$' ||
-        echo "${VIM_PLUGINS}" | grep -q '^.*:'"${plugin}"'$' ||
-        echo "${VIM_PLUGINS}" | grep -q '^.*:'"${plugin}"':.*$'); then
-            : # File is on the plugin list
-        else
-            plugin_path="${HOME}/.cache/nvim-plugs/${plugin}"
-            if file "${plugin_path}" | grep -q '^'"${plugin_path}"': symbolic link'; then
-                : # File is symlink
-            else
-                echo -n "Removing disabled plugin ${plugin}..."
-                if rm -rf "${plugin_path}"; then
-                    echo " done."
-                else
-                    echo " failed."
-                fi
-            fi
-    fi
+    lfconf "qutebrowser/config.py" ~/.config/qutebrowser/config.py
+    lfconf "zathura" ~/.config/zathura
+    lfconf "taskwarrior" ~/.config/taskwarrior
+
+    # lfconf "i3" ~/.config/i3
+    # lfconf "rofi" ~/.config/rofi
+  fi
+
+  # Shells, interfaces
+  lfconf "zsh/zshrc" ~/.config/zsh/.zshrc
+  lfconf "bash/bashrc" ~/.bashrc
+  lfconf "tmux.conf" ~/.tmux.conf
+  lfconf "inputrc" ~/.inputrc
+
+  # Programs
+  lfconf "broot" ~/.config/broot
+  lfconf "git/gitconfig" ~/.gitconfig
+  lfconf "git/gitignore" ~/.gitignore
+  lfglob "$DOTFILES/config/nvim" ~/.config/nvim
+
+  # Path-related
+  lfglob "$DOTFILES/local/bin" ~/.local/bin
+  lfglob "$DOTFILES/local/lib" ~/.local/lib
+  lfglob "$DOTFILES/local/share" ~/.local/share
+
+  # Gtk Config
+  for x in 2 3; do
+    lfglob "$DOTFILES/config/gtk-$x.0" ~/.config/"gtk-$x.0"
+  done
+
+  # lfconf "vifm" ~/.config/vifm
+  # lfconf "kak" ~/.config/kak
+  # lfglob "$DOTFILES/config/emacs" ~/.emacs.d
+  # lfglob "$DOTFILES/config/vscode" ~/.config/Code/User
+
+  # Local Symlinking
+  lfglob "$HOME/persist/local/bin" ~/.local/bin
+  lfglob "$HOME/persist/local/share" ~/.local/share
+fi
+
+# }}}
+# NeoVim Plugins {{{
+
+if [ -z "$NO_NEOVIM_PLUGIN" ]; then
+  echo "+ Check-up: neovim plugins"
+
+  if ! [ -r "$NVIM_PLUGS_FOLDER" ]; then
+    echo "  Making plugin directory..."
+    mkdir -p "$NVIM_PLUGS_FOLDER"
+  fi
+
+  ip "ion-vim@yohanandiamond" "https://gitlab.redox-os.org/YohananDiamond/ion-vim"
+  ip "deoplete.nvim" "https://github.com/Shougo/deoplete.nvim"
+  ip "vim-toml" "https://github.com/cespare/vim-toml"
+  ip "vim-surround" "https://github.com/tpope/vim-surround"
+  ip "vim-repeat" "https://github.com/tpope/vim-repeat"
+  ip "vim-commentary" "https://github.com/tpope/vim-commentary"
+  ip "jsonc.vim" "https://github.com/neoclide/jsonc.vim"
+  ip "lightline.vim" "https://github.com/itchyny/lightline.vim"
+  ip "yats.vim" "https://github.com/HerringtonDarkholme/yats.vim"
+  ip "ctrlp.vim" "https://github.com/ctrlpvim/ctrlp.vim"
+  ip "emmet-vim" "https://github.com/mattn/emmet-vim"
+  ip "vim-hy" "https://github.com/hylang/vim-hy"
+  ip "vim-fsharp" "https://github.com/fsharp/vim-fsharp"
+  ip "goyo.vim" "https://github.com/junegunn/goyo.vim"
+  ip "julia-vim" "https://github.com/JuliaEditorSupport/julia-vim"
+  ip "nord-vim" "https://github.com/arcticicestudio/nord-vim"
+  ip "nvim-nim" "https://github.com/baabelfish/nvim-nim"
+  ip "tabular" "https://github.com/godlygeek/tabular"
+  ip "vim-markdown" "https://github.com/plasticboy/vim-markdown"
+  ip "lexima.vim" "https://github.com/cohama/lexima.vim"
+  ip "emmet-vim" "https://github.com/mattn/emmet-vim"
+  ip "gruvbox" "https://github.com/morhetz/gruvbox"
+  ip "vim-racket" "https://github.com/wlangstroth/vim-racket"
+  ip "vim-auto-popmenu" "https://github.com/skywind3000/vim-auto-popmenu"
+  ip "scribble.vim" "https://github.com/vim-scripts/scribble.vim"
+  ip "vim-python-pep8-indent" "https://github.com/Vimjas/vim-python-pep8-indent"
+
+  lf "$NVIM_PLUGS_FOLDER" ~/.config/nvim/bundle
+fi
+
+# }}}
+# "Garbage Collection" {{{
+
+# For NeoVim plugins
+if [ -z "$NO_GC_NVIM_PLUGS" ]; then
+  echo "+ Garbage Collection: neovim plugins"
+  find "$NVIM_PLUGS_FOLDER" -mindepth 1 -maxdepth 1 |
+    while read plug_path; do
+      plug="$(basename "$plug_path")"
+      if ! (grep -q "^$plug:.*\$" <<<"$ARR_NVIM_PLUGS" ||
+          grep -q "^.*:$plug:.*\$" <<<"$ARR_NVIM_PLUGS" ||
+          grep -q "^.*:$plug\$" <<<"$ARR_NVIM_PLUGS"); then
+        if ! file "$plug_path" | grep -q "^$plug_path: symbolic link"; then
+          printf "  Removing disabled plugin [$plug]... "
+          rm -rf "$plug_path" &&
+            echo "done." ||
+            echo "failed."
+        fi
+      fi
+    done
+fi
+
+# For Symlinks
+for folder in ~/.local/{bin,lib,share}; do
+  if [ -r "$folder" ]; then
+    find "$folder" -mindepth 1 -maxdepth 1 |
+      while read file; do
+        if file "$file" | grep -q "^$file: broken symbolic link"; then
+          printf "  Removing broken symlink: '$file'... "
+          rm -rf "$file" &&
+            echo "done." ||
+            echo "failed."
+        fi
+      done
+    else
+      echo "  Target folder \"$folder\" doesn't exist."
+  fi
 done
-} # }}}
-
-setup_vimplugins() {
-    echo "   [ NOW ] Updating vim plugin cache..."
-
-    if ! [ -r ~/.cache/nvim-plugs ]; then
-        mkdir -p ~/.cache/nvim-plugs/
-    fi
-
-    ivp "ion-vim@yohanandiamond" "https://gitlab.redox-os.org/YohananDiamond/ion-vim"
-    ivp "deoplete.nvim" "https://github.com/Shougo/deoplete.nvim"
-    ivp "vim-toml" "https://github.com/cespare/vim-toml"
-    ivp "vim-surround" "https://github.com/tpope/vim-surround"
-    ivp "vim-repeat" "https://github.com/tpope/vim-repeat"
-    ivp "vim-commentary" "https://github.com/tpope/vim-commentary"
-    ivp "jsonc.vim" "https://github.com/neoclide/jsonc.vim"
-    ivp "lightline.vim" "https://github.com/itchyny/lightline.vim"
-    ivp "yats.vim" "https://github.com/HerringtonDarkholme/yats.vim"
-    ivp "ctrlp.vim" "https://github.com/ctrlpvim/ctrlp.vim"
-    ivp "emmet-vim" "https://github.com/mattn/emmet-vim"
-    ivp "vim-hy" "https://github.com/hylang/vim-hy"
-    ivp "vim-fsharp" "https://github.com/fsharp/vim-fsharp"
-    ivp "goyo.vim" "https://github.com/junegunn/goyo.vim"
-    ivp "julia-vim" "https://github.com/JuliaEditorSupport/julia-vim"
-    ivp "nord-vim" "https://github.com/arcticicestudio/nord-vim"
-    ivp "nvim-nim" "https://github.com/baabelfish/nvim-nim"
-    ivp "tabular" "https://github.com/godlygeek/tabular"
-    ivp "vim-markdown" "https://github.com/plasticboy/vim-markdown"
-    ivp "lexima.vim" "https://github.com/cohama/lexima.vim"
-    ivp "emmet-vim" "https://github.com/mattn/emmet-vim"
-    ivp "gruvbox" "https://github.com/morhetz/gruvbox"
-    ivp "vim-racket" "https://github.com/wlangstroth/vim-racket"
-    ivp "vim-auto-popmenu" "https://github.com/skywind3000/vim-auto-popmenu"
-    ivp "scribble.vim" "https://github.com/vim-scripts/scribble.vim"
-    ivp "vim-python-pep8-indent" "https://github.com/Vimjas/vim-python-pep8-indent"
-
-    lf "${HOME}/.cache/nvim-plugs" "${HOME}/.config/nvim/bundle"
-}
 
 # }}}
-
-welcome_agree
-link_files
-setup_vimplugins
-gc_vimplugins
-gc_symlinks ~/.local/{bin,lib,share}
-
-echo "   [ END ]"

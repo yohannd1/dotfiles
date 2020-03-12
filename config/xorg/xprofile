@@ -3,7 +3,7 @@
 # Commands to run on the start of the startup.
 
 # Environent variables
-source ~/.local/lib/cfg-export.sh
+source ~/.local/lib/env-vars.sh
 
 # Daemons & applets
 picom -b & # Compositor
