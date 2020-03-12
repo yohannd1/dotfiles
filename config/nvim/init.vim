@@ -179,7 +179,7 @@ let g:gruvbox_italics = 0
 
 augroup ft_sh
     au!
-    au FileType sh setlocal tabstop=4 shiftwidth=4
+    au FileType sh setlocal tabstop=2 shiftwidth=2
 augroup end
 
 " }}}
