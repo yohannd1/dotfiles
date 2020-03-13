@@ -172,6 +172,15 @@ let g:gruvbox_bold = 0
 let g:gruvbox_italics = 0
 
 " }}}
+" Lexima {{{
+
+" Remove the auto-double-quote rule
+call remove(g:lexima#default_rules, 11)
+
+" Then reload lexima
+call lexima#set_default_rules()
+
+" }}}
 
 " }}}
 " Filetype Config ---------------------------- {{{
