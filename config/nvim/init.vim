@@ -98,6 +98,7 @@ let $MYGVIMRC = g:VIM_CONFIG . "/ginit.vim"
 let g:is_windows = isdirectory('C:\') ? 1 : 0
 let g:is_android = isdirectory('/sdcard') ? 1 : 0
 let g:at_home = isdirectory(expand('~/projects/dotfiles')) || $DOTFILES != ""
+let g:first_time = exists("g:first_time") ? 0 : 1
 
 if is_windows
     call StartupCD('E:\usb-station\home', '..\..\..\home', $HOME)
@@ -174,8 +175,11 @@ let g:gruvbox_italics = 0
 " }}}
 " Lexima {{{
 
-" Remove the auto-double-quote rule
-call remove(g:lexima#default_rules, 11)
+if first_time
+    " Remove the auto-close-quote rule (for single and double quotes)
+    call remove(g:lexima#default_rules, 11)
+    " call remove(g:lexima#default_rules, 20)
+endif
 
 " Then reload lexima
 call lexima#set_default_rules()

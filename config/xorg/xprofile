@@ -26,5 +26,4 @@ xinput set-prop 16 307 1 & # Touchpad: natural scrolling
 setxkbmap -layout br & # Keyboard layout
 
 # Scripts
-setbg & # Set background
 cfg-recur & # Battery check & etc.
