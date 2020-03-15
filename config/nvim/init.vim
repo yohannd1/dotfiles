@@ -12,21 +12,6 @@ function! SpawnTerminal(command) " {{{
     exec l:command_string
     normal! i
 endfunction " }}}
-function! RunFile() " {{{
-    if g:is_windows
-        if !exists("b:runfile_command_win")
-            echo "[RunFile()]: `b:runfile_command_win` not defined."
-        else
-            call SpawnTerminal(b:runfile_command_win)
-        endif
-    else
-        if !exists("b:runfile_command")
-            echo "[RunFile()]: `b:runfile_command` not defined."
-        else
-            call SpawnTerminal(b:runfile_command)
-        endif
-    endif
-endfunction " }}}
 function! MyFoldText() " {{{
     let l:tab_char = strpart(' ', shiftwidth())
     let l:line_contents = substitute(getline(v:foldstart), '\t', l:tab_char, 'g')
@@ -104,6 +89,38 @@ function! PathAppend(...) " {{{
             let $PATH .= dir
         endif
     endfor
+endfunction " }}}
+function! ReverseRSearch(basedir, query) " {{{
+    let l:current_dir = a:basedir
+    while 1
+        let l:current_glob = glob(l:current_dir . "/*", 0, 1)
+        let l:list_match = ListMatch(l:current_glob, '.*/' .. a:query .. '$') || ListMatch(l:current_glob, '.*\\' .. a:query .. '$')
+        if (l:current_dir == "/") || (l:current_dir =~ '^\w:\\$') " *NIX or Windows root directories
+            return l:list_match
+        else
+            if l:list_match
+                return 1
+            else
+                let l:current_dir = fnamemodify(l:current_dir, ":h") 
+            endif
+        endif
+    endwhile
+endfunction " }}}
+function! InList(element, list) " {{{
+    for e in a:list
+        if e == a:element
+            return 1
+        endif
+    endfor
+    return 0
+endfunction " }}}
+function! ListMatch(list, pattern) " {{{
+    for e in a:list
+        if e =~ a:pattern
+            return 1
+        endif
+    endfor
+    return 0
 endfunction " }}}
 
 " }}}
@@ -226,9 +243,17 @@ augroup end
 " }}}
 " Rust {{{
 
+function! s:MakeRustRifle() " {{{
+    if ReverseRSearch(expand("%:p:h"), "Cargo.toml")
+        let b:rifle = {"std": {"body": "cargo build", "plus": "cargo run"}}
+    else
+        let b:rifle = {"std": {"body": "rustc %f -o %o", "plus": "%o"}}
+    endif
+endfunction " }}}
+
 augroup ft_rust
     au!
-    au FileType rust RfileCmd "cargo run"
+    au FileType rust call s:MakeRustRifle()
     au FileType rust set foldmethod=syntax
 augroup end 
 
@@ -238,7 +263,7 @@ augroup end
 augroup ft_julia
     au!
     au BufNewFile,BufRead,BufEnter *.jl set filetype=julia
-    au FileType julia RfileCmd "julia '%'"
+    au FileType julia let b:rifle = {"std": {"body": "julia '%f'"}}
 augroup end 
 
 " }}}
@@ -247,7 +272,7 @@ augroup end
 augroup ft_clojure
     au!
     au BufNewFile,BufRead,BufEnter *.clj set filetype=clojure
-    au FileType clojure RfileCmd "clojure '%'"
+    au FileType clojure let b:rifle = {"std": {"body": "clojure '%f'"}}
 augroup end
 
 " }}}
@@ -255,7 +280,7 @@ augroup end
 
 augroup ft_vim
     au!
-    au FileType vim RfileCmd "nvim -u '%'"
+    au FileType vim let b:rifle = {"std": {"body": "nvim -u '%f'"}}
     au FileType vim setlocal foldmethod=marker foldmarker={{{,}}}
 augroup end
 
@@ -264,7 +289,7 @@ augroup end
 
 augroup ft_python
     au!
-    au FileType python RfileCmd "python3 '%'"
+    au FileType python let b:rifle = {"std": {"body": "python3 '%f'"}}
 augroup end
 
 " }}}
@@ -272,7 +297,7 @@ augroup end
 
 augroup ft_hy
     au!
-    au FileType hy RfileCmd "hy '%'"
+    au FileType hy let b:rifle = {"std": {"body": "hy '%f'"}}
     au FileType hy setlocal tabstop=2 shiftwidth=2
 augroup end
 
@@ -283,7 +308,7 @@ augroup ft_fsharp
     au!
     " To be honest I wanted to compile to the .exe and run it... sadly I can't
     " without writing some substitutions script and I'm too lazy.
-    au FileType fsharp RfileCmd "fsharpi '%'"
+    au FileType fsharp let b:rifle = {"std": {"body": "fsharpi '%f'"}}
 augroup end
 
 " }}}
@@ -291,14 +316,7 @@ augroup end
 
 augroup ft_lua
     au!
-    au FileType lua RfileCmd "lua '%'"
-augroup end
-
-" }}}
-" Conf (general) {{{
-
-augroup ft_conf
-    au!
+    au FileType lua let b:rifle = {"std": {"body": "lua '%f'"}}
 augroup end
 
 " }}}
@@ -311,7 +329,7 @@ augroup ft_markdown
     au!
     au FileType markdown setlocal textwidth=72 nofoldenable noautoindent
     au FileType markdown setlocal tabstop=2 shiftwidth=2
-    au FileType markdown RfileCmd "md-preview '%'"
+    au FileType markdown let b:rifle = {"std": {"body": "md-preview '%f'"}}
     au FileType markdown nnoremap <Leader>df :TableFormat<CR>
     au FileType markdown nnoremap <Leader>d: vip:Tabularize /:\zs<CR>
     au FileType markdown vnoremap <Leader>d: :Tabularize /:\zs<CR>
@@ -321,19 +339,21 @@ augroup end
 " }}}
 " C {{{
 
+let s:cpp_rifle_win = {"body": 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -Command g++ \"%f\" -o \"%o\"', "plus": '%o; rm %o'}
+
 augroup ft_c
     au!
     au BufNewFile,BufRead,BufEnter *.fx set filetype=c
-    au FileType c RfileCmd "gcc '%' && { ./a.out; rm ./a.out; }"
+    au FileType c let b:rifle = {"std": {"body": 'gcc "%f" -o "%o"', "plus": "%o; rm %o"}, "win": s:cpp_rifle_win}
 
-    if is_windows
-        au FileType c RfileCmdWin printf('%s -Command gcc \"%%\" \"%s\" && %s; rm %s',
-                                         \ 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe', 
-                                         \ $HOME . '\tmp_output.exe',
-                                         \ $HOME . '\tmp_output.exe',
-                                         \ $HOME . '\tmp_output.exe',
-                                         \ )
-    endif
+    " if is_windows
+        " au FileType c RfileCmdWin printf('%s -Command gcc \"%%\" \"%s\" && %s; rm %s',
+        "                                  \ 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe', 
+        "                                  \ $HOME . '\tmp_output.exe',
+        "                                  \ $HOME . '\tmp_output.exe',
+        "                                  \ $HOME . '\tmp_output.exe',
+        "                                  \ )
+    " endif
 augroup end
 
 " }}}
@@ -341,16 +361,15 @@ augroup end
 
 augroup ft_cpp
     au!
-    au FileType cpp RfileCmd "g++ '%' && { ./a.out; rm ./a.out; }"
-
-    if is_windows
-        au FileType cpp RfileCmdWin printf('%s -Command g++ \"%%\" -o \"%s\" && %s; rm %s',
-                                         \ 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe', 
-                                         \ $HOME . '\tmp_output.exe',
-                                         \ $HOME . '\tmp_output.exe',
-                                         \ $HOME . '\tmp_output.exe',
-                                         \ )
-    endif
+    au FileType cpp let b:rifle = {"std": {"body": 'g++ "%f" -o "%o"', "plus": "%o; rm %o"}, "win": s:cpp_rifle_win}
+    " if is_windows
+    "     au FileType cpp RfileCmdWin printf('%s -Command g++ \"%%\" -o \"%s\" && %s; rm %s',
+    "                                      \ 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe', 
+    "                                      \ $HOME . '\tmp_output.exe',
+    "                                      \ $HOME . '\tmp_output.exe',
+    "                                      \ $HOME . '\tmp_output.exe',
+    "                                      \ )
+    " endif
 augroup end
 
 
@@ -360,7 +379,7 @@ augroup end
 augroup ft_nim
     au!
     au Filetype nim setlocal shiftwidth=2 softtabstop=2
-    au FileType nim RfileCmd "nim c -r '%'"
+    au FileType nim let b:rifle = {"std": {"body": "nim c -r '%f'"}}
 augroup end
 
 " }}}
@@ -368,7 +387,7 @@ augroup end
 
 augroup ft_ruby
     au!
-    au FileType ruby RfileCmd "ruby '%'"
+    au FileType ruby let b:rifle = {"std": {"body": "ruby '%f'"}}
     au FileType ruby set foldmethod=syntax
 augroup end
 
@@ -377,7 +396,7 @@ augroup end
 
 augroup ft_lisp
     au!
-    au FileType lisp RfileCmd "clisp '%'"
+    au FileType lisp let b:rifle = {"std": {"body": "clisp '%f'"}}
 augroup end
 
 " }}}
@@ -393,7 +412,7 @@ augroup end
 
 augroup ft_racket
     au!
-    au FileType racket RfileCmd "racket '%'"
+    au FileType racket let b:rifle = {"std": {"body": "racket '%f'"}}
 augroup end
 
 " }}}
@@ -409,8 +428,8 @@ augroup end
 
 augroup ft_html
     au!
-    au FileType html RfileCmdWin "start %"
-    au FileType html RfileCmd ($BROWSER . " '%'")
+    au FileType html let b:rifle = {"std": {"body": $BROWSER . " '%f'"},
+        \ "win": {"body": "start '%f'"}}
 augroup end
 
 " }}}
@@ -549,8 +568,9 @@ inoremap <expr> <C-j> pumvisible() ? "\<C-n>" : "<C-j>"
 inoremap <expr> <C-k> pumvisible() ? "\<C-p>" : "<C-k>"
 inoremap <expr> <C-m> pumvisible() ? "\<C-y>" : "<C-m>"
 
-" Run a file
-nnoremap <silent> <Leader>r :RunFile<CR>
+" Rifle Commands
+nnoremap <silent> <Leader>r :RifleRun<CR>
+nnoremap <silent> <Leader>R :Rifle<CR>
 
 " Steve Losh: Panic Button
 " (With zz on the end to center)
@@ -593,31 +613,3 @@ if at_home
 endif
 
 " }}}
-" Old Code ----------------------------------- {{{
-
-" function! EditNote(filename) " {{{
-"     let l:new_filename = substitute(a:filename, ' ', '-', 'g')
-"     let l:new_filename = substitute(l:new_filename, '.*', '\L&', 'g')
-"     let l:new_filename = substitute(l:new_filename, '\v(!|/)', '', 'g')
-"     if isdirectory(expand("~/projects/personal/wiki"))
-"         if (l:new_filename != "")
-"             exec "e ~/projects/personal/wiki/" . l:new_filename . ".md"
-"         else
-"             echo "... No arguments provided."
-"         endif
-"     else
-"         echo "Not found: '~/projects/personal/wiki'. Please create said directory."
-"     endif
-" endfunction " }}}
-" function! OpenWORD() " {{{
-"     let l:WORD = expand("<cWORD>")
-"     exec "!xdg-open " . l:WORD . " &"
-" endfunction " }}}
-
-" command! -nargs=* RunfileCommand let b:runfile_command = join([<f-args>], ' ') " Remember to quote '%' for better performance when using this.
-" command! -nargs=* RunfileCommandWin let b:runfile_command_win = join([<f-args>], ' ') " Remember to quote '%' for better performance when using this.
-
-" }}}
-
-" TODO: detect cargo data or makefiles and change the runfile command
-" accordingly

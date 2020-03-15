@@ -18,4 +18,4 @@ FILE="/tmp/md-export$(echo "${TEMP}" | sed 's/\///g; s/tmp//g').html"
 mv "${TEMP}" "${FILE}"
 md-compile "${1}" > "${FILE}" &&
     echo "Compiled to: ${FILE}" &&
-    nuke "${FILE}"
+    $BROWSER "${FILE}"
