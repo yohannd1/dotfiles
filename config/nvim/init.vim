@@ -581,6 +581,9 @@ nnoremap <leader>m :messages<CR>
 " Netrw for browsing when wanted
 nnoremap <silent> <leader>= :Vexplore<CR>
 
+" Replace everything in screen with... something
+nnoremap <Leader>s :%s//g<Left><Left>
+
 " }}}
 " Quick Editing ------------------------------ {{{
 

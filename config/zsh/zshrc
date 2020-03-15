@@ -109,7 +109,7 @@ path-maybe "${CARGO_HOME}/bin"
 path-maybe "/opt/bin"
 path-maybe "$(ruby -e "puts Gem.user_dir")/bin"
 
-source-maybe "${HOME}/.local/lib/env-vars.sh"
+source-maybe "${HOME}/.local/share/env.sh"
 source-maybe "${HOME}/persist/local/share/zshrc.personal"
 
 # }}}

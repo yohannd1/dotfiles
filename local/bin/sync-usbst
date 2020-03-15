@@ -4,10 +4,10 @@
 # I still have to explain this.
 
 for prog in rsync; do
-    if ! type $prog >/dev/null 2>/dev/null; then
-        echo "error: ${prog} not found."
-        exit 1
-    fi
+  if ! type $prog >/dev/null 2>/dev/null; then
+    echo "error: ${prog} not found."
+    exit 1
+  fi
 done
 
 USB_STATION="${USB_STATION:-/mnt/usb-main/usb-station}"

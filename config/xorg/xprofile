@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 
-# Commands to run on the start of the startup.
+# Commands to run on the start of an x server.
 
 # Environent variables
-source ~/.local/lib/env-vars.sh
+source ~/.local/share/env.sh
 
 # Daemons & applets
 picom -b & # Compositor
@@ -26,4 +26,4 @@ xinput set-prop 16 307 1 & # Touchpad: natural scrolling
 setxkbmap -layout br & # Keyboard layout
 
 # Scripts
-cfg-recur & # Battery check & etc.
+battery-check & # Battery check & etc.

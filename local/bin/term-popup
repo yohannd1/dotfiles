@@ -1,8 +1,0 @@
-#!/usr/bin/env sh
-
-if [ -t 1 ]; then 
-    eval "${@}"
-else
-    [ -z "$TERMINAL" ] &&
-    $TERMINAL --class "float" -e "${@}" 
-fi

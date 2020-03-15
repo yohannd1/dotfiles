@@ -1,2 +1,9 @@
 #!/usr/bin/env sh
-feh --no-fehbg --bg-fill "$(shuf -n1 -e /home/yohanan/persist/wallpapers/*.jpg)"
+
+if [ -z "$F_WALLPAPERS" ]; then
+  echo "Please set \$F_WALLPAPERS with the wallpapers folder path."
+  exit 1
+fi
+
+IMAGE="$(shuf -n1 -e "$F_WALLPAPERS"/*.jpg)"
+feh --no-fehbg --bg-fill "$IMAGE"

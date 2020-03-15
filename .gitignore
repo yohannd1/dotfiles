@@ -1,4 +1,0 @@
-# The bundle symlink. Is not included to prevent cloning errors if the file this symlink points to doesn't exist on the cloned computer.
-config/nvim/bundle
-
-config/vifm/vifminfo

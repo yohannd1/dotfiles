@@ -24,4 +24,4 @@ bspc rule -a firefox desktop='^2'
 
 setbg &
 start-polybar &
-bspwm-event-handler &
+bspwm-events &

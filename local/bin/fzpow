@@ -1,8 +1,9 @@
 #!/usr/bin/env sh
 # vim: foldmethod=marker
 
-# Power Off Commands
-# Currently only works properly under Xorg + Systemd + i3
+# A simple script for power actions.
+# If no args are specified, dmenu / fzf is loaded.
+# If an arg is provided, this script tries to choose said option.
 
 # Settings
 I3LOCK_COLOR="282828"
@@ -12,10 +13,9 @@ OPTIONS=$'lock\nlogout\nsuspend\nhibernate\nreboot\nshutdown'
 # Check if all dependencies are available
 check_dependencies() { # {{{
   for dependency in dmenu xdg-screensaver systemctl notify-send; do
-    type "${dependency}" >/dev/null ||
-      exit 127
-    done
-  } # }}}
+    type "${dependency}" >/dev/null || exit 127
+  done
+} # }}}
 
 # Match arguments
 match_args() { # {{{
@@ -52,9 +52,8 @@ match_args() { # {{{
 
 # Fuzzy matching
 fuzzy_match() { # {{{
-  echo "${OPTIONS}" | dmenu ||
-    return 1
-  } # }}}
+  echo "${OPTIONS}" | dmenu
+} # }}}
 
 # Help
 show_help() { # {{{
@@ -65,10 +64,10 @@ show_help() { # {{{
     while read line; do
       echo "  ${line}"
     done
-    echo ""
-    echo "If no argument is specified, a dmenu pop-up is shown."
-    exit 2
-  } # }}}
+  echo ""
+  echo "If no argument is specified, a dmenu pop-up is shown."
+  exit 2
+} # }}}
 
 # Actions
 action_lock() { # {{{

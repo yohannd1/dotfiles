@@ -1,32 +1,41 @@
 #!/usr/bin/env sh
 
-[ $# -gt 1 ] && exit 1
+PROG="$(basename $0)"
+
+msg() {
+  if [ -t 1 ]; then
+    echo "$@"
+  else
+    notify-send "$@"
+  fi
+}
+
+if [ $# = 1 ]; then
+  msg "$PROG: There should be at least one argument."
+  exit 1
+fi
+
+if [ -z "$FLAMEDASH_SCR_FOLDER" ]; then
+  msg "$PROG: please specify \$FLAMEDASH_SCR_FOLDER with the path to the screenshot."
+  exit 1
+fi
 
 if ! type flameshot >/dev/null 2>/dev/null; then
-    notify-send "[flamedash]: Command \`flameshot\` not found. Please make sure it is on your PATH."
+  msg "$PROG: command 'flameshot' not found. please make sure it is on your \$PATH."
+  exit 1
 fi
 
-SC_FOLDER="${HOME}/photos/screenshots/$(date +%Y-%m)"
+if ! mkdir -p "$FLAMEDASH_SCR_FOLDER"; then
+  msg "$PROG: could not make directory $FLAMEDASH_SCR_FOLDER."
+fi
 
-if ! mkdir -p "${SC_FOLDER}"; then
-    notify-send "[flamedash]: Could not make directory \"${SC_FOLDER}\"."
+case "$1" in
+  "") flameshot gui -p "$FLAMEDASH_SCR_FOLDER" ;;
+  gui) flameshot gui -p "$FLAMEDASH_SCR_FOLDER" ;;
+  full) flameshot full -p "$FLAMEDASH_SCR_FOLDER" ;;
+  fullc) flameshot full -c ;;
+  *)
+    msg "$PROG: invalid command."
     exit 1
-fi
-
-case "${1}" in
-    "")
-        flameshot gui -p "${SC_FOLDER}"
-        ;;
-    gui)
-        flameshot gui -p "${SC_FOLDER}"
-        ;;
-    full)
-        flameshot full -p "${SC_FOLDER}"
-        ;;
-    fullc)
-        flameshot full -c
-        ;;
-    *)
-        echo "Invalid command."
-        ;;
+    ;;
 esac

@@ -4,4 +4,4 @@
 # This is ran at login on a TTY.
 
 # Load environment variables.
-source ~/.local/lib/env-vars.sh
+source ~/.local/share/env.sh

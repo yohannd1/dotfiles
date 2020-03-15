@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+
+# A script to launch emacs as a client or standalone, on TUI or GUI.
+
+if [ $# = 0 ]; then
+  echo "Usage: $(basename $0) [emacs | emacsclient] <other-args>"
+  exit 1
+fi
+
+case "$1" in
+  emacs)
+    shift
+    if [ -t 1 ]; then
+      exec emacs -nw $@
+    else
+      exec emacs $@
+    fi
+    ;;
+  emacsclient)
+    shift
+    if [ -t 1 ]; then
+      exec emacsclient -a "" -t $@
+    else
+      exec emacsclient -a "" $@
+    fi
+    ;;
+  *)
+    echo "Bad command! $1"
+    exit 1
+    ;;
+esac

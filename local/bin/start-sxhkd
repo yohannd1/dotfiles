@@ -1,14 +1,14 @@
 #!/usr/bin/env sh
 
-# Uses `generate-sxhkd` and then actually starts sxhkd.
+# Uses `gen-sxhkd` and then actually starts sxhkd.
 
 SXHKD_TEMP="${HOME}/.cache/sxhkd-config"
 MKTEMP="$(mktemp)"
-generate-sxhkd $@ > "${SXHKD_TEMP}"
+gen-sxhkd $@ > "$SXHKD_TEMP"
 
-if [ -n "${LOGFILE}" ]; then
-    LOGFILE="${MKTEMP}.sxhkd"
-    sxhkd -c "${SXHKD_TEMP}" -r "${LOGFILE}"
+if [ -n "$MKTEMP" ]; then
+  LOGFILE="$MKTEMP.sxhkd"
+  sxhkd -c "$SXHKD_TEMP" -r "$LOGFILE"
 else
-    sxhkd -c "${SXHKD_TEMP}"
+  sxhkd -c "$SXHKD_TEMP"
 fi

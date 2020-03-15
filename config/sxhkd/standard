@@ -25,7 +25,7 @@ super + space
 
 # Power Menu
 super + shift + o
-    pow
+    fzpow
 
 # Print Screen
 Print
@@ -35,11 +35,11 @@ super + Print
 ctrl + Print
     flamedash full
 
-# Mounting (yes I stole it from Luke)
+# Mounting
 super + F10
-    menu-mount
+    fzmount
 super + shift + F10
-    menu-umount
+    fzumount
 
 # }}}
 # Extra Keys {{{

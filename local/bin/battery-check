@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # vim: foldmethod=marker
 
-# Some checks to run in the background.
-# "Why is this in python?" -> because it looked trash in sh syntax. :v
+# Battery checks to run in background.
+# "Why is this in python?" -> because it looked trash in sh syntax.
 
 import subprocess
 import time
