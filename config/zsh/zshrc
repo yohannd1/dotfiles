@@ -239,12 +239,12 @@ dir-action() { # {{{
         return 1
     }
 
-    echo -en '\033[2 q'
-    printf "\e[33mDirectory of choice:\e[m %s\n" "${dir}"
+    echo -en '\e[2 q'
+    printf "\e[38;5;11mDirectory:\e[m %s\n" "${dir}"
 
     while [ -z "${EXIT}" ]; do
-        printf "\e[33mCommands:\e[m [c]d, [b]root, [n]nn, [g]it-check, [q]uit\n"
-        printf "       λ> "
+        printf "::::: [c]d, [b]root, [n]nn, [g]it-check, [q]uit\n"
+        printf '\e[38;5;11m(dir)\e[m λ> '
         read -k1 ch
         printf "\n"
 

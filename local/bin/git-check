@@ -8,10 +8,10 @@ fi
 cd "$1" || exit
 
 if git status -sb; then
-  echo -e '\e[2 q'
+  echo -en '\e[2 q'
   while [ -z "$EXIT" ]; do
-    echo -e '\e[33mCommands:\e[m [d]iff, [a]dd-commit, [p]ull, pu[s]h, [f]etch, [l]og, [q]uit'
-    printf " (git) λ> "
+    echo -e '::::: [d]iff, [a]dd-commit, [p]ull, pu[s]h, [f]etch, [l]og, [q]uit'
+    printf '\e[38;5;11m(git)\e[m λ> '
     read -n1 ch; echo
     case "$ch" in
       d)
