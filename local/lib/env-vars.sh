@@ -19,7 +19,7 @@ export ZDOTDIR="${HOME}/.config/zsh"
 export TASKRC="${HOME}/.config/taskwarrior/taskrc"
 export WINEPREFIX="${HOME}/.cache/wine"
 
-export FZF_DEFAULT_OPTS='--color=16 --height 60% --layout=reverse --border'
+export FZF_DEFAULT_OPTS='--color=16 --height=60% --layout=reverse --border'
 export BAT_THEME="base16"
 
 export KEYTIMEOUT=1

@@ -265,7 +265,7 @@ dir-action() { # {{{
 } # }}}
 select-project() { # {{{
     local projects="$(find ~/projects -mindepth 1 -maxdepth 1 -type d | sed 's/^.*\///g')"
-    local choice="$(fzf <<<"$projects")"
+    local choice="$(fzf-tmux <<<"$projects")"
     if [ -n "$choice" ]; then
         echo "${HOME}/projects/$choice"
     fi

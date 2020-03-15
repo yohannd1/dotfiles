@@ -21,7 +21,7 @@ super + Return
 
 # Program Launcher
 super + space
-    dmenu_run -l 0
+    dmenu_run
 
 # Power Menu
 super + shift + o
