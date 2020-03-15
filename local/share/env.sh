@@ -2,7 +2,11 @@ export F_PROJECTS="$HOME/projects"
 export F_PERSIST="$HOME/persist"
 export F_DOTFILES="$F_PROJECTS/dotfiles"
 export F_WALLPAPERS="$F_PERSIST/wallpapers"
-export F_TEMP="/tmp"
+if [ "$(uname -o)" = Android ]; then
+  export F_TEMP="$HOME/.cache/tmp"
+else
+  export F_TEMP="/tmp"
+fi
 
 export DOTFILES="$F_DOTFILES" # Standard name for this one
 
