@@ -18,7 +18,11 @@ local function rifle(on_windows, plus)
         end
         tempfile = tempfile .. '\\tmp_output.exe'
     else
-        tempfile = '/tmp/tmp_output'
+        tempfile = os.getenv("F_TEMP")
+        if tempfile == nil then
+            tempfile = "/tmp"
+        end
+        tempfile = tempfile .. '/tmp_output'
     end
 
     if on_windows then
