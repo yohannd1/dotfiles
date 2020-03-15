@@ -6,6 +6,6 @@ do
     polybar-msg cmd hide
   fi
   if grep -q 'fullscreen off$' <<<"$event"; then
-    polybar-msg cmd hide
+    polybar-msg cmd show
   fi
 done

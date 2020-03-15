@@ -621,4 +621,3 @@ endif
 
 " TODO: detect cargo data or makefiles and change the runfile command
 " accordingly
-" TODO: in usb-station-sync, remove all .git folders
