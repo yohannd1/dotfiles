@@ -301,7 +301,8 @@ W() { # {{{
                 return 1
             fi
             ;;
-        d) dir-action "${DOTFILES}" ;;
+        d) dir-action "$DOTFILES" ;;
+        docs) dir-action "$HOME/persist/docs" ;;
         k) dir-action "${WIKI:-"${HOME}/wiki"}" ;;
         *) echo "?"; return 1 ;;
     esac
@@ -338,6 +339,7 @@ alias vim='nvim' vi='nvim'
 # alias ec='emacs-plus emacsclient'
 
 alias cp-sync='cp -ur'
+alias vs='vi ~/sync/Syncthing/shared-notes.md'
 
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'

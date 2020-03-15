@@ -6,101 +6,107 @@
 
 # Settings
 I3LOCK_COLOR="282828"
+I3LOCK_IMG="$HOME/.local/share/i3lock-img.png"
 OPTIONS=$'lock\nlogout\nsuspend\nhibernate\nreboot\nshutdown'
 
 # Check if all dependencies are available
 check_dependencies() { # {{{
-    for dependency in dmenu xdg-screensaver systemctl notify-send; do
-        type "${dependency}" >/dev/null ||
-            exit 127
+  for dependency in dmenu xdg-screensaver systemctl notify-send; do
+    type "${dependency}" >/dev/null ||
+      exit 127
     done
-} # }}}
+  } # }}}
 
 # Match arguments
 match_args() { # {{{
-    case $# in
-        0)
-            local f="$(fuzzy_match)"
-            if [ -n "$f" ]; then
-                match_args "$f"
-            else
-                show_help
-            fi
-            ;;
+  case $# in
+    0)
+      local f="$(fuzzy_match)"
+      if [ -n "$f" ]; then
+        match_args "$f"
+      else
+        show_help
+      fi
+      ;;
 
-        1)
-            case "${1}" in
-                lock) ;;
-                logout) ;;
-                suspend) ;;
-                hibernate) ;;
-                reboot) ;;
-                shutdown) ;;
-                *)
-                    show_help
-                    ;;
-            esac
-            eval "action_${1}"
-            ;;
-
+    1)
+      case "${1}" in
+        lock) ;;
+        logout) ;;
+        suspend) ;;
+        hibernate) ;;
+        reboot) ;;
+        shutdown) ;;
         *)
-            show_help
-            ;;
-    esac
+          show_help
+          ;;
+      esac
+      eval "action_${1}"
+      ;;
+
+    *)
+      show_help
+      ;;
+  esac
 } # }}}
 
 # Fuzzy matching
 fuzzy_match() { # {{{
-    echo "${OPTIONS}" | dmenu ||
-        return 1
-} # }}}
+  echo "${OPTIONS}" | dmenu ||
+    return 1
+  } # }}}
 
 # Help
 show_help() { # {{{
-    echo "$(basename "$0"): a simple power menu for i3 and systemd."
-    echo ""
-    echo "Allowed options:"
-    echo "${OPTIONS}" |
-        while read line; do
-            echo "  ${line}"
-        done
+  echo "$(basename "$0"): a simple power menu for i3 and systemd."
+  echo ""
+  echo "Allowed options:"
+  echo "${OPTIONS}" |
+    while read line; do
+      echo "  ${line}"
+    done
     echo ""
     echo "If no argument is specified, a dmenu pop-up is shown."
     exit 2
-} # }}}
+  } # }}}
 
 # Actions
 action_lock() { # {{{
-    xdg-screensaver lock 2>/dev/null ||
-        i3lock -c "${I3LOCK_COLOR}"
+  if ! xdg-screensaver lock 2>/dev/null; then
+    if [ -r "$I3LOCK_IMG" ]; then
+      i3lock -i "$I3LOCK_IMG"
+    else
+      i3lock -c "$I3LOCK_COLOR"
+    fi
+  fi
 } # }}}
 action_logout() { # {{{
-    case "${WM}" in
-        i3) i3-msg exit ;;
-        bspwm) bspc quit ;;
-        *)
-            local msg="Unknown WM. Please register it in the file source code."
-            echo "$msg"
-            notify-send "$msg" -u critical
-            ;;
-    esac
+  case "${WM}" in
+    i3) i3-msg exit ;;
+    bspwm) bspc quit ;;
+    *)
+      local msg="Unknown WM. Please register it in the file source code."
+      echo "$msg"
+      notify-send "$msg" -u critical
+      ;;
+  esac
 } # }}}
 action_suspend() { # {{{
-    if action_lock; then
-        systemctl suspend
-    else
-        notify-send "Failed to suspend." -u critical
-    fi
+  if action_lock; then
+    systemctl suspend
+  else
+    notify-send "Failed to suspend." -u critical
+  fi
 } # }}}
 action_hibernate() { # {{{
-    echo "Hibernate: currently disabled."
-    return 3
+  echo "Hibernate: currently disabled."
+  return 3
 } # }}}
 action_reboot() { # {{{
-    systemctl reboot
+  systemctl reboot
 } # }}}
 action_shutdown() { # {{{
-    systemctl poweroff
+  systemctl poweroff
 } # }}}
 
 check_dependencies

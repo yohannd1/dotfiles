@@ -70,21 +70,38 @@ function! PagerMode() " {{{
     nnoremap <buffer> <silent> k <C-y>
     normal M
 endfunction " }}}
-function! StartupCD(...) " {{{
+function! TryCD(...) " {{{
     for dir in a:000
         if isdirectory(dir)
-            echom "Entering " . dir . "..."
-            exec "cd " . dir
+            echom "Found directory: ".dir
+            exec "cd ".dir
             break
         endif
     endfor
 endfunction " }}}
+function! TryCustomShell(...) " {{{
+    for shell in a:000
+        if executable(shell)
+            echom "Found shell: ".shell
+            let g:custom_shell = shell
+            break
+        endif
+    endfor
+endfunction " }}}
+function! SpawnCustomShell(args) " {{{
+    if !exists("g:custom_shell")
+        echo "[SpawnCustomShell()]: `g:custom_shell` not defined."
+    else
+        call SpawnTerminal(g:custom_shell." ".a:args)
+    endif
+endfunction " }}}}
 function! PathAppend(...) " {{{
     " Appends to Vim's PATH.
     " Good for subshells, specially on Windows.
     for dir in a:000
         if stridx($PATH, dir) == -1
-            let $PATH .= (is_windows ? ";" : ":") . dir
+            let $PATH .= (g:is_windows ? ";" : ":")
+            let $PATH .= dir
         endif
     endfor
 endfunction " }}}
@@ -95,13 +112,14 @@ endfunction " }}}
 let g:VIM_CONFIG = resolve(expand("<sfile>:p:h"))
 let $MYVIMRC = g:VIM_CONFIG . "/init.vim"
 let $MYGVIMRC = g:VIM_CONFIG . "/ginit.vim"
-let g:is_windows = isdirectory('C:\') ? 1 : 0
-let g:is_android = isdirectory('/sdcard') ? 1 : 0
+let g:is_windows = isdirectory('C:\')
+let g:is_android = isdirectory('/sdcard')
 let g:at_home = isdirectory(expand('~/projects/dotfiles')) || $DOTFILES != ""
 let g:first_time = exists("g:first_time") ? 0 : 1
 
 if is_windows
-    call StartupCD('E:\usb-station\home', '..\..\..\home', $HOME)
+    call TryCustomShell($HOME.'\AppData\Local\Programs\Git\bin\sh', 'powershell')
+    call TryCD('E:\usb-station\home', '..\..\..\home', $HOME)
     call PathAppend('C:\Program Files (x86)\CodeBlocks\MinGW\bin')
 endif
 
@@ -178,7 +196,6 @@ let g:gruvbox_italics = 0
 if first_time
     " Remove the auto-close-quote rule (for single and double quotes)
     call remove(g:lexima#default_rules, 11)
-    " call remove(g:lexima#default_rules, 20)
 endif
 
 " Then reload lexima
@@ -327,7 +344,7 @@ augroup ft_cpp
     au FileType cpp RfileCmd "g++ '%' && { ./a.out; rm ./a.out; }"
 
     if is_windows
-        au FileType cpp RfileCmdWin printf('%s -Command g++ \"%%\" \"%s\" && %s; rm %s',
+        au FileType cpp RfileCmdWin printf('%s -Command g++ \"%%\" -o \"%s\" && %s; rm %s',
                                          \ 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe', 
                                          \ $HOME . '\tmp_output.exe',
                                          \ $HOME . '\tmp_output.exe',
@@ -556,7 +573,7 @@ inoremap <C-g>` ```<CR>```<Up><End><CR>
 nnoremap <silent> <C-p> :CtrlPBuffer<CR>
 
 " Terminal Spawner
-nnoremap <leader>K :call SpawnTerminal("")<CR>
+nnoremap <leader>K :call SpawnCustomShell("")<CR>
 
 " View messages history
 nnoremap <leader>m :messages<CR>
@@ -601,3 +618,4 @@ endif
 
 " TODO: detect cargo data or makefiles and change the runfile command
 " accordingly
+" TODO: in usb-station-sync, remove all .git folders
