@@ -249,17 +249,16 @@ dir-action() { # {{{
         printf "\n"
 
         case "${ch}" in
-            c) cd "${dir}"; local EXIT=1 ;;
-            b) br "${dir}"; local EXIT=1 ;;
-            n) n "${dir}"; local EXIT=1 ;;
-            g) (cd "${dir}"
-                git-check) ;;
+            c) cd "$dir"; local EXIT=1 ;;
+            b) br "$dir"; local EXIT=1 ;;
+            n) n "$dir"; local EXIT=1 ;;
+            g) git-check "$dir" ;;
             "") clear ;;
             ) local EXIT=1 ;;
             q) local EXIT=1 ;;
             "") local EXIT=1 ;;
             $'\n') local EXIT=1 ;;
-            *) echo "Invalid option: \"${ch}\"." ;;
+            *) echo "Invalid option: \"$ch\"." ;;
         esac
     done
 } # }}}
