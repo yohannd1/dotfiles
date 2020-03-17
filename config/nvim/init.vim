@@ -58,7 +58,7 @@ endfunction " }}}
 function! TryCD(...) " {{{
     for dir in a:000
         if isdirectory(dir)
-            echom "Found directory: ".dir
+            call LogMessage("Found directory: ".dir)
             exec "cd ".dir
             break
         endif
@@ -67,7 +67,7 @@ endfunction " }}}
 function! TryCustomShell(...) " {{{
     for shell in a:000
         if executable(shell)
-            echom "Found shell: ".shell
+            call LogMessage("Found shell: ".shell)
             let g:custom_shell = shell
             break
         endif
@@ -122,6 +122,18 @@ function! ListMatch(list, pattern) " {{{
     endfor
     return 0
 endfunction " }}}
+function! LogMessage(message) " {{{
+    if !exists("g:messages")
+        let g:messages = []
+    endif
+    call add(g:messages, a:message)
+endfunction " }}}
+function! ListMessages() " {{{
+    if !exists("g:messages") | return | endif
+    for message in g:messages
+        echo message
+    endfor
+endfunction " }}}
 
 " }}}
 " Prelude ------------------------------------ {{{
@@ -134,9 +146,9 @@ let g:is_android = isdirectory('/sdcard')
 let g:at_home = isdirectory(expand('~/projects/dotfiles')) || $DOTFILES != ""
 let g:first_time = exists("g:first_time") ? 0 : 1
 
-if is_windows
+if is_windows && first_time
     call TryCustomShell($HOME.'\AppData\Local\Programs\Git\bin\sh', 'powershell')
-    call TryCD('E:\usb-station\home', '..\..\..\home', $HOME)
+    call TryCD('E:\home', $HOME)
     call PathAppend('C:\Program Files (x86)\CodeBlocks\MinGW\bin')
 endif
 
@@ -146,8 +158,6 @@ endif
 " Pathogen {{{
 
 let g:pathogen_disabled = []
-" call add(g:pathogen_disabled, has("python3") ? "vim-auto-popmenu" : "deoplete.nvim")
-call add(g:pathogen_disabled, "deoplete.nvim")
 call add(g:pathogen_disabled, executable("nim") ? "" : "nvim-nim")
 call pathogen#infect()
 
@@ -206,17 +216,6 @@ let g:netrw_altv = 1
 
 let g:gruvbox_bold = 0
 let g:gruvbox_italics = 0
-
-" }}}
-" Lexima {{{
-
-if first_time
-    " Remove the auto-close-quote rule (for single and double quotes)
-    call remove(g:lexima#default_rules, 11)
-endif
-
-" Then reload lexima
-call lexima#set_default_rules()
 
 " }}}
 
@@ -339,21 +338,10 @@ augroup end
 " }}}
 " C {{{
 
-let s:cpp_rifle_win = {"body": 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -Command g++ \"%f\" -o \"%o\"', "plus": '%o; rm %o'}
-
 augroup ft_c
     au!
     au BufNewFile,BufRead,BufEnter *.fx set filetype=c
-    au FileType c let b:rifle = {"std": {"body": 'gcc "%f" -o "%o"', "plus": "%o; rm %o"}, "win": s:cpp_rifle_win}
-
-    " if is_windows
-        " au FileType c RfileCmdWin printf('%s -Command gcc \"%%\" \"%s\" && %s; rm %s',
-        "                                  \ 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe', 
-        "                                  \ $HOME . '\tmp_output.exe',
-        "                                  \ $HOME . '\tmp_output.exe',
-        "                                  \ $HOME . '\tmp_output.exe',
-        "                                  \ )
-    " endif
+    au FileType c let b:rifle = {"std": {"body": 'gcc "%f" -o "%o"', "plus": "%o; rm %o"}}
 augroup end
 
 " }}}
@@ -361,17 +349,8 @@ augroup end
 
 augroup ft_cpp
     au!
-    au FileType cpp let b:rifle = {"std": {"body": 'g++ "%f" -o "%o"', "plus": "%o; rm %o"}, "win": s:cpp_rifle_win}
-    " if is_windows
-    "     au FileType cpp RfileCmdWin printf('%s -Command g++ \"%%\" -o \"%s\" && %s; rm %s',
-    "                                      \ 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe', 
-    "                                      \ $HOME . '\tmp_output.exe',
-    "                                      \ $HOME . '\tmp_output.exe',
-    "                                      \ $HOME . '\tmp_output.exe',
-    "                                      \ )
-    " endif
+    au FileType cpp let b:rifle = {"std": {"body": 'g++ "%f" -o "%o"', "plus": "%o; rm %o"}}
 augroup end
-
 
 " }}}
 " Nim {{{
@@ -428,8 +407,7 @@ augroup end
 
 augroup ft_html
     au!
-    au FileType html let b:rifle = {"std": {"body": $BROWSER . " '%f'"},
-        \ "win": {"body": "start '%f'"}}
+    au FileType html let b:rifle = {"std": {"body": $BROWSER . " '%f'"}}
 augroup end
 
 " }}}
@@ -591,7 +569,7 @@ nnoremap <silent> <C-p> :CtrlPBuffer<CR>
 nnoremap <leader>K :call SpawnCustomShell("")<CR>
 
 " View messages history
-nnoremap <leader>m :messages<CR>
+nnoremap <leader>m :call ListMessages()<CR>
 
 " Netrw for browsing when wanted
 nnoremap <silent> <leader>= :Vexplore<CR>

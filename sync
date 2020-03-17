@@ -226,7 +226,6 @@ if [ -z "$NO_NEOVIM_PLUGIN" ]; then
   fi
 
   ip "ion-vim@yohanandiamond" "https://gitlab.redox-os.org/YohananDiamond/ion-vim"
-  ip "deoplete.nvim" "https://github.com/Shougo/deoplete.nvim"
   ip "vim-toml" "https://github.com/cespare/vim-toml"
   ip "vim-surround" "https://github.com/tpope/vim-surround"
   ip "vim-repeat" "https://github.com/tpope/vim-repeat"
