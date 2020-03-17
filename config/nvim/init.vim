@@ -445,11 +445,6 @@ au FileType xdefaults setlocal commentstring=\!%s
 command! -nargs=0 Reload source $MYVIMRC | if exists("g:GuiLoaded") && g:GuiLoaded && exists("$MYGVIMRC") | source $MYGVIMRC | endif
 command! -nargs=0 WhitespaceMode set list!
 command! -nargs=0 WrapMode set wrap!
-command! -nargs=0 OpenWORD call OpenWORD()
-command! -nargs=1 RfileCmd let b:runfile_command = eval(<f-args>)
-command! -nargs=1 RfileCmdWin let b:runfile_command_win = eval(<f-args>)
-command! -nargs=* EditNote call EditNote(join([<f-args>], ' '))
-command! -nargs=0 RunFile call RunFile()
 command! -nargs=0 PagerMode call PagerMode()
 
 cnoreabbrev rl Reload

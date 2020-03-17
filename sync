@@ -251,6 +251,7 @@ if [ -z "$NO_NEOVIM_PLUGIN" ]; then
   ip "vim-auto-popmenu" "https://github.com/skywind3000/vim-auto-popmenu"
   ip "scribble.vim" "https://github.com/vim-scripts/scribble.vim"
   ip "vim-python-pep8-indent" "https://github.com/Vimjas/vim-python-pep8-indent"
+  ip "vim-pencil" "https://github.com/reedes/vim-pencil"
 
   lf "$NVIM_PLUGS_FOLDER" ~/.config/nvim/bundle
 fi

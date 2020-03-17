@@ -20,6 +20,7 @@ bspc config normal_border_color '#32302F'
 # bspc rule -a Screenkey manage=off
 
 bspc rule -a qutebrowser desktop='^2'
+bspc rule -a Zathura state=tiled
 bspc rule -a firefox desktop='^2'
 
 setbg &

@@ -2,6 +2,7 @@ export F_PROJECTS="$HOME/projects"
 export F_PERSIST="$HOME/persist"
 export F_DOTFILES="$F_PROJECTS/dotfiles"
 export F_WALLPAPERS="$F_PERSIST/wallpapers"
+export F_USB_STATION="/mnt/usb-main"
 if [ "$(uname -o)" = Android ]; then
   export F_TEMP="$HOME/.cache/tmp"
 else
