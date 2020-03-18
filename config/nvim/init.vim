@@ -4,7 +4,7 @@
 " Setup {{{
 
 " If this is the first time sourcing the file
-let g:is_first = exists("g:first_time") ? 0 : 1
+let g:is_first = exists("g:is_first") ? 0 : 1
 
 if g:is_first
   " Cancel if this is not being sourced by NeoVim
@@ -159,13 +159,17 @@ function! ListMessages() " {{{
     echo message
   endfor
 endfunction " }}}
-function! SourceIf(...) " {{{
-  for path in a:000
-    if filereadable(path)
-      exec "source ".path
-    endif
-  endfor
-endfunction " }}}
+" (SourceIf) {{{
+if g:is_first " Weird workaround because the bang is not being recognized...
+  function! SourceIf(...)
+    for path in a:000
+      if filereadable(path)
+        exec "source ".path
+      endif
+    endfor
+  endfunction
+endif
+" }}}
 
 " }}}
 " General Initialization {{{
@@ -213,7 +217,7 @@ let g:ctrlp_cmd = 'CtrlP'
 let g:lightline = {}
 let g:lightline.active = {}
 let g:lightline.colorscheme = "gruvbox"
-let g:lightline.active.left = [["mode", "paste", "modified"], ["readonly", "filename"]]
+let g:lightline.active.left = [["mode", "paste"], ["readonly", "filename", "modified"]]
 let g:lightline.active.right = [["lineinfo"], ["percent"], ["fileformat", "fileencoding"]]
 
 " Markdown
@@ -264,6 +268,7 @@ if g:is_first
   set completeopt-=preview
   set completeopt+=menuone,noselect
   set noshowmode
+  set list
 
   syntax on
   silent! colorscheme desert
@@ -275,14 +280,15 @@ if g:is_first
 
   let &t_ZH = "\<Esc>[3m"
   let &t_ZR = "\<Esc>[23m"
+
+  " Indentation
+  set tabstop=8 " For tab characters, I guess
+  set shiftwidth=4 softtabstop=4
+  set expandtab smarttab
+
+  set listchars=tab:»\ ,trail:~
 endif
 
-set listchars=tab:»\ ,trail:~
-
-" Indentation
-set tabstop=8 " For tab characters, I guess
-set shiftwidth=4 softtabstop=4
-set expandtab smarttab
 
 " }}}
 " Autocommands {{{
@@ -579,4 +585,4 @@ endif
 " * Steve Losh
 " * jdhao (https://github.com/jdhao/nvim-config)
 
-" vim: foldmethod=marker foldmarker={{{,}}} shiftwidth=2
+" vim: foldmethod=marker foldmarker={{{,}}} shiftwidth=2 softtabstop=2
