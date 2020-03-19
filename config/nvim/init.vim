@@ -71,6 +71,7 @@ function! TabOrComplete(mode) " {{{
 endfunction " }}}
 function! PagerMode() " {{{
   setlocal ft=man ts=8 nomod nolist noma timeoutlen=0 nocursorline
+  setlocal noshowcmd
   nnoremap <buffer> <silent> d <C-d>
   nnoremap <buffer> <silent> u <C-u>
   nnoremap <buffer> <silent> f <C-f>
