@@ -41,6 +41,7 @@ export FZF_DEFAULT_OPTS='--color=16 --height=60% --layout=reverse --border'
 export BAT_THEME="base16"
 export NNN_OPENER="nuke"
 
+export FLAMEDASH_SCR_FOLDER="$HOME/photos/screenshots"
 export KEYTIMEOUT=1
 export TERM="xterm-256color"
 export WM="bspwm"

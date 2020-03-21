@@ -558,9 +558,6 @@ inoremap <silent> <C-l> <C-r>=strftime("20%y-%m-%d")<CR>
 " Quick character insert
 inoremap <C-g>` ```<CR>```<Up><End><CR>
 
-" CtrlP
-nnoremap <silent> <C-p> :CtrlPBuffer<CR>
-
 " Terminal Spawner
 nnoremap <leader>K :call SpawnCustomShell("")<CR>
 
@@ -571,7 +568,12 @@ nnoremap <leader>m :call ListMessages()<CR>
 nnoremap <silent> <leader>= :Vexplore<CR>
 
 " Replace everything in screen with... something
-nnoremap <Leader>s :%s//g<Left><Left>
+nnoremap <Leader>s :%s/\v/g<Left><Left>
+vnoremap <Leader>s :s/\v/g<Left><Left>
+
+" Buffer navigation mappings
+nnoremap <silent> <C-j> :bn<CR>
+nnoremap <silent> <C-k> :bp<CR>
 
 " }}}
 " Finishing {{{

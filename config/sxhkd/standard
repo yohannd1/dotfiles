@@ -45,6 +45,10 @@ super + shift + F10
 super + c
     cal -3 | dmenu -l 10
 
+# File browser
+super + n
+    nnn
+
 # }}}
 # Extra Keys {{{
 
