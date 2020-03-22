@@ -52,7 +52,7 @@ match_args() { # {{{
 
 # Fuzzy matching
 fuzzy_match() { # {{{
-  echo "${OPTIONS}" | dmenu
+  echo "${OPTIONS}" | dmenu -p "Power: "
 } # }}}
 
 # Help

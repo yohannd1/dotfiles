@@ -354,6 +354,11 @@ function! Ft_sh() " {{{
   let b:rifle.run = "if [ -x '%f' ]; then '%f'; else bash '%f'; fi"
   setlocal tabstop=2 shiftwidth=2
 endfunction " }}}
+function! Ft_zsh() " {{{
+  let b:rifle = {}
+  let b:rifle.run = "if [ -x '%f' ]; then '%f'; else zsh '%f'; fi"
+  setlocal tabstop=2 shiftwidth=2
+endfunction " }}}
 function! Ft_visualg() " {{{
   setlocal tabstop=4 shiftwidth=4 syntax=c
 endfunction " }}}

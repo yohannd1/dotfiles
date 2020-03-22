@@ -47,7 +47,7 @@ super + c
 
 # File browser
 super + n
-    nnn
+    $TERMINAL -e nnn
 
 # }}}
 # Extra Keys {{{

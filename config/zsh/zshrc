@@ -7,15 +7,15 @@
 
 ## Silently source a file, if it exists.
 function source-maybe { # {{{
-    while [ $# != 0 ]; do
-        if [ -f "${1}" ]; then
-            source "${1}"
-            return 0
-        else
-            shift
-        fi
-    done
-    return 1
+  while [ $# != 0 ]; do
+    if [ -f "${1}" ]; then
+      source "${1}"
+      return 0
+    else
+      shift
+    fi
+  done
+  return 1
 }
 # }}}
 
@@ -24,75 +24,75 @@ function source-maybe { # {{{
 ## 1 => Invalid arguments;
 ## 2 => ${1} already exists on ${PATH};
 function path-maybe { # {{{
-    [ $# != 1 ] && return 1
+  [ $# != 1 ] && return 1
 
-    if [[ ":${PATH}:" == *"${1}"* ]]; then
-        return 2
-    else
-        export PATH="${PATH:+"${PATH}:"}${1}"
-    fi
+  if [[ ":${PATH}:" == *"${1}"* ]]; then
+    return 2
+  else
+    export PATH="${PATH:+"${PATH}:"}${1}"
+  fi
 }
 # }}}
 
 ## Check if a tmux session is attached.
 function tmux-attached { # {{{
-    if [ $# = 1 ]; then
-        tmux ls | grep "^${1}.*(attached)\$" &>/dev/null
-    else
-        echo -e '\e[1m\e[34mUsage:\e[m ${0} SESSION-NAME'
-        return 1
-    fi
+  if [ $# = 1 ]; then
+    tmux ls | grep "^${1}.*(attached)\$" &>/dev/null
+  else
+    echo -e '\e[1m\e[34mUsage:\e[m ${0} SESSION-NAME'
+    return 1
+  fi
 } # }}}
 
 ## Start a tmux session or reattach to it.
 function tmux-session { # {{{
-    if [[ -n "$1" ]]; then
-        if tmux has -t="$1" &>/dev/null; then
-            tmux attach -t "$1"
-        else
-            tmux new-session -s "$1" \; source-file "${HOME}/.local/lib/tmux-sessions/$1.proj" \; $2
-        fi
+  if [[ -n "$1" ]]; then
+    if tmux has -t="$1" &>/dev/null; then
+      tmux attach -t "$1"
     else
-        echo -e '\e[1m\e[34mUsage:\e[m ${0} SESSION-NAME <optional-command>'
+      tmux new-session -s "$1" \; source-file "${HOME}/.local/lib/tmux-sessions/$1.proj" \; $2
     fi
+  else
+    echo -e '\e[1m\e[34mUsage:\e[m ${0} SESSION-NAME <optional-command>'
+  fi
 } # }}}
 
 ## Get the current git branch.
 function git-branch { # {{{
-    local branch="$(git symbolic-ref --short -q HEAD 2>/dev/null)"
-    if [ -n "${branch}" ]; then
-        echo "${branch}"
-    else
-        return 1
-    fi
+  local branch="$(git symbolic-ref --short -q HEAD 2>/dev/null)"
+  if [ -n "${branch}" ]; then
+    echo "${branch}"
+  else
+    return 1
+  fi
 } # }}}
 
 ## Gets a random alphanumeric string matching [0-9a-z]{$1}.
 ## $1 => The amount of digits.
 function random-string { # {{{
-    cat /dev/urandom | tr -dc 'a-z0-9' | fold -w ${1:-8} | head -n 1
+  cat /dev/urandom | tr -dc 'a-z0-9' | fold -w ${1:-8} | head -n 1
 } # }}}
 
 ## Sets up the tty coloring.
 function setup-tty { # {{{
-    echo -en "\e]P0282828" # Black
-    echo -en "\e]P19D0006" # Red
-    echo -en "\e]P279740E" # Green
-    echo -en "\e]P3B57614" # Yellow
-    echo -en "\e]P4076678" # Blue
-    echo -en "\e]P58F3F71" # Magenta
-    echo -en "\e]P6427B58" # Cyan
-    echo -en "\e]P7FBF1C7" # White
-    echo -en "\e]P832302F" # Bright Black
-    echo -en "\e]P9FB4934" # Bright Red
-    echo -en "\e]PAB8BB26" # Bright Green
-    echo -en "\e]PBFABD2F" # Bright Yellow
-    echo -en "\e]PC83A598" # Bright Blue
-    echo -en "\e]PDD3869B" # Bright Magenta
-    echo -en "\e]PE8EC07C" # Bright Cyan
-    echo -en "\e]PFFBF1C7" # "Bright White"
-    echo -en "\e[?16;2;112c" # Change cursor to block
-    clear # Redraw screen
+  echo -en "\e]P0282828" # Black
+  echo -en "\e]P19D0006" # Red
+  echo -en "\e]P279740E" # Green
+  echo -en "\e]P3B57614" # Yellow
+  echo -en "\e]P4076678" # Blue
+  echo -en "\e]P58F3F71" # Magenta
+  echo -en "\e]P6427B58" # Cyan
+  echo -en "\e]P7FBF1C7" # White
+  echo -en "\e]P832302F" # Bright Black
+  echo -en "\e]P9FB4934" # Bright Red
+  echo -en "\e]PAB8BB26" # Bright Green
+  echo -en "\e]PBFABD2F" # Bright Yellow
+  echo -en "\e]PC83A598" # Bright Blue
+  echo -en "\e]PDD3869B" # Bright Magenta
+  echo -en "\e]PE8EC07C" # Bright Cyan
+  echo -en "\e]PFFBF1C7" # "Bright White"
+  echo -en "\e[?16;2;112c" # Change cursor to block
+  clear # Redraw screen
 } # }}}
 
 ## Check if shell is interactive
@@ -117,23 +117,23 @@ source-maybe "${HOME}/persist/local/share/zshrc.personal"
 
 # is this an interactive shell?
 if is_interactive; then
-    # Set up SSH key server
-    if [[ -x /usr/bin/keychain ]]; then
-        eval "$(keychain --eval --ignore-missing ~/.ssh/id_rsa 2>/dev/null)"
-    fi
+  # Set up SSH key server
+  if [[ -x /usr/bin/keychain ]]; then
+    eval "$(keychain --eval --ignore-missing ~/.ssh/id_rsa 2>/dev/null)"
+  fi
 
     # tty coloring
     ! is_display && ! is_android && setup-tty
 fi
 
 if [ -z "${SHELL_FIRST}" ]; then
-    SHELL_FIRST="$(date)"
+  SHELL_FIRST="$(date)"
 
     # Defer to a shell inside tmux, if not attached yet.
     if is_interactive && (is_display || is_android); then
-        if [ -z "${TMUX}" ]; then
-            exec tmux new -s $(random-string 4)
-        fi
+      if [ -z "${TMUX}" ]; then
+        exec tmux new -s $(random-string 4)
+      fi
     fi
 fi
 
@@ -154,9 +154,9 @@ _comp_options+=(globdots) # Include hidden files in autocomplete
 # Prompt {{{
 
 if [ "$(uname -o)" = "Android" ]; then
-    PS1="%B%{$fg[green]%}%{$fg[magenta]%}%~%{$fg[green]%}%{$reset_color%}%b "
+  PS1="%B%{$fg[green]%}%{$fg[magenta]%}%~%{$fg[green]%}%{$reset_color%}%b "
 else
-    PS1="%B%{$fg[green]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[magenta]%}%~%{$fg[green]%}]%{$reset_color%}%b\$ "
+  PS1="%B%{$fg[green]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M:%{$fg[magenta]%}%~%{$fg[green]%}]%{$reset_color%}%b\$ "
 fi
 PS2='  '
 RPROMPT="%(?..%?)"
@@ -174,14 +174,14 @@ bindkey -v '^?' backward-delete-char
 # Change cursor shape for different vi modes
 zle-keymap-select() { # {{{
 if [[ ${KEYMAP} == vicmd ]] ||
-    [[ $1 = 'block' ]]; then
-    echo -ne '\e[1 q'
+  [[ $1 = 'block' ]]; then
+  echo -ne '\e[1 q'
 
 elif [[ ${KEYMAP} == main ]] ||
-    [[ ${KEYMAP} == viins ]] ||
-    [[ ${KEYMAP} = '' ]] ||
-    [[ $1 = 'beam' ]]; then
-    echo -ne '\e[5 q'
+  [[ ${KEYMAP} == viins ]] ||
+  [[ ${KEYMAP} = '' ]] ||
+  [[ $1 = 'beam' ]]; then
+  echo -ne '\e[5 q'
 fi
 } # }}}
 zle-line-init() { # {{{
@@ -202,22 +202,22 @@ preexec() { echo -ne '\e[5 q' ;}
 
 # Use lf to switch directories
 lfcd() { # {{{
-    tmp="$(mktemp)"
-    lf -last-dir-path="$tmp" "$@"
-    if [ -f "$tmp" ]; then
-        dir="$(cat "$tmp")"
-        rm -f "$tmp"
-        if [ -d "$dir" ]; then
-            if [ "$dir" != "$(pwd)" ]; then
-                cd "$dir"
-            fi
-        fi
+  tmp="$(mktemp)"
+  lf -last-dir-path="$tmp" "$@"
+  if [ -f "$tmp" ]; then
+    dir="$(cat "$tmp")"
+    rm -f "$tmp"
+    if [ -d "$dir" ]; then
+      if [ "$dir" != "$(pwd)" ]; then
+        cd "$dir"
+      fi
     fi
+  fi
 } # }}}
 
 # Use fzf to search history
 fh() { # {{{
-    print -z $( ([ -n "${ZSH_NAME}" ] && fc -l 1 || history) | fzf --no-sort --tac | sed -r 's/ *[0-9]*\*? *//' | sed -r 's/\\/\\\\/g')
+  print -z $( ([ -n "${ZSH_NAME}" ] && fc -l 1 || history) | fzf --no-sort --tac | sed -r 's/ *[0-9]*\*? *//' | sed -r 's/\\/\\\\/g')
 } # }}}
 
 # Actual binding
@@ -231,80 +231,80 @@ bindkey -s '^R' '\e0Di fh\n'
 rl() { source "${ZDOTDIR:-"${HOME}"}/.zshrc"; }
 sy() { "${DOTFILES}/sync"; }
 
-dir-action() { # {{{
-    [ $# != 1 ] && return 1
-    local dir="$(realpath -m "$1")"
-    [ -r "${dir}" ] || {
-        printf "Invalid directory: %s\n" "${dir}"
-        return 1
-    }
+function dir-action { # {{{
+  [ $# != 1 ] && return 1
+  local dir="$(realpath -m "$1")"
+  [ -r "${dir}" ] || {
+    printf "Invalid directory: %s\n" "${dir}"
+      return 1
+  }
 
-    echo -en '\e[2 q'
-    printf "\e[38;5;11mDirectory:\e[m %s\n" "${dir}"
+  echo -en '\e[2 q'
+  printf "\e[38;5;11mDirectory:\e[m %s\n" "${dir}"
 
-    while [ -z "${EXIT}" ]; do
-        printf "::::: [c]d, [b]root, [n]nn, [g]it-check, [q]uit\n"
-        printf '\e[38;5;11m(dir)\e[m λ> '
-        read -k1 ch
-        printf "\n"
+  while [ -z "${EXIT}" ]; do
+    printf "::::: [c]d, [b]root, [n]nn, [g]it-check, [q]uit\n"
+    printf '\e[38;5;11m(dir)\e[m λ> '
+    read -k1 ch
+    printf "\n"
 
-        case "${ch}" in
-            c) cd "$dir"; local EXIT=1 ;;
-            b) br "$dir"; local EXIT=1 ;;
-            n) n "$dir"; local EXIT=1 ;;
-            g) git-check "$dir" ;;
-            "") clear ;;
-            ) local EXIT=1 ;;
-            q) local EXIT=1 ;;
-            "") local EXIT=1 ;;
-            $'\n') local EXIT=1 ;;
-            *) echo "Invalid option: \"$ch\"." ;;
-        esac
-    done
-} # }}}
-select-project() { # {{{
-    local projects="$(find ~/projects -mindepth 1 -maxdepth 1 -type d | sed 's/^.*\///g')"
-    local choice="$(fzf-tmux <<<"$projects")"
-    if [ -n "$choice" ]; then
-        echo "${HOME}/projects/$choice"
-    fi
-} # }}}
-n() { # {{{
-    # Block nesting of nnn in subshells
-    if [ -n $NNNLVL ] && [ "${NNNLVL:-0}" -ge 1 ]; then
-        echo "nnn is already running"
-        return
-    fi
-
-    # The default behaviour is to cd on quit (nnn checks if NNN_TMPFILE is set)
-    # To cd on quit only on ^G, remove the "export" as in:
-    #     NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
-    # NOTE: NNN_TMPFILE is fixed, should not be modified
-    NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
-
-    nnn "$@"
-
-    if [ -f "$NNN_TMPFILE" ]; then
-            . "$NNN_TMPFILE"
-            rm -f "$NNN_TMPFILE" > /dev/null
-    fi
-} # }}}
-W() { # {{{
-    [ $# != 1 ] && return 1
-    case "$1" in
-        p)
-            local c="$(select-project)"
-            if [ -n "$c" ]; then
-                dir-action "$c"
-            else
-                return 1
-            fi
-            ;;
-        d) dir-action "$DOTFILES" ;;
-        docs) dir-action "$HOME/persist/docs" ;;
-        k) dir-action "${WIKI:-"${HOME}/wiki"}" ;;
-        *) echo "?"; return 1 ;;
+    case "${ch}" in
+      c) cd "$dir"; local EXIT=1 ;;
+      b) br "$dir"; local EXIT=1 ;;
+      n) n "$dir"; local EXIT=1 ;;
+      g) git-check "$dir" ;;
+      "") clear ;;
+      ) local EXIT=1 ;;
+      q) local EXIT=1 ;;
+      "") local EXIT=1 ;;
+      $'\n') local EXIT=1 ;;
+      *) echo "Invalid option: \"$ch\"." ;;
     esac
+  done
+} # }}}
+function select-project { # {{{
+  local projects="$(find ~/projects -mindepth 1 -maxdepth 1 -type d | sed 's/^.*\///g')"
+  local choice="$(fzf-tmux <<<"$projects")"
+  if [ -n "$choice" ]; then
+    echo "${HOME}/projects/$choice"
+  fi
+} # }}}
+function n { # {{{
+  # Block nesting of nnn in subshells
+  if [ -n $NNNLVL ] && [ "${NNNLVL:-0}" -ge 1 ]; then
+    echo "nnn is already running"
+    return
+  fi
+
+  # The default behaviour is to cd on quit (nnn checks if NNN_TMPFILE is set)
+  # To cd on quit only on ^G, remove the "export" as in:
+  #     NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
+  # NOTE: NNN_TMPFILE is fixed, should not be modified
+  NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
+
+  nnn "$@"
+
+  if [ -f "$NNN_TMPFILE" ]; then
+    . "$NNN_TMPFILE"
+    rm -f "$NNN_TMPFILE" > /dev/null
+  fi
+} # }}}
+function W { # {{{
+  [ $# != 1 ] && return 1
+  case "$1" in
+    p)
+      local c="$(select-project)"
+      if [ -n "$c" ]; then
+        dir-action "$c"
+      else
+        return 1
+      fi
+      ;;
+    d) dir-action "$DOTFILES" ;;
+    docs) dir-action "$HOME/persist/docs" ;;
+    k) dir-action "${WIKI:-"${HOME}/wiki"}" ;;
+    *) echo "?"; return 1 ;;
+  esac
 } # }}}
 
 gtd() { [ $# = 1 ] && grep "$(sed "s/_/:/g" <<<"TODO_")" $(find "${1}" -type f); }
@@ -317,12 +317,12 @@ alias la='ls -A'
 alias ll='ls -alF'
 
 if ! is_android; then
-    alias t='task'
-    alias tl='t ls'
-    alias tt='t due:today or sched:today or +OVERDUE'
-    alias to='t due:tomorrow or sched:tomorrow'
-    alias t-s='t pro:School'
-    alias tsh='tasksh'
+  alias t='task'
+  alias tl='t ls'
+  alias tt='t due:today or sched:today or +OVERDUE'
+  alias to='t due:tomorrow or sched:tomorrow'
+  alias t-s='t pro:School'
+  alias tsh='tasksh'
 fi
 
 alias du='du -shc'
@@ -349,36 +349,18 @@ alias vless="/bin/sh -c 'col -b | nvim -c PagerMode -'"
 # }}}
 # Settings {{{
 
-# History
 HISTFILE=~/.zhistory
 HISTSIZE=SAVEHIST=10000
 setopt sharehistory
 setopt extendedhistory
 
-# Less
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
-export LESS_TERMCAP_mb=$'\e[1;31m'     # begin bold
-export LESS_TERMCAP_md=$'\e[1;35m'     # begin blink
-export LESS_TERMCAP_me=$'\e[0m'        # reset bold/blink
-export LESS_TERMCAP_so=$'\e[33m'       # begin reverse video
-export LESS_TERMCAP_se=$'\e[0m'        # reset reverse video
-export LESS_TERMCAP_us=$'\e[1;32m'     # begin underline
-export LESS_TERMCAP_ue=$'\e[0m'        # reset underline
-
-# Dircolors
-if [ -r ~/.local/share/dircolors ]; then
-    eval "$(dircolors -b ~/.local/share/dircolors)"
-fi
-
-# GCC
-export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-
 # }}}
 # Post Processing {{{
 
 source-maybe "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" \
-    "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-    source-maybe "${HOME}/.config/broot/launcher/bash/br"
+  "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
+source-maybe "${HOME}/.config/broot/launcher/bash/br"
 
 # }}}
 : # Assert first prompt doesn't show any non-zero return value

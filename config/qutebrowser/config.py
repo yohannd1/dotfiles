@@ -1,6 +1,10 @@
-config.bind('D', 'tab-close')
-config.bind('U', 'undo')
-config.bind('d', 'scroll-page 0 0.5')
-config.bind('u', 'scroll-page 0 -0.5')
-
 c.downloads.location.directory = "~/inbox"
+bindings = [
+    ('D', 'tab-close'),
+    ('U', 'undo'),
+    ('d', 'scroll-page 0 0.5'),
+    ('u', 'scroll-page 0 -0.5'),
+]
+
+for kbind in bindings:
+    config.bind(*kbind)

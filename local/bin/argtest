@@ -1,7 +1,0 @@
-#!/usr/bin/env sh
-
-echo $#
-while [ $# != 0 ]; do
-  printf "$1\n"
-  shift
-done

@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+printf "Argument count: " >/dev/stderr
+echo $#
+echo "Arguments: " >/dev/stderr
+while [ $# != 0 ]; do
+  printf "  " >/dev/stderr
+  printf "$1\n"
+  shift
+done
+echo "[END]" >/dev/stderr

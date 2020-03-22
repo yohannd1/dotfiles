@@ -1,4 +1,5 @@
 ! vim: ft=xdefaults
+
 rofi.modi: combi
 rofi.width: 1000
 rofi.lines: 20

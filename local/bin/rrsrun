@@ -2,13 +2,18 @@
 
 shelp() {
   cat <<EOF >/dev/stderr
-$(basename $0): a program to recursively search and run an executable script from parent directories.
+$(basename $0): a program to recursively search and run an executable
+script from parent directories.
+
 Usage: $(basename $0) <mode> <cmd> [args...]
 
 Where <mode> is:
-  0, if <cmd> is a script to be found and it should be ran at current directory;
-  1, if <cmd> is a script to be found and it should be ran at its directory; and
-  2, if <cmd> is a file to be found, but arg1 is a command to be ran at <cmd>'s directory and arg2+ are the arguments.
+  0, if <cmd> is a script to be found and it should be ran at current
+  directory;
+  1, if <cmd> is a script to be found and it should be ran at its
+  directory; and
+  2, if <cmd> is a file to be found, but arg1 is a command to be ran at
+  <cmd>'s directory and arg2+ are the arguments.
 EOF
 }
 

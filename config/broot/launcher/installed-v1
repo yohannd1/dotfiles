@@ -1,4 +1,3 @@
-
-This file tells broot the installation of the br function was done.
-If there's a problem and you want to install it again run
-    broot -- install
+# This file tells broot the installation of the br function was done.
+# If there's a problem and you want to install it again run
+#     broot -- install

@@ -1,7 +1,6 @@
 #!/usr/bin/env sh
 
 # This file is ran when starting an X server.
-# [Partially stolen from Lukesmithxyz/voidrice]
 
 # Source xprofile,
 [ -f ~/.xprofile ] && . ~/.xprofile

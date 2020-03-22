@@ -22,4 +22,4 @@ while pgrep -u $UID -x polybar >/dev/null; do
 done
 
 # Launch polybar
-polybar main > "$LOGFILE"
+polybar main 2>"$LOGFILE"

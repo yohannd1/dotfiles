@@ -13,16 +13,11 @@ bspc config focused_border_color '#8EC07C'
 bspc config active_border_color '#32302F'
 bspc config normal_border_color '#32302F'
 
-# bspc rule -a Gimp desktop='^8' state=floating follow=on
-# bspc rule -a Chromium desktop='^2'
-# bspc rule -a mplayer2 state=floating
-# bspc rule -a Kupfer.py focus=on
-# bspc rule -a Screenkey manage=off
-
 bspc rule -a qutebrowser desktop='^2'
 bspc rule -a Zathura state=tiled
 bspc rule -a firefox desktop='^2'
 
+start-sxhkd standard bspwm &
 setbg &
 start-polybar &
 bspwm-events &

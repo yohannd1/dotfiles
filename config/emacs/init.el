@@ -1,6 +1,5 @@
 ;; -*- origami-fold-style: triple-braces -*-
 ;; vim: foldmethod=marker
-;;; YohananDiamond's barely alive init.el file.
 
 (defvar my/init-amount -1
   "Indicates the amount of times the init file has been loaded.
@@ -118,7 +117,7 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
 ;; }}}
 ;; Interactive Commands {{{
 
-;; rl -> Reload {{{
+;; (rl): Reload {{{
 (defun rl () "Reloads the init.el file stored in ~/.emacs.d"
        (interactive)
        (load-file "~/.emacs.d/init.el"))
