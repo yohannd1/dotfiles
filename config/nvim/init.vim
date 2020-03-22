@@ -218,8 +218,8 @@ let g:ctrlp_cmd = 'CtrlP'
 let g:lightline = {}
 let g:lightline.active = {}
 let g:lightline.colorscheme = "gruvbox"
-let g:lightline.active.left = [["mode", "paste"], ["readonly", "filename", "modified"]]
-let g:lightline.active.right = [["lineinfo"], ["percent"], ["fileformat", "fileencoding"]]
+let g:lightline.active.left = [["mode", "paste"], ["readonly", "filename"]]
+let g:lightline.active.right = [["lineinfo"], ["percent"], ["fileformat", "fileencoding", "filetype"]]
 
 " Markdown
 let g:vim_markdown_frontmatter = 1
@@ -240,6 +240,9 @@ let g:netrw_altv = 1
 let g:gruvbox_bold = 0
 let g:gruvbox_italics = 0
 
+" Buftabline
+let g:buftabline_indicators = 1
+
 " }}}
 " Settings {{{
 
@@ -259,6 +262,7 @@ if g:is_first
   set autoindent
   set hlsearch incsearch
   set linebreak wrap
+  set textwidth=72
   set cursorline
   set showcmd
   set shortmess+=atcI
@@ -320,89 +324,117 @@ augroup end
 " Filetypes {{{
 
 function! Ft_c() " {{{
-  let b:rifle = {"std": {"body": 'gcc "%f" -o "%o"', "plus": "%o; rm %o"}}
+  let b:rifle = {}
+  let b:rifle.run = "gcc '%f' -o '%o' && { '%o'; rm '%o'; }"
 endfunction " }}}
 function! Ft_cpp() " {{{
-  let b:rifle = {"std": {"body": 'g++ "%f" -o "%o"', "plus": "%o; rm %o"}}
+  let b:rifle = {}
+  let b:rifle.run = "g++ '%f' -o '%o' && { '%o'; rm '%o'; }"
 endfunction " }}}
 function! Ft_clojure() " {{{
-  let b:rifle = {"std": {"body": "clojure '%f'"}}
+  let b:rifle = {}
+  let b:rifle.run = "clojure '%f'"
 endfunction " }}}
 function! Ft_markdown() " {{{
-  let b:rifle = {"std": {"body": "md-preview '%f'"}}
+  let b:rifle = {}
+  let b:rifle.run = "md-preview '%f'"
+  let b:rifle.build = "md-compile '%f' > ~/".expand("%:t:r").".".strftime("%Y-%m-%d").".html"
   setlocal textwidth=72 nofoldenable noautoindent
   setlocal tabstop=2 shiftwidth=2
 
-  command! -buffer GenMetadata exec "normal ggO---\<CR>created: ".strftime("%Y-%m-%d")."\<CR>---\<CR>\<Esc>2k:Tabularize /:\\zs\<Esc>3j"
-  command! -buffer Compile call SpawnTerminal("md-compile " . expand("%") . " > ~/" . expand("%:t:r") . "." . strftime("%Y-%m-%d") . ".html")
+  command! -buffer MakeHeader exec "normal ggO---\<CR>created: ".strftime("%Y-%m-%d")."\<CR>---\<CR>\<Esc>2k:Tabularize /:\\zs\<Esc>3j"
 
   nnoremap <Leader>df :TableFormat<CR>
   nnoremap <Leader>d: vap:Tabularize /:\zs<CR>
   vnoremap <Leader>d: :Tabularize /:\zs<CR>
-  nnoremap <Leader>dm :GenMetadata<CR>
+  nnoremap <Leader>dm :MakeHeader<CR>
 endfunction " }}}
 function! Ft_sh() " {{{
+  let b:rifle = {}
+  let b:rifle.run = "if [ -x '%f' ]; then '%f'; else bash '%f'; fi"
   setlocal tabstop=2 shiftwidth=2
 endfunction " }}}
 function! Ft_visualg() " {{{
   setlocal tabstop=4 shiftwidth=4 syntax=c
 endfunction " }}}
-function! Ft_rust() " {{{
-  if ReverseRSearch(expand("%:p:h"), "Cargo.toml")
-    let b:rifle = {"std": {"body": "cargo build", "plus": "cargo run"}}
-  else
-    let b:rifle = {"std": {"body": "rustc %f -o %o", "plus": "%o"}}
-  endif
-
-  setlocal foldmethod=syntax
-endfunction " }}}
 function! Ft_visualg() " {{{
-  let b:rifle = {"std": {"body": "julia '%f'"}}
+  let b:rifle = {}
+  let b:rifle.run = "julia '%f'"
 endfunction " }}}
 function! Ft_vim() " {{{
-  let b:rifle = {"std": {"body": "nvim -u '%f'"}}
+  let b:rifle = {}
+  let b:rifle.run = "nvim -u '%f'"
   setlocal foldmethod=marker foldmarker={{{,}}}
 endfunction " }}}
 function! Ft_python() " {{{
-  let b:rifle = {"std": {"body": "python3 '%f'"}}
+  let b:rifle = {}
+  let b:rifle.run = "python3 '%f'"
 endfunction " }}}
 function! Ft_hy() " {{{
-  let b:rifle = {"std": {"body": "hy '%f'"}}
+  let b:rifle = {}
+  let b:rifle.run = "hy '%f'"
   setlocal tabstop=2 shiftwidth=2
 endfunction " }}}
 function! Ft_fsharp() " {{{
   " To be honest I wanted to compile to the .exe and run it... sadly I can't
   " without writing some substitutions script and I'm too lazy.
-  let b:rifle = {"std": {"body": "fsharpi '%f'"}}
+  let b:rifle = {}
+  let b:rifle.run = "fsharpi '%f'"
 endfunction " }}}
 function! Ft_lua() " {{{
-  let b:rifle = {"std": {"body": "lua '%f'"}}
+  let b:rifle = {}
+  let b:rifle.run = "lua '%f'"
 endfunction " }}}
 function! Ft_nim() " {{{
   setlocal shiftwidth=2 softtabstop=2
-  let b:rifle = {"std": {"body": "nim c -r '%f'"}}
+  let b:rifle = {}
+  let b:rifle.run = "nim -c -r '%f'"
+  let b:rifle.build = "nim -c '%f'"
 endfunction " }}}
 function! Ft_ruby() " {{{
-  let b:rifle = {"std": {"body": "ruby '%f'"}}
+  let b:rifle = {}
+  let b:rifle.run = "ruby '%f'"
   setlocal foldmethod=syntax
 endfunction " }}}
 function! Ft_haskell() " {{{
   setlocal tabstop=2 shiftwidth=2
 endfunction " }}}
 function! Ft_racket() " {{{
-  let b:rifle = {"std": {"body": "racket '%f'"}}
+  let b:rifle = {}
+  let b:rifle.run = "racket '%f'"
 endfunction " }}}
 function! Ft_scribble() " {{{
   " Nothing lol
 endfunction " }}}
 function! Ft_html() " {{{
-  let b:rifle = {"std": {"body": $BROWSER . " '%f'"}}
+  let b:rifle = {}
+  if g:is_win
+    let b:rifle.run = "start %f"
+  else
+    let b:rifle.run = $BROWSER." '%f'"
+  endif
+endfunction " }}}
+function! Ft_rust() " {{{
+  if ReverseRSearch(expand("%:p:h"), "Cargo.toml")
+    let b:rifle = {}
+    let b:rifle.run = "cd '".expand("%:p:h")."' && cargo run"
+    let b:rifle.build = "cd '".expand("%:p:h")."' && cargo build"
+  else
+    let b:rifle.run = "rustc '%f' -o '%o' && { '%o'; rm '%o'; }"
+    let b:rifle.build = "rustc '%f' -o '%o'"
+  endif
+
+  setlocal foldmethod=syntax
 endfunction " }}}
 function! Ft_java() " {{{
   if ReverseRSearch(expand("%:p:h"), "gradlew")
-    let b:rifle = {"std": {"body": "rrsrun 1 gradlew run"}}
+    let b:rifle = {}
+    let b:rifle.run = "rrsrun 1 gradlew run"
+    let b:rifle.build = "rrsrun 1 gradlew build"
   elseif ReverseRSearch(expand("%:p:h"), "Makefile")
-    let b:rifle = {"std": {"body": "rrsrun 2 Makefile make run"}}
+    let b:rifle = {}
+    let b:rifle.run = "rrsrun 2 Makefile make run"
+    let b:rifle.build = "rrsrun 2 Makefile make"
   endif
 endfunction " }}}
 
@@ -455,8 +487,9 @@ inoremap <expr> <C-k> pumvisible() ? "\<C-p>" : "<C-k>"
 inoremap <expr> <C-m> pumvisible() ? "\<C-y>" : "<C-m>"
 
 " Rifle Commands
-nnoremap <silent> <Leader>r :RifleRun<CR>
-nnoremap <silent> <Leader>R :Rifle<CR>
+nnoremap <silent> <Leader>r :Rifle "run"<CR>
+nnoremap <silent> <Leader>R :Rifle "build"<CR>
+nnoremap <Leader>f :Rifle ""<Left>
 
 " Escape terminal in nvim
 tnoremap <silent> <Esc> <C-\><C-n>

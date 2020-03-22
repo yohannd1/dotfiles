@@ -2,65 +2,68 @@ local api = vim.api
 local cmd = api.nvim_command
 local call = api.nvim_call_function
 
-local function rifle(on_windows, plus)
+-- Function: (string) -> boolean
+-- Checks if a file exists.
+-- Args:
+--   filename ::= the path to the file to check.
+function io.exists(filename)
+    local f = io.open(name, "r")
+    if f ~= nil then
+        io.close(f)
+        return true
+    else
+        return false
+    end
+end
+
+-- Function: () -> string
+-- Generates a temp file and returns it. Returns nil if the process was
+-- not successful.
+local function gen_tmp()
+    local base = nil
+
+    if on_windows then
+        local base = os.getenv("HOME") or os.getenv("APPDATA")
+        if io.exists(base) then os.remove(base) end
+        return base and (base.."\\prog.exe")
+    else
+        local base = os.getenv("F_TEMP") or "/tmp"
+        if io.exists(base) then os.remove(base) end
+        return base .. "/prog"
+    end
+end
+
+-- Function: (string) -> boolean
+-- The main part of the plugin. Returns a boolean indicating whether the
+-- operation was successful or not.
+-- Args:
+--   command ::= the key of the rifle dict that contains the command.
+local function rifle(command)
     local r = api.nvim_buf_get_var(0, "rifle")
-    local filename = api.nvim_buf_get_var(0, "filename")
+    local fname = api.nvim_buf_get_var(0, "filename")
 
-    local tempfile = nil
-    if on_windows then
-        tempfile = os.getenv("HOME")
-        if tempfile == nil then
-            tempfile = os.getenv("APPDATA")
-        end
-        if (tempfile == nil) and plus then
-            print("Could not generate tempfile")
-            return
-        end
-        tempfile = tempfile .. '\\tmp_output.exe'
-    else
-        tempfile = os.getenv("F_TEMP")
-        if tempfile == nil then
-            tempfile = "/tmp"
-        end
-        tempfile = tempfile .. '/tmp_output'
+    -- Check if specified command really exists
+    if r[command] == nil then
+        print("Rifle: key'"..command.."' not found in b:rifle.")
+        return false
     end
 
-    if on_windows then
-        r = r.win
-    else
-        r = r.std
-    end
+    local rifle_cmd = r[command]:gsub("%%f", fname)
 
-    if r.body == nil then
-        print("[Rifle] main command (.body key) not found.")
-        return
+    -- Only mess with gen_tmp() if it really is needed (%o is mentioned
+    -- in the command)
+    if r[command]:find("%%o") then
+        local output = gen_tmp()
+        if output == nil then
+            print("Rifle: could not generate output file.")
+            return false
+        end
+        local rifle_cmd = r[command]:gsub("%%o", output)
     end
 
     cmd("split")
     cmd("wincmd j")
     cmd("enew")
-
-    local rifle_cmd = ""
-    if r.before ~= nil then
-        rifle_cmd = rifle_cmd .. r.before .. " && "
-    end
-
-    rifle_cmd = rifle_cmd .. r.body
-
-    if plus then
-        if r.plus ~= nil then
-            rifle_cmd = rifle_cmd .. " && " .. r.plus
-        end
-    end
-
-    if r.after ~= nil then
-        rifle_cmd = rifle_cmd .. "; " .. r.after
-    end
-
-    rifle_cmd = string.gsub(rifle_cmd, "%%f", filename)
-    rifle_cmd = string.gsub(rifle_cmd, "%%o", tostring(tempfile))
-    rifle_cmd = string.gsub(rifle_cmd, "'", '"')
-
     call("termopen", {rifle_cmd})
     cmd("normal i")
 end

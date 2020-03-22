@@ -6,37 +6,20 @@ let s:is_windows = (exists("g:is_windows") && g:is_windows == 1) || isdirectory(
 let s:save_cpo = &cpo " Save user coptions
 set cpo&vim " Reset them to their defaults
 
-augroup rifle
+augroup plug_rifle
     au!
     au BufNewFile,BufRead,BufWrite,BufEnter * let b:filename = expand("%")
 augroup end
 
-function! g:LaunchRifle(alt)
-    if s:is_windows
-        if !exists("b:rifle.win")
-            echo "[Rifle] Windows Command (b:rifle.win) not found."
-            return
-        endif
-        if a:alt
-            lua require'rifle'.rifle(true, true)
-        else
-            lua require'rifle'.rifle(true, false)
-        endif
-    else
-        if !exists("b:rifle.std")
-            echo "[Rifle] Command (b:rifle.std) not found."
-            return
-        endif
-        if a:alt
-            lua require'rifle'.rifle(false, true)
-        else
-            lua require'rifle'.rifle(false, false)
-        endif
+function! g:LaunchRifle(key)
+    if !exists("b:rifle")
+        echo "[Rifle] b:rifle dictionary not found."
+        return
     endif
+    exec "lua require'rifle'.rifle(\"".a:key."\")"
 endfunction
 
-command! RifleRun call g:LaunchRifle(1)
-command! Rifle call g:LaunchRifle(0)
+command! Rifle call g:LaunchRifle(eval(<f-args>))
 
 let &cpo = s:save_cpo " Restore user coptions
 unlet s:save_cpo " Remove temp var
