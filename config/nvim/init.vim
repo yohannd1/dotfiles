@@ -127,7 +127,7 @@ function! ReverseRSearch(basedir, query) " {{{
       if l:list_match
         return 1
       else
-        let l:current_dir = fnamemodify(l:current_dir, ":h") 
+        let l:current_dir = fnamemodify(l:current_dir, ":h")
       endif
     endif
   endwhile
@@ -486,6 +486,22 @@ augroup end
 augroup ft_html
   au!
   au FileType html let b:rifle = {"std": {"body": $BROWSER . " '%f'"}}
+augroup end
+
+" }}}
+" Java {{{
+
+function! s:MakeJavaRifle() " {{{
+  if ReverseRSearch(expand("%:p:h"), "gradlew")
+    let b:rifle = {"std": {"body": "rrsrun 1 gradlew run"}}
+  elseif ReverseRSearch(expand("%:p:h"), "Makefile")
+    let b:rifle = {"std": {"body": "make", "plus": "make run"}}
+  endif
+endfunction " }}}
+
+augroup ft_java
+  au!
+  au FileType java call s:MakeJavaRifle()
 augroup end
 
 " }}}

@@ -1,0 +1,26 @@
+#!/bin/bash
+
+shelp() {
+  cat <<EOF >/dev/stderr
+$(basename $0): a program to recursively search and run an executable script from parent directories.
+Usage: $(basename $0) <mode> <script-name> [script-args...]
+
+Where <mode> is 0 if the command should be ran at current dir and 1 if the command should be ran at the script's dir.
+EOF
+}
+
+[ $# -lt 2 ] && shelp && exit 1
+
+CURRENT_PATH="$PWD"
+
+while true; do
+  FILE="$CURRENT_PATH/$2"
+  if ! [ -f "$FILE" ] || ! [ -x "$FILE" ]; then
+    [ "$CURRENT_PATH" = "/" ] && exit 1
+    CURRENT_PATH=$(realpath -m "$CURRENT_PATH/..")
+  else
+    cd "$CURRENT_PATH"
+    ./"$2" ${@:3}
+    exit $?
+  fi
+done
