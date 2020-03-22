@@ -153,11 +153,15 @@ _comp_options+=(globdots) # Include hidden files in autocomplete
 # }}}
 # Prompt {{{
 
-if [ "$(uname -o)" = "Android" ]; then
-  PS1="%B%{$fg[green]%}%{$fg[magenta]%}%~%{$fg[green]%}%{$reset_color%}%b "
+SHORT_PROMPT=1
+[ "$(uname -o)" = "Android" ] && SHORT_PROMPT=1
+
+if [ -n SHORT_PROMPT ]; then
+  PS1="%B%{$fg[green]%}[:%{$fg[magenta]%}%~%{$fg[green]%}]%{$reset_color%}%b\$ "
 else
   PS1="%B%{$fg[green]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M:%{$fg[magenta]%}%~%{$fg[green]%}]%{$reset_color%}%b\$ "
 fi
+
 PS2='  '
 RPROMPT="%(?..%?)"
 
