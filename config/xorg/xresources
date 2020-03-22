@@ -1,1 +1,4 @@
 ! vim: ft=xdefaults
+
+*.alpha: 1;
+*.font: Delugia Code Nerd:size=20
