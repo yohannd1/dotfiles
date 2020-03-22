@@ -294,7 +294,7 @@ endif
 " }}}
 " Autocommands {{{
 
-" Not related to FileTypes {{{
+" Augroups {{{
 
 augroup nft_terminal
   au!
@@ -306,203 +306,105 @@ augroup extras
   au FileType xdefaults setlocal commentstring=\!%s
 augroup end
 
-" }}}
-
-" C {{{
-
-augroup ft_c
+augroup ft_functions
   au!
+  au FileType * if exists("*Ft_".&ft) | exec 'call Ft_'.&ft.'()' | endif
   au BufNewFile,BufRead,BufEnter *.fx set filetype=c
-  au FileType c let b:rifle = {"std": {"body": 'gcc "%f" -o "%o"', "plus": "%o; rm %o"}}
-augroup end
-
-" }}}
-" C++ {{{
-
-augroup ft_cpp
-  au!
-  au FileType cpp let b:rifle = {"std": {"body": 'g++ "%f" -o "%o"', "plus": "%o; rm %o"}}
-augroup end
-
-" }}}
-" Clojure {{{
-
-augroup ft_clojure
-  au!
   au BufNewFile,BufRead,BufEnter *.clj set filetype=clojure
-  au FileType clojure let b:rifle = {"std": {"body": "clojure '%f'"}}
-augroup end
-
-" }}}
-" Markdown {{{
-
-command! MarkdownMetadata exec "normal ggO---\<CR>created: ".strftime("%Y-%m-%d")."\<CR>---\<CR>\<Esc>2k:Tabularize /:\\zs\<Esc>3j"
-command! MarkdownCompile call SpawnTerminal("md-compile " . expand("%") . " > ~/" . expand("%:t:r") . "." . strftime("%Y-%m-%d") . ".html")
-
-augroup ft_markdown
-  au!
-  au FileType markdown setlocal textwidth=72 nofoldenable noautoindent
-  au FileType markdown setlocal tabstop=2 shiftwidth=2
-  au FileType markdown let b:rifle = {"std": {"body": "md-preview '%f'"}}
-  au FileType markdown nnoremap <Leader>df :TableFormat<CR>
-  au FileType markdown nnoremap <Leader>d: vip:Tabularize /:\zs<CR>
-  au FileType markdown vnoremap <Leader>d: :Tabularize /:\zs<CR>
-  au FileType markdown nnoremap <Leader>dm :MarkdownMetadata<CR>
-augroup end
-
-" }}}
-" Shell {{{
-
-augroup ft_sh
-  au!
-  au FileType sh setlocal tabstop=2 shiftwidth=2
-augroup end
-
-" }}}
-" VisuAlg {{{
-
-augroup ft_visualg
-  au!
   au BufNewFile,BufRead,BufEnter *.alg set filetype=visualg
-  au! FileType visualg setlocal tabstop=4 shiftwidth=4
-  au FileType visualg set syntax=c " I don't have any syntax files for VisuAlg, so lets' use C syntax.
+  au BufNewFile,BufRead,BufEnter *.jl set filetype=julia
+  au BufNewFile,BufRead,BufEnter *.scrbl set filetype=scribble
 augroup end
 
 " }}}
-" Rust {{{
+" Filetypes {{{
 
-function! s:MakeRustRifle() " {{{
+function! Ft_c() " {{{
+  let b:rifle = {"std": {"body": 'gcc "%f" -o "%o"', "plus": "%o; rm %o"}}
+endfunction " }}}
+function! Ft_cpp() " {{{
+  let b:rifle = {"std": {"body": 'g++ "%f" -o "%o"', "plus": "%o; rm %o"}}
+endfunction " }}}
+function! Ft_clojure() " {{{
+  let b:rifle = {"std": {"body": "clojure '%f'"}}
+endfunction " }}}
+function! Ft_markdown() " {{{
+  let b:rifle = {"std": {"body": "md-preview '%f'"}}
+  setlocal textwidth=72 nofoldenable noautoindent
+  setlocal tabstop=2 shiftwidth=2
+
+  command! -buffer GenMetadata exec "normal ggO---\<CR>created: ".strftime("%Y-%m-%d")."\<CR>---\<CR>\<Esc>2k:Tabularize /:\\zs\<Esc>3j"
+  command! -buffer Compile call SpawnTerminal("md-compile " . expand("%") . " > ~/" . expand("%:t:r") . "." . strftime("%Y-%m-%d") . ".html")
+
+  nnoremap <Leader>df :TableFormat<CR>
+  nnoremap <Leader>d: vap:Tabularize /:\zs<CR>
+  vnoremap <Leader>d: :Tabularize /:\zs<CR>
+  nnoremap <Leader>dm :GenMetadata<CR>
+endfunction " }}}
+function! Ft_sh() " {{{
+  setlocal tabstop=2 shiftwidth=2
+endfunction " }}}
+function! Ft_visualg() " {{{
+  setlocal tabstop=4 shiftwidth=4 syntax=c
+endfunction " }}}
+function! Ft_rust() " {{{
   if ReverseRSearch(expand("%:p:h"), "Cargo.toml")
     let b:rifle = {"std": {"body": "cargo build", "plus": "cargo run"}}
   else
     let b:rifle = {"std": {"body": "rustc %f -o %o", "plus": "%o"}}
   endif
+
+  setlocal foldmethod=syntax
 endfunction " }}}
-
-augroup ft_rust
-  au!
-  au FileType rust call s:MakeRustRifle()
-  au FileType rust set foldmethod=syntax
-augroup end 
-
-" }}}
-" Julia {{{
-
-augroup ft_julia
-  au!
-  au BufNewFile,BufRead,BufEnter *.jl set filetype=julia
-  au FileType julia let b:rifle = {"std": {"body": "julia '%f'"}}
-augroup end 
-
-" }}}
-" VimScript {{{
-
-augroup ft_vim
-  au!
-  au FileType vim let b:rifle = {"std": {"body": "nvim -u '%f'"}}
-  au FileType vim setlocal foldmethod=marker foldmarker={{{,}}}
-augroup end
-
-" }}}
-" Python {{{
-
-augroup ft_python
-  au!
-  au FileType python let b:rifle = {"std": {"body": "python3 '%f'"}}
-augroup end
-
-" }}}
-" Hylang {{{
-
-augroup ft_hy
-  au!
-  au FileType hy let b:rifle = {"std": {"body": "hy '%f'"}}
-  au FileType hy setlocal tabstop=2 shiftwidth=2
-augroup end
-
-" }}}
-" F# {{{
-
-augroup ft_fsharp
-  au!
+function! Ft_visualg() " {{{
+  let b:rifle = {"std": {"body": "julia '%f'"}}
+endfunction " }}}
+function! Ft_vim() " {{{
+  let b:rifle = {"std": {"body": "nvim -u '%f'"}}
+  setlocal foldmethod=marker foldmarker={{{,}}}
+endfunction " }}}
+function! Ft_python() " {{{
+  let b:rifle = {"std": {"body": "python3 '%f'"}}
+endfunction " }}}
+function! Ft_hy() " {{{
+  let b:rifle = {"std": {"body": "hy '%f'"}}
+  setlocal tabstop=2 shiftwidth=2
+endfunction " }}}
+function! Ft_fsharp() " {{{
   " To be honest I wanted to compile to the .exe and run it... sadly I can't
   " without writing some substitutions script and I'm too lazy.
-  au FileType fsharp let b:rifle = {"std": {"body": "fsharpi '%f'"}}
-augroup end
-
-" }}}
-" Lua {{{
-
-augroup ft_lua
-  au!
-  au FileType lua let b:rifle = {"std": {"body": "lua '%f'"}}
-augroup end
-
-" }}}
-" Nim {{{
-
-augroup ft_nim
-  au!
-  au Filetype nim setlocal shiftwidth=2 softtabstop=2
-  au FileType nim let b:rifle = {"std": {"body": "nim c -r '%f'"}}
-augroup end
-
-" }}}
-" Ruby {{{
-
-augroup ft_ruby
-  au!
-  au FileType ruby let b:rifle = {"std": {"body": "ruby '%f'"}}
-  au FileType ruby set foldmethod=syntax
-augroup end
-
-" }}}
-" Haskell {{{
-
-augroup ft_haskell
-  au!
-  au FileType haskell setlocal tabstop=2 shiftwidth=2
-augroup end
-
-" }}}
-" Racket {{{
-
-augroup ft_racket
-  au!
-  au FileType racket let b:rifle = {"std": {"body": "racket '%f'"}}
-augroup end
-
-" }}}
-" Scribble {{{
-
-augroup ft_scribble
-  au!
-  au BufNewFile,BufRead,BufEnter *.scrbl set filetype=scribble
-augroup end
-
-" }}}
-" HTML {{{
-
-augroup ft_html
-  au!
-  au FileType html let b:rifle = {"std": {"body": $BROWSER . " '%f'"}}
-augroup end
-
-" }}}
-" Java {{{
-
-function! s:MakeJavaRifle() " {{{
+  let b:rifle = {"std": {"body": "fsharpi '%f'"}}
+endfunction " }}}
+function! Ft_lua() " {{{
+  let b:rifle = {"std": {"body": "lua '%f'"}}
+endfunction " }}}
+function! Ft_nim() " {{{
+  setlocal shiftwidth=2 softtabstop=2
+  let b:rifle = {"std": {"body": "nim c -r '%f'"}}
+endfunction " }}}
+function! Ft_ruby() " {{{
+  let b:rifle = {"std": {"body": "ruby '%f'"}}
+  setlocal foldmethod=syntax
+endfunction " }}}
+function! Ft_haskell() " {{{
+  setlocal tabstop=2 shiftwidth=2
+endfunction " }}}
+function! Ft_racket() " {{{
+  let b:rifle = {"std": {"body": "racket '%f'"}}
+endfunction " }}}
+function! Ft_scribble() " {{{
+  " Nothing lol
+endfunction " }}}
+function! Ft_html() " {{{
+  let b:rifle = {"std": {"body": $BROWSER . " '%f'"}}
+endfunction " }}}
+function! Ft_java() " {{{
   if ReverseRSearch(expand("%:p:h"), "gradlew")
     let b:rifle = {"std": {"body": "rrsrun 1 gradlew run"}}
   elseif ReverseRSearch(expand("%:p:h"), "Makefile")
     let b:rifle = {"std": {"body": "rrsrun 2 Makefile make run"}}
   endif
 endfunction " }}}
-
-augroup ft_java
-  au!
-  au FileType java call s:MakeJavaRifle()
-augroup end
 
 " }}}
 
@@ -599,9 +501,5 @@ if g:is_first && exists("g:messages") && len("g:messages") != 0
 endif
 
 " }}}
-
-" Some credits:
-" * Steve Losh
-" * jdhao (https://github.com/jdhao/nvim-config)
 
 " vim: foldmethod=marker foldmarker={{{,}}} shiftwidth=2 softtabstop=2

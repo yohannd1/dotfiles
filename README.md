@@ -31,3 +31,5 @@ work well...
 
 - https://github.com/denysdovhan/dotfiles
 - https://github.com/LukeSmithxyz/voidrice
+- https://github.com/jdhao/nvim-config
+- https://bitbucket.org/sjl/dotfiles/src/tip/vim/vimrc
