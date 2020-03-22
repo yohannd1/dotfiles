@@ -126,16 +126,16 @@ if is_interactive; then
     ! is_display && ! is_android && setup-tty
 fi
 
-if [ -z "${SHELL_FIRST}" ]; then
-  SHELL_FIRST="$(date)"
+# if [ -z "${SHELL_FIRST}" ]; then
+#   SHELL_FIRST="$(date)"
 
-    # Defer to a shell inside tmux, if not attached yet.
-    if is_interactive && (is_display || is_android); then
-      if [ -z "${TMUX}" ]; then
-        exec tmux new -s $(random-string 4)
-      fi
-    fi
-fi
+#     # Defer to a shell inside tmux, if not attached yet.
+#     if is_interactive && (is_display || is_android); then
+#       if [ -z "${TMUX}" ]; then
+#         exec tmux new -s $(random-string 4)
+#       fi
+#     fi
+# fi
 
 
 # }}}
