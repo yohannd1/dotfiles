@@ -3,24 +3,51 @@
 shelp() {
   cat <<EOF >/dev/stderr
 $(basename $0): a program to recursively search and run an executable script from parent directories.
-Usage: $(basename $0) <mode> <script-name> [script-args...]
+Usage: $(basename $0) <mode> <cmd> [args...]
 
-Where <mode> is 0 if the command should be ran at current dir and 1 if the command should be ran at the script's dir.
+Where <mode> is:
+  0, if <cmd> is a script to be found and it should be ran at current directory;
+  1, if <cmd> is a script to be found and it should be ran at its directory; and
+  2, if <cmd> is a file to be found, but arg1 is a command to be ran at <cmd>'s directory and arg2+ are the arguments.
 EOF
 }
 
+FILE_PATH="$PWD"
+MODE="$1"
+
 [ $# -lt 2 ] && shelp && exit 1
 
-CURRENT_PATH="$PWD"
+case "$MODE" in
+  0) ;; 1) ;; 2) ;;
+  *) shelp && exit 1 ;;
+esac
 
 while true; do
-  FILE="$CURRENT_PATH/$2"
-  if ! [ -f "$FILE" ] || ! [ -x "$FILE" ]; then
-    [ "$CURRENT_PATH" = "/" ] && exit 1
-    CURRENT_PATH=$(realpath -m "$CURRENT_PATH/..")
-  else
-    cd "$CURRENT_PATH"
-    ./"$2" ${@:3}
-    exit $?
+  FILE="$FILE_PATH/$2"
+
+  if [ -f "$FILE" ]; then
+    if [ "$MODE" = 2 ]; then
+      break
+    else
+      [ -x "$FILE" ] && break
+    fi
   fi
+
+  [ "$FILE_PATH" = "/" ] && exit 1
+  FILE_PATH=$(realpath -m "$FILE_PATH/..")
 done
+
+case "$MODE" in
+  0)
+    "$FILE" ${@:3}
+    ;;
+  1)
+    cd "$FILE_PATH"
+    "$FILE" ${@:3}
+    ;;
+  2)
+    CMD="$3"
+    cd "$FILE_PATH"
+    "$CMD" ${@:4}
+    ;;
+esac

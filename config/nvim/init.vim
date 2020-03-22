@@ -495,7 +495,7 @@ function! s:MakeJavaRifle() " {{{
   if ReverseRSearch(expand("%:p:h"), "gradlew")
     let b:rifle = {"std": {"body": "rrsrun 1 gradlew run"}}
   elseif ReverseRSearch(expand("%:p:h"), "Makefile")
-    let b:rifle = {"std": {"body": "make", "plus": "make run"}}
+    let b:rifle = {"std": {"body": "rrsrun 2 Makefile make run"}}
   endif
 endfunction " }}}
 
