@@ -446,6 +446,8 @@ function! Ft_java() " {{{
     let b:rifle.run = "rrsrun 2 Makefile make run"
     let b:rifle.build = "rrsrun 2 Makefile make"
   endif
+
+  setlocal foldmethod=syntax
 endfunction " }}}
 
 " }}}

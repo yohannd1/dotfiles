@@ -10,15 +10,15 @@
 
 font:
   normal:
-    family: Delugia Nerd Font
+    family: Cascadia Code
     style: Regular
 
   bold:
-    family: Delugia Nerd Font
+    family: Cascadia Code
     style: Bold
 
   italic:
-    family: Delugia Nerd Font
+    family: Cascadia Code
     style: Italic
 
   size: 10.5

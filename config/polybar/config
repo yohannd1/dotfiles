@@ -34,7 +34,7 @@ module-margin-right = 0
 
 enable-ipc = true
 
-font-0 = Delugia Nerd Font:pixelsize=10;1
+font-0 = Cascadia Code:pixelsize=10;1
 font-1 = unifont:fontformat=truetype:size=8:antialias=false;0
 font-2 = siji:pixelsize=10;1
 
@@ -63,7 +63,7 @@ cursor-scroll = ns-resize
 [module/xwindow]
 ;; {{{
 type = internal/xwindow
-label = %title:0:60:...%
+label = %title:0:40:...%
 ;; }}}
 [module/xkeyboard]
 ;; {{{
@@ -196,7 +196,7 @@ card = intel_backlight
 ;; {{{
 type = internal/cpu
 interval = 2
-format-prefix = "ﲯ "
+format-prefix = "cpu "
 format-prefix-foreground = ${colors.foreground-alt}
 format-underline = #f90000
 label = %percentage:2%%
@@ -205,7 +205,7 @@ label = %percentage:2%%
 ;; {{{
 type = internal/memory
 interval = 2
-format-prefix = "M "
+format-prefix = "ram "
 format-prefix-foreground = ${colors.foreground-alt}
 format-underline = #4bffdc
 label = %percentage_used%%
@@ -226,11 +226,11 @@ format-disconnected =
 ; label-disconnected = %ifname% disconnected
 ; label-disconnected-foreground = ${colors.foreground-alt}
 
-ramp-signal-0 = ﬉
-ramp-signal-1 = ﬉
-ramp-signal-2 = ﬉
-ramp-signal-3 = ﬉
-ramp-signal-4 = ﬉
+ramp-signal-0 = wlan
+ramp-signal-1 = wlan
+ramp-signal-2 = wlan
+ramp-signal-3 = wlan
+ramp-signal-4 = wlan
 ramp-signal-foreground = ${colors.foreground-alt}
 ;; }}}
 [module/eth]
@@ -299,31 +299,13 @@ bar-volume-empty-foreground = ${colors.foreground-alt}
 ;; {{{
 type = internal/alsa
 
-format-volume = <label-volume>
+format-volume = alsa <label-volume>
 ; format-volume = <label-volume> <bar-volume>
-label-volume =  %percentage%%
+label-volume = %percentage%%
 label-volume-foreground = ${root.foreground}
 format-volume-underline = #0a6cf5
-format-muted-prefix = "ﱝ "
 format-muted-foreground = ${colors.foreground-alt}
-label-muted = "(Muted)"
-
-bar-volume-width = 10
-bar-volume-foreground-0 = #55aa55
-bar-volume-foreground-1 = #55aa55
-bar-volume-foreground-2 = #55aa55
-bar-volume-foreground-3 = #55aa55
-bar-volume-foreground-4 = #55aa55
-bar-volume-foreground-5 = #f5a70a
-bar-volume-foreground-6 = #ff5555
-bar-volume-gradient = false
-bar-volume-indicator = |
-bar-volume-indicator-font = 2
-bar-volume-fill = ─
-bar-volume-fill-font = 2
-bar-volume-empty = ─
-bar-volume-empty-font = 2
-bar-volume-empty-foreground = ${colors.foreground-alt}
+label-muted = "Muted"
 ;; }}}
 [module/battery]
 ;; {{{
@@ -338,24 +320,24 @@ format-charging-underline = #ffb52a
 format-discharging = <animation-discharging> <label-discharging>
 format-discharging-underline = ${self.format-charging-underline}
 
-format-full-prefix = " "
+format-full-prefix = "bat="
 format-full-prefix-foreground = ${colors.foreground-alt}
 format-full-underline = ${self.format-charging-underline}
 
-ramp-capacity-0 = 
-ramp-capacity-1 = 
-ramp-capacity-2 = 
+ramp-capacity-0 = bat
+ramp-capacity-1 = bat
+ramp-capacity-2 = bat
 ramp-capacity-foreground = ${colors.foreground-alt}
 
-animation-charging-0 = 
-animation-charging-1 = 
-animation-charging-2 = 
+animation-charging-0 = bat+
+animation-charging-1 = bat+
+animation-charging-2 = bat+
 animation-charging-foreground = ${colors.foreground-alt}
 animation-charging-framerate = 750
 
-animation-discharging-0 = 
-animation-discharging-1 = 
-animation-discharging-2 = 
+animation-discharging-0 = bat
+animation-discharging-1 = bat
+animation-discharging-2 = bat
 animation-discharging-foreground = ${colors.foreground-alt}
 animation-discharging-framerate = 750
 ;; }}}
