@@ -22,6 +22,7 @@ xset r rate 400 35 & # Speed up xrate
 xinput set-prop 16 325 1 & # Touchpad: tap to click
 xinput set-prop 16 307 1 & # Touchpad: natural scrolling
 setxkbmap -layout br & # Keyboard layout
+xrdb ~/.Xresources
 
 # Scripts
 battery-check & # Battery check & etc.

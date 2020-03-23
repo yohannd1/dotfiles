@@ -276,9 +276,14 @@ if g:is_first
   set list
 
   syntax on
-  silent! colorscheme desert
+  silent! colorscheme elflord
   silent! colorscheme gruvbox
   let &background = g:is_win ? "light" : "dark" " I like to use light backgrounds on windows.
+  if g:is_home
+    " Disable background if I'm using vim at home, since my terminals
+    " are transparent
+    hi Normal guibg=NONE ctermbg=NONE
+  endif
 
   filetype plugin indent on
   set foldtext=MyFoldText()

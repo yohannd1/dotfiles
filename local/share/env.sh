@@ -22,7 +22,7 @@ else
 fi
 
 export EDITOR="nvim"
-export TERMINAL="alacritty"
+export TERMINAL="st"
 export BROWSER="qutebrowser"
 export PAGER="less"
 export MANPAGER="/bin/sh -c 'col -b | nvim -c PagerMode -'"

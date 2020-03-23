@@ -1,4 +1,45 @@
 ! vim: ft=xdefaults
 
-*.alpha: 1;
-*.font: Delugia Code Nerd:size=20
+*.font:	Cascadia Code:pixelsize=14.5:antialias=true:autohint=true;
+*.alpha: 0.92
+
+!! Set the background, foreground and cursor colors as below:
+*.background: #282828
+*.foreground: #FBF1C7
+*.cursorColor: #FBF1C7
+
+!! Gruvbox Dark (Better to use the default one, I guess)
+! *.color0: #282828
+! *.color1: #9D0006
+! *.color2: #79740E
+! *.color3: #B57614
+! *.color4: #076678
+! *.color5: #8F3F71
+! *.color6: #427B58
+! *.color7: #FBF1C7
+! *.color8: #32302F
+! *.color9: #FB4934
+! *.color10: #B8BB26
+! *.color11: #FABD2F
+! *.color12: #83A598
+! *.color13: #D3869B
+! *.color14: #8EC07C
+! *.color15: #FBF1C7
+
+!! Gruvbox Light
+! *.color0: #fbf1c7
+! *.color1: #cc241d
+! *.color2: #98971a
+! *.color3: #d79921
+! *.color4: #458588
+! *.color5: #b16286
+! *.color6: #689d6a
+! *.color7: #7c6f64
+! *.color8: #928374
+! *.color9: #9d0006
+! *.color10: #79740e
+! *.color11: #b57614
+! *.color12: #076678
+! *.color13: #8f3f71
+! *.color14: #427b58
+! *.color15: #3c3836
