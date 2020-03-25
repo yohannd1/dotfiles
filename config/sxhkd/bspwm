@@ -13,13 +13,13 @@ super + alt + r; p
 super + shift + r
     bspc wm -r
 
-# Close and kill window
+# Close or kill window
 super + {_,alt + }q
     bspc node -{c,k}
 
 # Alternate between the tiled and monocle layout
-super + m
-    bspc desktop -l next
+# super + m
+#     bspc desktop -l next
 
 # send the newest marked node to the newest preselected node
 # super + y
@@ -31,9 +31,12 @@ super + m
 
 # State / Flags {{{
 
+super + m
+    bspwm-tfullscreen
+
 # set the window state
-super + {t,shift + t,s,f}
-    bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
+super + {t,shift + t,f}
+    bspc node -t {tiled,pseudo_tiled,floating}
 
 # set the node flags
 super + ctrl + {m,x,y,z}
