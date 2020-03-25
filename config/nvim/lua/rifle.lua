@@ -7,7 +7,7 @@ local call = api.nvim_call_function
 -- Args:
 --   filename ::= the path to the file to check.
 function io.exists(filename)
-    local f = io.open(name, "r")
+    local f = io.open(filename, "r")
     if f ~= nil then
         io.close(f)
         return true
@@ -54,11 +54,11 @@ local function rifle(command)
     -- in the command)
     if r[command]:find("%%o") then
         local output = gen_tmp()
-        if output == nil then
+        if type(output) ~= "string" then
             print("Rifle: could not generate output file.")
             return false
         end
-        local rifle_cmd = r[command]:gsub("%%o", output)
+        rifle_cmd = rifle_cmd:gsub("%%o", output)
     end
 
     cmd("split")

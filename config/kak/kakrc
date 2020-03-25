@@ -1,6 +1,8 @@
-# Enable wrap
-add-highlighter global/ wrap
-add-highlighter global/ number-lines
+# Highlighters
+try %{
+    add-highlighter global/ wrap
+    add-highlighter global/ number-lines
+}
 
 hook global InsertCompletionShow .* %{
     map window insert <tab> <c-n>
@@ -12,8 +14,19 @@ hook global InsertCompletionHide .* %{
     unmap window insert <s-tab> <c-p>
 }
 
+# Commands
+try %{
+    define-command rl %{
+        source ~/.config/kak/kakrc
+    }
+}
+
 # Themes
-colorscheme solarized-dark-termcolors
+colorscheme gruvbox
+set-face global Default rgb:fbf1c7
+set-face global LineNumbers rgb:7c6f64
+set-face global BufferPadding rgb:7c6f64
+set-face global StatusLine rgb:fbf1c7
 
 # Standard mappings
 map global normal ç :

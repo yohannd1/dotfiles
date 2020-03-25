@@ -283,6 +283,7 @@ if g:is_first
     " Disable background if I'm using vim at home, since my terminals
     " are transparent
     hi Normal guibg=NONE ctermbg=NONE
+    hi BufTabLineFill guibg=NONE ctermbg=NONE
   endif
 
   filetype plugin indent on

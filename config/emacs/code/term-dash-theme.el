@@ -6,7 +6,7 @@
  ;; Standard
  '(default ((t (:background "black" :foreground "white"))))
  '(cursor ((((background light)) (:background "black")) (((background dark)) (:background "white"))))
- '(fixed-pitch ((t (:family "Cascadia Code"))))
+ '(fixed-pitch ((t (:family "JetBrains Mono Medium"))))
  '(variable-pitch ((t (:family "Sans Serif"))))
  ;; Emacs thingies
  '(minibuffer-prompt ((t (:foreground "yellow"))))

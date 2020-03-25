@@ -3,7 +3,7 @@
 rofi.modi: combi
 rofi.width: 1000
 rofi.lines: 20
-rofi.font: Cascadia Code 13
+rofi.font: JetBrains Mono Medium 13
 rofi.show-icons: false
 rofi.combi-modi: drun,run
 rofi.kb-move-char-back: Left

@@ -1,7 +1,7 @@
 ! vim: ft=xdefaults
 
-*.font:	Cascadia Code:pixelsize=14.5:antialias=true:autohint=true;
-*.alpha: 0.92
+*.font:	JetBrains Mono Medium:pixelsize=14.5:antialias=true:autohint=true;
+*.alpha: 0.8
 
 !! Set the background, foreground and cursor colors as below:
 *.background: #282828

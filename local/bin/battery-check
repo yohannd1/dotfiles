@@ -28,6 +28,8 @@ while True:
     battery_level = get_battery_level()
     is_charging = get_charge_state()
 
+    if 20 < battery_level < 90:
+        notify = None
     if (notify != "LOW") and (battery_level <= 20):
         notify = "LOW"
         if not is_charging:

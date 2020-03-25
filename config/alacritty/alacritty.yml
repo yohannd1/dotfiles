@@ -10,15 +10,15 @@
 
 font:
   normal:
-    family: Cascadia Code
+    family: JetBrains Mono Medium
     style: Regular
 
   bold:
-    family: Cascadia Code
+    family: JetBrains Mono Medium
     style: Bold
 
   italic:
-    family: Cascadia Code
+    family: JetBrains Mono Medium
     style: Italic
 
   size: 10.5
