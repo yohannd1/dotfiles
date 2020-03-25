@@ -1,46 +1,59 @@
-#!/usr/bin/env python3
-# vim: foldmethod=marker
+#!/usr/bin/env ruby
 
 # Battery checks to run in background.
-# "Why is this in python?" -> because it looked trash in sh syntax.
+# Due to not being a shell program to do such a simple task, it is
+# slower. But... should I care? I'm not sure if I should in this
+# situation. I might change my mind later, though.
 
-import subprocess
-import time
+BATTERY_PATH = "/sys/class/power_supply/BAT0/capacity"
+CHARGE_STATE_PATH = "/sys/class/power_supply/BAT0/status"
 
-def read_file(path: str):
-    contents = None
-    with open(path, "r") as f:
-        contents = f.read()
-    return contents
+CRIT_LEVEL = 5
+LOW_LEVEL = 20
+HIGH_LEVEL = 90
+MAX_LEVEL = 100
 
-def get_battery_level():
-    return int(read_file("/sys/class/power_supply/BAT0/capacity"))
+def send_notify(message, level = "normal")
+  system("notify-send '#{message}' -u #{level}")
+end
 
-def get_charge_state():
-    return read_file("/sys/class/power_supply/BAT0/status") == "Charging\n"
+state = :none
+loop do
+  bat_level = File::read(BATTERY_PATH).to_i
+  is_charging = File::read(CHARGE_STATE_PATH) == "Charging\n"
 
-def send_notify(message: str, level: str = "normal"):
-    subprocess.Popen(["notify-send", message, "-u", level])
+  if (state != :crit) && (bat_level <= CRIT_LEVEL)
+    if is_charging
+      state = :none
+    else
+      state = :crit
+      send_notify("Battery is very low! (#{format("%02d", bat_level)}%)", "critical")
+    end
 
-# Main loop
-notify = None
-while True:
-    battery_level = get_battery_level()
-    is_charging = get_charge_state()
+  elsif (state != :low) && (bat_level <= LOW_LEVEL)
+    if is_charging
+      state = :none
+    else
+      state = :low
+      send_notify("Battery is low! (#{format("%02d", bat_level)}%)", "critical")
+    end
 
-    if 20 < battery_level < 90:
-        notify = None
-    if (notify != "LOW") and (battery_level <= 20):
-        notify = "LOW"
-        if not is_charging:
-            send_notify(f"Battery is low! ({battery_level:02d}%)", "critical")
-    if (notify != "HIGH") and (battery_level >= 90):
-        notify = "HIGH"
-        if is_charging:
-            send_notify(f"Battery is close to full! ({battery_level:02d}%)", "low")
-    if (notify != "MAX") and (battery_level == 100):
-        notify = "MAX"
-        if is_charging:
-            send_notify(f"Battery is full! ({battery_level:02d}%)")
+  elsif (state != :high) && (HIGH_LEVEL <= bat_level)
+    if is_charging
+      state = :high
+      send_notify("Battery is almost charged! (#{format("%02d", bat_level)}%)", "low")
+    else
+      state = :none
+    end
 
-    time.sleep(60)
+  elsif (state != :max) && (MAX_LEVEL <= bat_level)
+    if is_charging
+      state = :max
+      send_notify("Battery is fully charged! (#{format("%02d", bat_level)}%)")
+    else
+      state = :none
+    end
+  end
+
+  sleep(5)
+end
