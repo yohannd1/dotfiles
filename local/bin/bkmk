@@ -1,0 +1,99 @@
+#!/usr/bin/env ruby
+
+# TODO: make an action to toggle a bookmark's state
+# TODO: make an action to remove a bookmark
+# TODO: make a bookmark adding command
+
+$LOAD_PATH << "#{Dir.home}/.local/lib"
+require 'ssv-parser'
+require 'open3'
+include SSV
+
+Bookmark = Struct::new(:state, :name, :link, :tags)
+
+def parse_state(state)
+  case state
+  when "t"; true
+  when "f"; false
+  else; nil
+  end
+end
+
+# Get options
+bookmark_path = ENV['BKMK_FILE'] || "#{Dir.home}/.bkmk"
+opener_path = ENV['BKMK_OPENER'] || "xdg-open"
+
+# Check if file exists
+if not File::file?(bookmark_path)
+  raise "File #{bookmark_path.inspect} does not exist."
+end
+
+# Read and parse the file
+parsed = File::read(bookmark_path)
+  .split("\n")
+  .map{|item| SSV::parse(item)}
+
+# Crash if parsed is nil
+if parsed == nil
+  raise "Couldn't parse bookmarks file"
+end
+
+bookmarks = Hash::new
+parsed.each do |raw_item|
+  case raw_item.length
+  when 0 # Comment / Empty Line
+  when 4 # ID, State, Name & Link
+    id, _state, name, link = raw_item
+    state = parse_state(_state)
+    if state == nil
+      raise "Could not parse state: #{state.inspect}"
+    end
+    bookmarks[id.to_i] = Bookmark::new(state, name, link, [])
+  when 5 # ID, State, Name, Link & Tags (as tag1:tag2)
+    id, _state, name, link, tags = raw_item
+    state = parse_state(_state)
+    if state == nil
+      raise "Could not parse state: #{state.inspect}"
+    end
+    bookmarks[id.to_i] = Bookmark::new(state, name, link, tags.split(":"))
+  end
+end
+
+chosen_string, exit_code =
+  Open3::popen3('dmenu -p "Bookmark:"') { |stdin, stdout, _, wait_thr|
+    bk_digit_len = bookmarks.length.to_s.length
+    bookmarks.each do |k, v|
+      stdin.puts "%0#{bk_digit_len}d #{v.name}" % "#{k}"
+    end
+    stdin.close
+    [stdout.read, wait_thr.value]
+}
+
+if exit_code.to_i != 0 then exit 1 end
+chosen_bookmark = bookmarks[chosen_string.split(" ")[0].to_i]
+
+actions = {
+  0 => "Open in web browser",
+  # 1 => "Mark as read",
+}
+
+chosen_string, exit_code =
+  Open3::popen3('dmenu -p "Action:"') { |stdin, stdout, _, wait_thr|
+    action_digit_len = actions.length.to_s.length
+    actions.each do |k, v|
+      stdin.puts "%0#{action_digit_len}d #{v}" % "#{k}"
+    end
+    stdin.close
+    [stdout.read, wait_thr.value]
+}
+
+if exit_code.to_i != 0 then exit 1 end
+chosen_action = chosen_string.split(" ")[0].to_i
+
+case chosen_action
+when 0
+  # This one is unsafe if opener is undefined.
+  system("xdg-open #{chosen_bookmark.link}")
+else
+  raise "Unknown action: #{chosen_action.inspect}"
+end
