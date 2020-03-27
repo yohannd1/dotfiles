@@ -18,7 +18,7 @@ report.next.filter=status:pending limit:page -hold
 
 # General decoration
 color.label=color4
-color.alternate=on color0
+color.alternate=
 color.header=color4
 color.footnote=color6
 color.warning=color0 on color3

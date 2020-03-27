@@ -266,7 +266,8 @@ function dir-action { # {{{
   done
 } # }}}
 function select-project { # {{{
-  local projects="$(find ~/projects -mindepth 1 -maxdepth 1 -type d | sed 's/^.*\///g')"
+  # local projects="$(find ~/projects -mindepth 1 -maxdepth 1 -type d | sed 's/^.*\///g')"
+  local projects="$(cd ~/projects && fd -d 1 -t d)"
   local choice="$(fzf-tmux <<<"$projects")"
   if [ -n "$choice" ]; then
     echo "${HOME}/projects/$choice"

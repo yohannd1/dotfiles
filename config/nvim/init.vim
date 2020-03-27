@@ -237,8 +237,8 @@ let g:netrw_liststyle = 3
 let g:netrw_altv = 1
 
 " Gruvbox
-let g:gruvbox_bold = 0
-let g:gruvbox_italics = 0
+let g:gruvbox_bold = 1
+let g:gruvbox_italics = 1
 
 " Buftabline
 let g:buftabline_indicators = 1
@@ -273,6 +273,7 @@ if g:is_first
   set completeopt-=preview
   set completeopt+=menuone,noselect
   set noshowmode
+  set autochdir
   set list
 
   syntax on

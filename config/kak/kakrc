@@ -7,11 +7,15 @@ try %{
 hook global InsertCompletionShow .* %{
     map window insert <tab> <c-n>
     map window insert <s-tab> <c-p>
+    map window insert <c-j> <c-n>
+    map window insert <c-k> <c-p>
 }
 
 hook global InsertCompletionHide .* %{
     unmap window insert <tab> <c-n>
     unmap window insert <s-tab> <c-p>
+    unmap window insert <c-j> <c-n>
+    unmap window insert <c-k> <c-p>
 }
 
 # Commands

@@ -211,7 +211,7 @@ if [ -z "$NO_CONFIG_LINK" ]; then
 
   # Local Symlinking
   lfglob "$HOME/persist/local/bin" ~/.local/bin
-  lfglob "$HOME/persist/local/lib" ~/.local/bin
+  lfglob "$HOME/persist/local/lib" ~/.local/lib
   lfglob "$HOME/persist/local/share" ~/.local/share
 fi
 
