@@ -10,6 +10,7 @@ pathadd() {
 }
 
 # F_DIRS (specific to my dotfiles)
+export F_WIKI="$HOME/wiki"
 export F_PROJECTS="$HOME/projects"
 export F_PERSIST="$HOME/persist"
 export F_DOTFILES="$F_PROJECTS/dotfiles"
@@ -42,8 +43,9 @@ export BAT_THEME="base16"
 # export NNN_OPENER="nuke" # Commented out for now because it seems to
 # be glitching...
 export NNN_OPENER=""
-
 export FLAMEDASH_SCR_FOLDER="$HOME/photos/screenshots"
+export BKMK_FILE="$F_WIKI/data/bookmarks"
+
 export KEYTIMEOUT=1
 export TERM="xterm-256color"
 export WM="bspwm"
@@ -64,6 +66,7 @@ fi
 
 # GCC
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
 pathadd "$HOME/.local/bin"
 pathadd "$HOME/.cache/go"
 pathadd "$CARGO_HOME/bin"

@@ -187,6 +187,7 @@ if [ -z "$NO_CONFIG_LINK" ]; then
   lfconf "bash/bashrc" ~/.bashrc
   lfconf "tmux.conf" ~/.tmux.conf
   lfconf "inputrc" ~/.inputrc
+  lfconf "mimeapps.list" ~/.config/mimeapps.list
 
   # Programs
   lfconf "broot" ~/.config/broot
