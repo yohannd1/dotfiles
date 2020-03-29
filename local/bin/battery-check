@@ -30,7 +30,7 @@ loop do
       send_notify("Battery is very low! (#{format("%02d", bat_level)}%)", "critical")
     end
 
-  elsif (state != :low) && (bat_level <= LOW_LEVEL)
+  elsif (state != :low) && (state != :crit) && (bat_level <= LOW_LEVEL)
     if is_charging
       state = :none
     else
@@ -46,7 +46,7 @@ loop do
       state = :none
     end
 
-  elsif (state != :max) && (MAX_LEVEL <= bat_level)
+  elsif (state != :max) && (state != :high) && (MAX_LEVEL <= bat_level)
     if is_charging
       state = :max
       send_notify("Battery is fully charged! (#{format("%02d", bat_level)}%)")
