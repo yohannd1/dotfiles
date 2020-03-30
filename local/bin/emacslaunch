@@ -3,29 +3,24 @@
 # A script to launch emacs as a client or standalone, on TUI or GUI.
 
 if [ $# = 0 ]; then
-  echo "Usage: $(basename $0) [emacs | emacsclient] <other-args>"
+  echo "Usage: $(basename $0) {emacs | emacsclient} [other_args]"
   exit 1
 fi
+
+is_term() { [ -t 1 ]; }
 
 case "$1" in
   emacs)
     shift
-    if [ -t 1 ]; then
-      exec emacs -nw $@
-    else
-      exec emacs $@
-    fi
-    ;;
+    is_term \
+      && exec emacs -nw "$@" \
+      || exec emacs "$@" ;;
+
   emacsclient)
     shift
-    if [ -t 1 ]; then
-      exec emacsclient -a "" -t $@
-    else
-      exec emacsclient -a "" $@
-    fi
-    ;;
-  *)
-    echo "Bad command! $1"
-    exit 1
-    ;;
+    is_term \
+      && exec emacsclient -a "" -t "$@" \
+      || exec emacsclient -a "" "$@" ;;
+
+  *) echo "Bad command! $1" && exit 1 ;;
 esac
