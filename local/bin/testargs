@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
 
+# This script shows info about arguments passed to it.
+# It's useful for inspecting how word splitting works in your shell.
+
 printf "Argument count: " >/dev/stderr
 echo $#
 echo "Arguments: " >/dev/stderr

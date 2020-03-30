@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# Runs the "open" script asynchronously and disowns it, so the spawning
+# shell doesn't need to stay up until it is closed.
+# The OPEN_GUI is set because, since it is forked, the opened program
+# won't be able to access stdin, stdout and stderr, or at least will
+# make a mess.
+
+if [ $# = 0 ]; then
+  echo "Please specify at least one argument."
+  exit 1
+fi
+
+OPEN_GUI=1 open "$@" &
+disown
