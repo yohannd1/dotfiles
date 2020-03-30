@@ -3,6 +3,8 @@
 # An opener script based off nuke.
 # https://github.com/jarun/nnn/blob/master/plugins/nuke
 
+# Dependencies (local to this repo): termup, runpage
+
 # Environment Variables
 # OPEN_GUI: whether the file should be always opened on a GUI
 # application.
@@ -16,8 +18,8 @@ set -f -o noclobber -o noglob
 # script.
 #   try_run_t: only runs if OPEN_GUI is unset
 #   try_run_g: only runs if OPEN_GUI is set
-#   try_run_p: acts like try_run_t, but pipes the output of the command
-# to a pager.
+#   try_run_tg: runs if OPEN_GUI is unset, but also runs if OPEN_GUI is
+# set, but through the "termup" script.
 exists() { type "$1" >/dev/null 2>/dev/null; }
 try_run() {
   exists "$1" || return
@@ -30,11 +32,7 @@ try_run() {
 }
 try_run_t() { [ -z "$OPEN_GUI" ] || return; try_run "$@"; }
 try_run_g() { [ -n "$OPEN_GUI" ] || return; try_run "$@"; }
-try_run_p() {
-  exists "$1" && [ -z "$OPEN_GUI" ] || return
-  "$@" | less -R
-  exit 0
-}
+try_run_tg() { try_run_t "$@"; try_run_g termup "$@"; }
 
 IFS="$(printf '%b_' '\n')"; IFS="${IFS%_}" # protect trailing \n
 PATH=$PATH:"${XDG_CONFIG_HOME:-$HOME/.config}/nnn/plugins"
@@ -48,9 +46,9 @@ fi
 
 handle_pdf() {
   try_run_g zathura "$FILE"
-  try_run_p pdftotext -l 10 -nopgbrk -q -- "$FILE" -
+  try_run_t runpage pdftotext -l 10 -nopgbrk -q -- "$FILE" -
   try_run_t mutool draw -F txt -i -- "$FILE" 1-10
-  try_run_p exiftool "$FILE"
+  try_run_t exiftool "$FILE"
 }
 
 handle_audio() {
@@ -63,18 +61,18 @@ handle_audio() {
 handle_video() {
   try_run_g smplayer "$FILE"
   try_run_g mpv "$FILE"
-  try_run_p mediainfo "$FILE"
-  try_run_p mediainfo "$FILE"
+  try_run_t runpage mediainfo "$FILE"
+  try_run_t runpage mediainfo "$FILE"
 }
 
 handle_ext() {
   case "$EXT" in
     a|ace|alz|arc|arj|bz|bz2|cab|cpio|deb|gz|jar|lha|lz|lzh|lzma|lzo|rpm|rz|t7z|tar|tbz|tbz2|tgz|tlz|txz|tZ|tzo|war|xpi|xz|Z|zip)
-      try_run_p atool --list -- "$FILE"
-      try_run_p bsdtar --list --file "$FILE"
+      try_run_t runpage atool --list -- "$FILE"
+      try_run_t runpage bsdtar --list --file "$FILE"
       ;;
-    rar) try_run_p unrar lt -p- -- "$FILE" ;;
-    7z) try_run_p 7z l -p -- "$FILE" ;;
+    rar) try_run_t runpage unrar lt -p- -- "$FILE" ;;
+    7z) try_run_t runpage 7z l -p -- "$FILE" ;;
     pdf) handle_pdf ;;
 
     aac|flac|m4a|mid|midi|mpa|mp2|mp3|ogg|wav|wma)
@@ -83,27 +81,26 @@ handle_ext() {
     avi|mkv|mp4)
       handle_video ;;
 
-    log) try_run_p cat "$FILE" ;;
-
     torrent)
       try_run_t rtorrent "$FILE"
       try_run_t transmission-show -- "$FILE"
       ;;
 
     odt|ods|odp|sxw)
-      try_run_p odt2txt "$FILE" ;;
+      try_run_t runpage odt2txt "$FILE" ;;
 
-    md) try_run_p glow -sdark "$FILE" ;;
+    md) try_run_tg runpage glow -w 72 -s dark "$FILE" ;;
 
     htm|html|xhtml)
-      try_run_p w3m -dump "$FILE"
-      try_run_p lynx -dump -- "$FILE"
-      try_run_p elinks -dump "$FILE"
+      try_run_t runpage w3m -dump "$FILE"
+      try_run_t runpage lynx -dump -- "$FILE"
+      try_run_t runpage elinks -dump "$FILE"
+      try_run_g xdg-open "$FILE"
       ;;
 
     json)
-      try_run_p jq --color-output . "$FILE"
-      try_run_p python -m json.tool -- "$FILE"
+      try_run_t runpage jq --color-output . "$FILE"
+      try_run_t runpage python -m json.tool -- "$FILE"
       ;;
   esac
 }
@@ -112,9 +109,9 @@ handle_multimedia() {
   case "$1" in
     image/*)
       try_run_g sxiv "$FILE"
-      try_run_p viu -n "$FILE"
-      try_run_p img2txt --gamma=0.6 -- "$FILE"
-      try_run_p exiftool "$FILE"
+      try_run_t runpage viu -n "$FILE"
+      try_run_t runpage img2txt --gamma=0.6 -- "$FILE"
+      try_run_t runpage exiftool "$FILE"
       ;;
 
     application/pdf) handle_pdf ;;
@@ -125,19 +122,19 @@ handle_multimedia() {
 
 handle_mime() {
   case "$1" in
-    text/troff) try_run_p man -l "$FILE" ;;
-    text/*) try_run_p cat "$FILE" ;;
-    */xml) try_run_p cat "$FILE" ;;
+    text/troff) try_run_t runpage man -l "$FILE" ;;
+    text/*) try_run_tg less "$FILE" ;;
+    */xml) try_run_t runpage cat "$FILE" ;;
     image/vnd.djvu)
-      try_run_p djvutxt "$FILE"
-      try_run_p exiftool "$FILE"
+      try_run_t runpage djvutxt "$FILE"
+      try_run_t runpage exiftool "$FILE"
       ;;
   esac
 }
 
 handle_fallback() {
   try_run_g xdg-open "$FILE"
-  try_run_p printf "*** File Details ***\n%s" "$(file --dereference --brief $FILE)"
+  try_run_t runpage printf "*** File Details ***\n%s" "$(file --dereference --brief $FILE)"
 }
 
 handle_blocked() {

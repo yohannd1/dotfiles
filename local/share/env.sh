@@ -26,7 +26,7 @@ export EDITOR="nvim"
 export TERMINAL="st"
 export BROWSER="qutebrowser"
 export PAGER="less"
-export MANPAGER="/bin/sh -c 'col -b | nvim -c PagerMode -'"
+# export MANPAGER="/bin/sh -c 'col -b | nvim -c PagerMode -'"
 export DOTFILES="$F_DOTFILES" # Standard name for this one
 
 export XDG_CONFIG_HOME="$HOME/.config"
@@ -48,13 +48,6 @@ export KEYTIMEOUT=1
 export TERM="xterm-256color"
 export WM="bspwm"
 
-export LESS_TERMCAP_mb=$'\e[1;31m'     # begin bold
-export LESS_TERMCAP_md=$'\e[1;35m'     # begin blink
-export LESS_TERMCAP_me=$'\e[0m'        # reset bold/blink
-export LESS_TERMCAP_so=$'\e[33m'       # begin reverse video
-export LESS_TERMCAP_se=$'\e[0m'        # reset reverse video
-export LESS_TERMCAP_us=$'\e[1;32m'     # begin underline
-export LESS_TERMCAP_ue=$'\e[0m'        # reset underline
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 # Dircolors
