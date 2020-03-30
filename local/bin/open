@@ -52,10 +52,10 @@ handle_pdf() {
 }
 
 handle_audio() {
-  exists mocp && try_run mocplay "$FILE" "opener"
-  try_run mpv "$FILE"
-  try_run mediainfo "$FILE"
-  try_run exiftool "$FILE"
+  exists mocp && try_run_t mocplay "$FILE" "opener"
+  try_run_tg mpv "$FILE"
+  try_run_t mediainfo "$FILE"
+  try_run_t exiftool "$FILE"
 }
 
 handle_video() {
