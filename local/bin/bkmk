@@ -60,7 +60,7 @@ parsed.each do |raw_item|
 end
 
 chosen_string, exit_code =
-  Open3::popen3('dmenu -p "Bookmark:"') { |stdin, stdout, _, wait_thr|
+  Open3::popen3('dmenu -i -p "Bookmark:"') { |stdin, stdout, _, wait_thr|
     bk_digit_len = bookmarks.length.to_s.length
     bookmarks.each do |k, v|
       stdin.puts "%0#{bk_digit_len}d #{v.name}" % "#{k}"
@@ -78,7 +78,7 @@ actions = {
 }
 
 chosen_string, exit_code =
-  Open3::popen3('dmenu -p "Action:"') { |stdin, stdout, _, wait_thr|
+  Open3::popen3('dmenu -i -p "Action:"') { |stdin, stdout, _, wait_thr|
     action_digit_len = actions.length.to_s.length
     actions.each do |k, v|
       stdin.puts "%0#{action_digit_len}d #{v}" % "#{k}"

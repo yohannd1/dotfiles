@@ -70,7 +70,9 @@ export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quo
 pathadd "$HOME/.local/bin"
 pathadd "$HOME/.cache/go"
 pathadd "$CARGO_HOME/bin"
-pathadd "$(ruby -e 'puts Gem.user_dir')/bin"
+# pathadd "$(ruby -e 'puts Gem.user_dir')/bin" # Seems to be slowing
+# down, so I'll use the ony below and update when needed.
+pathadd "$HOME/.gem/ruby/2.7.0"
 
 # Programs that I've installed in /opt
 for dir in /opt/*; do

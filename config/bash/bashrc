@@ -1,2 +1,2 @@
-type zsh &>/dev/null && exec zsh
+[ "$(uname -o)" = Android ] && type zsh &>/dev/null && exec zsh
 PS1='[\u@\h]\$ ' PS2='  '
