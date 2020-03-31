@@ -26,7 +26,7 @@ export EDITOR="nvim"
 export TERMINAL="st"
 export BROWSER="qutebrowser"
 export PAGER="less"
-# export MANPAGER="/bin/sh -c 'col -b | nvim -c PagerMode -'"
+# export MANPAGER="vimpager"
 export DOTFILES="$F_DOTFILES" # Standard name for this one
 
 export XDG_CONFIG_HOME="$HOME/.config"

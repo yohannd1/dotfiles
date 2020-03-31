@@ -60,7 +60,7 @@ handle_audio() {
 
 handle_video() {
   try_run_g smplayer "$FILE"
-  try_run_g mpv "$FILE"
+  try_run_g mpv --no-video "$FILE"
   try_run_t runpage mediainfo "$FILE"
   try_run_t runpage mediainfo "$FILE"
 }
@@ -89,7 +89,7 @@ handle_ext() {
     odt|ods|odp|sxw)
       try_run_t runpage odt2txt "$FILE" ;;
 
-    md) try_run_tg runpage glow -w 72 -s dark "$FILE" ;;
+    md) try_run_tg runpage glowrapper "$FILE" ;;
 
     htm|html|xhtml)
       try_run_t runpage w3m -dump "$FILE"
@@ -123,7 +123,7 @@ handle_multimedia() {
 handle_mime() {
   case "$1" in
     text/troff) try_run_t runpage man -l "$FILE" ;;
-    text/*) try_run_tg less "$FILE" ;;
+    text/*) try_run_tg $PAGER "$FILE" ;;
     */xml) try_run_t runpage cat "$FILE" ;;
     image/vnd.djvu)
       try_run_t runpage djvutxt "$FILE"

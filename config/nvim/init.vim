@@ -69,8 +69,11 @@ function! TabOrComplete(mode) " {{{
     return "\<Tab>"
   endif
 endfunction " }}}
-function! PagerMode() " {{{
-  setlocal ft=man ts=8 nomod nolist noma timeoutlen=0 nocursorline
+function! PagerMode(...) " {{{
+  if len(a:000) >= 1
+    let &ft = a:1
+  endif
+  setlocal ts=8 nomod nolist noma timeoutlen=0 nocursorline
   setlocal noshowcmd
   nnoremap <buffer> <silent> d <C-d>
   nnoremap <buffer> <silent> u <C-u>
@@ -189,7 +192,7 @@ endif
 " Commands {{{
 
 command! -nargs=0 Reload call SourceIf($VIM_INIT, $GVIM_INIT)
-command! -nargs=0 PagerMode call PagerMode()
+command! -nargs=* PagerMode call PagerMode(<f-args>)
 
 " Abbreviations
 cnoreabbrev rl Reload

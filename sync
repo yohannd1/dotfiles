@@ -199,6 +199,7 @@ if [ -z "$NO_CONFIG_LINK" ]; then
   lfglob "$DOTFILES/local/bin" ~/.local/bin
   lfglob "$DOTFILES/local/lib" ~/.local/lib
   lfglob "$DOTFILES/local/share" ~/.local/share
+  lfglob "$DOTFILES/desktop" ~/.local/share/applications
 
   # Gtk Config
   for x in 2 3; do
