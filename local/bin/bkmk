@@ -20,7 +20,7 @@ def parse_state(state)
 end
 
 # Get options
-bookmark_path = ENV['BKMK_FILE'] || "#{Dir.home}/.bkmk"
+bookmark_path = ENV['BKMK_FILE'] || "#{Dir.home}/.cache/bkmk"
 opener_path = ENV['BKMK_OPENER'] || "xdg-open"
 
 # Check if file exists

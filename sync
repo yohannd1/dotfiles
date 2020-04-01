@@ -23,14 +23,14 @@ install_dotfiles() { # {{{
 } # }}}
 
 # Symlinking Utilities
+# POINTER is the symlink file, that points to ADDRESS.
+# (Yes, I'm using this terminology. I like it.)
 lf() { # {{{
   if [ $# != 2 ]; then
     echo "lf: not enough arguments."
     return 1
   fi
 
-  # Create a file $POINTER, that points to $ADDRESS
-  # Yes, I'm using C (ish) terminology.
   local ADDRESS="$1"
   local POINTER="$2"
 
@@ -255,6 +255,7 @@ if [ -z "$NO_NEOVIM_PLUGIN" ]; then
   ip "vim-pencil" "https://github.com/reedes/vim-pencil"
   ip "pear-tree" "https://github.com/tmsvg/pear-tree"
   ip "vim-buftabline" "https://github.com/ap/vim-buftabline"
+  ip "vim-vinegar" "https://github.com/tpope/vim-vinegar"
 
   lf "$NVIM_PLUGS_FOLDER" ~/.config/nvim/bundle
 fi

@@ -30,6 +30,7 @@ try_run() {
   fi
   exit 0
 }
+# TODO: check existence of $2 if $1 is runpage
 try_run_t() { [ -z "$OPEN_GUI" ] || return; try_run "$@"; }
 try_run_g() { [ -n "$OPEN_GUI" ] || return; try_run "$@"; }
 try_run_tg() { try_run_t "$@"; try_run_g termup "$@"; }

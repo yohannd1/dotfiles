@@ -11,5 +11,5 @@ if [ $# = 0 ]; then
   exit 1
 fi
 
-OPEN_GUI=1 open "$@" &
+OPEN_GUI=1 runnsend open "$@" &
 disown

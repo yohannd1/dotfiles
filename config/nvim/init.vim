@@ -233,11 +233,11 @@ let g:vim_markdown_new_list_item_indent = 0
 let g:vim_markdown_auto_insert_bullets = 0
 
 " Netrw
-let g:netrw_banner = 0
-let g:netrw_winsize = 25
-let g:netrw_browse_split = 4
-let g:netrw_liststyle = 3
-let g:netrw_altv = 1
+" let g:netrw_banner = 0
+" let g:netrw_winsize = 25
+" let g:netrw_browse_split = 4
+" let g:netrw_liststyle = 3
+" let g:netrw_altv = 1
 
 " Gruvbox
 let g:gruvbox_bold = 1

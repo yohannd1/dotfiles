@@ -67,12 +67,6 @@ function git-branch { # {{{
   fi
 } # }}}
 
-## Gets a random alphanumeric string matching [0-9a-z]{$1}.
-## $1 => The amount of digits.
-function random-string { # {{{
-  cat /dev/urandom | tr -dc 'a-z0-9' | fold -w ${1:-8} | head -n 1
-} # }}}
-
 ## Sets up the tty coloring.
 function setup-tty { # {{{
   echo -en "\e]P0282828" # Black
@@ -95,19 +89,15 @@ function setup-tty { # {{{
   clear # Redraw screen
 } # }}}
 
+function exists { type "$1" >/dev/null 2>/dev/null; }
+
 ## Check if shell is interactive
-is_interactive() { [[ $- == *i* ]]; }
-is_android() { [ "$(uname -o)" = Android ]; }
-is_display() { [ -n "${DISPLAY}" ]; }
+function is_interactive { [[ $- == *i* ]]; }
+function is_android { [ "$(uname -o)" = Android ]; }
+function is_display { [ -n "${DISPLAY}" ]; }
 
 # }}}
 # Libraries and basic PATH {{{
-
-path-maybe "${HOME}/.local/bin"
-path-maybe "${HOME}/.cache/go"
-path-maybe "${CARGO_HOME}/bin"
-path-maybe "/opt/bin"
-path-maybe "$(ruby -e "puts Gem.user_dir")/bin"
 
 source-maybe "${HOME}/.local/share/env.sh"
 source-maybe "${HOME}/persist/local/share/zshrc.personal"
@@ -125,18 +115,6 @@ if is_interactive; then
     # tty coloring
     ! is_display && ! is_android && setup-tty
 fi
-
-# if [ -z "${SHELL_FIRST}" ]; then
-#   SHELL_FIRST="$(date)"
-
-#     # Defer to a shell inside tmux, if not attached yet.
-#     if is_interactive && (is_display || is_android); then
-#       if [ -z "${TMUX}" ]; then
-#         exec tmux new -s $(random-string 4)
-#       fi
-#     fi
-# fi
-
 
 # }}}
 # Plugins and Extensions {{{
@@ -231,10 +209,7 @@ bindkey -s '^R' '\e0Di fh\n'
 # User functions {{{
 ## Functions that were designed to be used in the shell.
 
-rl() { source "${ZDOTDIR:-"${HOME}"}/.zshrc"; }
-sy() { "${DOTFILES}/sync"; }
-
-function dir-action { # {{{
+function inspect-dir { # {{{
   [ $# != 1 ] && return 1
   local dir="$(realpath -m "$1")"
   [ -r "${dir}" ] || {
@@ -266,14 +241,29 @@ function dir-action { # {{{
   done
 } # }}}
 function select-project { # {{{
-  # local projects="$(find ~/projects -mindepth 1 -maxdepth 1 -type d | sed 's/^.*\///g')"
   local projects="$(cd ~/projects && fd -d 1 -t d)"
   local choice="$(fzf-tmux <<<"$projects")"
   if [ -n "$choice" ]; then
     echo "${HOME}/projects/$choice"
   fi
 } # }}}
-function n { # {{{
+function register-dirfunc { # {{{
+  [ $# != 2 ] && return 1
+  local commandWrapper="$(printf "%s%s() { %s %s; }" "%s" "$1" "%s" "$2")"
+  for cmd in br inspect-dir; do
+    [ "$cmd" = "inspect-dir" ] \
+      && local wordPrefix='W' \
+      || local wordPrefix='w'
+    local command="$(printf "$commandWrapper" "$wordPrefix" "$cmd")"
+    eval "$command"
+  done
+} # }}}
+
+rl() { source "${ZDOTDIR:-"${HOME}"}/.zshrc"; }
+sy() { "${DOTFILES}/sync"; }
+wp() { local c="$(select-project)"; [ -n "$c" ] && br "$c"; }
+gtd() { [ $# = 1 ] && grep "$(sed "s/_/:/g" <<<"TODO_")" $(find "${1}" -type f); }
+n() { # {{{
   # Block nesting of nnn in subshells
   if [ -n $NNNLVL ] && [ "${NNNLVL:-0}" -ge 1 ]; then
     echo "nnn is already running"
@@ -293,62 +283,33 @@ function n { # {{{
     rm -f "$NNN_TMPFILE" > /dev/null
   fi
 } # }}}
-function W { # {{{
-  [ $# != 1 ] && return 1
-  case "$1" in
-    p)
-      local c="$(select-project)"
-      if [ -n "$c" ]; then
-        dir-action "$c"
-      else
-        return 1
-      fi
-      ;;
-    d) dir-action "$DOTFILES" ;;
-    docs) dir-action "$HOME/persist/docs" ;;
-    k) dir-action "${WIKI:-"${HOME}/wiki"}" ;;
-    *) echo "?"; return 1 ;;
-  esac
-} # }}}
 
-gtd() { [ $# = 1 ] && grep "$(sed "s/_/:/g" <<<"TODO_")" $(find "${1}" -type f); }
+register-dirfunc d "$DOTFILES"
+register-dirfunc k "$F_WIKI"
+register-dirfunc docs "$F_PERSIST/docs"
 
 # }}}
 # Aliases {{{
 
 alias ls='ls --color=auto'
 alias la='ls -A'
-alias ll='ls -alF'
-
-if ! is_android; then
-  alias t='task'
-  alias tl='t ls'
-  alias tt='t due:today or sched:today or +OVERDUE'
-  alias to='t due:tomorrow or sched:tomorrow'
-  alias t-s='t pro:School'
-  alias tsh='tasksh'
-fi
-
 alias du='du -shc'
+alias cpsync='cp -ur'
 
 alias p3='python3'
 alias jl='julia'
-alias nm='neomutt'
-alias wk='br ~/wiki'
 alias G='git-check'
+alias t='task'
 
-alias vim='nvim' vi='nvim'
-# alias emacs='emacs-plus emacs'
-# alias ec='emacs-plus emacsclient'
+exists nvim \
+  && alias vi='nvim' vim='nvim' \
+  || alias vi='vim'
 
-alias cp-sync='cp -ur'
 alias vs='vi ~/sync/Syncthing/shared-notes.md'
 
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
-
-alias vless="/bin/sh -c 'col -b | nvim -c PagerMode -'"
 
 # }}}
 # Settings {{{
