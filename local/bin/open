@@ -90,6 +90,8 @@ handle_ext() {
     odt|ods|odp|sxw)
       try_run_t runpage odt2txt "$FILE" ;;
 
+    kra) try_run_g krita "$FILE" ;;
+
     md) try_run_tg runpage glowrapper "$FILE" ;;
 
     htm|html|xhtml)
