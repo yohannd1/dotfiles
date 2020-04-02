@@ -259,10 +259,6 @@ function register-dirfunc { # {{{
   done
 } # }}}
 
-rl() { source "${ZDOTDIR:-"${HOME}"}/.zshrc"; }
-sy() { "${DOTFILES}/sync"; }
-wp() { local c="$(select-project)"; [ -n "$c" ] && br "$c"; }
-gtd() { [ $# = 1 ] && grep "$(sed "s/_/:/g" <<<"TODO_")" $(find "${1}" -type f); }
 n() { # {{{
   # Block nesting of nnn in subshells
   if [ -n $NNNLVL ] && [ "${NNNLVL:-0}" -ge 1 ]; then
@@ -283,6 +279,11 @@ n() { # {{{
     rm -f "$NNN_TMPFILE" > /dev/null
   fi
 } # }}}
+rl() { source "${ZDOTDIR:-"${HOME}"}/.zshrc"; }
+sy() { "${DOTFILES}/sync"; }
+gtd() { [ $# = 1 ] && grep "$(sed "s/_/:/g" <<<"TODO_")" $(find "${1}" -type f); }
+wp() { local c="$(select-project)"; [ -n "$c" ] && br "$c"; }
+Wp() { local c="$(select-project)"; [ -n "$c" ] && inspect-dir "$c"; }
 
 register-dirfunc d "$DOTFILES"
 register-dirfunc k "$F_WIKI"

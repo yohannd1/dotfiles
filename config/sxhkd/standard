@@ -2,15 +2,9 @@
 
 # Restarting {{{
 
-# Make sxhkd reload the config
-super + alt + r; s
-    pkill -USR1 -x sxhkd
-    notify-send "shkd restarted."
-
 # Restart Picom
-super + alt + r; c
+super + r; c
     pkill picom; picom -b
-    notify-send "picom restarted."
 
 # }}}
 # Programs {{{
@@ -29,11 +23,11 @@ super + shift + o
 
 # Print Screen
 Print
-    flamedash fullc
+    runnsend flamedash fullc
 super + Print
-    flamedash gui
+    runnsend flamedash gui
 ctrl + Print
-    flamedash full
+    runnsend flamedash full
 
 # Mounting
 super + F10
@@ -41,13 +35,17 @@ super + F10
 super + shift + F10
     fzumount
 
-# Crappy calendar
-super + c
-    cal -3 | dmenu -l 10
-
-# File browser
+# Other tools
+super + o; c
+    $TERMINAL -c float -g 65x10 -e runread cal -3
 super + n
-    $TERMINAL -e nnn
+    termup nnn
+super + o; d
+    termup nnn $DOTFILES
+super + b
+    runnsend qutebrowser
+super + o; w
+    termup nnn $F_WIKI
 
 # }}}
 # Extra Keys {{{
@@ -62,7 +60,7 @@ XF86AudioMute
 
 # Media Player
 XF86AudioPlay
-    playerctl pause
+    playerctl play-pause
 XF86AudioNext
     playerctl next
 XF86AudioPrev
@@ -74,8 +72,6 @@ XF86MonBrightnessDown
 XF86MonBrightnessUp
     xbacklight -inc 5
 
-# Power
-XF86PowerOff
-    echo Void # Disabled.
+# Some other keys: XF86PowerOff
 
 # }}}

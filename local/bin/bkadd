@@ -6,7 +6,7 @@
 # Reference:
 # https://unix.stackexchange.com/questions/103252/how-do-i-get-a-websites-title-using-command-line
 
-source ~/.local/lib/yshstd.sh
+source ~/.local/lib/ystd.sh
 depCheck recode wget perl
 
 if [ $# != 1 ]; then
@@ -18,7 +18,7 @@ EOF
 fi
 
 url="$1"
-template="$(printf '%s "%s" "%s" %s' "%s" "%s" "$url" "bkadd")"
+template="$(printf '%s %s "%s" "%s" %s' "%s" "f" "%s" "$url" "bkadd")"
 file="${BKMK_FILE:-~/.cache/bkmk}"
 
 title="$(wget -qO- "$1" \

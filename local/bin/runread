@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Runs "$@" and waits the user to press q.
+
+if [ $# = 0 ]; then
+  echo "You need to specify at least one argument."
+  exit 1
+fi
+
+"$@"
+exitCode="$?"
+
+printf ":"
+while read -sn1 ch; do
+  [ "$ch" = q ] && exit "$exitCode"
+done

@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+
+# Normalizes the terminal window window with stty sane and then runs a
+# command. Sometimes there is a problem with opening vim, and I guess
+# this might help.
+
+if [ $# = 0 ]; then
+  printf "%s\n" "You need to specify at least one argument."
+  exit 1
+fi
+
+stty sane \
+  && "$@"

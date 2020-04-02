@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+# Runs "$@" and pipes it into less -R.
+
 if [ $# = 0 ]; then
   echo "You need to specify at least one argument."
   exit 1

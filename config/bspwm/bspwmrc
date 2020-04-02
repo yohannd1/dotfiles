@@ -15,8 +15,10 @@ bspc config normal_border_color '#32302F'
 
 # bspc rule -a qutebrowser desktop='^2'
 bspc rule -a Zathura state=tiled
+bspc rule -a float state=floating
 # bspc rule -a firefox desktop='^2'
 
+killall sxhkd
 start-sxhkd standard bspwm &
 setbg &
 start-polybar &

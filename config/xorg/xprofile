@@ -10,8 +10,8 @@ picom -b & # Compositor
 dunst & # Notification daemon
 nm-applet & # Network manager on tray
 blueman-applet & # Bluetooth
-[ "$WM" != bspwm ] &&
-  start-sxhkd standard & # sxhkd on not bspwm
+[ "$WM" != bspwm ] \
+  && start-sxhkd standard & # sxhkd on not bspwm
 flameshot & # Screenshot app
 type dropbox >/dev/null 2>/dev/null &&
     dropbox start & # Dropbox sync daemon

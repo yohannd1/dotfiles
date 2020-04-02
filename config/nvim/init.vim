@@ -336,10 +336,12 @@ augroup end
 function! Ft_c() " {{{
   let b:rifle = {}
   let b:rifle.run = "gcc '%f' -o '%o' && { '%o'; rm '%o'; }"
+  setlocal foldmethod=syntax
 endfunction " }}}
 function! Ft_cpp() " {{{
   let b:rifle = {}
   let b:rifle.run = "g++ '%f' -o '%o' && { '%o'; rm '%o'; }"
+  setlocal foldmethod=syntax
 endfunction " }}}
 function! Ft_clojure() " {{{
   let b:rifle = {}
