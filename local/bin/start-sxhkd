@@ -5,8 +5,8 @@
 source ~/.local/lib/ystd.sh
 depCheck gen-sxhkd sxhkd mktemp
 
-tempConf="$(mktemp "sxhkd.conf.XXXXXXXX")"
-tempLog="$(mktemp "sxhkd.log.XXXXXXXX")"
+tempConf="$(mktemp "/tmp/sxhkd.conf.XXXXXXXX")"
+tempLog="$(mktemp "/tmp/sxhkd.log.XXXXXXXX")"
 
 if [ -z "$tempConf" ] || [ -z "$tempLog" ]; then
   printf >&2 "Could not generate all temp files."

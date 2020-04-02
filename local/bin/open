@@ -31,8 +31,8 @@ tryRun() {
   exit
 }
 # TODO: check existence of $2 if $1 is runpage
-tryRunTerm() { [ -z "$OPEN_GUI" ] || return; tryRun "$@"; }
-tryRunGraph() { [ -n "$OPEN_GUI" ] || return; tryRun "$@"; }
+tryRunTerm() { [ -z "$OPEN_GUI" ] && tryRun "$@"; }
+tryRunGraph() { [ -n "$OPEN_GUI" ] && tryRun "$@"; }
 tryRunTermGraph() { tryRunTerm "$@"; tryRunGraph termup "$@"; }
 
 IFS="$(printf '%b_' '\n')"; IFS="${IFS%_}" # protect trailing \n

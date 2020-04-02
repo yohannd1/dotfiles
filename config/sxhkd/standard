@@ -49,6 +49,10 @@ super + o; w
 super + o; b
     bkmk
 
+# Reload wallpaper
+super + w
+    setbg
+
 # }}}
 # Extra Keys {{{
 

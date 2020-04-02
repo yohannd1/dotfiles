@@ -9,7 +9,7 @@ depCheck notify-send
 commandStderr="$("$@" 2>&1 >/dev/null)"
 exitCode="$?"
 
-if [ "$exitCode" = 0 ]; then
+if [ "$exitCode" != 0 ]; then
   headingMessage="$(printf 'Error while running # [%s] %s' "$exitCode" "$*")"
   notify-send "$headingMessage" "$commandStderr"
 fi
