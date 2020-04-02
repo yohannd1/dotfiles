@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+prog="$(pathbin | dmenu "$@")"
+
+if grep -q '!$' <<<"$prog"; then
+  prog="${prog%?}"
+  exec $TERMINAL -e $prog
+else
+  exec $prog
+fi
