@@ -1,15 +1,24 @@
 #!/usr/bin/env sh
 
-# Uses `gen-sxhkd` and then actually starts sxhkd.
+# A script to load sxhkd based off the gen-sxhkd script.
 
-sxhkdTemp="${SXHKD_TEMP:-~/.cache/sxhkd-config}"
-mktemp="$(mktemp)"
-gen-sxhkd $@ > "$sxhkdTemp"
+source ~/.local/lib/ystd.sh
+depCheck gen-sxhkd sxhkd mktemp
 
-if [ -n "$mktemp" ]; then
-  rm "$mktemp"
-  logfile="$mktemp.sxhkd"
-  sxhkd -c "$sxhkdTemp" -r "$logfile"
-else
-  sxhkd -c "$sxhkdTemp"
+tempConf="$(mktemp "sxhkd.conf.XXXXXXXX")"
+tempLog="$(mktemp "sxhkd.log.XXXXXXXX")"
+
+if [ -z "$tempConf" ] || [ -z "$tempLog" ]; then
+  printf >&2 "Could not generate all temp files."
+  exit 1
 fi
+
+gen-sxhkd "$@" > "$tempConf"
+
+if [ $? != 0 ]; then
+  printf >&2 "gen-sxhkd failed; aborting\n"
+  exit 1
+fi
+
+sxhkd -c "$tempConf" -r "$tempLog"
+rm "$tempConf" # Remove the config after execution, but leave the log
