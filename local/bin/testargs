@@ -3,12 +3,12 @@
 # This script shows info about arguments passed to it.
 # It's useful for inspecting how word splitting works in your shell.
 
-printf "Argument count: " >/dev/stderr
+printf >&2 "Argument count: "
 echo $#
-echo "Arguments: " >/dev/stderr
+echo >&2 "Arguments: "
 while [ $# != 0 ]; do
-  printf "  " >/dev/stderr
-  printf "$1\n"
+  printf >&2 "  "
+  printf "%s\n" "$1"
   shift
 done
-echo "[END]" >/dev/stderr
+printf >&2 "[END]\n"

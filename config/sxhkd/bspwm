@@ -32,7 +32,7 @@ super + {_,alt + }q
 # State / Flags {{{
 
 super + m
-    bspwm-tfullscreen
+    bspwm-togglefull
 
 # set the window state
 super + {t,shift + t,f}

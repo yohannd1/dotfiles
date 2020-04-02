@@ -73,8 +73,7 @@ if exit_code.to_i != 0 then exit 1 end
 chosen_bookmark = bookmarks[chosen_string.split(" ")[0].to_i]
 
 actions = {
-  0 => "Open in web browser",
-  # 1 => "Mark as read",
+  0 => "open in web browser",
 }
 
 chosen_string, exit_code =
@@ -93,7 +92,7 @@ chosen_action = chosen_string.split(" ")[0].to_i
 case chosen_action
 when 0
   # This one is unsafe if opener is undefined.
-  system("xdg-open #{chosen_bookmark.link}")
+  system "xdg-open #{chosen_bookmark.link}"
 else
   raise "Unknown action: #{chosen_action.inspect}"
 end

@@ -1,19 +1,19 @@
 #!/usr/bin/env sh
 
-exists() { type "$1" >/dev/null 2>/dev/null; }
+source ~/.local/lib/ystd.sh
 
 if exists nvim; then
-  alias edit=nvim
+  alias editor=nvim
 elif exists vim; then
-  alias edit=vim
+  alias editor=vim
 else
   echo "Neither vim nor neovim were found."
   exit 1
 fi
 
 case $# in
-  0) cat /dev/stdin | col -b | edit -c "PagerMode" - ;;
-  1) cat "$1" | col -b | edit -c "PagerMode" - ;;
-  2) cat "$1" | col -b | edit -c "PagerMode $2" - ;;
+  0) cat /dev/stdin | col -b | editor -c "PagerMode" - ;;
+  1) cat "$1" | col -b | editor -c "PagerMode" - ;;
+  2) cat "$1" | col -b | editor -c "PagerMode $2" - ;;
   *) echo "Invalid number of arguments." ;;
 esac

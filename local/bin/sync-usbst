@@ -3,31 +3,27 @@
 # A simple script to sync some things from my USB station (local to actual USB)
 # I still have to explain this.
 
-PROG="$(basename "$0")"
-
-for prog in rsync; do
-  if ! type "$prog" >/dev/null 2>/dev/null; then
-    echo "$PROG: $prog not found."
-    exit 1
-  fi
-done
+source ~/.local/lib/ystd.sh
+depCheck rsync fd
 
 if [ -z "$F_USB_STATION" ]; then
-  echo "$PROG: \$F_USB_STATION not found. Please set it with the path of the usb-station."
+  printf >&2 "%s\n" 'Variable \$F_USB_STATION not found'
   exit 1
-fi
-
-if [ -z "$F_DOTFILES" ]; then
-  echo "$PROG: \$F_DOTFILES not found. Please set it."
+elif [ -z "$DOTFILES" ]; then
+  printf >&2 "%s\n" 'Variable \$DOTFILES not found'
   exit 1
 fi
 
 mkdir -p "$F_USB_STATION/config/nvim"
-rsync -rtuvc --delete "$F_DOTFILES/config/nvim/" "$F_USB_STATION/config/nvim"
+rsync -rtuvc --delete "$DOTFILES/config/nvim/" \
+  "$F_USB_STATION/config/nvim"
 
-if rsync -rtuvc --delete "$HOME/.cache/nvim-plugs/" "$F_USB_STATION/config/nvim/bundle" && [ -n "$USB_STATION_REMOVE_GIT" ]; then
-  find "$F_USB_STATION/config/nvim/bundle" -mindepth 1 -maxdepth 1 -type d |
-    while read plugin; do
+if rsync -rtuvc --delete "$HOME/.cache/nvim-plugs/" \
+  "$F_USB_STATION/config/nvim/bundle" \
+  && [ -n "$USB_STATION_REMOVE_GIT" ]
+then
+  fd . "$F_USB_STATION/config/nvim/bundle" -t d -d 1 \
+    | while read plugin; do
       for file in .git .gitignore .github; do
         if [ -r "$plugin/$file" ]; then
           rm -rf "$plugin/$file"

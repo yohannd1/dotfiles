@@ -1,25 +1,17 @@
 #!/usr/bin/env sh
 
-# Checks for the ocurrence of the pattern in $2 in filenames and inside
-# files of directory $1.
-
 source ~/.local/lib/ystd.sh
 depCheck rg fd
 
 if [ $# != 2 ]; then
-  cat >&2 <<"  EOF"
-$(basename $0): checks for ocurrences of a pattern in filenames inside a
+  printf >&2 "%s\n" \
+    "$(basename $0): checks for ocurrences of a pattern in filenames inside a
 directory and their contents.
 
-Usage: $(basename $0) <directory> <pattern>
-  EOF
+Usage: $(basename $0) <directory> <pattern>"
   exit 1
 fi
 
 cd "$1"
-
-printf "In filenames:\n"
-fd "$2"
-
-printf "In files:\n"
-rg "$2"
+printf "In filenames:\n"; fd "$2"
+printf "In files:\n"; rg "$2"

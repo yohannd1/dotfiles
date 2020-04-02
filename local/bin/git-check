@@ -1,24 +1,24 @@
 #!/usr/bin/env bash
 
 if [ $# != 1 ]; then
-  echo "Usage: $(basename $0) <repo-path>"
+  printf >&2 "%s\n" "Usage: $(basename $0) <repo-path>"
   exit 1
 fi
 
 cd "$1" || exit
 
 if git status -sb; then
-  echo -en '\e[2 q'
+  printf '\e[2 q'
   while [ -z "$EXIT" ]; do
-    echo -e '::::: [d]iff, [a]dd-commit, [p]ull, pu[s]h, [f]etch, [l]og, [q]uit'
+    printf "%s\n" '::::: [d]iff, [a]dd-commit, [p]ull, pu[s]h, [f]etch, [l]og, [q]uit'
     printf '\e[38;5;11m(git)\e[m λ> '
     read -n1 ch; echo
     case "$ch" in
-      d)
-        git add .
+      d) git add .
         git diff HEAD
         ;;
-      a) git add . && git commit || git reset . ;;
+      a) git add . \
+        && git commit ;;
       l) git log --all --oneline ;;
       p) git pull ;;
       s) git push ;;
@@ -27,13 +27,10 @@ if git status -sb; then
       q) EXIT=0 ;;
       ) EXIT=0 ;;
       "") clear ;;
-      *) echo "Invalid option: \"${ch}\"." ;;
+      *) printf 'Invalid option: "%s"\n' "$ch" ;;
     esac
   done
   exit "$EXIT"
 else
   exit 1
 fi
-
-# TODO: temp-cd to the git repo's root directory to perform the add.
-# TODO: find a way to choose which files to add.

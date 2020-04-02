@@ -3,10 +3,10 @@
 # Pops up a new terminal window.
 
 if [ $# = 0 ]; then
-  echo "You need to specify at least one argument."
+  printf >&2 "%s\n" "Usage: $(basename $0) <command> [command]"
   exit 1
 elif [ -z "$TERMINAL" ]; then
-  echo "\$TERMINAL should be set."
+  printf >&2 "Variable %s not set\n" '$TERMINAL'
   exit 1
 fi
 

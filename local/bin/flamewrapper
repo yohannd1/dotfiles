@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+
+source ~/.local/lib/ystd.sh
+depCheck flameshot
+
+if [ $# != 1 ]; then
+  printf >&2 "%s\n" "Usage: $(basename $0) {gui | full | fullc}"
+  exit 1
+fi
+
+folder="${FLAMEDASH_SCR_FOLDER:-~/.cache/screenshots}"
+
+mkdir -p "$folder" \
+  || printf >&2 "%s\n" "Could not make directory $folder" \
+  && exit 1
+
+case "$1" in
+  "") flameshot gui -p "$folder" ;;
+  gui) flameshot gui -p "$folder" ;;
+  full) flameshot full -p "$folder" ;;
+  fullc) flameshot full -c ;;
+  *)
+    printf >&2 "%s\n" "Invalid command."
+    exit 1
+    ;;
+esac

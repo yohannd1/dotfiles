@@ -3,47 +3,20 @@
 # A script to find and load articles.
 # Works better with fuzzy finders.
 
-case $# in
-  0) 
-    if [ -z "$F_ARTICLES" ]; then
-      echo "Please set \$F_ARTICLES for the articles folder or specify it here as \$1."
-      exit 1
-    fi
-    ARTICLES="$F_ARTICLES"
-    ;;
-  1) ARTICLES="$1" ;;
-  *) 
-    echo "Invalid amount of arguments."
-    exit 1
-    ;;
-esac
+source ~/.local/lib/ystd.sh
+depCheck fd
 
-exists() {
-  [ $# = 1 ] || return 2
-  type "$1" >/dev/null 2>/dev/null
-}
-
-if exists "dmenu"; then
-  if [ -n "$DISPLAY" ]; then
-    choose() { dmenu -l 10 <<<"$1"; }
-  else
-    echo "dmenu was detected, but won't be used due to display not being found."
-    exists "fzf" &&
-      choose() { fzf <<<"$1"; }
-  fi
-elif exists "fzf"; then
-  choose() { fzf <<<"$1"; }
-else
-  echo "No valid fuzzy finder found."
-  echo "The valid ones are: dmenu, fzf"
+if [ $# != 0 ]; then
+  printf >&2 "%s\n" "Usage: $(basename $0) <url>"
+  printf >&2 "%s %s\n" "The articles folder is" '${F_ARTICLES:-~/articles}'
   exit 1
 fi
 
-if [ -z "$DISPLAY" ] && exists "w3m"; then
-  browse() { w3m $@; }
-else
-  browse() { nuke $@; }
+articles="${F_ARTICLES:-~/articles}"
+if ! cd "$articles"; then
+  printf >&2 "%s\n" "Couldn't open $articles"
+  exit 1
 fi
 
-cd "$ARTICLES" || exit 1
-CHOICE="$(choose "$(find . -mindepth 1 -maxdepth 1 | sed 's/^\.\///g' | grep '\.html$')")" && browse "$CHOICE"
+choice="$(fd -d 1 -t f '\.html$' | dmenu)" \
+  && open "$choice"

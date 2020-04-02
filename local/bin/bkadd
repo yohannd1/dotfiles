@@ -10,10 +10,8 @@ source ~/.local/lib/ystd.sh
 depCheck recode wget perl
 
 if [ $# != 1 ]; then
-  cat >&2 <<EOF
-Usage: $(basename $0) <url>
-Bookmark file is \${BKMK_FILE:-~/.cache/bkmk}
-EOF
+  printf >&2 "%s\n" "Usage: $(basename $0) <url>"
+  printf >&2 "%s %s\n" "Bookmark file is" '${BKMK_FILE:-~/.cache/bkmk}'
   exit 1
 fi
 

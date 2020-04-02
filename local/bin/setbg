@@ -1,9 +1,14 @@
 #!/usr/bin/env sh
 
-if [ -z "$F_WALLPAPERS" ]; then
-  echo "Please set \$F_WALLPAPERS with the wallpapers folder path."
+if [ $# = 0 ]; then
+  printf >&2 "%s\n" "Usage: $(basename $0)"
   exit 1
 fi
 
-IMAGE="$(shuf -n1 -e "$F_WALLPAPERS"/*.jpg)"
-feh --no-fehbg --bg-fill "$IMAGE"
+if [ -z "$F_WALLPAPERS" ]; then
+  printf >&2 "Please set %s to the wallpapers folder path\n" '$F_WALLPAPERS'
+  exit 1
+fi
+
+image="$(shuf -n1 -e "$F_WALLPAPERS"/*.jpg)"
+feh --no-fehbg --bg-fill "$image"

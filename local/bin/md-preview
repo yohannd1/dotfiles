@@ -1,21 +1,25 @@
 #!/usr/bin/env sh
 
-# Markdown Preview
-[ $# = 1 ] || exit 1
-[ -f "${1}" ] || exit 1
+if [ $# != 1 ]; then
+  printf >&2 "%s\n" "Usage: $(basename $0) <file>"
+  exit 1
+fi
 
-# Delete files on future runs
+if ! [ -f "$1" ]; then
+  printf >&2 "File doesn't exist: %s\n" "$1"
+fi
+
+# Delete files from previous runs
 for garbage in /tmp/md-export.*.html; do
-  if [ -f "${garbage}" ]; then
-    # echo "Garbage collection: ${garbage}"
-    rm "${garbage}"
+  if [ -f "$garbage" ]; then
+    rm "$garbage"
   fi
 done
 
-# The main code
 TEMP=$(mktemp)
-FILE="/tmp/md-export$(echo "${TEMP}" | sed 's/\///g; s/tmp//g').html"
-mv "${TEMP}" "${FILE}"
-md-compile "${1}" > "${FILE}" &&
-  echo "Compiled to: ${FILE}" &&
-  $BROWSER "${FILE}"
+FILE="/tmp/md-export$(printf "%s" "$TEMP" | sed 's/\///g; s/tmp//g').html"
+mv "$TEMP" "$FILE"
+
+md-compile "$1" > "$FILE" \
+  && printf >&2 "%s\n" "Compiled to: $FILE" \
+  && $BROWSER "$FILE"

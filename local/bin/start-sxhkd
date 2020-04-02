@@ -2,13 +2,14 @@
 
 # Uses `gen-sxhkd` and then actually starts sxhkd.
 
-SXHKD_TEMP="${HOME}/.cache/sxhkd-config"
-MKTEMP="$(mktemp)"
-gen-sxhkd $@ > "$SXHKD_TEMP"
+sxhkdTemp="${SXHKD_TEMP:-~/.cache/sxhkd-config}"
+mktemp="$(mktemp)"
+gen-sxhkd $@ > "$sxhkdTemp"
 
-if [ -n "$MKTEMP" ]; then
-  LOGFILE="$MKTEMP.sxhkd"
-  sxhkd -c "$SXHKD_TEMP" -r "$LOGFILE"
+if [ -n "$mktemp" ]; then
+  rm "$mktemp"
+  logfile="$mktemp.sxhkd"
+  sxhkd -c "$sxhkdTemp" -r "$logfile"
 else
-  sxhkd -c "$SXHKD_TEMP"
+  sxhkd -c "$sxhkdTemp"
 fi

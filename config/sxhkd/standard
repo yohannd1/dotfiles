@@ -46,6 +46,8 @@ super + b
     runnsend qutebrowser
 super + o; w
     termup nnn $F_WIKI
+super + o; b
+    bkmk
 
 # }}}
 # Extra Keys {{{

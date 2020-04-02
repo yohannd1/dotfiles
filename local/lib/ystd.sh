@@ -3,6 +3,11 @@
 ## Might make them less protable, but makes the code less painful too.
 ## Code here should work with dash, bash and zsh.
 
+exists() {
+  [ $# = 1 ] \
+    && type "$1" >/dev/null 2>/dev/null
+}
+
 depCheck() {
   local depArray=""
   for dep in "$@"; do

@@ -8,98 +8,62 @@
 # Settings
 I3LOCK_COLOR="282828"
 I3LOCK_IMG="$HOME/.local/share/i3lock-img.png"
-OPTIONS=$'lock\nlogout\nsuspend\nhibernate\nreboot\nshutdown'
+OPTIONS='lock\nlogout\nsuspend\nhibernate\nreboot\nshutdown'
 
-# Check if all dependencies are available
-check_dependencies() { # {{{
-  for dependency in dmenu xdg-screensaver systemctl notify-send; do
-    type "${dependency}" >/dev/null || exit 127
-  done
-} # }}}
+source ~/.local/lib/ystd.sh
+depCheck dmenu systemctl i3lock xdg-screensaver
 
-# Match arguments
-match_args() { # {{{
+fuzzyMatch() { printf "$OPTIONS" | dmenu -p "Power: "; }
+matchArgs() { # {{{
   case $# in
-    0)
-      local f="$(fuzzy_match)"
-      if [ -n "$f" ]; then
-        match_args "$f"
+    0) local choice="$(fuzzyMatch)"
+      if [ -n "$choice" ]; then
+        matchArgs "$choice"
       else
-        show_help
-      fi
-      ;;
+        showHelp
+      fi ;;
 
-    1)
-      case "${1}" in
-        lock) ;;
-        logout) ;;
-        suspend) ;;
-        hibernate) ;;
-        reboot) ;;
-        shutdown) ;;
-        *)
-          show_help
-          ;;
-      esac
-      eval "action_${1}"
-      ;;
+    1) case "$1" in
+        lock|logout|suspend|hibernate|reboot|shutdown) \
+          eval "action_$1" ;;
+        *) showHelp ;;
+      esac ;;
 
-    *)
-      show_help
-      ;;
+    *) showHelp ;;
   esac
 } # }}}
-
-# Fuzzy matching
-fuzzy_match() { # {{{
-  echo "${OPTIONS}" | dmenu -p "Power: "
-} # }}}
-
-# Help
-show_help() { # {{{
-  echo "$(basename "$0"): a simple power menu for i3 and systemd."
-  echo ""
-  echo "Allowed options:"
-  echo "${OPTIONS}" |
-    while read line; do
-      echo "  ${line}"
-    done
-  echo ""
-  echo "If no argument is specified, a dmenu pop-up is shown."
-  exit 2
+showHelp() { # {{{
+  printf >&2 "%s %s\n" "Usage: $(basename $0)" \
+    "[{lock | logout | suspend | hibernate | reboot | shutdown}]"
+  printf >&2 "%s\n" "If no argument is specified, a dmenu pop-up is shown."
+  exit 1
 } # }}}
 
 # Actions
 action_lock() { # {{{
-  if ! xdg-screensaver lock 2>/dev/null; then
     if [ -r "$I3LOCK_IMG" ]; then
       i3lock -i "$I3LOCK_IMG"
     else
       i3lock -c "$I3LOCK_COLOR"
     fi
-  fi
 } # }}}
 action_logout() { # {{{
-  case "${WM}" in
+  case "$WM" in
     i3) i3-msg exit ;;
     bspwm) bspc quit ;;
-    *)
-      local msg="Unknown WM. Please register it in the file source code."
-      echo "$msg"
-      notify-send "$msg" -u critical
-      ;;
+    *) printf 'Unknown wm "%s" - logging out will not work\n' "$wm" ;;
   esac
 } # }}}
 action_suspend() { # {{{
   if action_lock; then
     systemctl suspend
   else
-    notify-send "Failed to suspend." -u critical
+    printf >&2 "Failed to lock - suspending was cancelled\n"
   fi
 } # }}}
 action_hibernate() { # {{{
-  echo "Hibernate: currently disabled."
-  return 3
+  printf >&2 "The hibernate action is currently unimplemented\n"
+  exit 1
 } # }}}
 action_reboot() { # {{{
   systemctl reboot
@@ -108,5 +72,4 @@ action_shutdown() { # {{{
   systemctl poweroff
 } # }}}
 
-check_dependencies
-match_args $@
+matchArgs "$@"

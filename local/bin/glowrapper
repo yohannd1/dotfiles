@@ -1,13 +1,12 @@
 #!/usr/bin/env sh
 
-if ! type glow >/dev/null 2>/dev/null; then
-  printf "'glow' binary not found"
-  exit 1
-fi
+source ~/.local/lib/ystd.sh
+depCheck glow
 
 if [ $# = 0 ]; then
-  echo "You need to specify at least one argument."
+  printf >&2 "%s\n" "Usage: $(basename $0) <file> [extra_args]"
   exit 1
 fi
 
-glow -sdark -w $(( $(tput cols) - "${GLOWRAPPER_MARGIN:-2}" )) "$@"
+width="$(($(tput cols) - "${GLOWRAPPER_MARGIN:-2}"))"
+glow -sdark -w "$width" "$@"

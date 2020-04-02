@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-shelp() {
-  cat <<EOF >/dev/stderr
+showHelp() {
+  cat >&2 <<"  EOF"
 $(basename $0): a program to recursively search and run an executable
 script from parent directories.
 
@@ -14,45 +14,43 @@ Where <mode> is:
   directory; and
   2, if <cmd> is a file to be found, but arg1 is a command to be ran at
   <cmd>'s directory and arg2+ are the arguments.
-EOF
+  EOF
+
+  exit 1
 }
 
-FILE_PATH="$PWD"
-MODE="$1"
+filePath="$PWD"
+mode="$1"
 
-[ $# -lt 2 ] && shelp && exit 1
+[ $# -lt 2 ] && showHelp
 
-case "$MODE" in
-  0) ;; 1) ;; 2) ;;
-  *) shelp && exit 1 ;;
+case "$mode" in
+  0|1|2) ;;
+  *) showHelp ;;
 esac
 
 while true; do
-  FILE="$FILE_PATH/$2"
+  file="$filePath/$2"
 
-  if [ -f "$FILE" ]; then
-    if [ "$MODE" = 2 ]; then
+  if [ -f "$file" ]; then
+    if [ "$mode" = 2 ]; then
       break
     else
-      [ -x "$FILE" ] && break
+      [ -x "$file" ] && break
     fi
   fi
 
-  [ "$FILE_PATH" = "/" ] && exit 1
-  FILE_PATH=$(realpath -m "$FILE_PATH/..")
+  [ "$filePath" = "/" ] && exit 1
+  filePath=$(realpath -m "$filePath/..")
 done
 
-case "$MODE" in
-  0)
-    "$FILE" ${@:3}
-    ;;
-  1)
-    cd "$FILE_PATH"
-    "$FILE" ${@:3}
-    ;;
-  2)
-    CMD="$3"
-    cd "$FILE_PATH"
-    "$CMD" ${@:4}
-    ;;
+case "$mode" in
+  0) "$file" ${@:3} ;;
+
+  1) cd "$filePath"
+    "$file" ${@:3} ;;
+
+  2) cmd="$3"
+    cd "$filePath"
+    "$cmd" ${@:4} ;;
 esac

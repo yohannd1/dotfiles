@@ -7,7 +7,7 @@
 # make a mess.
 
 if [ $# = 0 ]; then
-  echo "Please specify at least one argument."
+  printf >&2 "%s\n" "Usage: $(basename $0) <open_args> [open_args]"
   exit 1
 fi
 
