@@ -40,7 +40,7 @@ font-2 = siji:pixelsize=10;1
 
 modules-left = bspwm i3 xwindow
 modules-center =
-modules-right = wlan memory cpu eth battery alsa date
+modules-right = wlan memory swap cpu eth battery alsa date
 
 tray-position = right
 tray-padding = 2
@@ -142,7 +142,16 @@ interval = 2
 format-prefix = "ram "
 format-prefix-foreground = ${colors.foreground-alt}
 format-underline = #4bffdc
-label = %percentage_used%%
+label = "%percentage_used%%"
+;; }}}
+;; [module/swap] {{{
+[module/swap]
+type = internal/memory
+interval = 2
+format-prefix = "swap "
+format-prefix-foreground = ${colors.foreground-alt}
+format-underline = #4bffdc
+label = "%percentage_swap_used%%"
 ;; }}}
 ;; [module/wlan] {{{
 [module/wlan]
