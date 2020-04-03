@@ -7,7 +7,7 @@ source ~/.local/lib/ystd.sh
 depCheck fd
 
 if [ $# != 0 ]; then
-  printf >&2 "%s\n" "Usage: $(basename $0) <url>"
+  printf >&2 "%s\n" "Usage: $(basename $0)"
   printf >&2 "%s %s\n" "The articles folder is" '${F_ARTICLES:-~/articles}'
   exit 1
 fi

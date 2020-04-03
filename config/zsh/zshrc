@@ -19,49 +19,11 @@ function source-maybe { # {{{
 }
 # }}}
 
-## If ${1} is not in ${PATH}, append to it.
-## Exit codes:
-## 1 => Invalid arguments;
-## 2 => ${1} already exists on ${PATH};
-function path-maybe { # {{{
-  [ $# != 1 ] && return 1
-
-  if [[ ":${PATH}:" == *"${1}"* ]]; then
-    return 2
-  else
-    export PATH="${PATH:+"${PATH}:"}${1}"
-  fi
-}
-# }}}
-
-## Check if a tmux session is attached.
-function tmux-attached { # {{{
-  if [ $# = 1 ]; then
-    tmux ls | grep "^${1}.*(attached)\$" &>/dev/null
-  else
-    echo -e '\e[1m\e[34mUsage:\e[m ${0} SESSION-NAME'
-    return 1
-  fi
-} # }}}
-
-## Start a tmux session or reattach to it.
-function tmux-session { # {{{
-  if [[ -n "$1" ]]; then
-    if tmux has -t="$1" &>/dev/null; then
-      tmux attach -t "$1"
-    else
-      tmux new-session -s "$1" \; source-file "${HOME}/.local/lib/tmux-sessions/$1.proj" \; $2
-    fi
-  else
-    echo -e '\e[1m\e[34mUsage:\e[m ${0} SESSION-NAME <optional-command>'
-  fi
-} # }}}
-
 ## Get the current git branch.
 function git-branch { # {{{
   local branch="$(git symbolic-ref --short -q HEAD 2>/dev/null)"
-  if [ -n "${branch}" ]; then
-    echo "${branch}"
+  if [ -n "$branch" ]; then
+    echo "$branch"
   else
     return 1
   fi
@@ -99,8 +61,8 @@ function is_display { [ -n "${DISPLAY}" ]; }
 # }}}
 # Libraries and basic PATH {{{
 
-source-maybe "${HOME}/.local/share/env.sh"
-source-maybe "${HOME}/persist/local/share/zshrc.personal"
+source-maybe "$HOME/.local/share/env.sh"
+source-maybe "$HOME/persist/local/share/zshrc.personal"
 
 # }}}
 # First Steps {{{
@@ -113,7 +75,9 @@ if is_interactive; then
   fi
 
     # tty coloring
-    ! is_display && ! is_android && setup-tty
+    if ! is_display && ! is_android; then
+      setup-tty
+    fi
 fi
 
 # }}}
@@ -153,48 +117,29 @@ bindkey -M menuselect 'j' vi-down-line-or-history
 bindkey -v '^?' backward-delete-char
 
 # Change cursor shape for different vi modes
-zle-keymap-select() { # {{{
-if [[ ${KEYMAP} == vicmd ]] ||
-  [[ $1 = 'block' ]]; then
-  echo -ne '\e[1 q'
-
-elif [[ ${KEYMAP} == main ]] ||
-  [[ ${KEYMAP} == viins ]] ||
-  [[ ${KEYMAP} = '' ]] ||
-  [[ $1 = 'beam' ]]; then
-  echo -ne '\e[5 q'
-fi
+function zle-keymap-select { # {{{
+  if [[ ${KEYMAP} == vicmd ]] || [[ $1 = 'block' ]]; then
+    echo -en '\e[1 q'
+  elif [[ ${KEYMAP} == main ]] || [[ ${KEYMAP} == viins ]] \
+    || [[ ${KEYMAP} = '' ]] || [[ $1 = 'beam' ]]; then
+      echo -en '\e[5 q'
+  fi
 } # }}}
-zle-line-init() { # {{{
-zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
-echo -ne "\e[5 q"
+function zle-line-init { # {{{
+  zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
+  echo -en '\e[5 q'
 } # }}}
 
 zle -N zle-keymap-select
 zle -N zle-line-init
 
 # Use beam shape cursor on startup.
-echo -ne '\e[5 q'
+echo -en '\e[5 q'
 # Use beam shape cursor for each new prompt.
-preexec() { echo -ne '\e[5 q' ;}
+preexec() { echo -en '\e[5 q'; }
 
 # }}}
 # Bindings {{{
-
-# Use lf to switch directories
-lfcd() { # {{{
-  tmp="$(mktemp)"
-  lf -last-dir-path="$tmp" "$@"
-  if [ -f "$tmp" ]; then
-    dir="$(cat "$tmp")"
-    rm -f "$tmp"
-    if [ -d "$dir" ]; then
-      if [ "$dir" != "$(pwd)" ]; then
-        cd "$dir"
-      fi
-    fi
-  fi
-} # }}}
 
 # Use fzf to search history
 fh() { # {{{
@@ -202,7 +147,6 @@ fh() { # {{{
 } # }}}
 
 # Actual binding
-bindkey -s '^O' '\e0Di lfcd\n'
 bindkey -s '^R' '\e0Di fh\n'
 
 # }}}
@@ -215,7 +159,7 @@ function inspect-dir { # {{{
   [ -r "${dir}" ] || {
     printf "Invalid directory: %s\n" "${dir}"
       return 1
-  }
+    }
 
   echo -en '\e[2 q'
   printf "\e[38;5;11mDirectory:\e[m %s\n" "${dir}"
@@ -254,17 +198,17 @@ function register-dirfunc { # {{{
     [ "$cmd" = "inspect-dir" ] \
       && local wordPrefix='W' \
       || local wordPrefix='w'
-    local command="$(printf "$commandWrapper" "$wordPrefix" "$cmd")"
-    eval "$command"
-  done
-} # }}}
+          local command="$(printf "$commandWrapper" "$wordPrefix" "$cmd")"
+          eval "$command"
+        done
+      } # }}}
 
-n() { # {{{
-  # Block nesting of nnn in subshells
-  if [ -n $NNNLVL ] && [ "${NNNLVL:-0}" -ge 1 ]; then
-    echo "nnn is already running"
-    return
-  fi
+    n() { # {{{
+      # Block nesting of nnn in subshells
+      if [ -n $NNNLVL ] && [ "${NNNLVL:-0}" -ge 1 ]; then
+        echo "nnn is already running"
+        return
+      fi
 
   # The default behaviour is to cd on quit (nnn checks if NNN_TMPFILE is set)
   # To cd on quit only on ^G, remove the "export" as in:

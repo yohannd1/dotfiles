@@ -256,6 +256,7 @@ if [ -z "$NO_NEOVIM_PLUGIN" ]; then
   ip "pear-tree" "https://github.com/tmsvg/pear-tree"
   ip "vim-buftabline" "https://github.com/ap/vim-buftabline"
   ip "vim-vinegar" "https://github.com/tpope/vim-vinegar"
+  ip "quick-scope" "https://github.com/unblevable/quick-scope"
 
   lf "$NVIM_PLUGS_FOLDER" ~/.config/nvim/bundle
 fi

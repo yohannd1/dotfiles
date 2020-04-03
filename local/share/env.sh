@@ -1,4 +1,3 @@
-# Useful functions
 pathadd() {
   [ $# != 1 ] && return 1
 
@@ -16,6 +15,7 @@ export F_PERSIST="$HOME/persist"
 export F_DOTFILES="$F_PROJECTS/dotfiles"
 export F_WALLPAPERS="$F_PERSIST/wallpapers"
 export F_USB_STATION="/mnt/usb-main"
+export F_ARTICLES="$F_PERSIST/docs/articles"
 if [ "$(uname -o)" = Android ]; then
   export F_TEMP="$HOME/.cache/tmp"
 else

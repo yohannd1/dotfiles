@@ -246,6 +246,9 @@ let g:gruvbox_italics = 1
 " Buftabline
 let g:buftabline_indicators = 1
 
+" QuickScope
+let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+
 " }}}
 " Settings {{{
 
@@ -374,7 +377,7 @@ endfunction " }}}
 function! Ft_visualg() " {{{
   setlocal tabstop=4 shiftwidth=4 syntax=c
 endfunction " }}}
-function! Ft_visualg() " {{{
+function! Ft_julia() " {{{
   let b:rifle = {}
   let b:rifle.run = "julia '%f'"
 endfunction " }}}
@@ -522,8 +525,9 @@ tnoremap <silent> <C-w>l <C-\><C-n><C-w>l
 nnoremap / /\v
 vnoremap / /\v
 
-" Insert today's date
-inoremap <silent> <C-l> <C-r>=strftime("20%y-%m-%d")<CR>
+" Quick inserts
+inoremap <silent> <C-l>d <C-r>=strftime("20%y-%m-%d")<CR>
+inoremap <silent> <C-l>co ∘
 
 " Quick character insert
 inoremap <C-g>` ```<CR>```<Up><End><CR>

@@ -15,7 +15,7 @@ super + Return
 
 # Program Launcher
 super + space
-    dmenu_run
+    dmenurun
 
 # Power Menu
 super + shift + o
@@ -23,11 +23,11 @@ super + shift + o
 
 # Print Screen
 Print
-    runnsend flamedash fullc
+    runnsend flamewrapper fullc
 super + Print
-    runnsend flamedash gui
+    runnsend flamewrapper gui
 ctrl + Print
-    runnsend flamedash full
+    runnsend flamewrapper full
 
 # Mounting
 super + F10
