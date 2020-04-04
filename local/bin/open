@@ -45,21 +45,21 @@ if ! [ -z "$EXT" ]; then
   EXT="$(printf "%s" "$EXT" | tr '[:upper:]' '[:lower:]')"
 fi
 
-handle_pdf() {
+handlePdf() {
   tryRunGraph zathura "$FILE"
   tryRunTerm runpage pdftotext -l 10 -nopgbrk -q -- "$FILE" -
   tryRunTerm mutool draw -F txt -i -- "$FILE" 1-10
   tryRunTerm exiftool "$FILE"
 }
 
-handle_audio() {
+handleAudio() {
   exists mocp && tryRunTerm mocplay "$FILE" "opener"
   tryRunTermGraph mpv "$FILE"
   tryRunTerm mediainfo "$FILE"
   tryRunTerm exiftool "$FILE"
 }
 
-handle_video() {
+handleVideo() {
   tryRunGraph smplayer "$FILE"
   tryRunGraph mpv --no-video "$FILE"
   tryRunTerm runpage mediainfo "$FILE"
@@ -74,13 +74,13 @@ handleExt() {
       ;;
     rar) tryRunTerm runpage unrar lt -p- -- "$FILE" ;;
     7z) tryRunTerm runpage 7z l -p -- "$FILE" ;;
-    pdf) handle_pdf ;;
+    pdf) handlePdf ;;
 
     aac|flac|m4a|mid|midi|mpa|mp2|mp3|ogg|wav|wma)
-      handle_audio ;;
+      handleAudio ;;
 
     avi|mkv|mp4)
-      handle_video ;;
+      handleVideo ;;
 
     torrent)
       tryRunTerm rtorrent "$FILE"
@@ -117,9 +117,9 @@ handleMultimedia() {
       tryRunTerm runpage exiftool "$FILE"
       ;;
 
-    application/pdf) handle_pdf ;;
-    audio/*) handle_audio ;;
-    video/*) handle_video ;;
+    application/pdf) handlePdf ;;
+    audio/*) handleAudio ;;
+    video/*) handleVideo ;;
   esac
 }
 
