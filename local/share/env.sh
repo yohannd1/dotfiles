@@ -27,6 +27,7 @@ export TERMINAL="st"
 export BROWSER="qutebrowser"
 export PAGER="less"
 export DOTFILES="$F_DOTFILES"
+export OPENER="openfork"
 
 export XDG_CONFIG_HOME="$HOME/.config"
 
@@ -39,7 +40,7 @@ export WINEPREFIX="$HOME/.cache/wine"
 
 export FZF_DEFAULT_OPTS='--height=60% --layout=reverse --border'
 export BAT_THEME="base16"
-export NNN_OPENER="openfork"
+export NNN_OPENER="$OPENER"
 export FLAMEDASH_SCR_FOLDER="$HOME/photos/screenshots"
 export BKMK_FILE="$F_WIKI/data/bookmarks"
 

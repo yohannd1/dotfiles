@@ -47,7 +47,7 @@ super + b
 super + o; w
     termup nnn $F_WIKI
 super + o; b
-    bkmk
+    runnsend bkmk
 
 # Reload wallpaper
 super + w

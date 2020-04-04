@@ -10,6 +10,13 @@ commandStderr="$("$@" 2>&1 >/dev/null)"
 exitCode="$?"
 
 if [ "$exitCode" != 0 ]; then
+  # Exit silently if there is no error message and RUNNSEND_STRICT is
+  # not set.
+  if [ -z "$commandStderr" ] && [ -z "$RUNNSEND_STRICT" ]; then
+    exit "$exitCode"
+  fi
+
   headingMessage="$(printf 'Error while running # [%s] %s' "$exitCode" "$*")"
   notify-send "$headingMessage" "$commandStderr"
+  exit "$exitCode"
 fi

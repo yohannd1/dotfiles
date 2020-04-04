@@ -1,5 +1,5 @@
 module SSV
-  def parse(source)
+  def tokenize(source)
     pos = 0
     queue = []
     tokens = []
@@ -77,5 +77,21 @@ module SSV
     end
 
     tokens
+  end
+
+  def tokenize_lines(lines, allow_raise = false)
+    lines_list = lines.split("\n")
+
+    lines_list.each_with_index.map{ |contents, index|
+      tokens = tokenize(contents)
+      if tokens == nil
+        if allow_raise
+          raise "Could not tokenize line ##{index}: #{contents.inspect}"
+        else
+          nil
+        end
+      end
+      tokens
+    }
   end
 end

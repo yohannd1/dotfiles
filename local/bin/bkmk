@@ -1,98 +1,126 @@
 #!/usr/bin/env ruby
 
-# TODO: make an action to toggle a bookmark's state
-# TODO: make an action to remove a bookmark
-# TODO: make a bookmark adding command
-
 $LOAD_PATH << "#{Dir.home}/.local/lib"
-require 'ssv-parser'
-require 'open3'
+require "ssv-parser"
+require "open3"
 include SSV
 
-Bookmark = Struct::new(:state, :name, :link, :tags)
-
-def parse_state(state)
-  case state
-  when "t"; true
-  when "f"; false
-  else; nil
+def parse_tokens(line)
+  if line.length == 0
+    nil
+  else
+    Bookmark.new(line)
   end
 end
 
-# Get options
-bookmark_path = ENV['BKMK_FILE'] || "#{Dir.home}/.cache/bkmk"
-opener_path = ENV['BKMK_OPENER'] || "xdg-open"
+class Bookmark
+  attr_reader :id, :state, :name, :link, :tags
 
-# Check if file exists
-if not File::file?(bookmark_path)
-  raise "File #{bookmark_path.inspect} does not exist."
-end
+  def initialize(tokens)
+    _id, _state, _name, _link, _tags = tokens
 
-# Read and parse the file
-parsed = File::read(bookmark_path)
-  .split("\n")
-  .map{|item| SSV::parse(item)}
+    @id = _id.to_i
 
-# Crash if parsed is nil
-if parsed == nil
-  raise "Couldn't parse bookmarks file"
-end
+    # Parse state
+    @state = case _state
+             when "t"
+               true
+             when "f"
+               false
+             else
+               raise "Failed to parse state #{_id}: #{_state.inspect}"
+             end
 
-bookmarks = Hash::new
-parsed.each do |raw_item|
-  case raw_item.length
-  when 0 # Comment / Empty Line
-  when 4 # ID, State, Name & Link
-    id, _state, name, link = raw_item
-    state = parse_state(_state)
-    if state == nil
-      raise "Could not parse state: #{state.inspect}"
+    # Parse name & link
+    @name = _name
+    @link = _link
+
+    # Parse tags
+    @tags = (_tags == nil) ? [] : _tags.split(":")
+  end
+
+  def tags_to_s()
+    if @tags.length == 0
+      ""
+    else
+      " [#{@tags.join(":")}]"
     end
-    bookmarks[id.to_i] = Bookmark::new(state, name, link, [])
-  when 5 # ID, State, Name, Link & Tags (as tag1:tag2)
-    id, _state, name, link, tags = raw_item
-    state = parse_state(_state)
-    if state == nil
-      raise "Could not parse state: #{state.inspect}"
-    end
-    bookmarks[id.to_i] = Bookmark::new(state, name, link, tags.split(":"))
   end
 end
 
-chosen_string, exit_code =
-  Open3::popen3('dmenu -i -p "Bookmark:"') { |stdin, stdout, _, wait_thr|
-    bk_digit_len = bookmarks.length.to_s.length
-    bookmarks.each do |k, v|
-      stdin.puts "%0#{bk_digit_len}d #{v.name}" % "#{k}"
+if __FILE__ == $0
+  # Get options
+  bookmark_path = ENV["BKMK_FILE"] || "#{Dir.home}/.cache/bkmk"
+  opener = ENV["BKMK_OPENER"] || ENV["OPENER"] || "xdg-open"
+
+  # Check if the bookmark file exists
+  if not File::file?(bookmark_path)
+    raise "File #{bookmark_path.inspect} does not exist."
+  end
+
+  # Read and parse the file
+  file_contents = File::read(bookmark_path)
+  bookmarks_map = Hash.new
+  token_lines = SSV::tokenize_lines(file_contents, allow_raise: true)
+  token_lines.each{ |tokens|
+    parsed = parse_tokens(tokens)
+    if parsed != nil
+      bookmark = Bookmark.new(tokens)
+      bookmarks_map[bookmark.id] = bookmark
     end
-    stdin.close
-    [stdout.read, wait_thr.value]
-}
+  }
 
-if exit_code.to_i != 0 then exit 1 end
-chosen_bookmark = bookmarks[chosen_string.split(" ")[0].to_i]
+  # Use the dmenu to let the user select a bookmark
+  chosen_str, exit_code =
+    Open3::popen3('dmenu -i -l 25 -p "Bookmark:"') { |stdin, stdout, _, wait_thr|
+      digit_len = bookmarks_map.length.to_s.length # Cool hack
+      bookmarks_map.each do |k, v|
+        stdin.puts "%0#{digit_len}d #{v.name}#{v.tags_to_s}" % "#{k}"
+      end
+      stdin.close
+      [stdout.read, wait_thr.value]
+  }
 
-actions = {
-  0 => "open in web browser",
-}
+  # Exit if the dmenu prompt was cancelled.
+  if exit_code.to_i != 0
+    exit 1
+  end
 
-chosen_string, exit_code =
-  Open3::popen3('dmenu -i -p "Action:"') { |stdin, stdout, _, wait_thr|
-    action_digit_len = actions.length.to_s.length
-    actions.each do |k, v|
-      stdin.puts "%0#{action_digit_len}d #{v}" % "#{k}"
-    end
-    stdin.close
-    [stdout.read, wait_thr.value]
-}
+  # Parse the selected bookmark and get its id
+  chosen_bookmark = bookmarks_map[chosen_str.split(" ")[0].to_i]
 
-if exit_code.to_i != 0 then exit 1 end
-chosen_action = chosen_string.split(" ")[0].to_i
+  # List some actions here
+  actions = {
+    0 => "open url",
+    # 1 => "delete", # TODO
+    # 2 => "mark as done", # TODO
+  }
 
-case chosen_action
-when 0
-  # This one is unsafe if opener is undefined.
-  system "xdg-open #{chosen_bookmark.link}"
-else
-  raise "Unknown action: #{chosen_action.inspect}"
+  # Use the dmenu to let the user select an action
+  chosen_str, exit_code =
+    Open3::popen3('dmenu -i -p "Action:"') { |stdin, stdout, _, wait_thr|
+      digit_len = actions.length.to_s.length
+      actions.each do |k, v|
+        stdin.puts "%0#{digit_len}d #{v}" % "#{k}"
+      end
+      stdin.close
+      [stdout.read, wait_thr.value]
+  }
+
+  # Exit if the dmenu prompt was cancelled.
+  if exit_code.to_i != 0
+    exit 1
+  end
+
+  # Parse the selected action and get its id
+  chosen_action_id = chosen_str.split(" ")[0].to_i
+
+  case chosen_action_id
+  when 0
+    # This one is pretty unsafe if opener is defined, but I still
+    # haven't found a better way to call shell commands.
+    system "'#{opener}' '#{chosen_bookmark.link}'"
+  else
+    raise "Unknown action: #{chosen_action_id.inspect}"
+  end
 end

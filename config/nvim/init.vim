@@ -538,8 +538,8 @@ nnoremap <leader>K :call SpawnCustomShell("")<CR>
 " View messages history
 nnoremap <leader>m :call ListMessages()<CR>
 
-" Netrw for browsing when wanted
-nnoremap <silent> <leader>= :Vexplore<CR>
+" Adjust indentation on the entire file
+nnoremap <silent> <leader>= mtgg=G`tzz
 
 " Replace everything in screen with... something
 nnoremap <Leader>s :%s/\v/g<Left><Left>
