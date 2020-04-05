@@ -48,6 +48,8 @@ super + o; w
     termup nnn $F_WIKI
 super + o; b
     runnsend bkmk
+super + o; p
+    termup zsh -ic "Wp n"
 
 # Reload wallpaper
 super + w

@@ -95,23 +95,28 @@ bindkey -s '^R' '\e0Di fh\n'
 ## Functions that were designed to be used in the shell.
 
 function inspect-dir { # {{{
-  [ $# != 1 ] && return 1
-  local dir="$(realpath -m "$1")"
-  [ -r "${dir}" ] || {
-    printf "Invalid directory: %s\n" "${dir}"
-      return 1
-    }
+  [ $# != 1 ] && [ $# != 2 ] \
+    && return 1
 
-  echo -en '\e[2 q'
-  printf "\e[38;5;11mDirectory:\e[m %s\n" "${dir}"
+  local ch="$2"
+  local dir="$(realpath -m $1)"
+  if ! [ -r "$dir" ]; then
+    printf "Invalid directory: %s\n" "$dir"
+    return 1
+  fi
+
+  printf '\e[2 q'
+  printf '\033[38;5;11m%s\033[m %s\n' "Directory:" "$dir"
 
   while [ -z "${EXIT}" ]; do
-    printf "::::: [c]d, [b]root, [n]nn, [g]it-check, [q]uit\n"
-    printf '\e[38;5;11m(dir)\e[m λ> '
-    read -k1 ch
-    printf "\n"
+    if [ -z "$ch" ]; then
+      printf "::::: [c]d, [b]root, [n]nn, [g]it-check, [q]uit\n"
+      printf '\e[38;5;11m(dir)\e[m λ> '
+      read -k1 ch
+      printf '\n'
+    fi
 
-    case "${ch}" in
+    case "$ch" in
       c) cd "$dir"; local EXIT=1 ;;
       b) br "$dir"; local EXIT=1 ;;
       n) n "$dir"; local EXIT=1 ;;
@@ -121,7 +126,7 @@ function inspect-dir { # {{{
       q) local EXIT=1 ;;
       "") local EXIT=1 ;;
       $'\n') local EXIT=1 ;;
-      *) echo "Invalid option: \"$ch\"." ;;
+      *) printf 'Invalid option: "%s"\n' "$ch" ;;
     esac
   done
 } # }}}
@@ -139,17 +144,18 @@ function register-dirfunc { # {{{
     [ "$cmd" = "inspect-dir" ] \
       && local wordPrefix='W' \
       || local wordPrefix='w'
-          local command="$(printf "$commandWrapper" "$wordPrefix" "$cmd")"
-          eval "$command"
-        done
-      } # }}}
 
-    n() { # {{{
-      # Block nesting of nnn in subshells
-      if [ -n $NNNLVL ] && [ "${NNNLVL:-0}" -ge 1 ]; then
-        echo "nnn is already running"
-        return
-      fi
+    local command="$(printf "$commandWrapper" "$wordPrefix" "$cmd")"
+    eval "$command"
+  done
+} # }}}
+
+n() { # {{{
+  # Block nesting of nnn in subshells
+  if [ -n $NNNLVL ] && [ "${NNNLVL:-0}" -ge 1 ]; then
+    echo "nnn is already running"
+    return
+  fi
 
   # The default behaviour is to cd on quit (nnn checks if NNN_TMPFILE is set)
   # To cd on quit only on ^G, remove the "export" as in:
@@ -168,7 +174,7 @@ rl() { source "${ZDOTDIR:-"${HOME}"}/.zshrc"; }
 sy() { "${DOTFILES}/sync"; }
 gtd() { [ $# = 1 ] && grep "$(sed "s/_/:/g" <<<"TODO_")" $(find "${1}" -type f); }
 wp() { local c="$(select-project)"; [ -n "$c" ] && br "$c"; }
-Wp() { local c="$(select-project)"; [ -n "$c" ] && inspect-dir "$c"; }
+Wp() { local c="$(select-project)"; [ -n "$c" ] && inspect-dir "$c" "$1"; }
 
 register-dirfunc d "$DOTFILES"
 register-dirfunc k "$F_WIKI"
