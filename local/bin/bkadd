@@ -7,54 +7,80 @@
 # https://unix.stackexchange.com/questions/103252/how-do-i-get-a-websites-title-using-command-line
 
 source ~/.local/lib/ystd.sh
-depCheck recode wget perl
+depCheck wget perl
 
-if [ $# != 1 ]; then
-  printf >&2 "%s\n" "Usage: $(basename $0) <url>"
+if [ $# = 0 ]; then
+  printf >&2 "%s\n\n" "$(basename $0): gets the tile of one or more URLs and stores the websites into the bokmark file."
+  printf >&2 "%s\n" "Usage: $(basename $0) <url> [url]"
   printf >&2 "%s %s\n" "Bookmark file is" '${BKMK_FILE:-~/.cache/bkmk}'
+  printf >&2 "%s\n" "If title can't be obtained and the user is running the script interactively, the file is died."
   exit 1
 fi
 
-url="$1"
-template="$(printf '%s %s "%s" "%s" %s' "%s" "f" "%s" "$url" "bkadd")"
-file="${BKMK_FILE:-~/.cache/bkmk}"
+# GNU recode was having problems with utf-8, so I'm making my own
+# function. Might take a look at it later, but for now I'll use this.
+recodeHTML() {
+  cat /dev/stdin \
+    | sed 's/&gt\;/>/g' \
+    | sed 's/&lt\;/</g' \
+    | sed "s/&#039\\;/'/g" \
+    | sed 's/"/\\"/g' \
+    | tr '\n' ' ' \
+    | sed 's/  / /g' \
+    | sed 's/ $//g'
+}
 
-title="$(wget -qO- "$1" \
-  | perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si' \
-  | recode html..)"
-if [ -z "$title" ]; then
-  printf "Page not found (or empty title).\n" >&2
-  exit 2
-else
-  printf "Title: %s\n" "$title"
-fi
+while [ $# != 0 ]; do
+  url="$1"
+  template='%s f "%s" "%s" bkadd'
+  file="${BKMK_FILE:-~/.cache/bkmk}"
 
-if [ -f "$file" ]; then
-  # Search for the last line that contains useful bookmark data to get
-  # its ID.
-  tailCounter=1
-  while line="$(tail -"$tailCounter" "$file" | head -1)"; do
-    grep -vq '^#' <<<"$line" \
-      && grep -vq '^$' <<<"$line" \
-      && bookmarkID="$(printf "%s" "$line" | awk '{print $1}')" \
-      && if ! [ "$bookmarkID" -eq "$bookmarkID" ] 2>/dev/null; then
-          printf "Parsing error on bookmarks file: not a valid bookmark ID: %s\n" "$bookmarkID" >&2
-          exit 3
-        else
-          break
+  title="$(wget -qO- "$1" \
+    | perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si' \
+    | recodeHTML)"
+
+  if [ -z "$title" ]; then
+    printf >&2 'Page not found (or empty title) for "%s"\n' "$url"
+    if [ -t 1 ]; then
+      printf 'Select a tile for it: '
+      read title
+    else
+      exit 2
+    fi
+  fi
+
+  printf 'Got title: "%s"\n' "$title"
+
+  if [ -f "$file" ]; then
+    # Search for the last line that contains useful bookmark data to get
+    # its ID.
+    tailCounter=1
+    while line="$(tail -"$tailCounter" "$file" | head -1)"; do
+      if grep -vq '^#' <<<"$line" \
+        && grep -vq '^$' <<<"$line" \
+        && bookmarkID="$(printf "%s" "$line" | awk '{print $1}')"; then
+          if ! [ "$bookmarkID" -eq "$bookmarkID" ] 2>/dev/null; then
+            printf 'Parsing error on bookmarks file: not a valid bookmark ID: "%s"\n' "$bookmarkID" >&2
+            exit 3
+          else
+            break
+          fi
       fi
 
-    tailCounter="$(($tailCounter + 1))"
+      tailCounter="$(($tailCounter + 1))"
 
     # Set bookmarkID to 0 if no file was found.
     [ "$tailCounter" -gt "$(wc -l < "$file")" ] \
       && bookmarkID=-1 \
       && break
-  done
-else
-  # Bookmarks file doesn't exist, so bookmark ID is 0
-  bookmarkID=-1
-fi
+    done
+  else
+    # Bookmarks file doesn't exist, so bookmark ID is 0
+    bookmarkID=-1
+  fi
 
-bookmarkID="$(printf "%02d\n" "$(($bookmarkID + 1))")"
-printf "$template\n" "$bookmarkID" "$title" >> "$file"
+  bookmarkID="$(printf "%02d\n" "$(($bookmarkID + 1))")"
+  printf "$template\n" "$bookmarkID" "$title" "$url" >> "$file"
+
+  shift
+done

@@ -1,18 +1,28 @@
 #!/usr/bin/env bash
-# vim: foldmethod=marker
+# vim: fdm=marker
 # -*- origami-fold-style: triple-braces -*-
 
+# Config {{{
+
+DOTFILES_URL_HTTPS="https://github.com/YohananDiamond/dotfiles"
+DOTFILES_URL_SSH="git@github.com:yohanandiamond/dotfiles"
+DOTFILES="${DOTFILES:-~/projects/dotfiles}"
+BACKUP_DIR="$HOME/.cache/dotsync-backup/dotfiles-$(date '+%Y%m%d-%H%M')-$(shuf -i 0-999 -n 1)"
+
+NVIM_PLUGS_FOLDER="${NVIM_PLUGS_FOLDER:-"$HOME/.cache/neovim-plugins"}"
+
+# }}}
 # Library {{{
 
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
-is_android() { [ "$(uname -o)" = "Android" ]; }
+isAndroid() { [ "$(uname -o)" = "Android" ]; }
 
-# Installing Dotfiles
-install_dotfiles() { # {{{
+installDotfiles() { # {{{
   if [ -r "$DOTFILES" ]; then
-    echo "There is already a folder in $DOTFILES. If you want to install, manually remove said folder."
+    printf >&2 "%s\n" "There is already a folder in $DOTFILES. If you want to install, manually remove said folder."
+    exit 1
   else
-    printf "SSH or HTTPS? [S/h] "
+    printf >&2 "SSH or HTTPS? [S/h] "
     read choice
     if [ "$choice" = S ] || [ "$choice" = s ]; then
       git clone "$DOTFILES_URL_SSH" "$DOTFILES"
@@ -21,13 +31,9 @@ install_dotfiles() { # {{{
     fi
   fi
 } # }}}
-
-# Symlinking Utilities
-# POINTER is the symlink file, that points to ADDRESS.
-# (Yes, I'm using this terminology. I like it.)
 lf() { # {{{
   if [ $# != 2 ]; then
-    echo "lf: not enough arguments."
+    printf >&2 "%s\n" "lf: not enough arguments."
     return 1
   fi
 
@@ -38,24 +44,28 @@ lf() { # {{{
     return 1
 
   if [ -e "$POINTER" ] || [ -L "$POINTER" ]; then
-    if [ -z "$NO_BACKUP" ]; then
+    if [ -n "$DOTSYNC_NO_BACKUP" ]; then
+      rm -r "$POINTER"
+    else
       local BACKUP_FOLDER="$BACKUP_DIR/$(dirname "${POINTER#?}")"
       mkdir -p "$BACKUP_FOLDER"
       if ! mv "$POINTER" -t "$BACKUP_FOLDER"; then
-        echo "  Error symlinking *'$POINTER' -> &'$ADDRESS'"
+        printf >&2 "%s\n" "Could not make directory: *'$POINTER' -> &'$ADDRESS'"
         return 1
       fi
     fi
   else
-    echo "  New file: *'$POINTER' -> &'$ADDRESS'"
+    printf >&2 "%s\n" "New symlink: *'$POINTER' -> &'$ADDRESS'"
   fi
 
-  ln -s "$ADDRESS" "$POINTER" ||
-    echo "  Error symlinking *'$POINTER' -> &'$ADDRESS'"
+  ln -s "$ADDRESS" "$POINTER" \
+    || printf >&2 "%s\n" "Error symlinking *'$POINTER' -> &'$ADDRESS'"
+
+  return $? # Indentation fix
 } # }}}
 lfglob() { # {{{
   if [ $# != 2 ]; then
-    echo "lfglob: not enough arguments"
+    printf >&2 "%s\n" "lfglob: not enough arguments"
     return 1
   fi
 
@@ -72,7 +82,7 @@ lfglob() { # {{{
 } # }}}
 lfconf() { # {{{
   if [ $# != 2 ]; then
-    echo "lfconf: not enough arguments"
+    printf >&2 "%s\n" "lfconf: not enough arguments"
     return 1
   fi
 
@@ -83,7 +93,7 @@ lfconf() { # {{{
 } # }}}
 lflocal() { # {{{
   if [ $# != 2 ]; then
-    echo "link: not enough arguments."
+    printf >&2 "%s\n" "link: not enough arguments."
     return 1
   fi
 
@@ -92,11 +102,9 @@ lflocal() { # {{{
 
   lf "$ADDRESS" "$POINTER"
 } # }}}
-
-# NeoVim Plugin Management
 ip() { # {{{
   if [ $# != 2 ]; then
-    echo "ip: not enough arguments"
+    printf >&2 "%s\n" "ip: not enough arguments"
     return 1
   fi
 
@@ -118,18 +126,6 @@ ip() { # {{{
 } # }}}
 
 # }}}
-# Config {{{
-
-DOTFILES_URL_HTTPS="https://github.com/YohananDiamond/dotfiles"
-DOTFILES_URL_SSH="git@github.com:yohanandiamond/dotfiles"
-DOTFILES="${HOME}/projects/dotfiles"
-BACKUP_DIR="${HOME}/.cache/symlink-backup/dotfiles.$(date '+%Y-%m-%d.%H.%M').$(shuf -i 0-99 -n 1)"
-
-PROGRAM_NAME="$(basename "$0")"
-NVIM_PLUGS_FOLDER="${NVIM_PLUGS_FOLDER:-"$HOME/.cache/nvim-plugs"}"
-
-# }}}
-
 # Check if dotfiles are installed {{{
 
 if [ -z "$NO_INSTALL_CHECK" ]; then
@@ -140,10 +136,10 @@ This is a personal script I've made that links some config files I have.
 No packages are installed here yet - only dotfiles cloning and config symlinking is done.
 Although I've implemented a backup system for preventing problems with losing the files, I can't assure it will actually work properly.
 EOF
-    printf "Do you wish to proceed? [y/N] "
+    printf >&2 "Do you wish to proceed? [y/N] "
     read option
     if [ "$option" = "y" ] || [ "$option" = "Y"]; then
-      install_dotfiles
+      installDotfiles
     else
       exit 2
     fi
@@ -154,9 +150,7 @@ fi
 # Config Files {{{
 
 if [ -z "$NO_CONFIG_LINK" ]; then
-  echo "+ Symlinking files..."
-
-  if is_android; then
+  if isAndroid; then
     lfconf "termux" ~/.termux
   else
     # Startup-related configuration
@@ -221,10 +215,8 @@ fi
 # NeoVim Plugins {{{
 
 if [ -z "$NO_NEOVIM_PLUGIN" ]; then
-  echo "+ Check-up: neovim plugins"
-
   if ! [ -r "$NVIM_PLUGS_FOLDER" ]; then
-    echo "  Making plugin directory..."
+    printf >&2 "%s\n" "Making neovim plugin directory..."
     mkdir -p "$NVIM_PLUGS_FOLDER"
   fi
 
@@ -262,11 +254,10 @@ if [ -z "$NO_NEOVIM_PLUGIN" ]; then
 fi
 
 # }}}
-# "Garbage Collection" {{{
+# Garbage Collection {{{
 
 # For NeoVim plugins
 if [ -z "$NO_GC_NVIM_PLUGS" ]; then
-  echo "+ Garbage Collection: neovim plugins"
   find "$NVIM_PLUGS_FOLDER" -mindepth 1 -maxdepth 1 |
     while read plug_path; do
       plug="$(basename "$plug_path")"
@@ -274,29 +265,29 @@ if [ -z "$NO_GC_NVIM_PLUGS" ]; then
           grep -q "^.*:$plug:.*\$" <<<"$ARR_NVIM_PLUGS" ||
           grep -q "^.*:$plug\$" <<<"$ARR_NVIM_PLUGS"); then
         if ! file "$plug_path" | grep -q "^$plug_path: symbolic link"; then
-          printf "  Removing disabled plugin [$plug]... "
+          printf >&2 "Removing disabled plugin [$plug]... "
           rm -rf "$plug_path" &&
-            echo "done." ||
-            echo "failed."
+            printf >&2 "done.\n" ||
+            printf >&2 "failed.\n"
         fi
       fi
     done
 fi
 
-# For Symlinks
+# Broken Symlinks
 for folder in ~/.local/{bin,lib,share}; do
   if [ -r "$folder" ]; then
     find "$folder" -mindepth 1 -maxdepth 1 |
       while read file; do
         if file "$file" | grep -q "^$file: broken symbolic link"; then
-          printf "  Removing broken symlink: '$file'... "
+          printf >&2 "Removing broken symlink: '$file'... "
           rm -rf "$file" &&
-            echo "done." ||
-            echo "failed."
+            printf >&2 "done.\n" ||
+            printf >&2 "failed.\n"
         fi
       done
     else
-      echo "  Target folder \"$folder\" doesn't exist."
+      printf >&2 'Target folder "%s" %s exist.\n' "$folder" "doesn't"
   fi
 done
 

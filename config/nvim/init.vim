@@ -419,7 +419,7 @@ function! Ft_ruby() " {{{
   setlocal foldmethod=syntax
 endfunction " }}}
 function! Ft_haskell() " {{{
-  setlocal tabstop=2 shiftwidth=2
+  setlocal ts=2 sw=2
 endfunction " }}}
 function! Ft_racket() " {{{
   let b:rifle = {}
@@ -460,6 +460,9 @@ function! Ft_java() " {{{
   endif
 
   setlocal foldmethod=syntax
+endfunction " }}}
+function! Ft_make() " {{{
+  setlocal sw=8 ts=8 noet
 endfunction " }}}
 
 " }}}

@@ -45,7 +45,7 @@ sourceAlt() {
   return 1
 }
 
-isInteractive() { bash -c '[[ $- == *i* ]]'; }
+isInteractive() { printf "%s" "$-" | grep -q '.*i.*'; }
 isAndroid() { [ "$(uname -o)" = Android ]; }
 isDisplay() { [ -n "$DISPLAY" ]; }
 isTTY() { ! isDisplay && ! isAndroid; }

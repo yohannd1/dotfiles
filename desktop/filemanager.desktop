@@ -1,0 +1,4 @@
+[Desktop Entry]
+Name=File manager
+Exec=termup nnn %u
+Type=Application

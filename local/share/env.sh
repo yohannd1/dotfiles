@@ -1,5 +1,3 @@
-export FOO_BAR=10
-
 pathadd() {
   [ $# != 1 ] && return 1
 
@@ -45,6 +43,7 @@ export BAT_THEME="base16"
 export NNN_OPENER="$OPENER"
 export FLAMEDASH_SCR_FOLDER="$HOME/photos/screenshots"
 export BKMK_FILE="$F_WIKI/data/bookmarks"
+export DOTSYNC_NO_BACKUP=1
 
 export KEYTIMEOUT=1
 export TERM="xterm-256color"

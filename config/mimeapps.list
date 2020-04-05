@@ -3,6 +3,7 @@
 image/jpeg=sxiv.desktop
 image/png=sxiv.desktop
 text/html=browser.desktop
+inode/directory=filemanager.desktop
 
 x-scheme-handler/discord-455712169795780630=discord-455712169795780630.desktop
 x-scheme-handler/discord-430794114037055489=discord-430794114037055489.desktop
