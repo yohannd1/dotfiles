@@ -5,6 +5,6 @@ copyfun() {
   if [ $# != 2 ]; then
     echo "Invalid amount of arguments."
   fi
-  declare -F "$1" > /dev/null || exit 1;
-  eval "$(echo "$2()"; declare -f "$1" | tail -n +2)"
+  declare -F "$1" >/dev/null || exit 1;
+  eval "$(printf "%s()\n" "$2"; declare -f "$1" | tail -n +2)"
 }

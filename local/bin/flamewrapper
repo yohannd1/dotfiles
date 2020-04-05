@@ -10,9 +10,10 @@ fi
 
 folder="${FLAMEDASH_SCR_FOLDER:-~/.cache/screenshots}"
 
-mkdir -p "$folder" \
-  || printf >&2 "%s\n" "Could not make directory $folder" \
-  && exit 1
+if ! mkdir -p "$folder"; then
+  printf >&2 "%s\n" "Could not make directory $folder" \
+  exit 1
+fi
 
 case "$1" in
   "") flameshot gui -p "$folder" ;;

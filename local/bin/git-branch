@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+# Print the current branch of the git repo on the cwd, or else return an
+# error.
+
+branch="$(git symbolic-ref --short -q HEAD 2>/dev/null)" \
+  && echo "$branch"

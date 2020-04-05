@@ -3,82 +3,23 @@
 # Partially stolen from https://github.com/LukeSmithxyz/voidrice and my own bashrc
 
 # Backend functions {{{
-## Functions that usually aren't used only on the shell setup.
 
-## Silently source a file, if it exists.
-function source-maybe { # {{{
-  while [ $# != 0 ]; do
-    if [ -f "${1}" ]; then
-      source "${1}"
-      return 0
-    else
-      shift
-    fi
-  done
-  return 1
-}
-# }}}
+source ~/.local/lib/ystd.sh &>/dev/null \
+  || printf "Couldn't load library file."
 
-## Get the current git branch.
-function git-branch { # {{{
-  local branch="$(git symbolic-ref --short -q HEAD 2>/dev/null)"
-  if [ -n "$branch" ]; then
-    echo "$branch"
-  else
-    return 1
-  fi
-} # }}}
-
-## Sets up the tty coloring.
-function setup-tty { # {{{
-  echo -en "\e]P0282828" # Black
-  echo -en "\e]P19D0006" # Red
-  echo -en "\e]P279740E" # Green
-  echo -en "\e]P3B57614" # Yellow
-  echo -en "\e]P4076678" # Blue
-  echo -en "\e]P58F3F71" # Magenta
-  echo -en "\e]P6427B58" # Cyan
-  echo -en "\e]P7FBF1C7" # White
-  echo -en "\e]P832302F" # Bright Black
-  echo -en "\e]P9FB4934" # Bright Red
-  echo -en "\e]PAB8BB26" # Bright Green
-  echo -en "\e]PBFABD2F" # Bright Yellow
-  echo -en "\e]PC83A598" # Bright Blue
-  echo -en "\e]PDD3869B" # Bright Magenta
-  echo -en "\e]PE8EC07C" # Bright Cyan
-  echo -en "\e]PFFBF1C7" # "Bright White"
-  echo -en "\e[?16;2;112c" # Change cursor to block
-  clear # Redraw screen
-} # }}}
+setTitle "zsh"
 
 function exists { type "$1" >/dev/null 2>/dev/null; }
 
-## Check if shell is interactive
-function is_interactive { [[ $- == *i* ]]; }
-function is_android { [ "$(uname -o)" = Android ]; }
-function is_display { [ -n "${DISPLAY}" ]; }
-
 # }}}
-# Libraries and basic PATH {{{
+# Init {{{
 
-source-maybe "$HOME/.local/share/env.sh"
-source-maybe "$HOME/persist/local/share/zshrc.personal"
+sourceIf "$HOME/.local/share/env.sh"
+sourceIf "$HOME/persist/local/share/zshrc.personal"
 
-# }}}
-# First Steps {{{
+sourceIf ~/.config/broot/launcher/bash/br
 
-# is this an interactive shell?
-if is_interactive; then
-  # Set up SSH key server
-  if [[ -x /usr/bin/keychain ]]; then
-    eval "$(keychain --eval --ignore-missing ~/.ssh/id_rsa 2>/dev/null)"
-  fi
-
-    # tty coloring
-    if ! is_display && ! is_android; then
-      setup-tty
-    fi
-fi
+isTTY && setup-tty
 
 # }}}
 # Plugins and Extensions {{{
@@ -265,12 +206,11 @@ setopt sharehistory
 setopt extendedhistory
 
 # }}}
-# Post Processing {{{
+# After {{{
 
-source-maybe "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" \
-  "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-
-source-maybe "${HOME}/.config/broot/launcher/bash/br"
+sourceAlt \
+  /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
+  /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # }}}
 : # Assert first prompt doesn't show any non-zero return value

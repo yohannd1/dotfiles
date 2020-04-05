@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+
+# A collection of commands to set up a tty
+
+printf '\e]P0282828' # Black
+printf '\e]P19D0006' # Red
+printf '\e]P279740E' # Green
+printf '\e]P3B57614' # Yellow
+printf '\e]P4076678' # Blue
+printf '\e]P58F3F71' # Magenta
+printf '\e]P6427B58' # Cyan
+printf '\e]P7FBF1C7' # White
+printf '\e]P832302F' # Bright Black
+printf '\e]P9FB4934' # Bright Red
+printf '\e]PAB8BB26' # Bright Green
+printf '\e]PBFABD2F' # Bright Yellow
+printf '\e]PC83A598' # Bright Blue
+printf '\e]PDD3869B' # Bright Magenta
+printf '\e]PE8EC07C' # Bright Cyan
+printf '\e]PFFBF1C7' # Bright White
+printf '\e[?16;2;112c' # Change cursor to block
+
+clear # Redraw screen

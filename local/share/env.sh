@@ -1,3 +1,5 @@
+export FOO_BAR=10
+
 pathadd() {
   [ $# != 1 ] && return 1
 

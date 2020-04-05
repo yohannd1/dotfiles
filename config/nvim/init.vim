@@ -1,9 +1,10 @@
 " YohananDiamond's main configuration file
 " Feel free to take anything!
+" vim: fdm=marker sw=2 sts=2
 
 " Setup {{{
 
-" If this is the first time sourcing the file
+" Check if this is the first time sourcing the file
 let g:is_first = exists("g:is_first") ? 0 : 1
 
 if g:is_first
@@ -40,7 +41,7 @@ endfunction " }}}
 function! MyFoldText() " {{{
   let l:tab_char = strpart(' ', shiftwidth())
   let l:line_contents = substitute(getline(v:foldstart), '\t', l:tab_char, 'g')
-  let l:line_contents = substitute(l:line_contents, '{{{', '', 'g') " Remove fold marker }}}
+  let l:line_contents = substitute(l:line_contents, '{' . '{{', '', 'g')
 
   let l:numbers_width = &foldcolumn + &number * &numberwidth
   let l:window_width = winwidth(0) - numbers_width - 1
@@ -158,21 +159,21 @@ function! LogMessage(message) " {{{
   call add(g:messages, a:message)
 endfunction " }}}
 function! ListMessages() " {{{
-  if !exists("g:messages") | return | endif
+  if !exists("g:messages") || len(g:messages) == 0
+    echo "You have no messages."
+    return
+  endif
   for message in g:messages
     echo message
   endfor
 endfunction " }}}
-" (SourceIf) {{{
-if g:is_first " Weird workaround because the bang is not being recognized...
-  function! SourceIf(...)
-    for path in a:000
-      if filereadable(path)
-        exec "source ".path
-      endif
-    endfor
-  endfunction
-endif
+if g:is_first | function! SourceIf(...) " {{{
+  for path in a:000
+    if filereadable(path)
+      exec "source ".path
+    endif
+  endfor
+endfunction | endif
 " }}}
 
 " }}}
@@ -279,8 +280,9 @@ if g:is_first
   set completeopt-=preview
   set completeopt+=menuone,noselect
   set noshowmode
-  set autochdir
   set list
+
+  let &autochdir = !g:is_win
 
   syntax on
   silent! colorscheme elflord
@@ -557,5 +559,3 @@ if g:is_first && exists("g:messages") && len("g:messages") != 0
 endif
 
 " }}}
-
-" vim: foldmethod=marker foldmarker={{{,}}} shiftwidth=2 softtabstop=2

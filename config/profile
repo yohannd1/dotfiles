@@ -5,3 +5,8 @@
 
 # Load environment variables.
 source ~/.local/share/env.sh
+
+# Set up SSH keychaing
+if [ -x /usr/bin/keychain ]; then
+  eval "$(keychain --eval --ignore-missing ~/.ssh/id_rsa 2>/dev/null)"
+fi

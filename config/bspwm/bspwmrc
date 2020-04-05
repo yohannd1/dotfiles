@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 # vim: foldmethod=marker
 
-# Based off: https://github.com/BrodieRobertson/cleanfullscreen
-
 # Init {{{
+
+source ~/.local/share/env.sh # Reload environment variables
 
 bspc monitor -d 1 2 3 4 5 6 7 8 9 0
 
@@ -31,6 +31,8 @@ bspwm-events &
 
 # }}}
 # Event Handling {{{
+
+# Based off: https://github.com/BrodieRobertson/cleanfullscreen
 
 hideBar() { polybar-msg cmd hide; }
 showBar() { polybar-msg cmd show; }
