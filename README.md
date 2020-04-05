@@ -1,6 +1,6 @@
 # YohananDiamond's Dotfiles
 
-![A screenshot of my desktop...](img/scr1.png)
+![A screenshot of my desktop](img/screenshot.png)
 
 This repository contains most of my config files, including also my
 scripts and my Arch Linux environment.
@@ -15,7 +15,7 @@ to only add to your system things that you understand, instead of making
 it confusing with the imense amount of bloat that would come with
 getting all scripts from a repository.
 
-If you want, you can use the `./sync` in the repo's root to do the
+If you want, you can use the `./dotsync` in the repo's root to do the
 thing, but, as said before, it's still pretty incomplete, so I can't
 assure backups will work well.
 
