@@ -6,12 +6,10 @@
 # If an arg is provided, this script tries to choose said option.
 
 # Settings
-I3LOCK_COLOR="282828"
-I3LOCK_IMG="$HOME/.local/share/i3lock-img.png"
 OPTIONS='lock\nlogout\nsuspend\nhibernate\nreboot\nshutdown'
 
 source ~/.local/lib/ystd.sh
-depCheck dmenu systemctl i3lock xdg-screensaver
+depCheck dmenu systemctl betterlockscreen
 
 fuzzyMatch() { printf "$OPTIONS" | dmenu -p "Power: "; }
 matchArgs() { # {{{
@@ -41,11 +39,7 @@ showHelp() { # {{{
 
 # Actions
 action_lock() { # {{{
-    if [ -r "$I3LOCK_IMG" ]; then
-      i3lock -i "$I3LOCK_IMG"
-    else
-      i3lock -c "$I3LOCK_COLOR"
-    fi
+  betterlockscreen -l
 } # }}}
 action_logout() { # {{{
   case "$WM" in

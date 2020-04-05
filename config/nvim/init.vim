@@ -167,6 +167,13 @@ function! ListMessages() " {{{
     echo message
   endfor
 endfunction " }}}
+function! SetupMakefileRifle() " {{{
+  if ReverseRSearch(expand("%:p:h"), "Makefile")
+    let b:rifle = {}
+    let b:rifle.run = "rrsrun 2 Makefile make run"
+    let b:rifle.build = "rrsrun 2 Makefile make"
+  endif
+endfunction " }}}
 if g:is_first | function! SourceIf(...) " {{{
   for path in a:000
     if filereadable(path)
@@ -309,7 +316,6 @@ if g:is_first
   set listchars=tab:»\ ,trail:~
 endif
 
-
 " }}}
 " Autocommands {{{
 
@@ -328,6 +334,7 @@ augroup end
 augroup ft_functions
   au!
   au FileType * if exists("*Ft_".&ft) | exec 'call Ft_'.&ft.'()' | endif
+  au FileType * call SetupMakefileRifle()
   au BufNewFile,BufRead,BufEnter *.fx set filetype=c
   au BufNewFile,BufRead,BufEnter *.clj set filetype=clojure
   au BufNewFile,BufRead,BufEnter *.alg set filetype=visualg
@@ -453,10 +460,6 @@ function! Ft_java() " {{{
     let b:rifle = {}
     let b:rifle.run = "rrsrun 1 gradlew run"
     let b:rifle.build = "rrsrun 1 gradlew build"
-  elseif ReverseRSearch(expand("%:p:h"), "Makefile")
-    let b:rifle = {}
-    let b:rifle.run = "rrsrun 2 Makefile make run"
-    let b:rifle.build = "rrsrun 2 Makefile make"
   endif
 
   setlocal foldmethod=syntax
