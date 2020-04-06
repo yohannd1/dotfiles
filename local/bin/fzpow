@@ -49,11 +49,9 @@ action_logout() { # {{{
   esac
 } # }}}
 action_suspend() { # {{{
-  if action_lock; then
-    systemctl suspend
-  else
-    printf >&2 "Failed to lock - suspending was cancelled\n"
-  fi
+  action_lock &
+  sleep 1 # Small delay
+  systemctl suspend
 } # }}}
 action_hibernate() { # {{{
   printf >&2 "The hibernate action is currently unimplemented\n"

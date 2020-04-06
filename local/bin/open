@@ -72,7 +72,7 @@ handleExt() {
       tryRunTerm runpage atool --list -- "$FILE"
       tryRunTerm runpage bsdtar --list --file "$FILE"
       ;;
-    rar) tryRunTerm runpage unrar lt -p- -- "$FILE" ;;
+    rar) tryRunTermGraph runpage unrar l -p- -- "$FILE" ;;
     7z) tryRunTerm runpage 7z l -p -- "$FILE" ;;
     pdf) handlePdf ;;
 
