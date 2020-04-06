@@ -5,11 +5,11 @@
 # Source xprofile,
 [ -f ~/.xprofile ] && . ~/.xprofile
 
-case "${WM}" in
-    i3) exec i3 ;;
-    bspwm) exec bspwm ;;
-    *)
-        echo "Window manager '${WM}': not yet supported."
-        exit 1
-        ;;
+case "$WM" in
+  i3) exec i3 ;;
+  bspwm) exec bspwm ;;
+  *)
+    printf 'Window manager "%s" is not yet supported.\n' "$WM"
+    exit 1
+    ;;
 esac

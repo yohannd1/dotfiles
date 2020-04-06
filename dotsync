@@ -179,7 +179,7 @@ if [ -z "$NO_CONFIG_LINK" ]; then
   lfconf "zsh/zshrc" ~/.config/zsh/.zshrc
   lfconf "bash/bashrc" ~/.bashrc
   lfconf "tmux.conf" ~/.tmux.conf
-  lfconf "inputrc" ~/.inputrc
+  lfconf "inputrc" ~/.config/inputrc
   lfconf "mimeapps.list" ~/.config/mimeapps.list
 
   # Programs

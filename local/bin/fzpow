@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# vim: foldmethod=marker
+# vim: fdm=marker
 
 # A simple script for power actions.
 # If no args are specified, dmenu / fzf is loaded.

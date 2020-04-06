@@ -348,12 +348,12 @@ augroup end
 function! Ft_c() " {{{
   let b:rifle = {}
   let b:rifle.run = "gcc '%f' -o '%o' && { '%o'; rm '%o'; }"
-  setlocal foldmethod=syntax
+  setlocal fdm=syntax
 endfunction " }}}
 function! Ft_cpp() " {{{
   let b:rifle = {}
   let b:rifle.run = "g++ '%f' -o '%o' && { '%o'; rm '%o'; }"
-  setlocal foldmethod=syntax
+  setlocal fdm=syntax
 endfunction " }}}
 function! Ft_clojure() " {{{
   let b:rifle = {}
@@ -393,7 +393,7 @@ endfunction " }}}
 function! Ft_vim() " {{{
   let b:rifle = {}
   let b:rifle.run = "nvim -u '%f'"
-  setlocal foldmethod=marker foldmarker={{{,}}}
+  setlocal fdm=marker foldmarker={{{,}}}
 endfunction " }}}
 function! Ft_python() " {{{
   let b:rifle = {}
@@ -423,7 +423,7 @@ endfunction " }}}
 function! Ft_ruby() " {{{
   let b:rifle = {}
   let b:rifle.run = "ruby '%f'"
-  setlocal foldmethod=syntax
+  setlocal fdm=syntax
 endfunction " }}}
 function! Ft_haskell() " {{{
   setlocal ts=2 sw=2
@@ -453,7 +453,7 @@ function! Ft_rust() " {{{
     let b:rifle.build = "rustc '%f' -o '%o'"
   endif
 
-  setlocal foldmethod=syntax
+  setlocal fdm=syntax
 endfunction " }}}
 function! Ft_java() " {{{
   if ReverseRSearch(expand("%:p:h"), "gradlew")
@@ -462,7 +462,7 @@ function! Ft_java() " {{{
     let b:rifle.build = "rrsrun 1 gradlew build"
   endif
 
-  setlocal foldmethod=syntax
+  setlocal fdm=syntax
 endfunction " }}}
 function! Ft_make() " {{{
   setlocal sw=8 ts=8 noet

@@ -1,5 +1,5 @@
 ;; -*- origami-fold-style: triple-braces -*-
-;; vim: foldmethod=marker
+;; vim: fdm=marker
 
 (defvar my/init-amount -1
   "Indicates the amount of times the init file has been loaded.

@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=Qutebrowser
+Name=Browser
 Exec=qutebrowser %u
 Type=Application
 Categories=Internet;

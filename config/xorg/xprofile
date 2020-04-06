@@ -4,17 +4,21 @@
 
 # Environent variables
 source ~/.local/share/env.sh
+source ~/.local/lib/ystd.sh
 
-# Daemons & applets
+# Daemons
 picom -b & # Compositor
 dunst & # Notification daemon
+exists dropbox && dropbox start &
+[ "$WM" != bspwm ] 
+  && start-sxhkd standard & # sxhkd when not on bspwm
+
+# Background apps
+flameshot & # Screenshot app
+
+# Applets
 nm-applet & # Network manager on tray
 blueman-applet & # Bluetooth
-[ "$WM" != bspwm ] \
-  && start-sxhkd standard & # sxhkd on not bspwm
-flameshot & # Screenshot app
-type dropbox >/dev/null 2>/dev/null &&
-    dropbox start & # Dropbox sync daemon
 
 # Configuration
 systemd-inhibit --what=handle-power-key sleep infinity & # Disable power button

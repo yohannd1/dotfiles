@@ -1,4 +1,4 @@
-;; vim: ft=dosini foldmethod=marker foldmarker={{{,}}}
+;; vim: ft=dosini fdm=marker
 
 ;; [colors] {{{
 [colors]

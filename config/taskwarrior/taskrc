@@ -1,5 +1,5 @@
 # -*- mode: conf-space -*-
-# vim: foldmethod=marker
+# vim: fdm=marker
 
 # Use the command 'task show' to see all defaults and overrides
 data.location=~/wiki/taskwarrior

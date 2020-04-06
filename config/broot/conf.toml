@@ -1,4 +1,4 @@
-# vim: foldmethod=marker foldmarker=#{,#}
+# vim: fdm=marker foldmarker=#{,#}
 # Configuration docs at: https://dystroy.org/broot
 
 # Default command-line flags

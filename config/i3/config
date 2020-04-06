@@ -1,5 +1,5 @@
 # -*- origami-fold-style: triple-braces -*-
-# vim: foldmethod=marker
+# vim: fdm=marker
 # i3 (v4.0) config file
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
 

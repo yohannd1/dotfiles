@@ -36,6 +36,7 @@ export CARGO_HOME="$HOME/.cache/cargo"
 export RUSTUP_HOME="$HOME/.cache/rustup"
 export ZDOTDIR="$HOME/.config/zsh"
 export TASKRC="$HOME/.config/taskwarrior/taskrc"
+export INPUTRC="$HOME/.config/inputrc"
 export WINEPREFIX="$HOME/.cache/wine"
 
 export FZF_DEFAULT_OPTS='--height=60% --layout=reverse --border'

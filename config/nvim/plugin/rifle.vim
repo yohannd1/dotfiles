@@ -26,4 +26,4 @@ unlet s:save_cpo " Remove temp var
 
 let g:loaded_rifle = 1
 
-" vim: foldmethod=marker foldmarker={{{,}}} shiftwidth=2 softtabstop=2
+" vim: fdm=marker foldmarker={{{,}}} shiftwidth=2 softtabstop=2

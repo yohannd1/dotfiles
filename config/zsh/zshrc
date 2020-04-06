@@ -1,24 +1,21 @@
 # -*- origami-fold-style: triple-braces -*-
-# vim: foldmethod=marker
-# Partially stolen from https://github.com/LukeSmithxyz/voidrice and my own bashrc
+# vim: fdm=marker
 
-# Backend functions {{{
-
-source ~/.local/lib/ystd.sh &>/dev/null \
-  || printf "Couldn't load library file."
-
-setTitle "zsh"
-
-function exists { type "$1" >/dev/null 2>/dev/null; }
-
-# }}}
 # Init {{{
 
+# Load the library file
+source ~/.local/lib/ystd.sh &>/dev/null \
+  || printf "Couldn't load library file.\n"
+
+# Set the shell title
+setTitle "zsh"
+
+# Load some other libraries
 sourceIf "$HOME/.local/share/env.sh"
 sourceIf "$HOME/persist/local/share/zshrc.personal"
+sourceIf "$HOME/.config/broot/launcher/bash/br"
 
-sourceIf ~/.config/broot/launcher/bash/br
-
+# Run the setup-tty script if it is a tty
 isTTY && setup-tty
 
 # }}}
@@ -48,7 +45,7 @@ PS2='  '
 RPROMPT="%(?..%?)"
 
 # }}}
-# Vim bindings and cursor {{{
+# Keybindings Config {{{
 
 # Use vim keys in tab complete menu
 bindkey -M menuselect 'h' vi-backward-char
@@ -79,9 +76,6 @@ echo -en '\e[5 q'
 # Use beam shape cursor for each new prompt.
 preexec() { echo -en '\e[5 q'; }
 
-# }}}
-# Bindings {{{
-
 # Use fzf to search history
 fh() { # {{{
   print -z $( ([ -n "${ZSH_NAME}" ] && fc -l 1 || history) | fzf --no-sort --tac | sed -r 's/ *[0-9]*\*? *//' | sed -r 's/\\/\\\\/g')
@@ -91,8 +85,7 @@ fh() { # {{{
 bindkey -s '^R' '\e0Di fh\n'
 
 # }}}
-# User functions {{{
-## Functions that were designed to be used in the shell.
+# Commands {{{
 
 function inspect-dir { # {{{
   [ $# != 1 ] && [ $# != 2 ] \
@@ -170,9 +163,9 @@ n() { # {{{
     rm -f "$NNN_TMPFILE" > /dev/null
   fi
 } # }}}
-rl() { source "${ZDOTDIR:-"${HOME}"}/.zshrc"; }
+rl() { source "${ZDOTDIR:-"$HOME"}/.zshrc"; }
 sy() { "$DOTFILES/dotsync"; }
-gtd() { [ $# = 1 ] && grep "$(sed "s/_/:/g" <<<"TODO_")" $(find "${1}" -type f); }
+gt() { [ $# = 1 ] && (cd "$1" && rg "$(sed 's/1/T/g' <<<'1ODO:')"); }
 wp() { local c="$(select-project)"; [ -n "$c" ] && br "$c"; }
 Wp() { local c="$(select-project)"; [ -n "$c" ] && inspect-dir "$c" "$1"; }
 
