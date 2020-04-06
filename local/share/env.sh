@@ -30,14 +30,18 @@ export DOTFILES="$F_DOTFILES"
 export OPENER="openfork"
 
 export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CACHE_HOME="$HOME/.cache"
 
-export GOPATH="$HOME/.cache/go"
-export CARGO_HOME="$HOME/.cache/cargo"
-export RUSTUP_HOME="$HOME/.cache/rustup"
-export ZDOTDIR="$HOME/.config/zsh"
-export TASKRC="$HOME/.config/taskwarrior/taskrc"
-export INPUTRC="$HOME/.config/inputrc"
-export WINEPREFIX="$HOME/.cache/wine"
+export GOPATH="$XDG_CACHE_HOME/go"
+export CARGO_HOME="$XDG_CACHE_HOME/cargo"
+export GEM_HOME="$XDG_CACHE_HOME/gem"
+export GEM_PATH="$GEM_HOME"
+export RUSTUP_HOME="$XDG_CACHE_HOME/rustup"
+export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+export TASKRC="$XDG_CONFIG_HOME/taskwarrior/taskrc"
+export INPUTRC="$XDG_CONFIG_HOME/inputrc"
+export WINEPREFIX="$XDG_CACHE_HOME/wine"
+export LESSHISTFILE="-"
 
 export FZF_DEFAULT_OPTS='--height=60% --layout=reverse --border'
 export BAT_THEME="base16"
@@ -58,11 +62,11 @@ if [ -r ~/.local/share/dircolors ]; then
 fi
 
 pathadd "$HOME/.local/bin"
-pathadd "$HOME/.cache/go"
+pathadd "$GOPATH"
 pathadd "$CARGO_HOME/bin"
 
 # pathadd "$(ruby -e 'puts Gem.user_dir')/bin" # Seems to be slowing down, so I'll use the ony below and update when needed.
-pathadd "$HOME/.gem/ruby/2.7.0"
+pathadd "$GEM_HOME/ruby/2.7.0"
 
 # Programs that I've installed in /opt
 for dir in /opt/*; do

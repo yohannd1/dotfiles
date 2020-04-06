@@ -2,4 +2,5 @@
   && type zsh &>/dev/null \
   && exec zsh
 
+HISTFILE=
 PS1='[\u@\h]\$ ' PS2='  '
