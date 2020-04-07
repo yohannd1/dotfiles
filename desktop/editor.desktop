@@ -1,0 +1,4 @@
+[Desktop Entry]
+Name=Editor
+Exec=termup nvim %u
+Type=Application
