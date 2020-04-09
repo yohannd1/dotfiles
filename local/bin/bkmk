@@ -75,7 +75,9 @@ if __FILE__ == $0
     Open3::popen3('dmenu -i -l 25 -p "Bookmark:"') { |stdin, stdout, _, wait_thr|
       digit_len = bookmarks_map.length.to_s.length # Cool hack
       bookmarks_map.each do |k, v|
-        stdin.puts "%0#{digit_len}d #{v.name}#{v.tags_to_s}" % "#{k}"
+        if !v.state
+          stdin.puts "%0#{digit_len}d #{v.name}#{v.tags_to_s}" % "#{k}"
+        end
       end
       stdin.close
       [stdout.read, wait_thr.value]

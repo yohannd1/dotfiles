@@ -248,7 +248,7 @@ let g:vim_markdown_auto_insert_bullets = 0
 " let g:netrw_altv = 1
 
 " Gruvbox
-let g:gruvbox_bold = 1
+let g:gruvbox_bold = 0
 let g:gruvbox_italics = 1
 
 " Buftabline
@@ -300,6 +300,8 @@ if g:is_first
     " are transparent
     hi Normal guibg=NONE ctermbg=NONE
     hi BufTabLineFill guibg=NONE ctermbg=NONE
+    hi CursorLine guibg=NONE ctermbg=NONE
+    hi CursorLineNr guibg=NONE ctermbg=NONE
   endif
 
   filetype plugin indent on
