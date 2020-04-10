@@ -45,6 +45,14 @@ if ! [ -z "$EXT" ]; then
   EXT="$(printf "%s" "$EXT" | tr '[:upper:]' '[:lower:]')"
 fi
 
+handleUrl() {
+  if grep -q '^http\(s\)\?://' <<<"$FILE"\
+    || grep -q '^ftp://' <<<"$FILE"; then
+      tryRunGraph $BROWSER "$FILE"
+      tryRunTerm w3m "$FILE" # Temporary measure. Might set an env var for CLI browsers later.
+  fi
+}
+
 handlePdf() {
   tryRunGraph zathura "$FILE"
   tryRunTerm runpage pdftotext -l 10 -nopgbrk -q -- "$FILE" -
@@ -54,7 +62,8 @@ handlePdf() {
 
 handleAudio() {
   exists mocp && tryRunTerm mocplay "$FILE" "opener"
-  tryRunTermGraph mpv "$FILE"
+  tryRunGraph mpv "$FILE"
+  tryRunTerm mpv --no-video "$FILE"
   tryRunTerm mediainfo "$FILE"
   tryRunTerm exiftool "$FILE"
 }
@@ -62,6 +71,7 @@ handleAudio() {
 handleVideo() {
   tryRunGraph smplayer "$FILE"
   tryRunGraph mpv "$FILE"
+  tryRunTerm mpv --no-video "$FILE"
   tryRunTerm runpage mediainfo "$FILE"
   tryRunTerm runpage mediainfo "$FILE"
 }
@@ -151,6 +161,7 @@ handleBlocked() {
 
 MIMETYPE="$(file --dereference --brief --mime-type -- $FILE)"
 handleBlocked "$MIMETYPE"
+handleUrl
 handleExt
 handleMultimedia "$MIMETYPE"
 handleMIME "$MIMETYPE"
