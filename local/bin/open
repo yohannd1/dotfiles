@@ -102,7 +102,10 @@ handleExt() {
 
     kra) tryRunGraph krita "$FILE" ;;
 
-    md) tryRunTermGraph runpage glowrapper "$FILE" ;;
+    md)
+      tryRunTerm runpage glowrapper "$FILE" 
+      tryRunGraph md-preview "$FILE"
+      ;;
 
     htm|html|xhtml)
       tryRunTerm runpage w3m -dump "$FILE"

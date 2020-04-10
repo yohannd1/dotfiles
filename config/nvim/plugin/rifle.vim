@@ -6,7 +6,9 @@ augroup plug_rifle
   au!
   au BufNewFile,BufRead,BufWrite,BufEnter * let b:filename = expand("%")
   au BufNewFile,BufRead,BufWrite,BufEnter * let g:_rifle_use_termup =
-    \ exists("b:rifle_use_termup") ? (b:rifle_use_termup != 0) : (!s:is_windows && executable("termup") && executable("rifle-run"))
+    \ exists("b:rifle_use_termup")
+    \ ? (b:rifle_use_termup != 0)
+    \ : (!s:is_windows && executable("termup") && executable("rifle-run") && $DISPLAY != "")
 augroup end
 
 let s:is_windows = (exists("g:is_windows") && g:is_windows != 0) || isdirectory('C:\')
