@@ -22,4 +22,4 @@ mv "$TEMP" "$FILE"
 
 md-compile "$1" > "$FILE" \
   && printf >&2 "%s\n" "Compiled to: $FILE" \
-  && $BROWSER "$FILE"
+  && OPEN_GUI=1 open "$FILE"

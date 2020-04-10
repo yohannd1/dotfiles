@@ -38,9 +38,10 @@ end
 -- operation was successful or not.
 -- Args:
 --   command ::= the key of the rifle dict that contains the command.
-local function rifle(command)
+local function rifle(command, _use_termup)
     local r = api.nvim_buf_get_var(0, "rifle")
     local fname = api.nvim_buf_get_var(0, "filename")
+    local use_termup = _use_termup ~= 0
 
     -- Check if specified command really exists
     if r[command] == nil then
@@ -48,7 +49,15 @@ local function rifle(command)
         return false
     end
 
-    local rifle_cmd = r[command]:gsub("%%f", fname)
+    local rifle_cmd = ""
+
+    -- Maybe use termup.
+    if use_termup then
+        rifle_cmd = rifle_cmd .. 'rifle-run "'
+    end
+
+    rifle_cmd = rifle_cmd .. r[command]
+    rifle_cmd = rifle_cmd:gsub("%%f", fname)
 
     -- Only mess with gen_tmp() if it really is needed (%o is mentioned
     -- in the command)
@@ -61,11 +70,20 @@ local function rifle(command)
         rifle_cmd = rifle_cmd:gsub("%%o", output)
     end
 
-    cmd("split")
-    cmd("wincmd j")
-    cmd("enew")
-    call("termopen", {rifle_cmd})
-    cmd("normal i")
+    -- The closing quote
+    if use_termup then
+        rifle_cmd = rifle_cmd .. '"'
+    end
+
+    if use_termup then
+        call("jobstart", {rifle_cmd})
+    else
+        cmd("split")
+        cmd("wincmd j")
+        cmd("enew")
+        call("termopen", {rifle_cmd})
+        cmd("normal i")
+    end
 end
 
 return {

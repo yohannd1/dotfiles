@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# Intended for the "rifle" neovim plugin I made, this script opens a
+# termup and disowns it.
+
+if [ $# != 1 ]; then
+  printf >&2 "%s\n" "Usage: $(basename $0) <command>"
+  printf >&2 "%s\n" "The command must be in only one argument. That's how much this crap is fragile."
+  exit 1
+fi
+
+termup runread eval "$1" &
+disown

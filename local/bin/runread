@@ -9,7 +9,6 @@ fi
 
 "$@"
 exitCode="$?"
-
 printf '\033[2 q'
 printf '[EC %d]:' "$exitCode"
 while read -sn1 ch; do

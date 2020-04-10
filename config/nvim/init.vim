@@ -362,6 +362,7 @@ function! Ft_clojure() " {{{
   let b:rifle.run = "clojure '%f'"
 endfunction " }}}
 function! Ft_markdown() " {{{
+  let b:rifle_use_termup = 0
   let b:rifle = {}
   let b:rifle.run = "md-preview '%f'"
   let b:rifle.build = "md-compile '%f' > ~/".expand("%:t:r").".".strftime("%Y-%m-%d").".html"
@@ -395,7 +396,7 @@ endfunction " }}}
 function! Ft_vim() " {{{
   let b:rifle = {}
   let b:rifle.run = "nvim -u '%f'"
-  setlocal fdm=marker foldmarker={{{,}}}
+  setlocal fdm=marker
 endfunction " }}}
 function! Ft_python() " {{{
   let b:rifle = {}
@@ -438,11 +439,12 @@ function! Ft_scribble() " {{{
   " Nothing lol
 endfunction " }}}
 function! Ft_html() " {{{
+  let b:rifle_use_termup = 0
   let b:rifle = {}
   if g:is_win
     let b:rifle.run = "start %f"
   else
-    let b:rifle.run = $BROWSER." '%f'"
+    let b:rifle.run = "OPEN_GUI=1 open '%f'"
   endif
 endfunction " }}}
 function! Ft_rust() " {{{

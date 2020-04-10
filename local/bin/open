@@ -108,6 +108,7 @@ handleExt() {
       tryRunTerm runpage w3m -dump "$FILE"
       tryRunTerm runpage lynx -dump -- "$FILE"
       tryRunTerm runpage elinks -dump "$FILE"
+      tryRunGraph $BROWSER "$FILE"
       tryRunGraph xdg-open "$FILE"
       ;;
 
