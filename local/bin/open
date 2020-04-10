@@ -61,7 +61,7 @@ handleAudio() {
 
 handleVideo() {
   tryRunGraph smplayer "$FILE"
-  tryRunGraph mpv --no-video "$FILE"
+  tryRunGraph mpv "$FILE"
   tryRunTerm runpage mediainfo "$FILE"
   tryRunTerm runpage mediainfo "$FILE"
 }

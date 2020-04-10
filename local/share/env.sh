@@ -30,6 +30,7 @@ export DOTFILES="$F_DOTFILES"
 export OPENER="openfork"
 
 export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DOWNLOAD_DIR="$HOME/inbox"
 export XDG_CACHE_HOME="$HOME/.cache"
 
 export GOPATH="$XDG_CACHE_HOME/go"

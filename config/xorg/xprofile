@@ -10,7 +10,7 @@ source ~/.local/lib/ystd.sh
 picom -b & # Compositor
 dunst & # Notification daemon
 exists dropbox && dropbox start &
-[ "$WM" != bspwm ] 
+[ "$WM" != bspwm ] \
   && start-sxhkd standard & # sxhkd when not on bspwm
 
 # Background apps

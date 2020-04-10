@@ -27,7 +27,6 @@ killall sxhkd
 start-sxhkd standard bspwm &
 setbg &
 start-polybar &
-bspwm-events &
 
 # }}}
 # Event Handling {{{
