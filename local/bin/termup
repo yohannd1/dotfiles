@@ -3,15 +3,17 @@
 # Pops up a new terminal window.
 
 if [ $# = 0 ]; then
-  printf >&2 "%s\n" "Usage: $(basename $0) <command> [command]"
+  printf >&2 "%s\n" "Usage: $(basename $0) [options] <command> [command...]"
+  printf >&2 "%s\n" "Available options:"
+  printf >&2 "  %s\n" "-f, --float: set the class to 'float'"
   exit 1
 elif [ -z "$TERMINAL" ]; then
-  printf >&2 "Variable %s not set\n" '$TERMINAL'
+  printf >&2 "Environment variable %s not set\n" '$TERMINAL'
   exit 1
 fi
 
 # "Floating" popup arg. Will make this better later.
-if [ "$1" = "-f" ]; then
+if [ "$1" = "-f" ] || [ "$1" = "--float" ]; then
   $TERMINAL -c float -e runsane "${@:2}"
 else
   $TERMINAL -e runsane "$@"

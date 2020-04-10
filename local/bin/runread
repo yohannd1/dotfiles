@@ -10,7 +10,8 @@ fi
 "$@"
 exitCode="$?"
 
-printf ":"
+printf '\033[2 q'
+printf '[EC %d]:' "$exitCode"
 while read -sn1 ch; do
   [ "$ch" = q ] && exit "$exitCode"
 done
