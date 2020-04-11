@@ -1,27 +1,26 @@
 # vim: ft=conf fdm=marker
+#
+# a set of keybindings for general use (in any wm I might use, not only
+# bspwm)
+# keys to use someday, maybe: XF86PowerOff
 
-# Restarting {{{
-
-# Restart Picom
+# restart picom
 super + r; c
     pkill picom; picom -b
 
-# }}}
-# Programs {{{
-
-# Terminal
+# terminal
 super + Return
     $TERMINAL
 
-# Program Launcher
+# program launcher
 super + space
     dmenurun
 
-# Power Menu
+# power menu
 super + shift + o
     fzpow
 
-# Print Screen
+# screenshot related
 Print
     runnsend flamewrapper fullc
 super + Print
@@ -29,36 +28,17 @@ super + Print
 ctrl + Print
     runnsend flamewrapper full
 
-# Mounting
+# mounting
 super + F10
     fzmount
 super + shift + F10
     fzumount
 
-# Other tools
-super + o; c
-    $TERMINAL -c float -g 65x10 -e runread cal -3
-super + n
-    termup nnn
-super + o; d
-    termup nnn $DOTFILES
-super + b
-    runnsend qutebrowser
-super + o; w
-    termup nnn $F_WIKI
-super + o; b
-    runnsend bkmk
-super + o; p
-    termup zsh -ic "Wp n"
-
-# Reload wallpaper
+# wallpaper
 super + w
     setbg
 
-# }}}
-# Extra Keys {{{
-
-# Audio
+# audio
 XF86AudioLowerVolume
     amixer set Master 5%-
 XF86AudioRaiseVolume
@@ -66,7 +46,7 @@ XF86AudioRaiseVolume
 XF86AudioMute
     amixer -D pulse set Master 1+ toggle
 
-# Media Player
+# media player
 XF86AudioPlay
     playerctl play-pause
 XF86AudioNext
@@ -74,12 +54,29 @@ XF86AudioNext
 XF86AudioPrev
     playerctl previous
 
-# Brightness
-XF86MonBrightnessDown
-    xbacklight -dec 5
-XF86MonBrightnessUp
-    xbacklight -inc 5
+# brightness (not working)
+# XF86MonBrightnessDown
+#     xbacklight -dec 5
+# XF86MonBrightnessUp
+#     xbacklight -inc 5
 
-# Some other keys: XF86PowerOff
+# etc
+super + o; c
+    $TERMINAL -c float -g 65x10 -e runread cal -3
+super + n
+    termup nnn
+super + o; d
+    termup nnn $DOTFILES
+super + o; super + d
+    termup zsh -ic "br $DOTFILES"
+super + b
+    runnsend qutebrowser
+super + o; w
+    termup nnn $F_WIKI
+super + o; super + w
+    termup zsh -ic "br $F_WIKI"
+super + o; b
+    runnsend bkmk
+super + o; p
+    termup zsh -ic "Wp n"
 
-# }}}

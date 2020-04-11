@@ -185,12 +185,11 @@ alias p3='python3'
 alias jl='julia'
 alias G='git-check'
 alias t='task'
+alias e='$EDITOR'
 
 exists nvim \
   && alias vi='nvim' vim='nvim' \
   || alias vi='vim'
-
-alias vs='vi ~/sync/Syncthing/shared-notes.md'
 
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'

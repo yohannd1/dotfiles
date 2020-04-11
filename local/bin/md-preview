@@ -7,6 +7,7 @@ fi
 
 if ! [ -f "$1" ]; then
   printf >&2 "File doesn't exist: %s\n" "$1"
+  exit 1
 fi
 
 # Delete files from previous runs
@@ -22,4 +23,4 @@ mv "$TEMP" "$FILE"
 
 md-compile "$1" > "$FILE" \
   && printf >&2 "%s\n" "Compiled to: $FILE" \
-  && OPEN_GUI=1 open "$FILE"
+  && (OPEN_GUI=1 openfork "$FILE" & sleep 1)

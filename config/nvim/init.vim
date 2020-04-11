@@ -1,6 +1,5 @@
-" YohananDiamond's main configuration file
-" Feel free to take anything!
 " vim: fdm=marker sw=2 sts=2
+" YohananDiamond's main neovim config file
 
 " Setup {{{
 
@@ -24,6 +23,7 @@ if g:is_first
   let g:is_linux = has("unix") && !has("macunix")
   let g:is_mac = has("macunix")
   let g:is_android = isdirectory("/sdcard")
+  let g:is_tty = $DISPLAY == "" && !g:is_android
 
   " If I'm at home
   let g:is_home = isdirectory(expand("~/projects"))
@@ -194,6 +194,7 @@ if g:is_first
     call TryCD('E:\home', $HOME)
     call PathAppend('C:\Program Files (x86)\CodeBlocks\MinGW\bin')
   endif
+
 endif
 
 " }}}
@@ -248,7 +249,7 @@ let g:vim_markdown_auto_insert_bullets = 0
 " let g:netrw_altv = 1
 
 " Gruvbox
-let g:gruvbox_bold = 0
+let g:gruvbox_bold = 1
 let g:gruvbox_italics = 1
 
 " Buftabline
@@ -289,10 +290,13 @@ if g:is_first
   set noshowmode
   set list
 
+  " Try to make italics work
+  let &t_ZH = "\<Esc>[3m"
+  let &t_ZR = "\<Esc>[23m"
+
   let &autochdir = !g:is_win
 
   syntax on
-  silent! colorscheme elflord
   silent! colorscheme gruvbox
   let &background = g:is_win ? "light" : "dark" " I like to use light backgrounds on windows.
   if g:is_home
@@ -307,15 +311,12 @@ if g:is_first
   filetype plugin indent on
   set foldtext=MyFoldText()
 
-  let &t_ZH = "\<Esc>[3m"
-  let &t_ZR = "\<Esc>[23m"
-
   " Indentation
   set tabstop=8 " For tab characters, I guess
   set shiftwidth=4 softtabstop=4
   set expandtab smarttab
 
-  set listchars=tab:»\ ,trail:~
+  set listchars=tab:»\ ,trail:¬
 endif
 
 " }}}
@@ -444,7 +445,7 @@ function! Ft_html() " {{{
   if g:is_win
     let b:rifle.run = "start %f"
   else
-    let b:rifle.run = "OPEN_GUI=1 open '%f'"
+    let b:rifle.run = "OPEN_GUI=1 openfork '%f' & sleep 1"
   endif
 endfunction " }}}
 function! Ft_rust() " {{{
@@ -564,8 +565,22 @@ nnoremap <silent> <C-k> :bp<CR>
 " }}}
 " Finishing {{{
 
-if g:is_first && exists("g:messages") && len("g:messages") != 0
-  echo "You have unread startup messages."
+if g:is_first
+  if exists("g:messages") && len("g:messages") != 0
+    echo "You have unread startup messages."
+  endif
+
+  if g:is_tty
+    " This one because it must be done after loading theme
+    hi Comment ctermfg=2
+    hi Folded ctermfg=2
+    hi LineNr ctermfg=2
+  else
+    hi Comment cterm=italic
+    hi Folded cterm=italic
+    hi LineNr cterm=italic
+  endif
+
 endif
 
 " }}}

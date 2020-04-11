@@ -143,7 +143,8 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
 ;; Modes to disable
 (tool-bar-mode 0)
 (menu-bar-mode 0)
-(scroll-bar-mode 0)
+(when (display-graphic-p)
+  (scroll-bar-mode 0))
 
 (setq inhibit-startup-message t) ; Disable welcome message on startup
 ;; (setq initial-scratch-message nil) ; Disable scratch buffer on startup

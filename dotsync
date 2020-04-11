@@ -200,9 +200,9 @@ if [ -z "$NO_CONFIG_LINK" ]; then
   done
 
   # lfconf "vifm" ~/.config/vifm
-  # lfconf "kak" ~/.config/kak
   # lfglob "$DOTFILES/config/emacs" ~/.emacs.d
   # lfglob "$DOTFILES/config/vscode" ~/.config/Code/User
+  # lfglob "$HOME/.config/kak" ~/.config/kak
 
   # Local Symlinking
   lfglob "$HOME/persist/local/bin" ~/.local/bin
@@ -248,6 +248,7 @@ if [ -z "$NO_NEOVIM_PLUGIN" ]; then
   ip "vim-buftabline" "https://github.com/ap/vim-buftabline"
   ip "vim-vinegar" "https://github.com/tpope/vim-vinegar"
   ip "quick-scope" "https://github.com/unblevable/quick-scope"
+  ip "haskell-vim" "https://github.com/neovimhaskell/haskell-vim"
 
   lf "$NVIM_PLUGS_FOLDER" ~/.config/nvim/bundle
 fi

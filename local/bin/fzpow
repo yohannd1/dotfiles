@@ -6,7 +6,7 @@
 # If an arg is provided, this script tries to choose said option.
 
 # Settings
-OPTIONS='lock\nlogout\nsuspend\nhibernate\nreboot\nshutdown'
+OPTIONS='lock\nexit\nsuspend\nhibernate\nreboot\nshutdown'
 
 source ~/.local/lib/ystd.sh
 depCheck dmenu systemctl betterlockscreen
@@ -22,7 +22,7 @@ matchArgs() { # {{{
       fi ;;
 
     1) case "$1" in
-        lock|logout|suspend|hibernate|reboot|shutdown) \
+        lock|exit|suspend|hibernate|reboot|shutdown) \
           eval "action_$1" ;;
         *) showHelp ;;
       esac ;;
@@ -32,7 +32,7 @@ matchArgs() { # {{{
 } # }}}
 showHelp() { # {{{
   printf >&2 "%s %s\n" "Usage: $(basename $0)" \
-    "[{lock | logout | suspend | hibernate | reboot | shutdown}]"
+    "[{lock | exit | suspend | hibernate | reboot | shutdown}]"
   printf >&2 "%s\n" "If no argument is specified, a dmenu pop-up is shown."
   exit 1
 } # }}}
@@ -41,11 +41,11 @@ showHelp() { # {{{
 action_lock() { # {{{
   betterlockscreen -l
 } # }}}
-action_logout() { # {{{
+action_exit() { # {{{
   case "$WM" in
     i3) i3-msg exit ;;
     bspwm) bspc quit ;;
-    *) printf 'Unknown wm "%s" - logging out will not work\n' "$wm" ;;
+    *) printf 'Unknown wm "%s" - exiting will not work\n' "$wm" ;;
   esac
 } # }}}
 action_suspend() { # {{{

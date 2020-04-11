@@ -4,7 +4,7 @@ prog="$(pathbin | dmenu "$@")"
 
 if grep -q '!$' <<<"$prog"; then
   prog="${prog%?}"
-  exec $TERMINAL -e $prog
+  exec $TERMINAL -e "$prog"
 else
-  exec $prog
+  exec "$prog"
 fi
