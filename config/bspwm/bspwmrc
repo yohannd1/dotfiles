@@ -5,24 +5,33 @@
 
 source ~/.local/share/env.sh # Reload environment variables
 
+# desktop config
 bspc monitor -d 1 2 3 4 5 6 7 8 9 0
 
-# bspc config window_gap 7
+# with gaps
+bspc config window_gap 7
 bspc config top_padding 30
+
+# without gaps
+# bspc config window_gap 0
+# bspc config top_padding 30
+
+# other
 bspc config split_ratio 0.52
 bspc config borderless_monocle true
 bspc config gapless_monocle true
 
+# border
 bspc config border_width 1
 bspc config focused_border_color '#8EC07C'
 bspc config active_border_color '#32302F'
 bspc config normal_border_color '#32302F'
 
-# bspc rule -a qutebrowser desktop='^2'
+# rules
 bspc rule -a Zathura state=tiled
 bspc rule -a float state=floating
-# bspc rule -a firefox desktop='^2'
 
+# programs to start along
 killall sxhkd
 start-sxhkd standard bspwm &
 setbg &
@@ -33,8 +42,7 @@ start-polybar &
 
 # Based off: https://github.com/BrodieRobertson/cleanfullscreen
 
-hideBar() { polybar-msg cmd hide; }
-showBar() { polybar-msg cmd show; }
+bar() { polybar-msg cmd "$1"; }
 
 hideNodes() {
   nodes=$(bspc query -N -n .tiled -d "$1")
@@ -63,12 +71,12 @@ do
   if [ "$state" = "fullscreen" ]; then
     if [ "$active" = "on" ]; then
       if [ "$(bspc query -M -m primary)" = "$monitor" ]; then
-        hideBar
+        bar hide
       fi
       hideNodes "$desktop"
     else
       showNodes "$desktop"
-      showBar
+      bar show
     fi
   fi
 done &
@@ -79,7 +87,7 @@ do
 
   # Show bar if no nodes are fullscreen on current desktop
   if [ -z "$(bspc query -N -n .fullscreen -d "$desktop")" ]; then
-    showBar
+    bar show
   fi
   showNodes "$desktop"
 done &
@@ -94,7 +102,7 @@ do
     showNodes "$srcDesktop"
     destDesktop=$(echo "$event" | awk '{print $6}')
     hideNodes "$destDesktop"
-    showBar
+    bar show
   fi
 done &
 
@@ -104,9 +112,9 @@ do
 
   # Hide bar if desktop contains fullscreen node, otherwise show it
   if [ -n "$(bspc query -N -n .fullscreen -d "$desktop" -m primary)" ]; then
-    hideBar
+    bar hide
   else
-    showBar
+    bar show
   fi
 done &
 
