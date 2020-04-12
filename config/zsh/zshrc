@@ -8,7 +8,7 @@ source ~/.local/lib/ystd.sh &>/dev/null \
   || printf "Couldn't load library file.\n"
 
 # Set the shell title
-setTitle "zsh"
+# setTitle "zsh"
 
 # Load some other libraries
 sourceIf "$HOME/.local/share/env.sh"
@@ -32,6 +32,18 @@ _comp_options+=(globdots) # Include hidden files in autocomplete
 
 # }}}
 # Prompt {{{
+
+precmd() {
+  # Use beam shape cursor for each new prompt.
+  printf '\033[5 q'
+
+  # Update title
+  local cwd="$(pwd)"
+  if grep -q '^'"$HOME" <<<"$cwd"; then
+    local cwd="$(sed 's/^'"$(sed 's/\//\\\//g' <<<"$HOME")"'/~/g' <<<"$cwd")"
+  fi
+  setTitle "$(whoami)@$(hostname): $cwd"
+}
 
 [ "$(uname -o)" = "Android" ] && SHORT_PROMPT=1
 
@@ -57,24 +69,19 @@ bindkey -v '^?' backward-delete-char
 # Change cursor shape for different vi modes
 function zle-keymap-select { # {{{
   if [[ ${KEYMAP} == vicmd ]] || [[ $1 = 'block' ]]; then
-    echo -en '\e[1 q'
+    printf '\033[1 q'
   elif [[ ${KEYMAP} == main ]] || [[ ${KEYMAP} == viins ]] \
     || [[ ${KEYMAP} = '' ]] || [[ $1 = 'beam' ]]; then
-      echo -en '\e[5 q'
+    printf '\033[5 q'
   fi
 } # }}}
 function zle-line-init { # {{{
   zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
-  echo -en '\e[5 q'
+  printf '\e[5 q'
 } # }}}
 
 zle -N zle-keymap-select
 zle -N zle-line-init
-
-# Use beam shape cursor on startup.
-echo -en '\e[5 q'
-# Use beam shape cursor for each new prompt.
-preexec() { echo -en '\e[5 q'; }
 
 # Use fzf to search history
 fh() { # {{{
@@ -127,7 +134,7 @@ function select-project { # {{{
   local projects="$(cd ~/projects && fd -d 1 -t d)"
   local choice="$(fzf-tmux <<<"$projects")"
   if [ -n "$choice" ]; then
-    echo "${HOME}/projects/$choice"
+    printf "%s\n" "${HOME}/projects/$choice"
   fi
 } # }}}
 function register-dirfunc { # {{{
@@ -146,7 +153,7 @@ function register-dirfunc { # {{{
 n() { # {{{
   # Block nesting of nnn in subshells
   if [ -n $NNNLVL ] && [ "${NNNLVL:-0}" -ge 1 ]; then
-    echo "nnn is already running"
+    printf "%s\n" "nnn is already running"
     return
   fi
 
@@ -159,7 +166,7 @@ n() { # {{{
   nnn "$@"
 
   if [ -f "$NNN_TMPFILE" ]; then
-    . "$NNN_TMPFILE"
+    source "$NNN_TMPFILE"
     rm -f "$NNN_TMPFILE" > /dev/null
   fi
 } # }}}

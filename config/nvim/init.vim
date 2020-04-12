@@ -270,6 +270,7 @@ if g:is_first
   call SourceIf($VIMRUNTIME."/delmenu.vim", $VIMRUNTIME."/menu.vim")
 
   set hidden
+  set title
   set backspace=indent,eol,start
   set laststatus=2
   set number relativenumber
