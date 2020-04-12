@@ -39,7 +39,7 @@ sourceIf() {
 # no arguments.
 sourceAlt() {
   while [ $# != 0 ]; do
-    sourceIf && return 0
+    sourceIf "$1" && return 0
     shift
   done
   return 1

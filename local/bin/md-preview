@@ -23,4 +23,4 @@ mv "$TEMP" "$FILE"
 
 md-compile "$1" > "$FILE" \
   && printf >&2 "%s\n" "Compiled to: $FILE" \
-  && (OPEN_GUI=1 openfork "$FILE" & sleep 1)
+  && OPEN_GUI=1 openfork "$FILE"

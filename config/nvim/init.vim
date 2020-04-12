@@ -39,9 +39,10 @@ function! SpawnTerminal(command) " {{{
   normal! i
 endfunction " }}}
 function! MyFoldText() " {{{
+  let l:foldmarker = split(&foldmarker, ',')
   let l:tab_char = strpart(' ', shiftwidth())
   let l:line_contents = substitute(getline(v:foldstart), '\t', l:tab_char, 'g')
-  let l:line_contents = substitute(l:line_contents, '{' . '{{', '', 'g')
+  let l:line_contents = substitute(l:line_contents, l:foldmarker[0], '', 'g')
 
   let l:numbers_width = &foldcolumn + &number * &numberwidth
   let l:window_width = winwidth(0) - numbers_width - 1
@@ -366,7 +367,7 @@ endfunction " }}}
 function! Ft_markdown() " {{{
   let b:rifle_use_termup = 0
   let b:rifle = {}
-  let b:rifle.run = "md-preview '%f'"
+  let b:rifle.run = "runread md-preview '%f'"
   let b:rifle.build = "md-compile '%f' > ~/".expand("%:t:r").".".strftime("%Y-%m-%d").".html"
   setlocal textwidth=72 nofoldenable noautoindent
   setlocal tabstop=2 shiftwidth=2
@@ -446,7 +447,7 @@ function! Ft_html() " {{{
   if g:is_win
     let b:rifle.run = "start %f"
   else
-    let b:rifle.run = "OPEN_GUI=1 openfork '%f' & sleep 1"
+    let b:rifle.run = "OPEN_GUI=1 runread openfork '%f'"
   endif
 endfunction " }}}
 function! Ft_rust() " {{{

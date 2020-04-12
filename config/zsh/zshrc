@@ -42,7 +42,7 @@ precmd() {
   if grep -q '^'"$HOME" <<<"$cwd"; then
     local cwd="$(sed 's/^'"$(sed 's/\//\\\//g' <<<"$HOME")"'/~/g' <<<"$cwd")"
   fi
-  setTitle "$(whoami)@$(hostname): $cwd"
+  setTitle "$(whoami)@$(hostname):$cwd"
 }
 
 [ "$(uname -o)" = "Android" ] && SHORT_PROMPT=1

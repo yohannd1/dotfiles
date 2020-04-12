@@ -6,6 +6,8 @@
 Starts with -1 because, for convenience reasons, it is increased on the start of the file.")
 (setq my/init-amount (+ my/init-amount 1))
 
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+
 ;; Package Management {{{
 
 ;; Set up 'package and 'use-package {{{
@@ -13,8 +15,8 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
 (require 'package)
 (setq package-archives
       '(("melpa-stable" . "http://stable.melpa.org/packages/")
-	;; ("melpa" . "http://melpa.org/packages")
-	("gnu" . "http://elpa.gnu.org/")))
+        ("melpa" . "http://melpa.org/packages")
+        ("gnu" . "http://elpa.gnu.org/")))
 (package-initialize)
 
 (unless (package-installed-p 'use-package)
@@ -71,8 +73,8 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
 (use-package markdown-mode
   :ensure t
   :mode (("README\\.md\\'" . gfm-mode)
-	 ("\\.md\\'" . markdown-mode)
-	 ("\\.markdown\\'" . markdown-mode))
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 ;; }}}
 ;; Clojure Mode {{{
@@ -169,8 +171,8 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
   "Detects whether the current frame is on GUI or a terminal and then loads the corresponding theme."
   (if (display-graphic-p)
       (progn
-	(load-theme my/theme-gui t)
-	(set-frame-font "JetBrains Mono Medium 11" nil t))
+        (load-theme my/theme-gui t)
+        (set-frame-font "JetBrains Mono Medium 11" nil t))
     (progn
       (load-theme my/theme-term t))))
 
@@ -184,24 +186,24 @@ Starts with -1 because, for convenience reasons, it is increased on the start of
   (add-to-list 'load-path "~/.emacs.d/code/")
   (if (daemonp)
       (progn
-	(add-hook 'after-make-frame-functions
-		  (lambda (frame)
-		    (with-selected-frame frame (my/load-theme)))))
+        (add-hook 'after-make-frame-functions
+                  (lambda (frame)
+                    (with-selected-frame frame (my/load-theme)))))
     (progn
       (my/load-theme)))
   (if (display-graphic-p)
       nil
       (progn
-	;; Evil hooks for changing cursor on mode change {{{
-	(add-hook 'evil-normal-state-entry-hook #'my/term-change-cursor)
-	(add-hook 'evil-motion-state-entry-hook #'my/term-change-cursor)
-	(add-hook 'evil-replace-state-entry-hook #'my/term-change-cursor)
-	(add-hook 'evil-visual-state-entry-hook #'my/term-change-cursor)
-	(add-hook 'evil-insert-state-entry-hook (lambda () (my/term-change-cursor 6)))
-	(add-hook 'evil-operator-state-entry-hook (lambda () (my/term-change-cursor 3)))
-	(add-hook 'evil-emacs-state-entry-hook #'my/term-change-cursor)
-	;; }}}
-	)))
+        ;; Evil hooks for changing cursor on mode change {{{
+        (add-hook 'evil-normal-state-entry-hook #'my/term-change-cursor)
+        (add-hook 'evil-motion-state-entry-hook #'my/term-change-cursor)
+        (add-hook 'evil-replace-state-entry-hook #'my/term-change-cursor)
+        (add-hook 'evil-visual-state-entry-hook #'my/term-change-cursor)
+        (add-hook 'evil-insert-state-entry-hook (lambda () (my/term-change-cursor 6)))
+        (add-hook 'evil-operator-state-entry-hook (lambda () (my/term-change-cursor 3)))
+        (add-hook 'evil-emacs-state-entry-hook #'my/term-change-cursor)
+        ;; }}}
+        )))
 
 (if (display-graphic-p)
     ()
