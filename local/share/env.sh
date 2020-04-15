@@ -32,6 +32,7 @@ export OPENER="openfork"
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DOWNLOAD_DIR="$HOME/inbox"
 export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_CURRENT_DESKTOP="none"
 
 export GOPATH="$XDG_CACHE_HOME/go"
 export CARGO_HOME="$XDG_CACHE_HOME/cargo"
@@ -44,6 +45,7 @@ export INPUTRC="$XDG_CONFIG_HOME/inputrc"
 export WINEPREFIX="$XDG_CACHE_HOME/wine"
 export LESSHISTFILE="-"
 
+export LESS="-RC"
 export FZF_DEFAULT_OPTS='--height=60% --layout=reverse --border'
 export BAT_THEME="base16"
 export NNN_OPENER="$OPENER"

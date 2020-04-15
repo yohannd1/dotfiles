@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+# For interacting with dirs.
+# At early stages - not sure when I'll start actually putting it all
+# here.
+
+source ~/.local/lib/ystd.sh
+depCheck broot
+
+cd "$1"
+broot

@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+
+source ~/.local/lib/ystd.sh
+depCheck xclip
+
+if [ $# != 1 ]; then
+  printf >&2 "%s: %s\n" "$(basename $0)" "a tool to copy images to clipboard"
+  printf >&2 "Usage: %s\n" "$(basename $0) <file>"
+  exit 1
+fi
+
+if [ ! -f "$1" ]; then
+  printf >&2 "%s: %s: %s\n" "$(basename $0)" "file does not exist" "$1"
+  exit 1
+fi
+
+type=$(file -b --mime-type "$1")
+xclip -selection clipboard -t "$type" < "$1"

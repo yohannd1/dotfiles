@@ -39,7 +39,7 @@ $if mode=vi
 
     # Vi Insert Mode Commands
     set keymap vi-insert
-    "\C-l": clear-screen 
+    "\C-l": clear-screen
 
     # No arrow keys
     # "\eOD": ""

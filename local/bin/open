@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # An opener script based off nuke.
 # https://github.com/jarun/nnn/blob/master/plugins/nuke
@@ -22,23 +22,34 @@ set -f -o noclobber -o noglob
 #   tryRunTermGraph: runs if OPEN_GUI is unset, but also runs if OPEN_GUI is
 # set, but through the "termup" script.
 tryRun() {
-  exists "$1" || return
-  if [ -n "$OPEN_GUI" ]; then
-    "$@" >/dev/null 2>/dev/null
-  else
-    "$@"
+  if exists "$1"; then
+    if [ "$1" = "runpage" ]; then
+      exists "$2" || return
+    fi
+
+    if [ -n "$OPEN_GUI" ]; then
+      "$@" >/dev/null 2>&1
+    else
+      "$@"
+    fi
+    exit
   fi
-  exit
 }
-# TODO: check existence of $2 if $1 is runpage
 tryRunTerm() { [ -z "$OPEN_GUI" ] && tryRun "$@"; }
 tryRunGraph() { [ -n "$OPEN_GUI" ] && tryRun "$@"; }
 tryRunTermGraph() { tryRunTerm "$@"; tryRunGraph termup "$@"; }
+tryXdgOpen() { VIA_OPEN=1 tryRunGraph xdg-open "$@"; }
 
 IFS="$(printf '%b_' '\n')"; IFS="${IFS%_}" # protect trailing \n
 PATH=$PATH:"${XDG_CONFIG_HOME:-$HOME/.config}/nnn/plugins"
 
+if [ $# != 1 ]; then
+  printf >&2 "Usage: %s %s\n" "$(basename $0)" "<file>"
+  exit 1
+fi
+
 FILE="$1"
+
 FILENAME=$(basename "$1")
 EXT="${FILENAME##*.}"
 if ! [ -z "$EXT" ]; then
@@ -46,7 +57,7 @@ if ! [ -z "$EXT" ]; then
 fi
 
 handleUrl() {
-  if grep -q '^http\(s\)\?://' <<<"$FILE"\
+  if grep -q '^http\(s\)\?://' <<<"$FILE" \
     || grep -q '^ftp://' <<<"$FILE"; then
       tryRunGraph $BROWSER "$FILE"
       tryRunTerm w3m "$FILE" # Temporary measure. Might set an env var for CLI browsers later.
@@ -112,7 +123,7 @@ handleExt() {
       tryRunTerm runpage lynx -dump -- "$FILE"
       tryRunTerm runpage elinks -dump "$FILE"
       tryRunGraph $BROWSER "$FILE"
-      tryRunGraph xdg-open "$FILE"
+      tryXdgOpen "$FILE"
       ;;
 
     json)
@@ -139,6 +150,7 @@ handleMultimedia() {
 
 handleMIME() {
   case "$1" in
+    inode/directory) tryRunTermGraph nnn "$FILE" ;;
     text/troff) tryRunTerm runpage man -l "$FILE" ;;
     text/*) tryRunTermGraph $PAGER "$FILE" ;;
     */xml) tryRunTerm runpage cat "$FILE" ;;
@@ -150,7 +162,7 @@ handleMIME() {
 }
 
 handleFallback() {
-  tryRunGraph xdg-open "$FILE"
+  tryXdgOpen "$FILE"
   tryRunTerm runpage printf "*** File Details ***\n%s" "$(file --dereference --brief $FILE)"
 }
 

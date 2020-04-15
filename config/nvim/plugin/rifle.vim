@@ -20,7 +20,7 @@ function! g:LaunchRifle(key)
     echo "[Rifle] b:rifle dictionary not found."
     return
   endif
-  exec "lua require'rifle'.rifle(\"".a:key."\", ".g:_rifle_use_termup.")"
+  exec "lua require'rifle'".'.rifle("'.a:key.'",'.g:_rifle_use_termup.','.executable("bspc").')'
 endfunction
 
 command! -nargs=1 Rifle call g:LaunchRifle(eval(<f-args>))

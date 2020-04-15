@@ -29,6 +29,7 @@ bspc config normal_border_color '#32302F'
 
 # rules
 bspc rule -a Zathura state=tiled
+bspc rule -a Sxiv state=floating
 bspc rule -a float state=floating
 
 # programs to start along

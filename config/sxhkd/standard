@@ -22,11 +22,11 @@ super + shift + o
 
 # screenshot related
 Print
-    runnsend flamewrapper fullc
+    runnsend flamew fullc
 super + Print
-    runnsend flamewrapper gui
+    runnsend flamew gui
 ctrl + Print
-    runnsend flamewrapper full
+    runnsend flamew full
 
 # mounting
 super + F10
@@ -60,23 +60,22 @@ XF86AudioPrev
 # XF86MonBrightnessUp
 #     xbacklight -inc 5
 
-# etc
-super + o; c
-    $TERMINAL -c float -g 65x10 -e runread cal -3
+# quick apps
 super + n
     termup nnn
-super + o; d
-    termup nnn $DOTFILES
-super + o; super + d
-    termup zsh -ic "br $DOTFILES"
 super + b
     runnsend qutebrowser
-super + o; w
-    termup nnn $F_WIKI
-super + o; super + w
-    termup zsh -ic "br $F_WIKI"
+
+# super-o apps
+super + o; c
+    $TERMINAL -c float -g 65x10 -e runread cal -3
 super + o; b
     runnsend bkmk
-super + o; p
-    termup zsh -ic "Wp n"
 
+# super-o dirs
+super + o; d
+    termup atdir $DOTFILES
+super + o; w
+    termup atdir $F_WIKI
+super + o; p
+    termup zsh -ic "Wp b"

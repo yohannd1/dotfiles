@@ -1,0 +1,15 @@
+--- /usr/bin/xdg-open	2020-04-14 15:52:50.133466898 -0300
++++ xdg-open	2020-04-14 18:14:08.853695453 -0300
+@@ -1,4 +1,12 @@
+ #!/bin/sh
++
++# Delegate to local `open` script if it did not already delegate to here.
++if [ -z "$VIA_OPEN" ]; then
++  if command -v open >/dev/null 2>&1; then
++    OPEN_GUI=1 open "$1" && exit
++  fi
++fi
++
+ #---------------------------------------------
+ #   xdg-open
+ #

@@ -38,7 +38,7 @@ end
 -- operation was successful or not.
 -- Args:
 --   command ::= the key of the rifle dict that contains the command.
-local function rifle(command, _use_termup)
+local function rifle(command, _use_termup, _bspc)
     local r = api.nvim_buf_get_var(0, "rifle")
     local fname = api.nvim_buf_get_var(0, "filename")
     local use_termup = _use_termup ~= 0
@@ -76,6 +76,9 @@ local function rifle(command, _use_termup)
     end
 
     if use_termup then
+        -- if _bspc ~= 0 then
+        --     call("jobstart", {"bspc node -p south"})
+        -- end
         call("jobstart", {rifle_cmd})
     else
         cmd("split")

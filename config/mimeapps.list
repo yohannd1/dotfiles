@@ -9,4 +9,5 @@ x-scheme-handler/discord-455712169795780630=discord-455712169795780630.desktop
 x-scheme-handler/discord-430794114037055489=discord-430794114037055489.desktop
 x-scheme-handler/http=browser.desktop
 x-scheme-handler/https=browser.desktop
+x-scheme-handler/file=filemanager.desktop
 application/pdf=org.pwmt.zathura.desktop

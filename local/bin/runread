@@ -7,10 +7,16 @@ if [ $# = 0 ]; then
   exit 1
 fi
 
-"$@"
-exitCode="$?"
-printf '\033[2 q'
-printf '[EC %d]:' "$exitCode"
-while read -sn1 ch; do
-  [ "$ch" = q ] && exit "$exitCode"
+while true; do
+  "$@"
+  exitCode="$?"
+  printf '\033[2 q'
+  printf '[EC %d]:' "$exitCode"
+  while read -sn1 ch; do
+    case "$ch" in
+      q) exit "$exitCode" ;;
+      R) clear && break ;;
+      *) ;;
+    esac
+  done
 done

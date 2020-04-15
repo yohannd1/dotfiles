@@ -6,8 +6,6 @@
 Starts with -1 because, for convenience reasons, it is increased on the start of the file.")
 (setq my/init-amount (+ my/init-amount 1))
 
-(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-
 ;; Package Management {{{
 
 ;; Set up 'package and 'use-package {{{

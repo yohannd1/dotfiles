@@ -6,7 +6,7 @@
 # Check if a program exists
 exists() {
   [ $# = 1 ] \
-    && type "$1" >/dev/null 2>/dev/null
+    && command -v "$1" >/dev/null 2>/dev/null
 }
 
 # Die if one of the dependencies in the arglist doesn't exist

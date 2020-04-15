@@ -1,17 +1,18 @@
 #!/usr/bin/env sh
 
 source ~/.local/lib/ystd.sh
-depCheck flameshot
+depCheck flameshot date
 
 if [ $# != 1 ]; then
-  printf >&2 "%s\n" "Usage: $(basename $0) {gui | full | fullc}"
+  printf >&2 "%s\n" "Usage: $(basename $0) { gui | full | fullc }"
   exit 1
 fi
 
-folder="${FLAMEDASH_SCR_FOLDER:-~/.cache/screenshots}"
+BASE_FOLDER="${FLAMEDASH_SCR_FOLDER:-~/.cache/screenshots}"
+folder="$BASE_FOLDER/$(date +%Y-%m)"
 
 if ! mkdir -p "$folder"; then
-  printf >&2 "%s\n" "Could not make directory $folder" \
+  printf >&2 "%s\n" "Could not make directory $folder"
   exit 1
 fi
 

@@ -42,7 +42,7 @@ function! MyFoldText() " {{{
   let l:foldmarker = split(&foldmarker, ',')
   let l:tab_char = strpart(' ', shiftwidth())
   let l:line_contents = substitute(getline(v:foldstart), '\t', l:tab_char, 'g')
-  let l:line_contents = substitute(l:line_contents, l:foldmarker[0], '', 'g')
+  let l:line_contents = substitute(l:line_contents, l:foldmarker[0].'\d*', '', 'g')
 
   let l:numbers_width = &foldcolumn + &number * &numberwidth
   let l:window_width = winwidth(0) - numbers_width - 1
@@ -203,6 +203,7 @@ endif
 
 command! -nargs=0 Reload call SourceIf($VIM_INIT, $GVIM_INIT)
 command! -nargs=* PagerMode call PagerMode(<f-args>)
+command! -nargs=0 CleanWhitespace if &filetype != "markdown" | %s/\v +$//g | else | echo "That wouldn't be a good idea." | endif
 
 " Abbreviations
 cnoreabbrev rl Reload
@@ -279,7 +280,6 @@ if g:is_first
   set autoindent
   set hlsearch incsearch
   set linebreak wrap
-  set textwidth=72
   set cursorline
   set showcmd
   set shortmess+=atcI
@@ -382,12 +382,23 @@ endfunction " }}}
 function! Ft_sh() " {{{
   let b:rifle = {}
   let b:rifle.run = "if [ -x '%f' ]; then '%f'; else bash '%f'; fi"
-  setlocal tabstop=2 shiftwidth=2
+  " let g:is_bash = 1
+  " let g:sh_fold_enabled = 0
+  setlocal tabstop=2 shiftwidth=2 fdm=syntax
+
+  " 1 (001): fold functions
+  " let g:sh_fold_enabled += 1
+
+  " 2 (010): fold heredoc
+  " let g:sh_fold_enabled += 2
+
+  " 4 (100): fold if/for/case/...
+  " let g:sh_fold_enabled += 4
 endfunction " }}}
 function! Ft_zsh() " {{{
   let b:rifle = {}
   let b:rifle.run = "if [ -x '%f' ]; then '%f'; else zsh '%f'; fi"
-  setlocal tabstop=2 shiftwidth=2
+  setlocal tabstop=2 shiftwidth=2 fdm=syntax
 endfunction " }}}
 function! Ft_visualg() " {{{
   setlocal tabstop=4 shiftwidth=4 syntax=c
@@ -399,7 +410,7 @@ endfunction " }}}
 function! Ft_vim() " {{{
   let b:rifle = {}
   let b:rifle.run = "nvim -u '%f'"
-  setlocal fdm=marker
+  setlocal fdm=marker tw=72
 endfunction " }}}
 function! Ft_python() " {{{
   let b:rifle = {}
@@ -451,8 +462,8 @@ function! Ft_html() " {{{
   endif
 endfunction " }}}
 function! Ft_rust() " {{{
+  let b:rifle = {}
   if ReverseRSearch(expand("%:p:h"), "Cargo.toml")
-    let b:rifle = {}
     let b:rifle.run = "cd '".expand("%:p:h")."' && cargo run"
     let b:rifle.build = "cd '".expand("%:p:h")."' && cargo build"
   else
@@ -543,6 +554,7 @@ vnoremap / /\v
 " Quick inserts
 inoremap <silent> <C-l>d <C-r>=strftime("20%y-%m-%d")<CR>
 inoremap <silent> <C-l>co ∘
+inoremap <silent> <C-l>l λ
 
 " Quick character insert
 inoremap <C-g>` ```<CR>```<Up><End><CR>
@@ -573,7 +585,6 @@ if g:is_first
   endif
 
   if g:is_tty
-    " This one because it must be done after loading theme
     hi Comment ctermfg=2
     hi Folded ctermfg=2
     hi LineNr ctermfg=2
@@ -581,8 +592,10 @@ if g:is_first
     hi Comment cterm=italic
     hi Folded cterm=italic
     hi LineNr cterm=italic
+    hi CursorLineNr cterm=italic
   endif
 
+  hi link SpecialComment Comment
 endif
 
 " }}}

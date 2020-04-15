@@ -170,6 +170,7 @@ if [ -z "$NO_CONFIG_LINK" ]; then
     lfconf "qutebrowser/config.py" ~/.config/qutebrowser/config.py
     lfconf "zathura" ~/.config/zathura
     lfconf "taskwarrior" ~/.config/taskwarrior
+    lfconf "sxiv" ~/.config/sxiv
 
     # lfconf "i3" ~/.config/i3
     # lfconf "rofi" ~/.config/rofi
