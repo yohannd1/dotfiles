@@ -237,6 +237,7 @@ let g:lightline.active.right = [["lineinfo"], ["percent"], ["fileformat", "filee
 
 " Markdown
 let g:vim_markdown_frontmatter = 1
+let g:vim_markdown_folding_disabled = 1
 let g:vim_markdown_folding_style_pythonic = 0
 let g:vim_markdown_override_foldtext = 0
 let g:vim_markdown_no_extensions_in_markdown = 1
@@ -365,20 +366,6 @@ function! Ft_clojure() " {{{
   let b:rifle.run = "clojure '%f'"
 endfunction " }}}
 function! Ft_markdown() " {{{
-  let b:rifle_use_termup = 0
-  let b:rifle = {}
-  let b:rifle.run = "runread md-preview '%f'"
-  let b:rifle.build = "md-compile '%f' > ~/".expand("%:t:r").".".strftime("%Y-%m-%d").".html"
-  setlocal textwidth=72 nofoldenable noautoindent
-  setlocal tabstop=2 shiftwidth=2
-
-  command! -buffer MakeHeader exec "normal ggO---\<CR>created: ".strftime("%Y-%m-%d")."\<CR>---\<CR>\<Esc>2k:Tabularize /:\\zs\<Esc>3j"
-
-  nnoremap <Leader>df :TableFormat<CR>
-  nnoremap <Leader>d: vap:Tabularize /:\zs<CR>
-  vnoremap <Leader>d: :Tabularize /:\zs<CR>
-  nnoremap <Leader>dm :MakeHeader<CR>
-
   " Thanks to https://gist.github.com/olmokramer/feadbf14a055efd46a8e1bf1e4be4447
   let s:bullet = '^\s*\%(\d\+\.\|[-+*]\)'
   function! MarkdownCheckboxToggle(...) abort " {{{
@@ -416,6 +403,39 @@ function! Ft_markdown() " {{{
     endtry
   endfunction " }}}
 
+  " Folding code from https://stackoverflow.com/questions/3828606/vim-markdown-folding
+  " function! MarkdownFoldExpr()
+  "   let l:h = matchstr(getline(v:lnum), '^#\+')
+  "   if empty(h)
+  "     return "="
+  "   else
+  "     return ">" . len(h)
+  "   endif
+  " endfunction
+  function! MarkdownFoldExpr(lnum)
+    for level in range(1, 6)
+      if getline(a:lnum) =~ '^'.repeat('#', level).' .*$'
+        return '>' . level
+      endif
+    endfo
+    return "="
+  endfunction
+
+  let b:rifle_use_termup = 0
+  let b:rifle = {}
+  let b:rifle.run = "runread md-preview '%f'"
+  let b:rifle.build = "md-compile '%f' > ~/".expand("%:t:r").".".strftime("%Y-%m-%d").".html"
+
+  setlocal fdm=expr foldexpr=MarkdownFoldExpr(v:lnum)
+  setlocal textwidth=72 noautoindent
+  setlocal tabstop=2 shiftwidth=2
+
+  command! -buffer MakeHeader exec "normal ggO---\<CR>created: ".strftime("%Y-%m-%d")."\<CR>---\<CR>\<Esc>2k:Tabularize /:\\zs\<Esc>3j"
+
+  nnoremap <Leader>df :TableFormat<CR>
+  nnoremap <Leader>d: vap:Tabularize /:\zs<CR>
+  vnoremap <Leader>d: :Tabularize /:\zs<CR>
+  nnoremap <Leader>dm :MakeHeader<CR>
   nnoremap <silent> <buffer> <Leader>o :call MarkdownCheckboxToggle("x")<CR>
   nnoremap <silent> <buffer> <Leader>O :call MarkdownCheckboxRemove()<CR>
   vnoremap <silent> <buffer> <Leader>o :call MarkdownCheckboxToggle("x")<CR>

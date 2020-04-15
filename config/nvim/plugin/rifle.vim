@@ -2,7 +2,7 @@ if exists("g:loaded_rifle")
   finish
 endif
 
-let s:is_windows = exists("g:is_windows") 
+let s:is_windows = exists("g:is_windows")
   \ ? g:is_windows
   \ : isdirectory('C:\')
 let s:has_display = $DISPLAY != ""
