@@ -36,14 +36,16 @@ export XDG_CURRENT_DESKTOP="none"
 
 export GOPATH="$XDG_CACHE_HOME/go"
 export CARGO_HOME="$XDG_CACHE_HOME/cargo"
-export GEM_HOME="$XDG_CACHE_HOME/gem"
-export GEM_PATH="$GEM_HOME"
 export RUSTUP_HOME="$XDG_CACHE_HOME/rustup"
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export TASKRC="$XDG_CONFIG_HOME/taskwarrior/taskrc"
 export INPUTRC="$XDG_CONFIG_HOME/inputrc"
 export WINEPREFIX="$XDG_CACHE_HOME/wine"
 export LESSHISTFILE="-"
+
+# export GEM_HOME="$XDG_CACHE_HOME/gem" # for some reason it's not working...
+# export GEM_HOME="$HOME/.gem" # ... neither this one...
+# export GEM_PATH="${GEM_HOME:-$HOME/.gem}/bin" # ... nor this one...
 
 export LESS="-RC"
 export FZF_DEFAULT_OPTS='--height=60% --layout=reverse --border'
@@ -69,7 +71,7 @@ pathadd "$GOPATH"
 pathadd "$CARGO_HOME/bin"
 
 # pathadd "$(ruby -e 'puts Gem.user_dir')/bin" # Seems to be slowing down, so I'll use the ony below and update when needed.
-pathadd "$GEM_HOME/ruby/2.7.0"
+pathadd "${GEM_HOME:-$HOME/.gem}/ruby/2.7.0/bin"
 
 # Programs that I've installed in /opt
 for dir in /opt/*; do

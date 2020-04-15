@@ -4,6 +4,8 @@
 # At early stages - not sure when I'll start actually putting it all
 # here.
 
+# TODO: actually do the thing.
+
 source ~/.local/lib/ystd.sh
 depCheck broot
 
