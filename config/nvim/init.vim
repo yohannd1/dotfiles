@@ -175,6 +175,23 @@ function! SetupMakefileRifle() " {{{
     let b:rifle.build = "rrsrun 2 Makefile make"
   endif
 endfunction " }}}
+function! Surround(...) " {{{
+  let l:ls = a:000
+  let l:len = len(l:ls)
+
+  if l:len == 0
+    echoerr "Specify at least one argument"
+  elseif l:len == 1
+    " Surround l:ls[0] with double quotes
+    return '"' . l:ls[0] . '"'
+  elseif l:len == 2
+    " Surround l:ls[0] with l:ls[1]
+    return l:ls[1] . l:ls[0] . l:ls[1]
+  elseif l:len == 3
+    " Prepend l:ls[1] and append l:ls[2] to l:ls[0]
+    return l:ls[1] . l:ls[0] . l:ls[2]
+  endif
+endfunction " }}}
 if g:is_first | function! SourceIf(...) " {{{
   for path in a:000
     if filereadable(path)
@@ -546,6 +563,14 @@ function! Ft_java() " {{{
 endfunction " }}}
 function! Ft_make() " {{{
   setlocal sw=8 ts=8 noet
+endfunction " }}}
+function! Ft_tex() " {{{
+  " let b:rifle = {}
+  " let l:subst_command = printf('$(basename $(echo %s | sed %s))', Surround("%f", "'"), Surround('s/\.tex$//g', "'"))
+  " let b:rifle.run = "pdflatex '%f' -output_directory '%t' && openfork '%t'/" . l:subst_command . ".pdf"
+endfunction
+function! Ft_plaintex()
+  call Ft_tex()
 endfunction " }}}
 
 " }}}

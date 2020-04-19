@@ -1,0 +1,60 @@
+#!/usr/bin/bash
+
+# Inspired by redscreen.sh -> inspired by redscreen.csh
+# redscreen.sh Fri Feb 28 11:36 EST 2020 Alan Formy-Duval
+# (https://opensource.com/article/20/4/linux-astronomy?sc_cid=7013a000002DbNoAAK)
+# Inspired by redscreen.csh created by Jeff Jahr 2014
+# (http://www.jeffrika.com/~malakai/redscreen/index.html)
+
+# This program is free software: you can redistribute it
+# and/or modify it under the terms of the GNU General
+# Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any
+# later version.
+
+# This program is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied
+# warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+# PURPOSE. See the GNU General Public License for
+# more details.
+
+# You should have received a copy of the GNU General Public
+# License along with this program.
+# If not, see <http://www.gnu.org/licenses/>.
+
+source ~/.local/lib/ystd.sh
+depCheck xcalib
+
+TOGGLE_TEMP=/tmp/redscr-toggle
+
+showHelp() {
+  printf >&2 "Usage: %s %s\n" "$(basename $0)" "{ night [level] | invert | clear }"
+  printf >&2 "%s\n" "In the night option, [level] defaults to 70."
+  exit 1
+}
+
+a_clear() { xcalib -clear; }
+a_invert() { xcalib -i -a; }
+
+a_night() {
+  contrast="${1:-70}"
+  xcalib -green 1 0 "$contrast" -blue 1 0 "$contrast" -alter
+}
+
+a_toggle() {
+  if [ -e "$TOGGLE_TEMP" ]; then
+    rm -f "$TOGGLE_TEMP"
+    a_clear
+  else
+    touch "$TOGGLE_TEMP"
+    a_night "$1"
+  fi
+}
+
+case "$1" in
+  invert) a_invert ;;
+  clear) a_clear ;;
+  toggle) a_toggle "$2" ;;
+  night) a_night "$2" ;;
+  *) showHelp ;;
+esac

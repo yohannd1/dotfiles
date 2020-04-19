@@ -1,0 +1,361 @@
+#!/usr/bin/env sh
+
+# Stolen from
+# https://github.com/kevin-nel/arch-rice-space-lofi/blob/master/Scripts/lemonbar-script
+# (thanks!)
+
+. ~/.local/lib/ystd.sh
+depCheck lemonbar mkfifo bspc xtitle
+
+FOREGROUND="#FBF1C7"
+BACKGROUND="#282828"
+BLACK="#282828"
+RED="#9D0006"
+GREEN="#79740E"
+YELLOW="#B57614"
+BLUE="#076678"
+MAGENTA="#8F3F71"
+CYAN="#427B58"
+WHITE="#32302F"
+
+# Panel configurations
+PANEL_HEIGHT=26
+PANEL_WIDTH=1366 # TODO: get monitor width via command
+PANEL_HORIZONTAL_OFFSET=0
+PANEL_VERTICAL_OFFSET=0
+PANEL_FONT="JetBrains Mono Medium:pixelsize=14:antialias=true"
+PANEL_FIFO=/tmp/fifo.lemonbar
+PANEL_WM_NAME=bspwm-lemonbar
+
+# Colors
+COLOR_DEFAULT_FG="$FOREGROUND"
+COLOR_DEFAULT_BG="$BACKGROUND"
+COLOR_MONITOR_FG="$FOREGROUND"
+COLOR_MONITOR_BG="$BACKGROUND"
+COLOR_FOCUSED_MONITOR_FG="$FOREGROUND"
+COLOR_FOCUSED_MONITOR_BG="$CYAN"
+COLOR_FREE_FG="$FOREGROUND"
+COLOR_FREE_BG="$BACKGROUND"
+COLOR_FOCUSED_FREE_FG="$FOREGROUND"
+COLOR_FOCUSED_FREE_BG="$YELLOW"
+COLOR_OCCUPIED_FG="$FOREGROUND"
+COLOR_OCCUPIED_BG="$BACKGROUND"
+COLOR_FOCUSED_OCCUPIED_FG="$FOREGROUND"
+COLOR_FOCUSED_OCCUPIED_BG="$YELLOW"
+COLOR_URGENT_FG="$FOREGROUND"
+COLOR_URGENT_BG="$YELLOW"
+COLOR_FOCUSED_URGENT_FG="$FOREGROUND"
+COLOR_FOCUSED_URGENT_BG="$YELLOW"
+COLOR_STATE_FG="$BACKGROUND"
+COLOR_STATE_BG="$BACKGROUND"
+COLOR_TITLE_FG="$FOREGROUND"
+COLOR_TITLE_BG="$BACKGROUND"
+COLOR_SYS_FG="$FOREGROUND"
+COLOR_SYS_BG="$BACKGROUND"
+COLOR_BAT_URG_BG="$RED"
+COLOR_BAT_OK_BG="$BACKGROUND"
+COLOR_BAT_CHR_BG="$YELLOW"
+COLOR_BAT_MAX_BG="$GREEN"
+COLOR_BAT_FG="$FOREGROUND"
+COLOR_LABEL_FG="#64605E"
+COLOR_VOLUME_FG="$FOREGROUND"
+COLOR_VOLUME_BG="$BACKGROUND"
+
+# TODO: wlan
+# TODO: ram
+# TODO: swap
+# TODO: cpu
+# TODO: volume
+main() {
+  initLemonbar &
+
+  # hideNodes() {
+  #   nodes=$(bspc query -N -n .tiled -d "$1")
+
+  #   for node in $nodes; do
+  #     bspc node "$node" -g hidden=on
+  #   done
+  # }
+
+  # showNodes() {
+  #   nodes=$(bspc query -N -n .hidden -d "$1")
+
+  #   for node in $nodes; do
+  #     bspc node "$node" -g hidden=off
+  #   done
+  # }
+
+  # bspc subscribe node_state | while read -r event
+  # do
+  #   monitor=$(echo "$event" | awk '{print $2}')
+  #   desktop=$(echo "$event" | awk '{print $3}')
+  #   state=$(echo "$event" | awk '{print $5}')
+  #   active=$(echo "$event" | awk '{print $6}')
+
+  #   # Hide bar and nodes when node becomes fullscreen, otherwise show
+  #   if [ "$state" = "fullscreen" ]; then
+  #     if [ "$active" = "on" ]; then
+  #       if [ "$(bspc query -M -m primary)" = "$monitor" ]; then
+  #         stopLemonbar
+  #       fi
+  #       hideNodes "$desktop"
+  #     else
+  #       showNodes "$desktop"
+  #       initLemonbar --no-restart
+  #     fi
+  #   fi
+  # done &
+
+  # bspc subscribe node_remove | while read -r event
+  # do
+  #   desktop=$(echo "$event" | awk '{print $3}')
+
+  #   # Show bar if no nodes are fullscreen on current desktop
+  #   if [ -z "$(bspc query -N -n .fullscreen -d "$desktop")" ]; then
+  #     initLemonbar --no-restart
+  #   fi
+  #   showNodes "$desktop"
+  # done &
+
+  # bspc subscribe node_transfer | while read -r event
+  # do
+  #   srcNode=$(echo "$event" | awk '{print $4}')
+  #   # Show nodes on src desktop and hide nodes on dest desktop
+  #   # If src node is in full screen mode
+  #   if [ -n "$(bspc query -N -n "$srcNode".fullscreen)" ]; then
+  #     srcDesktop=$(echo "$event" | awk '{print $3}')
+  #     showNodes "$srcDesktop"
+  #     destDesktop=$(echo "$event" | awk '{print $6}')
+  #     hideNodes "$destDesktop"
+  #     initLemonbar --no-restart
+  #   fi
+  # done &
+
+  # bspc subscribe desktop_focus | while read -r event
+  # do
+  #   desktop=$(echo "$event" | awk '{print $3}')
+
+  #   # Hide bar if desktop contains fullscreen node, otherwise show it
+  #   if [ -n "$(bspc query -N -n .fullscreen -d "$desktop" -m primary)" ]; then
+  #     stopLemonbar
+  #   else
+  #     initLemonbar --no-restart
+  #   fi
+  # done &
+}
+
+stopLemonbar() { killall -9 lemonbar 2>/dev/null; }
+
+initLemonbar() {
+  # Init FIFO file
+  [ -e "$PANEL_FIFO" ] && rm "$PANEL_FIFO"
+  mkfifo "$PANEL_FIFO"
+
+  # Assure there is no double process
+  stopLemonbar
+
+  # if [ "$1" = "--no-restart" ]; then
+  #   # Check if there is a lemonbar open
+  #   pgrep lemonbar >/dev/null && return
+  # else
+  #   # the lemonbar stop thing
+  # fi
+
+  # Echo every modules to PANEL_FIFO
+  titleModule > "$PANEL_FIFO" &
+  bspwmModule > "$PANEL_FIFO" &
+  timeModule > "$PANEL_FIFO" &
+  batteryModule > "$PANEL_FIFO" &
+  volumeModule > "$PANEL_FIFO" &
+  cpuModule > "$PANEL_FIFO" &
+  ramModule > "$PANEL_FIFO" &
+
+  # TODO: figure out why is this used
+  num_mon=$(bspc query -M | wc -l)
+
+  # Get all the results of the modules above then pipe them to Lemonbar
+  processModules < "$PANEL_FIFO" | lemonbar -a 12 \
+    -g "$PANEL_WIDTH"x"$PANEL_HEIGHT"+"$PANEL_HORIZONTAL_OFFSET"+"$PANEL_VERTICAL_OFFSET" \
+    -f "$PANEL_FONT" -F "$COLOR_DEFAULT_FG" -B "$COLOR_DEFAULT_BG" -n "$PANEL_WM_NAME" | bash &
+
+  sleep 0.5
+  # Trigger the PANEL_FIFO to make it instantly refreshed after bspwmrc reloaded
+  printf "refresh\n" > "$PANEL_FIFO"
+
+  wait
+}
+
+genLabel() { printf "%s%s%s" "%{F$COLOR_LABEL_FG}" "$1" "%{F-}"; }
+
+titleModule() { xtitle -t 70 -sf 'T%s\n'; }
+bspwmModule() { bspc subscribe report; }
+batteryModule() {
+  while true; do
+    printf "B%s\n" "$(cat /sys/class/power_supply/BAT0/capacity)"
+    sleep 10
+  done
+}
+timeModule() {
+  while true; do
+    date +"S%m/%d %H:%M"
+    sleep 30
+  done
+}
+volumeModule() {
+  while true; do
+    printf 'V%s\n' "$(amixer sget Master | awk -F"[][]" '/dB/ { print $2 }')"
+    sleep 10
+  done
+}
+cpuModule() {
+  while true; do
+    usage="$(top -bn1 \
+      | grep "Cpu(s)" \
+      | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" \
+      | awk '{print $1}')"
+    printf "C%.0f%%\n" "$usage"
+
+    sleep 5
+  done
+}
+ramModule() {
+  while true; do
+    free -m | awk 'NR==2{printf "R%.0f%%\n", $3*100/$2}'
+    sleep 5
+  done
+}
+
+# Then read those value
+processModules() {
+  while read -r line; do
+    case $line in
+      B*)
+        batteryLevel="${line#?}"
+        if [ "$batteryLevel" -le 20 ]; then
+          label='urg'
+        else
+          label='bat'
+        fi
+
+        if cat /sys/class/power_supply/BAT0/status | grep -q 'Charging'; then
+          label='chr'
+          if [ "batteryLevel" -ge 90 ]; then
+            label='max'
+          fi
+        fi
+        bat="%{F$COLOR_BAT_FG} $(genLabel "$label") ${line#?}% %{B-}%{F-}"
+        ;;
+      S*) sys="%{F$COLOR_SYS_FG}%{B$COLOR_SYS_BG} ${line#?} %{B-}%{F-}" ;;
+      T*) title="%{F$COLOR_TITLE_FG}%{B$COLOR_TITLE_BG} ${line#?} %{B-}%{F-}" ;;
+      V*) volume="%{F$COLOR_VOLUME_FG} $(genLabel vol) ${line#?} %{B-}%{F-}" ;;
+      C*) cpu="%{F$COLOR_VOLUME_BG} $(genLabel cpu) ${line#?} %{F-}" ;;
+      R*) ram="%{F$FOREGROUND} $(genLabel ram) ${line#?} %{F-}" ;;
+      W*)
+        # workspaces output
+        wm=
+        IFS=':'
+        set -- ${line#?}
+        while [ $# -gt 0 ]; do
+          item=$1
+          name=${item#?}
+          case $item in
+            [mM]*)
+              case $item in
+                m*)
+                  # monitor
+                  FG=$COLOR_MONITOR_FG
+                  BG=$COLOR_MONITOR_BG
+                  on_focused_monitor=
+                  ;;
+                M*)
+                  # focused monitor
+                  FG=$COLOR_FOCUSED_MONITOR_FG
+                  BG=$COLOR_FOCUSED_MONITOR_BG
+                  on_focused_monitor=1
+                  ;;
+              esac
+              [ $num_mon -lt 2 ] && shift && continue
+              wm="${wm}%{F${FG}}%{B${BG}}%{A:bspc monitor -f ${name}:} ${name} %{A}%{B-}%{F-}"
+              ;;
+            [fFoOuU]*)
+              hide=
+              case $item in
+                f*)
+                  # free desktop
+                  hide=1 # hide free desktops that aren't focused
+                  FG=$COLOR_FREE_FG
+                  BG=$COLOR_FREE_BG
+                  UL=$BG
+                  ;;
+                F*)
+                  if [ "$on_focused_monitor" ] ; then
+                    # focused free desktop
+                    FG=$COLOR_FOCUSED_FREE_FG
+                    BG=$COLOR_FOCUSED_FREE_BG
+                    UL=$BG
+                  else
+                    # active free desktop
+                    FG=$COLOR_FREE_FG
+                    BG=$COLOR_FREE_BG
+                    UL=$COLOR_FOCUSED_FREE_BG
+                  fi
+                  ;;
+                o*)
+                  # occupied desktop
+                  FG=$COLOR_OCCUPIED_FG
+                  BG=$COLOR_OCCUPIED_BG
+                  UL=$BG
+                  ;;
+                O*)
+                  if [ "$on_focused_monitor" ] ; then
+                    # focused occupied desktop
+                    FG=$COLOR_FOCUSED_OCCUPIED_FG
+                    BG=$COLOR_FOCUSED_OCCUPIED_BG
+                    UL=$BG
+                  else
+                    # active occupied desktop
+                    FG=$COLOR_OCCUPIED_FG
+                    BG=$COLOR_OCCUPIED_BG
+                    UL=$COLOR_FOCUSED_OCCUPIED_BG
+                  fi
+                  ;;
+                u*)
+                  # urgent desktop
+                  FG=$COLOR_URGENT_FG
+                  BG=$COLOR_URGENT_BG
+                  UL=$BG
+                  ;;
+                U*)
+                  if [ "$on_focused_monitor" ] ; then
+                    # focused urgent desktop
+                    FG=$COLOR_FOCUSED_URGENT_FG
+                    BG=$COLOR_FOCUSED_URGENT_BG
+                    UL=$BG
+                  else
+                    # active urgent desktop
+                    FG=$COLOR_URGENT_FG
+                    BG=$COLOR_URGENT_BG
+                    UL=$COLOR_FOCUSED_URGENT_BG
+                  fi
+                  ;;
+              esac
+              if [ -z "$hide" ]; then
+                wm="${wm}%{F${FG}}%{B${BG}}%{U${UL}}%{+u}%{A:bspc desktop -f ${name}:} ${name} %{A}%{B-}%{F-}%{-u}"
+              fi
+              ;;
+            [LTG]*)
+              # layout, state and flags
+              # for some reason this is glitching padding...
+              # wm="${wm}%{F$COLOR_STATE_FG}%{B$COLOR_STATE_BG} ${name} %{B-}%{F-}"
+              ;;
+          esac
+          shift
+        done
+        ;;
+    esac
+    printf "%s\n" "%{l}${wm}${title}%{c}%{r}${ram}${cpu}${volume}${bat}|${sys}"
+  done
+}
+
+main
+wait

@@ -40,14 +40,16 @@ function! g:Rifle(command)
   let l:rifle_cmd = b:rifle[a:command]
   let l:rifle_cmd = substitute(l:rifle_cmd, '%f', expand("%"), "g")
 
-  if l:rifle_cmd =~ '%o'
-    let l:output_file = s:GenTemp()
-    if l:output_file == 0
-      echo "[Rifle] could not generate output file."
-      return
-    endif
+  " Get temp dir and/or file
+  if l:rifle_cmd =~ '\v(\%o|\%t)'
+    let l:temp = s:GenTemp()
+    " if len(l:temp) == 0
+    "   echo "[Rifle] could not generate output file."
+    "   return
+    " endif
 
-    let l:rifle_cmd = substitute(l:rifle_cmd, '%o', l:output_file, "g")
+    let l:rifle_cmd = substitute(l:rifle_cmd, '%o', l:temp[0]."/".l:temp[1], "g")
+    let l:rifle_cmd = substitute(l:rifle_cmd, '%t', l:temp[0], "g")
   endif
 
   if b:rifle_use_termup
@@ -59,6 +61,17 @@ function! g:Rifle(command)
     call termopen(l:rifle_cmd) " TODO: turn this into a list
     normal i
   endif
+endfunction
+
+function! s:GenTemp()
+  if $F_TEMP != ""
+    let l:temp_dir = $F_TEMP
+  else
+    let l:temp_dir = "/tmp"
+  endif
+
+  let l:temp_name = "tmp-output"
+  return [l:temp_dir, l:temp_name]
 endfunction
 
 command! -nargs=1 Rifle call g:Rifle(eval(<f-args>))

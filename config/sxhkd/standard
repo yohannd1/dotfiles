@@ -38,6 +38,10 @@ super + shift + F10
 super + w
     setbg
 
+# panic button (some resets)
+super + alt + p
+    xcalib -clear
+
 # audio
 XF86AudioLowerVolume
     amixer set Master 5%-
@@ -60,6 +64,10 @@ XF86AudioPrev
 # XF86MonBrightnessUp
 #     xbacklight -inc 5
 
+# toggle red screen
+super + F12
+    redscr toggle 70
+
 # quick apps
 super + n
     termup nnn
@@ -79,3 +87,5 @@ super + o; w
     termup atdir $F_WIKI
 super + o; p
     termup zsh -ic "Wp b"
+super + o; j
+    termup journalentry # "journalentry" is a private script
