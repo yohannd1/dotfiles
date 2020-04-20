@@ -8,7 +8,7 @@ source ~/.local/share/env.sh # Reload environment variables
 # desktop config
 bspc monitor -d 1 2 3 4 5 6 7 8 9 0
 
-bspc config top_padding 30
+bspc config top_padding 0
 bspc config bottom_padding 0
 bspc config left_padding 0
 bspc config right_padding 0
@@ -32,12 +32,14 @@ bspc rule -a Zathura state=tiled
 bspc rule -a Sxiv state=floating
 bspc rule -a float state=floating
 
-# programs to start along
+# kill some programs
 killall sxhkd
+killall lemonbar
+
+# programs to start along
 start-sxhkd standard bspwm &
 start-lemonbar &
 setbg &
-# start-polybar &
 
 # }}}
 # # Event Handling {{{

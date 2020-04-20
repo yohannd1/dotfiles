@@ -68,6 +68,9 @@ XF86AudioPrev
 super + F12
     redscr toggle 70
 
+super + equal
+    display-report
+
 # quick apps
 super + n
     termup nnn

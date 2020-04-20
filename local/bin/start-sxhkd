@@ -17,6 +17,7 @@ gen-sxhkd "$@" > "$tempConf"
 
 if [ $? != 0 ]; then
   printf >&2 "gen-sxhkd failed; aborting\n"
+  test -f "$tempConf" && rm "$tempConf"
   exit 1
 fi
 
