@@ -421,18 +421,10 @@ function! Ft_markdown() " {{{
   endfunction " }}}
 
   " Folding code from https://stackoverflow.com/questions/3828606/vim-markdown-folding
-  " function! MarkdownFoldExpr()
-  "   let l:h = matchstr(getline(v:lnum), '^#\+')
-  "   if empty(h)
-  "     return "="
-  "   else
-  "     return ">" . len(h)
-  "   endif
-  " endfunction
   function! MarkdownFoldExpr(lnum)
     for level in range(1, 6)
       if getline(a:lnum) =~ '^'.repeat('#', level).' .*$'
-        return '>' . level
+        return '>1'
       endif
     endfo
     return "="

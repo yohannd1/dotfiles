@@ -279,25 +279,30 @@ modules = (
 
     Const("%{r}"),
 
+    Const("%{+u}"),
     Label("cpu "),
     CpuModule(),
-    Const("  "),
+    Const("%{-u}  "),
 
+    Const("%{+u}"),
     Label("swap "),
     MemoryUsage("SWAP"),
-    Const("  "),
+    Const("%{-u}  "),
 
+    Const("%{+u}"),
     Label("ram "),
     MemoryUsage("RAM"),
-    Const("  "),
+    Const("%{-u}  "),
 
+    Const("%{+u}"),
     Label("bat "),
     File("/sys/class/power_supply/BAT0/capacity"),
-    Const("%  "),
+    Const("%%{-u}  "),
 
+    Const("%{+u}"),
     Label("vol "),
     Volume("Master"),
-    Const("% "),
+    Const("%%{-u} "),
 
     Const("| "),
     Clock(),
@@ -313,8 +318,8 @@ command = (
     '-g', 'x25',
     '-B', Theme.BG,
     '-F', Theme.FG,
-    '-U', Theme.YELLOW,
-    '-u', '3',
+    '-U', Theme.BLUE,
+    '-u', '2',
     '-f', 'JetBrains Mono Medium:pixelsize=14:antialias=true',
 )
 
