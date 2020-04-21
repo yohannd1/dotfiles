@@ -40,7 +40,7 @@ class File(Module):
     def __init__(self, file: str):
         super().__init__()
         self._file = file
-        self.wait_time = 60
+        self.wait_time = 30
 
     def output(self):
         with open(self._file, "r") as f:
@@ -49,7 +49,7 @@ class File(Module):
 class CpuModule(Module):
     def __init__(self):
         super().__init__()
-        self.wait_time = 1
+        self.wait_time = 30
 
     def output(self):
         data = None
@@ -60,16 +60,19 @@ class CpuModule(Module):
         return "{:.0f}%".format(usage)
 
 class MemoryUsage(Module):
-    def __init__(self, type_: str):
+    RAM = object()
+    SWAP = object()
+
+    def __init__(self, mode):
         super().__init__()
         self.wait_time = 10
 
-        if type_.upper() == "RAM":
+        if mode == self.RAM:
             self._line_number = 1
-        elif type_.upper() == "SWAP":
+        elif mode == self.SWAP:
             self._line_number = 2
         else:
-            raise Exception("invalid type")
+            raise Exception("mode must be MemoryUsage.RAM or MemoryUsage.SWAP")
 
     def output(self):
         data = sp.Popen(
@@ -135,6 +138,7 @@ class Volume(Module):
         self.readables = [self._pactl_subscribe.stdout]
 
         self._regex = re.compile(r'(\d{1,3})%') # For parsing ALSA output
+        self._off_regex = re.compile(r'\[off\]$') # For parsing ALSA output
 
     def _parse_amixer(self, data):
         """Parse the output from the amixer command.
@@ -146,8 +150,11 @@ class Volume(Module):
             int: An integer between 0 and 100 (inclusive) representing the
                 volume level.
         """
+        if re.findall(self._off_regex, data):
+            return "OFF"
+
         levels = [int(level) for level in re.findall(self._regex, data)]
-        return "{:.0f}".format(sum(levels) / len(levels))
+        return "{:.0f}%".format(sum(levels) / len(levels))
 
     def _get_level(self):
         """Get the current volume level for the device.
@@ -166,17 +173,6 @@ class Volume(Module):
 
     def output(self):
         return self._get_level()
-
-    def handle_event(self, event):
-        if not event.startswith('set_volume_{}_'.format(self._device)):
-            return
-
-        level = int(event[event.rindex('_')+1:])
-        percent = (level / self._increments) * 100
-
-        self._set_level(percent)
-        self._current_level = percent
-        self.last_update = 0  # Invalidate the cache to force a redraw
 
 class BSPWM(Module):
     def __init__(self, monitor):
@@ -197,7 +193,7 @@ class BSPWM(Module):
 
         self._monitor = monitor
 
-        # The different format strings use to display the stauts of the desktops
+        # The different format strings use to display the status of the desktops
         self._formats = {
             'O': '%{{B' + Theme.YELLOW + '}} {} %{{B-}}', # Focused, Occupied
             'F': '%{{B' + Theme.YELLOW + '}} {} %{{B-}}', # Focused, Free
@@ -241,18 +237,9 @@ class BSPWM(Module):
 
         output = []
         for desktop, state in desktops.items():
-            output.append('%{{A:focus_desktop_{}:}}'.format(desktop))
             output.append(self._formats[state].format(desktop))
-            output.append('%{A}')
 
         return ''.join(output)
-
-    def handle_event(self, event):
-        if not event.startswith('focus_desktop_'):
-            return
-
-        desktop = event[event.rindex('_')+1:]
-        sp.Popen(['bspc', 'desktop', '--focus', desktop])
 
 # Define the modules to put on the bar (in order)
 modules = (
@@ -274,12 +261,12 @@ modules = (
 
     Const("%{+u}"),
     Label("swap "),
-    MemoryUsage("SWAP"),
+    MemoryUsage(MemoryUsage.SWAP),
     Const("%{-u}  "),
 
     Const("%{+u}"),
     Label("ram "),
-    MemoryUsage("RAM"),
+    MemoryUsage(MemoryUsage.RAM),
     Const("%{-u}  "),
 
     Const("%{+u}"),
@@ -290,7 +277,7 @@ modules = (
     Const("%{+u}"),
     Label("vol "),
     Volume("Master"),
-    Const("%%{-u} "),
+    Const("%{-u} "),
 
     Const("| "),
     Clock(),

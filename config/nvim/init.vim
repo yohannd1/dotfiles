@@ -586,7 +586,7 @@ endif
 
 " Clipboard versions of keymappings
 for mapmode in ['n', 'v']
-  for mapkey in ['y', 'p', 'd']
+  for mapkey in split('y Y p P d D x X')
     exec mapmode."noremap <silent> <Leader>".mapkey.' "+'.mapkey
   endfor
 endfor
