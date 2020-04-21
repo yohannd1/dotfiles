@@ -9,11 +9,21 @@ foreground-alt = #64605E
 primary = #ffb52a
 secondary = #e60053
 alert = #bd2c40
+
+black = #282828
+red = #9d0006
+green = #79740e
+yellow = #b57614
+blue = #076678
+magenta = #8f3f71
+cyan = #427b58
+white = #32302f
+label = #64605e
 ;; }}}
 ;; [bar/main] {{{
 [bar/main]
 width = 100%
-height = 27
+height = 24
 radius = 0.0
 fixed-center = true
 
@@ -38,9 +48,9 @@ font-0 = JetBrains Mono Medium:pixelsize=10;1
 font-1 = unifont:fontformat=truetype:size=8:antialias=false;0
 font-2 = siji:pixelsize=10;1
 
-modules-left = bspwm xwindow
+modules-left = bspwm
 modules-center =
-modules-right = wlan memory swap cpu eth battery alsa date
+modules-right = alsa cpu memory battery date
 
 tray-position = right
 tray-padding = 0
@@ -91,21 +101,10 @@ interface = wlp1s0
 interval = 3.0
 
 format-connected = <ramp-signal> <label-connected>
-format-connected-underline = #9f78e1
+format-connected-underline = ${colors.blue}
 label-connected = %essid%
 
 format-disconnected =
-; format-disconnected = <label-disconnected>
-; format-disconnected-underline = ${self.format-connected-underline}
-; label-disconnected = %ifname% disconnected
-; label-disconnected-foreground = ${colors.foreground-alt}
-
-ramp-signal-0 = wlan
-ramp-signal-1 = wlan
-ramp-signal-2 = wlan
-ramp-signal-3 = wlan
-ramp-signal-4 = wlan
-ramp-signal-foreground = ${colors.foreground-alt}
 ;; }}}
 ;; [module/memory] {{{
 [module/memory]
@@ -113,7 +112,7 @@ type = internal/memory
 interval = 2
 format-prefix = "ram "
 format-prefix-foreground = ${colors.foreground-alt}
-format-underline = #4bffdc
+format-underline = ${colors.blue}
 label = "%percentage_used%%"
 ;; }}}
 ;; [module/swap] {{{
@@ -122,7 +121,7 @@ type = internal/memory
 interval = 2
 format-prefix = "swap "
 format-prefix-foreground = ${colors.foreground-alt}
-format-underline = #4bffdc
+format-underline = ${colors.blue}
 label = "%percentage_swap_used%%"
 ;; }}}
 ;; [module/cpu] {{{
@@ -131,7 +130,7 @@ type = internal/cpu
 interval = 2
 format-prefix = "cpu "
 format-prefix-foreground = ${colors.foreground-alt}
-format-underline = #f90000
+format-underline = ${colors.blue}
 label = %percentage:2%%
 ;; }}}
 ;; [module/battery] {{{
@@ -142,12 +141,12 @@ adapter = AC
 full-at = 98
 
 format-charging = <animation-charging> <label-charging>
-format-charging-underline = #ffb52a
+format-charging-underline = ${colors.blue}
 
 format-discharging = <animation-discharging> <label-discharging>
 format-discharging-underline = ${self.format-charging-underline}
 
-format-full-prefix = "bat="
+format-full-prefix = "max"
 format-full-prefix-foreground = ${colors.foreground-alt}
 format-full-underline = ${self.format-charging-underline}
 
@@ -156,9 +155,9 @@ ramp-capacity-1 = bat
 ramp-capacity-2 = bat
 ramp-capacity-foreground = ${colors.foreground-alt}
 
-animation-charging-0 = bat+
-animation-charging-1 = bat+
-animation-charging-2 = bat+
+animation-charging-0 = chr
+animation-charging-1 = chr
+animation-charging-2 = chr
 animation-charging-foreground = ${colors.foreground-alt}
 animation-charging-framerate = 750
 
@@ -175,7 +174,7 @@ type = internal/alsa
 format-volume = vol <label-volume>
 label-volume = %percentage%%
 label-volume-foreground = ${root.foreground}
-format-volume-underline = #0a6cf5
+format-volume-underline = ${colors.blue}
 format-muted-foreground = ${colors.foreground-alt}
 label-muted = vol OFF
 ;; }}}
@@ -184,17 +183,11 @@ label-muted = vol OFF
 type = internal/date
 interval = 5
 
-date = "%m/%d"
-date-alt = "%Y/%m/%d"
+date = "%m/%d %H:%M"
 
-time = "%H:%M"
-time-alt = "%H:%M"
-
-format-prefix = 
 format-prefix-foreground = ${colors.foreground-alt}
-format-underline = 1
 
-label = %date% %time%
+label = %date%
 ;; }}}
 ;; Not Using {{{
 
@@ -242,7 +235,7 @@ type = internal/network
 interface = enp2s0
 interval = 3.0
 
-format-connected-underline = #55aa55
+format-connected-underline = ${colors.blue}
 format-connected-prefix = " "
 format-connected-prefix-foreground = ${colors.foreground-alt}
 label-connected = %local_ip%

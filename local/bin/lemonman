@@ -65,7 +65,7 @@ class MemoryUsage(Module):
 
     def __init__(self, mode):
         super().__init__()
-        self.wait_time = 10
+        self.wait_time = 30
 
         if mode == self.RAM:
             self._line_number = 1
@@ -117,7 +117,7 @@ class Clock(Module):
         time.
         """
         super().__init__()
-        self.wait_time = 30  # How often to update this module
+        self.wait_time = 60  # How often to update this module
 
     def output(self):
         return strftime("%m/%d %H:%M")
@@ -244,11 +244,6 @@ class BSPWM(Module):
 # Define the modules to put on the bar (in order)
 modules = (
     BSPWM("eDP1"),
-    # Const('%{Sf}%{l}'),
-    # Const('%{r}'),
-    # Clock(),
-    # Const(' '),
-    # Const('%{Sl}%{l}'),
 
     # Const("%{c}"),
 
@@ -259,10 +254,10 @@ modules = (
     CpuModule(),
     Const("%{-u}  "),
 
-    Const("%{+u}"),
-    Label("swap "),
-    MemoryUsage(MemoryUsage.SWAP),
-    Const("%{-u}  "),
+    # Const("%{+u}"),
+    # Label("swap "),
+    # MemoryUsage(MemoryUsage.SWAP),
+    # Const("%{-u}  "),
 
     Const("%{+u}"),
     Label("ram "),

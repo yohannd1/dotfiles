@@ -1,5 +1,8 @@
+#!/usr/bin/env sh
+
 message() {
   printf "[%s]\n" "$(xtitle)"
+  printf "%s\n" "$(date +"%Y/%m/%d %H:%M")"
   printf "%s: %.0f%%\n" \
     "Battery" "$(cat /sys/class/power_supply/BAT0/capacity)" \
     "CPU" "$(grep 'cpu ' /proc/stat \

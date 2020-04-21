@@ -85,3 +85,5 @@ do
     bar show
   fi
 done &
+
+exit
