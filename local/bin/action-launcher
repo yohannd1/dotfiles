@@ -1,0 +1,78 @@
+#!/usr/bin/env ruby
+
+# Tasklauncher: a simple way to run small scripts with their descriptions.
+
+require 'pathname'
+require 'open3'
+
+ACTIONS_DIR = ENV["ACTIONS_DIR"] || "#{Dir.home}/scripts"
+
+def main()
+  actions = get_action_names(ACTIONS_DIR, side_effects: true)
+
+  if actions.length == 0
+    STDERR.puts "No actions were found."
+    return 1
+  end
+
+  stdout, _, exit_code =
+    dmenu_prompt(
+      "Task:",
+      actions.map{ |action|
+        formatted = format_action_with_description(action, ACTIONS_DIR)
+        if formatted == :not_one_line
+          STDERR.puts "Action description file \"#{action}.description\" should have only one line (the description)."
+          return 1
+        else
+          formatted
+        end
+      }.join("\n"), 25)
+  return exit_code if exit_code != 0
+
+  exec("#{ACTIONS_DIR}/#{stdout.split[0][0...-1]}.script")
+
+  return 0
+end
+
+def format_action_with_description(action, dir)
+  base = "#{dir}/#{action}"
+  metadata = File::readlines("#{base}.description")
+
+  if metadata.length != 1
+    :not_one_line
+  else
+    "#{action}: #{metadata[0]}"
+  end
+end
+
+def dmenu_prompt(prompt, input, lines_height = 0)
+  Open3::popen3("dmenu -i -l #{lines_height} -p '#{prompt}'") {
+    |stdin, stdout, stderr, wait_thr|
+    stdin.puts input
+    stdin.close
+    [stdout.read, stderr.read, wait_thr.value]
+  }
+end
+
+def get_action_names(directory, side_effects = false)
+  actions_dir = Pathname::new(directory)
+
+  actions_dir.children(with_directory: false)
+    .map{ |file| file.basename.to_s }
+    .select{ |name| /\.script$/ =~ name }
+    .map{ |name| name.gsub(/\.script$/, '') }
+    .select{ |name|
+      if not File::exists?("#{ACTIONS_DIR}/#{name}.description")
+        if side_effects
+          STDERR.puts "WARNING: \"#{name}.script\" has no description file \"#{name}.description\" and it will be ignored."
+        end
+        false
+      else
+        true
+      end
+    }
+end
+
+if __FILE__ == $0
+  exit main.to_i
+end

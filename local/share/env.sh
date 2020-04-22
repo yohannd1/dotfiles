@@ -42,6 +42,7 @@ export TASKRC="$XDG_CONFIG_HOME/taskwarrior/taskrc"
 export INPUTRC="$XDG_CONFIG_HOME/inputrc"
 export WINEPREFIX="$XDG_CACHE_HOME/wine"
 export LESSHISTFILE="-"
+export ACTIONS_DIR="$F_PERSIST/actions"
 
 # export GEM_HOME="$XDG_CACHE_HOME/gem" # for some reason it's not working...
 # export GEM_HOME="$HOME/.gem" # ... neither this one...
