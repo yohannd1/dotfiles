@@ -82,6 +82,8 @@ super + o; c
     $TERMINAL -c float -g 65x10 -e runread cal -3
 super + o; b
     runnsend bkmk
+super + o; a
+    runnsend action-launcher
 
 # super-o dirs
 super + o; d

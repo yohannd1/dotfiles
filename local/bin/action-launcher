@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
-# Tasklauncher: a simple way to run small scripts with their descriptions.
+# a not-simple-at-all way to run small scripts while reading their descriptions
+# not that useful...
 
 require 'pathname'
 require 'open3'
@@ -17,7 +18,7 @@ def main()
 
   stdout, _, exit_code =
     dmenu_prompt(
-      "Task:",
+      "Action:",
       actions.map{ |action|
         formatted = format_action_with_description(action, ACTIONS_DIR)
         if formatted == :not_one_line
