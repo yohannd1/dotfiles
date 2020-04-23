@@ -191,9 +191,9 @@ if [ -z "$NO_CONFIG_LINK" ]; then
   lfglob "$DOTFILES/config/nvim" ~/.config/nvim
 
   # Path-related
-  lfglob "$DOTFILES/local/bin" ~/.local/bin
-  lfglob "$DOTFILES/local/lib" ~/.local/lib
-  lfglob "$DOTFILES/local/share" ~/.local/share
+  lfglob "$DOTFILES/scripts" ~/.local/bin
+  lfglob "$DOTFILES/lib" ~/.local/lib
+  lfglob "$DOTFILES/share" ~/.local/share
   lfglob "$DOTFILES/desktop" ~/.local/share/applications
 
   # Gtk Config
@@ -207,9 +207,8 @@ if [ -z "$NO_CONFIG_LINK" ]; then
   # lfglob "$HOME/.config/kak" ~/.config/kak
 
   # Local Symlinking
-  lfglob "$HOME/persist/local/bin" ~/.local/bin
-  lfglob "$HOME/persist/local/lib" ~/.local/lib
-  lfglob "$HOME/persist/local/share" ~/.local/share
+  lfglob "$STORAGE_DIR/scripts" ~/.local/bin
+  lfglob "$STORAGE_DIR/share" ~/.local/share
 fi
 
 # }}}

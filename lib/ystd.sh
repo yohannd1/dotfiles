@@ -4,12 +4,9 @@
 ## Code here should work with dash, bash and zsh.
 
 # Check if a program exists
-exists() {
-  [ $# = 1 ] \
-    && command -v "$1" >/dev/null 2>/dev/null
-}
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
-# Die if one of the dependencies in the arglist doesn't exist
+# Error and die if one of the dependencies in the arglist doesn't exist
 depCheck() {
   local depArray=""
   for dep in "$@"; do
@@ -23,10 +20,7 @@ depCheck() {
 }
 
 # Set the terminal window title
-setTitle() {
-  [ $# != 1 ] && return 1
-  printf '\033]0;%s\007' "$1"
-}
+setTitle() { printf '\033]0;%s\007' "$1"; }
 
 # Source a file, if it exists
 sourceIf() {
@@ -46,6 +40,6 @@ sourceAlt() {
 }
 
 isInteractive() { printf "%s" "$-" | grep -q '.*i.*'; }
-isAndroid() { [ "$(uname -o)" = Android ]; }
-isDisplay() { [ -n "$DISPLAY" ]; }
+isAndroid() { test "$(uname -o)" = Android; }
+isDisplay() { test -n "$DISPLAY"; }
 isTTY() { ! isDisplay && ! isAndroid; }

@@ -15,7 +15,7 @@ to only add to your system things that you understand, instead of making
 it confusing with the imense amount of bloat that would come with
 getting all scripts from a repository.
 
-If you want, you can use the `./dotsync` in the repo's root to do the
+If you want, you can use the `dotsync` in the `scripts` folder to do the
 thing, but, as said before, it's still pretty incomplete, so I can't
 assure backups will work well.
 

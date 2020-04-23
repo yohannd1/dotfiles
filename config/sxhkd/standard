@@ -93,4 +93,4 @@ super + o; w
 super + o; p
     termup zsh -ic "Wp b"
 super + o; j
-    termup journalentry # "journalentry" is a private script
+    termup ,journalentry # ",journalentry" is a private script

@@ -64,12 +64,7 @@ function! g:Rifle(command)
 endfunction
 
 function! s:GenTemp()
-  if $F_TEMP != ""
-    let l:temp_dir = $F_TEMP
-  else
-    let l:temp_dir = "/tmp"
-  endif
-
+  let l:temp_dir = expand("~/.cache")
   let l:temp_name = "tmp-output"
   return [l:temp_dir, l:temp_name]
 endfunction
