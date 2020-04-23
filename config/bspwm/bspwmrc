@@ -6,12 +6,12 @@ source ~/.local/share/env.sh # Reload environment variables
 # desktop config
 bspc monitor -d 1 2 3 4 5 6 7 8 9 0
 
-bspc config top_padding 0
-bspc config bottom_padding 0
-bspc config left_padding 0
-bspc config right_padding 0
+# bspc config top_padding 0
+# bspc config bottom_padding 0
+# bspc config left_padding 0
+# bspc config right_padding 0
 
-bspc config window_gap 7 # with gaps
+bspc config window_gap 5 # with gaps
 # bspc config window_gap 0 # without gaps
 
 # other
