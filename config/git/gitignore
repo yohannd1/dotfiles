@@ -15,6 +15,9 @@ Thumbs.db
 Session.vim
 \#*\#
 
+# Markdown Preview cache
+.md-export.*.html
+
 # Temp / Backup Files
 *~
 *.sw*

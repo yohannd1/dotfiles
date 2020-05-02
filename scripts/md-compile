@@ -43,7 +43,7 @@ def main(argv):
                          if options.style_folder
                          else None)
                         or os.getenv("MARKDOWN_STYLES_FOLDER")
-                        or Path("~/.local/share/css"))
+                        or Path("~/.local/share/css").expanduser())
 
     # Check where is the input.
     source = None
@@ -62,7 +62,8 @@ def main(argv):
     compiler.stdin.write(source)
     compiled_html = compiler.communicate()[0]
 
-    available_themes = style_folder.glob("*.css")
+    available_themes = list(style_folder.glob("*"))
+    available_themes = [x.name for x in available_themes]
     selected_theme = (metadata["theme"]
                       if "theme" in metadata
                       else "default")
@@ -74,7 +75,7 @@ def main(argv):
 
     css_data = None
     if f"{selected_theme}.css" in available_themes:
-        with open(f"{selected_theme}.css", "r") as f:
+        with open(f"{style_folder}/{selected_theme}.css", "r") as f:
             css_data = f.read()
     else:
         if selected_theme == "default":

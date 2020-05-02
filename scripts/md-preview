@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+MD_PREVIEW_MODE=1
+
 if [ $# != 1 ]; then
   printf >&2 "%s\n" "Usage: $(basename $0) <file>"
   exit 1
@@ -10,16 +12,34 @@ if ! [ -f "$1" ]; then
   exit 1
 fi
 
-# Delete files from previous runs
-for garbage in /tmp/md-export.*.html; do
-  if [ -f "$garbage" ]; then
-    rm "$garbage"
-  fi
-done
+case "$MD_PREVIEW_MODE" in
+  0)
+    # Delete files from previous runs
+    for garbage in /tmp/md-export.*.html; do
+      [ -f "$garbage" ] && rm "$garbage"
+    done
 
-TEMP=$(mktemp)
-FILE="/tmp/md-export$(printf "%s" "$TEMP" | sed 's/\///g; s/tmp//g').html"
-mv "$TEMP" "$FILE"
+    TEMP=$(mktemp)
+    FILE="/tmp/md-export$(printf "%s" "$TEMP" | sed 's/\///g; s/tmp//g').html"
+    mv "$TEMP" "$FILE"
+    ;;
+
+  1)
+    DIRNAME="$(dirname "$1")"
+    BASENAME="$(basename "$1")"
+
+    # Delete old files stored in /tmp/md-exports
+    if [ -e /tmp/md-exports ]; then
+      while read garbage; do
+        [ -e "$garbage" ] && rm "$garbage"
+      done < /tmp/md-exports
+      rm /tmp/md-exports
+    fi
+
+    FILE="$(realpath -m "$DIRNAME/.md-export.$BASENAME.html")"
+    printf "%s\n" "$FILE" >> /tmp/md-exports
+    ;;
+esac
 
 md-compile "$1" > "$FILE" \
   && printf >&2 "%s\n" "Compiled to: $FILE" \
