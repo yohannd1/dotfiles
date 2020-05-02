@@ -1,18 +1,124 @@
-#!/usr/bin/env sh
+#!/usr/bin/env python3
+# A script to compile markdown files.
 
-case $# in
-  0)
-    md-remove-metadata </dev/stdin \
-      | comrak --gfm --unsafe \
-      | md-wrap-output -t "STDIN" ;;
+import argparse, os, sys, re, subprocess as sp
+from pathlib import Path
 
-  1)
-    md-remove-metadata "$1" \
-      | comrak --gfm --unsafe \
-      | md-wrap-output -t "$(basename $1)" ;;
+COMPILER_COMMAND = ["comrak", "--gfm"]
 
-  *)
-    printf >&2 "%s\n" "Usage: $(basename $0) [file]"
-    printf >&2 "%s\n" "If [file] is not specified, contents are read from stdin."
-    exit 1 ;;
-esac
+def eprint(*args, **kwargs):
+    print(f"error:", *args, file=sys.stderr, **kwargs)
+
+def main(argv):
+    parser = argparse.ArgumentParser(
+        prog=Path(sys.argv[0]).name,
+        description="a wrapper to compile markdown data",
+    )
+
+    parser.add_argument(
+        "source_file",
+        help="the file to read, reading from standard input",
+        action="store",
+        nargs="?",
+        type=str,
+    )
+
+    parser.add_argument(
+        "-s", "--style-folder",
+        help="the path where the CSS files are located. Read from environment variable MARKDOWN_STYLES_FOLDER (or ~/.local/share/css) if not specified",
+        action="store",
+        nargs=1,
+        type=str,
+    )
+
+    parser.add_argument(
+        "-v", "--version",
+        action="version",
+        version=f"{parser.prog} ...",
+    )
+
+    options = parser.parse_args(sys.argv[1:])
+
+    style_folder = Path((options.style_folder[0]
+                         if options.style_folder
+                         else None)
+                        or os.getenv("MARKDOWN_STYLES_FOLDER")
+                        or Path("~/.local/share/css"))
+
+    # Check where is the input.
+    source = None
+    if options.source_file != None:
+        # Input file (from args)
+        with open(options.source_file, "r") as f:
+            source = f.read()
+    else:
+        # Stdin data (when piping)
+        source = "".join(sys.stdin.readlines())
+
+    (metadata, source) = split_metadata(source)
+
+    # Compile markdown to html
+    compiler = sp.Popen(COMPILER_COMMAND, stdin=sp.PIPE, stdout=sp.PIPE, encoding="UTF-8")
+    compiler.stdin.write(source)
+    compiled_html = compiler.communicate()[0]
+
+    available_themes = style_folder.glob("*.css")
+    selected_theme = (metadata["theme"]
+                      if "theme" in metadata
+                      else "default")
+    title = (metadata["title"] # Title Value (FIXME: exploitable with "<>")
+             if "title" in metadata
+             else (Path(options.source_file).name # File name
+                   if options.source_file != None
+                   else "STDIN")) # From STDIN
+
+    css_data = None
+    if f"{selected_theme}.css" in available_themes:
+        with open(f"{selected_theme}.css", "r") as f:
+            css_data = f.read()
+    else:
+        if selected_theme == "default":
+            # Fallback CSS
+            css_data = 'body { font-family: "Arial"; }'
+        else:
+            eprint(f"could not find '{selected_theme}.css' in styles folder")
+            return 1
+    css_data = re.sub(r"\n", "", css_data)
+
+    final_html = (
+        '<!DOCTYPE html>'
+        '<html>'
+        '<head>'
+        '<title>{}</title>'
+        '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">'
+        '<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">'
+        '<meta name="HandheldFriendly" content="true">'
+        '<meta charset="UTF-8">'
+        '<style>{}</style>'
+        '</head>'
+        '<body>'
+        '{}'
+        '</body>'
+        '</html>'
+    ).format(title, css_data, compiled_html)
+
+    print(final_html)
+
+def split_metadata(source):
+    metadata = {}
+    split = source.split("\n")
+    for (i, line) in enumerate(split):
+        if re.findall(r"^@[a-zA-Z0-9._-]+:", line):
+            identifier, *value = line[1:].split(":")
+            value = ":".join(value)
+            metadata[identifier] = value.strip()
+        else:
+            return (metadata, "\n".join(split[i:]))
+
+    return (metadata, "")
+
+if __name__ == "__main__":
+    import sys
+    exit_code = main(sys.argv)
+    if exit_code == None: sys.exit(0)
+    else: sys.exit(int(exit_code))

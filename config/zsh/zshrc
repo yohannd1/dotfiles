@@ -12,7 +12,7 @@ source ~/.local/lib/ystd.sh &>/dev/null \
 
 # Load some other libraries
 sourceIf "$HOME/.local/share/env.sh"
-sourceIf "$HOME/persist/local/share/zshrc.personal"
+sourceIf "$STORAGE/share/zshrc.personal"
 sourceIf "$HOME/.config/broot/launcher/bash/br"
 
 # Run the setup-tty script if it is a tty
@@ -171,7 +171,6 @@ n() { # {{{
   fi
 } # }}}
 rl() { source "${ZDOTDIR:-"$HOME"}/.zshrc"; }
-sy() { "$DOTFILES/dotsync"; }
 gt() { [ $# = 1 ] && (cd "$1" && rg "$(sed 's/1/T/g' <<<'1ODO:')"); }
 wp() { local c="$(select-project)"; [ -n "$c" ] && br "$c"; }
 Wp() { local c="$(select-project)"; [ -n "$c" ] && inspect-dir "$c" "$1"; }
@@ -191,8 +190,8 @@ alias cpsync='cp -ur'
 alias p3='python3'
 alias jl='julia'
 alias G='git-check'
-alias t='task'
 alias e='$EDITOR'
+alias sy='dotsync'
 
 exists nvim \
   && alias vi='nvim' vim='nvim' \

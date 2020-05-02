@@ -192,6 +192,13 @@ function! Surround(...) " {{{
     return l:ls[1] . l:ls[0] . l:ls[2]
   endif
 endfunction " }}}
+function! FormatFile() " {{{
+  if exists("b:format_command")
+    exec "%!" . b:format_command
+  else
+    echo "Could not find b:format_command."
+  endif
+endfunction " }}}
 if g:is_first | function! SourceIf(...) " {{{
   for path in a:000
     if filereadable(path)
@@ -221,6 +228,7 @@ endif
 command! -nargs=0 Reload call SourceIf($VIM_INIT, $GVIM_INIT)
 command! -nargs=* PagerMode call PagerMode(<f-args>)
 command! -nargs=0 CleanWhitespace if &filetype != "markdown" | %s/\v +$//g | else | echo "That wouldn't be a good idea." | endif
+command! -nargs=0 FormatFile call FormatFile()
 
 " Abbreviations
 cnoreabbrev rl Reload
@@ -363,6 +371,8 @@ augroup ft_functions
   au BufNewFile,BufRead,BufEnter *.alg set filetype=visualg
   au BufNewFile,BufRead,BufEnter *.jl set filetype=julia
   au BufNewFile,BufRead,BufEnter *.scrbl set filetype=scribble
+  au BufNewFile,BufRead,BufEnter *.h set filetype=c
+  au BufNewFile,BufRead,BufEnter calcurse-note.* set filetype=markdown
 augroup end
 
 " }}}
@@ -542,7 +552,8 @@ function! Ft_rust() " {{{
     let b:rifle.build = "rustc '%f' -o '%o'"
   endif
 
-  setlocal fdm=syntax
+  let b:format_command = "rustfmt"
+  setlocal fdm=syntax textwidth=100
 endfunction " }}}
 function! Ft_java() " {{{
   if ReverseRSearch(expand("%:p:h"), "gradlew")
@@ -616,7 +627,10 @@ inoremap <expr> <C-m> pumvisible() ? "\<C-y>" : "<C-m>"
 " Rifle Commands
 nnoremap <silent> <Leader>r :Rifle "run"<CR>
 nnoremap <silent> <Leader>R :Rifle "build"<CR>
-nnoremap <Leader>f :Rifle ""<Left>
+nnoremap <Leader><C-r> :Rifle ""<Left>
+
+" Formatting Commands
+nnoremap <Leader>f :FormatFile<CR>
 
 " Escape terminal in nvim
 tnoremap <silent> <Esc> <C-\><C-n>
@@ -630,13 +644,11 @@ tnoremap <silent> <C-w>l <C-\><C-n><C-w>l
 nnoremap / /\v
 vnoremap / /\v
 
-" Quick inserts
+" Quick character inserts
 inoremap <silent> <C-l>d <C-r>=strftime("20%y-%m-%d")<CR>
-inoremap <silent> <C-l>co ∘
+inoremap <silent> <C-l>o ∘
 inoremap <silent> <C-l>l λ
-
-" Quick character insert
-inoremap <C-g>` ```<CR>```<Up><End><CR>
+inoremap <silent> <C-l>c ```<CR>```<Up><End><CR>
 
 " Terminal Spawner
 nnoremap <leader>K :call SpawnCustomShell("")<CR>

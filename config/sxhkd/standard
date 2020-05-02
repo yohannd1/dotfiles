@@ -89,8 +89,10 @@ super + o; a
 super + o; d
     termup atdir $DOTFILES
 super + o; w
-    termup atdir $F_WIKI
+    termup atdir $WIKI
 super + o; p
     termup zsh -ic "Wp b"
 super + o; j
     termup ,journalentry # ",journalentry" is a private script
+super + o; s
+    termup atdir $STORAGE/school/current

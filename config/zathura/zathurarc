@@ -1,3 +1,5 @@
+# vim: ft=conf
+
 set statusbar-h-padding 0
 set statusbar-v-padding 0
 set page-padding 1
@@ -9,3 +11,7 @@ map R rotate
 map J zoom in
 map K zoom out
 map i recolor
+
+set selection-clipboard clipboard
+set statusbar-home-tilde true
+set window-title-home-tilde true

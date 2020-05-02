@@ -15,10 +15,10 @@ export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_CURRENT_DESKTOP="none"
 
 export STORAGE="$HOME/storage"
-export PROJECTS_DIR="$HOME/projects"
-export WIKI_DIR="$HOME/wiki"
+export WIKI="$HOME/wiki"
+export PROJECTS="$HOME/projects"
 
-export DOTFILES="$PROJECTS_DIR/dotfiles"
+export DOTFILES="$PROJECTS/dotfiles"
 export EDITOR="nvim"
 export TERMINAL="st"
 export BROWSER="qutebrowser"

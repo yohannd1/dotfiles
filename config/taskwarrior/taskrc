@@ -1,24 +1,16 @@
-# -*- mode: conf-space -*-
-# vim: fdm=marker
-
 # Use the command 'task show' to see all defaults and overrides
 data.location=~/wiki/taskwarrior
 
 # Precedence
 rule.precedence.color=deleted,completed,active,keyword.,tag.,project.,overdue,due.today,due,recurring,scheduled,blocking,blocked,tagged,uda.
 
-# "next" Report {{{
-
 # Sorting and Filtering
 report.next.sort=scheduled+,due+,urgency-
 report.next.filter=status:pending limit:page -hold
 
-# }}}
-# Colors {{{
-
 # General decoration
 color.label=color4
-color.alternate=
+color.alternate=on color0
 color.header=color4
 color.footnote=color6
 color.warning=color0 on color3
@@ -92,5 +84,3 @@ report._reviewed.description=Tasksh Review Report
 report._reviewed.columns=uuid
 report._reviewed.sort=reviewed+,modified+
 report._reviewed.filter=( reviewed.none: or reviewed.before:now-6days ) and ( +PENDING or +WAITING )
-
-# }}}

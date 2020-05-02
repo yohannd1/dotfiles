@@ -5,10 +5,10 @@ if [ $# != 0 ]; then
   exit 1
 fi
 
-if [ -z "$F_WALLPAPERS" ]; then
-  printf >&2 "Please set %s to the wallpapers folder path\n" '$F_WALLPAPERS'
+if [ -z "$SETBG_WALLPAPER_DIR" ]; then
+  printf >&2 "Please set %s to the wallpapers folder path\n" '$SETBG_WALLPAPER_DIR'
   exit 1
 fi
 
-image="$(shuf -n1 -e "$F_WALLPAPERS"/*.jpg)"
+image="$(shuf -n1 -e "$SETBG_WALLPAPER_DIR"/*.jpg)"
 feh --no-fehbg --bg-fill "$image"

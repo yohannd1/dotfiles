@@ -63,6 +63,12 @@ invocation = "nnn"
 execution = "nnn {directory}"
 
 [[verbs]]
+name = "openfork"
+key = "ctrl-o"
+invocation = "openfork"
+execution = "openfork {directory}/{subpath}"
+
+[[verbs]]
 name = "shell"
 key = "ctrl-s"
 invocation = "shell"

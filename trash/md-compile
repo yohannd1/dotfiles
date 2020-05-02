@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+
+case $# in
+  0)
+    md-remove-metadata </dev/stdin \
+      | comrak --gfm --unsafe \
+      | md-wrap-output -t "STDIN" ;;
+
+  1)
+    md-remove-metadata "$1" \
+      | comrak --gfm --unsafe \
+      | md-wrap-output -t "$(basename $1)" ;;
+
+  *)
+    printf >&2 "%s\n" "Usage: $(basename $0) [file]"
+    printf >&2 "%s\n" "If [file] is not specified, contents are read from stdin."
+    exit 1 ;;
+esac

@@ -45,7 +45,7 @@ action_exit() { # {{{
   case "$WM" in
     i3) i3-msg exit ;;
     bspwm) bspc quit ;;
-    *) printf 'Unknown wm "%s" - exiting will not work\n' "$wm" ;;
+    *) printf >&2 'Unknown wm "%s" - exiting will not work\n' "$wm" ;;
   esac
 } # }}}
 action_suspend() { # {{{

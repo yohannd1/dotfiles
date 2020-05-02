@@ -8,6 +8,7 @@
 case "$WM" in
   i3) exec i3 ;;
   bspwm) exec bspwm ;;
+  dwm) exec dwm ;;
   *)
     printf 'Window manager "%s" is not yet supported.\n' "$WM"
     exit 1
