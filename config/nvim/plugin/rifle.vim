@@ -17,9 +17,12 @@ augroup end
 
 function! s:RifleInit()
   let b:rifle_use_termup = exists("b:rifle_use_termup")
-    \ ? b:rifle_use_termup
-    \ : (!s:is_windows && s:has_display && executable("termup")
-    \ && executable("rifle-run"))
+                         \ ? b:rifle_use_termup
+                         \ : (exists("g:rifle_use_termup")
+                           \ ? g:rifle_use_termup
+                           \ : (!s:is_windows && s:has_display && executable("termup") && executable("rifle-run")
+                           \ )
+                         \ )
 endfunction
 
 function! g:Rifle(command)

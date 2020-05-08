@@ -251,6 +251,7 @@ if [ -z "$NO_NEOVIM_PLUGIN" ]; then
   ip "haskell-vim" "https://github.com/neovimhaskell/haskell-vim"
   ip "vim-orgmode" "https://github.com/jceb/vim-orgmode"
   ip "python-syntax" "https://github.com/vim-python/python-syntax"
+  ip "vim-rsi" "https://github.com/tpope/vim-rsi"
 
   lf "$NVIM_PLUGS_FOLDER" ~/.config/nvim/bundle
 fi

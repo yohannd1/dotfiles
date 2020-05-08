@@ -194,7 +194,10 @@ function! Surround(...) " {{{
 endfunction " }}}
 function! FormatFile() " {{{
   if exists("b:format_command")
+    normal mz
     exec "%!" . b:format_command
+    normal `z
+    normal zz
   else
     echo "Could not find b:format_command."
   endif
@@ -286,6 +289,9 @@ let g:buftabline_indicators = 1
 " QuickScope
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
+" Rifle
+let g:rifle_use_termup = 1
+
 " }}}
 " Settings {{{
 
@@ -352,20 +358,17 @@ endif
 
 " Augroups {{{
 
-augroup nft_terminal
-  au!
-  au TermOpen * setlocal norelativenumber nocursorline
-augroup end
-
 augroup extras
   au!
   au FileType xdefaults setlocal commentstring=\!%s
+  au TermOpen * setlocal norelativenumber nonumber nocursorline
 augroup end
 
-augroup ft_functions
+augroup buffer_load
   au!
   au FileType * if exists("*Ft_".&ft) | exec 'call Ft_'.&ft.'()' | endif
   au FileType * call SetupMakefileRifle()
+  au BufNewFile,BufRead,BufEnter * if line('$') > 5000 | syntax off | endif
   au BufNewFile,BufRead,BufEnter *.fx set filetype=c
   au BufNewFile,BufRead,BufEnter *.clj set filetype=clojure
   au BufNewFile,BufRead,BufEnter *.alg set filetype=visualg
@@ -434,7 +437,7 @@ function! Ft_markdown() " {{{
   function! MarkdownFoldExpr(lnum)
     for level in range(1, 6)
       if getline(a:lnum) =~ '^'.repeat('#', level).' .*$'
-        return '>1'
+        return '>'.level
       endif
     endfo
     return "="
@@ -657,7 +660,7 @@ nnoremap <leader>K :call SpawnCustomShell("")<CR>
 nnoremap <leader>m :call ListMessages()<CR>
 
 " Adjust indentation on the entire file
-nnoremap <silent> <leader>= mtgg=G`tzz
+nnoremap <silent> <leader>= mzgg=G`zzz
 
 " Replace everything in screen with... something
 nnoremap <Leader>s :%s/\v/g<Left><Left>

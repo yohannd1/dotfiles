@@ -73,8 +73,7 @@ handlePdf() {
 
 handleAudio() {
   exists mocp && tryRunTerm mocplay "$FILE" "opener"
-  tryRunGraph mpv "$FILE"
-  tryRunTerm mpv --no-video "$FILE"
+  tryRunTermGraph mpv --no-video "$FILE"
   tryRunTerm mediainfo "$FILE"
   tryRunTerm exiftool "$FILE"
 }

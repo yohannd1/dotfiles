@@ -6,9 +6,6 @@ from pathlib import Path
 
 COMPILER_COMMAND = ["comrak", "--gfm"]
 
-def eprint(*args, **kwargs):
-    print(f"error:", *args, file=sys.stderr, **kwargs)
-
 def main(argv):
     parser = argparse.ArgumentParser(
         prog=Path(sys.argv[0]).name,
@@ -55,7 +52,7 @@ def main(argv):
         # Stdin data (when piping)
         source = "".join(sys.stdin.readlines())
 
-    (metadata, source) = split_metadata(source)
+    (metadata, source) = split_metadata(source, MetadataType.WITH_AT)
 
     # Compile markdown to html
     compiler = sp.Popen(COMPILER_COMMAND, stdin=sp.PIPE, stdout=sp.PIPE, encoding="UTF-8")
@@ -105,18 +102,34 @@ def main(argv):
 
     print(final_html)
 
-def split_metadata(source):
-    metadata = {}
-    split = source.split("\n")
-    for (i, line) in enumerate(split):
-        if re.findall(r"^@[a-zA-Z0-9._-]+:", line):
-            identifier, *value = line[1:].split(":")
-            value = ":".join(value)
-            metadata[identifier] = value.strip()
-        else:
-            return (metadata, "\n".join(split[i:]))
+def eprint(*args, **kwargs):
+    print(f"error:", *args, file=sys.stderr, **kwargs)
 
-    return (metadata, "")
+class MetadataType:
+    WITH_AT = 0
+    YAML_TRIPLE_LINE = 1
+
+def split_metadata(source, type):
+    if type == MetadataType.WITH_AT:
+        metadata = {}
+        split = source.split("\n")
+        for (i, line) in enumerate(split):
+            if re.findall(r"^@[a-zA-Z0-9._-]+:", line):
+                identifier, *value = line[1:].split(":")
+                value = ":".join(value)
+                metadata[identifier] = value.strip()
+            else:
+                return (metadata, "\n".join(split[i:]))
+
+        return (metadata, "")
+    elif type == MetadataType.YAML_TRIPLE_LINE:
+        metadata = {}
+        split = source.split("\n")
+        eprint(f"unimplemented: MetadataType.YAML_TRIPLE_LINE")
+        sys.exit(1)
+    else:
+        eprint(f"invalid metadata type: {repr(type)}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     import sys
