@@ -2,5 +2,3 @@
 # vim: ft=python
 
 from math import *
-
-PI = pi

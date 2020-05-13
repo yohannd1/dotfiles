@@ -5,21 +5,33 @@
 source ~/.local/lib/ystd.sh
 depCheck gen-sxhkd sxhkd mktemp
 
-tempConf="$(mktemp "/tmp/sxhkd.conf.XXXXXXXX")"
-tempLog="$(mktemp "/tmp/sxhkd.log.XXXXXXXX")"
+# get data folder based on current display
+dataFolder="/tmp/sxhkd.${DISPLAY}"
+tempConf="$dataFolder/conf"
+tempLog="$dataFolder/log"
 
-if [ -z "$tempConf" ] || [ -z "$tempLog" ]; then
-  printf >&2 "Could not generate all temp files."
-  exit 1
+# cleanup / kill current sxhkd on this display if it exists
+if [ -r "$dataFolder" ]; then
+  if [ -f "$dataFolder/pid" ]; then
+    oldPid="$(cat "$dataFolder/pid")"
+    ps -C >/dev/null "$oldPid" && kill "$oldPid"
+  fi
+  rm -r "$dataFolder"
+elif [ -f "$dataFolder" ]; then
+  rm "$dataFolder"
 fi
+mkdir "$dataFolder"
 
-gen-sxhkd "$@" > "$tempConf"
-
-if [ $? != 0 ]; then
+# generate sxhkd config with gen-sxhkd
+gen-sxhkd "$@" > "$tempConf" || {
   printf >&2 "gen-sxhkd failed; aborting\n"
   test -f "$tempConf" && rm "$tempConf"
   exit 1
-fi
+}
 
-sxhkd -c "$tempConf" -r "$tempLog"
-rm "$tempConf" # Remove the config after execution, but leave the log
+# start sxhkd and get its pid
+sxhkd -c "$tempConf" -r "$tempLog" &
+pid="$!"
+echo "$pid" > "$dataFolder/pid"
+
+wait "$pid" # wait for sxhkd to close

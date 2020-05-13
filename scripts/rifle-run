@@ -5,7 +5,7 @@
 
 if [ $# != 1 ]; then
   printf >&2 "%s\n" "Usage: $(basename $0) <command>"
-  printf >&2 "%s\n" "The command must be in only one argument. That's how much this crap is fragile."
+  printf >&2 "%s\n" "The command should be entirely in one argument."
   exit 1
 fi
 

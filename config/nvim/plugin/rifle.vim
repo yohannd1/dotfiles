@@ -59,7 +59,7 @@ function! g:Rifle(command)
     call jobstart(["rifle-run", l:rifle_cmd])
   else
     split
-    wincmd j " TODO: make more customizable directions (here and on termup with bspc and other wm commands)
+    wincmd j
     enew
     call termopen(l:rifle_cmd) " TODO: turn this into a list
     normal i
