@@ -10,7 +10,7 @@ fi
 
 case $# in
   0)
-    standardInit="${XDG_CONFIG_HOME:-$HOME/.config}/xorg/initrc"
+    standardInit="${XDG_CONFIG_HOME:-$HOME/.config}/xorg/xinitrc"
     [ -f "$standardInit" ] && initrc="$standardInit" || initrc="$HOME/.xinitrc"
     ;;
   1)
@@ -19,7 +19,7 @@ case $# in
   2)
     printf >&2 "%s\n" "$(basename $0): invalid amount of arguments"
     printf >&2 "%s\n" "Usage: $(basename $0) [init_file]"
-    printf >&2 "%s\n" "init_file defaults to \$XDG_CONFIG_HOME/xorg/initrc or ~/.xinitrc."
+    printf >&2 "%s\n" "init_file defaults to \$XDG_CONFIG_HOME/xorg/xinitrc or ~/.xinitrc."
     exit 1
     ;;
 esac

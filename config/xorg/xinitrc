@@ -5,7 +5,12 @@
 # does what a display manager would do - source ~/.xprofile if it exists and
 # load the window manager.
 
-[ -f ~/.xprofile ] && . ~/.xprofile
+# source xprofile
+if [ -f "${XDG_CONFIG_HOME}/xorg/xprofile" ]; then
+  . "${XDG_CONFIG_HOME}/xorg/xprofile"
+elif [ -f ~/.xprofile ]; then
+  . ~/.xprofile
+fi
 
 case "$WM" in
   i3) exec i3 ;;

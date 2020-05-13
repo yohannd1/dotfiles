@@ -153,7 +153,6 @@ if [ -z "$NO_CONFIG_LINK" ]; then
     lfconf "termux" ~/.termux
   else
     # Startup-related configuration
-    lfconf "xorg/xprofile" ~/.xprofile # I'm just symlinking it because compatibility with display managers.
     lfconf "stalonetray/stalonetrayrc" ~/.stalonetrayrc
     lfconf "profile" ~/.profile
     lfconf "profile" ~/.zprofile
