@@ -153,9 +153,7 @@ if [ -z "$NO_CONFIG_LINK" ]; then
     lfconf "termux" ~/.termux
   else
     # Startup-related configuration
-    lfconf "xorg/xresources" ~/.Xresources
-    lfconf "xorg/xinitrc" ~/.xinitrc
-    lfconf "xorg/xprofile" ~/.xprofile
+    lfconf "xorg/xprofile" ~/.xprofile # I'm just symlinking it because compatibility with display managers.
     lfconf "stalonetray/stalonetrayrc" ~/.stalonetrayrc
     lfconf "profile" ~/.profile
     lfconf "profile" ~/.zprofile
@@ -167,6 +165,7 @@ if [ -z "$NO_CONFIG_LINK" ]; then
     lfconf "alacritty" ~/.config/alacritty
     lfconf "dunst" ~/.config/dunst
     lfconf "picom" ~/.config/picom
+    lfconf "xorg" ~/.config/xorg
 
     lfconf "qutebrowser/config.py" ~/.config/qutebrowser/config.py
     lfconf "zathura" ~/.config/zathura
