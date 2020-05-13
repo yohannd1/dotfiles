@@ -350,7 +350,8 @@ if g:is_first
   set shiftwidth=4 softtabstop=4
   set expandtab smarttab
 
-  set listchars=tab:»\ ,trail:¬
+  " set listchars=tab:»\ ,trail:¬
+  set listchars=tab:\ \ ,trail:¬
 endif
 
 " }}}
@@ -368,7 +369,7 @@ augroup buffer_load
   au!
   au FileType * if exists("*Ft_".&ft) | exec 'call Ft_'.&ft.'()' | endif
   au FileType * call SetupMakefileRifle()
-  au BufNewFile,BufRead,BufEnter * if line('$') > 5000 | syntax off | endif
+  " au BufNewFile,BufRead,BufEnter * if line('$') > 5000 | syntax off | endif " Not really working well
   au BufNewFile,BufRead,BufEnter *.fx set filetype=c
   au BufNewFile,BufRead,BufEnter *.clj set filetype=clojure
   au BufNewFile,BufRead,BufEnter *.alg set filetype=visualg
@@ -384,6 +385,7 @@ augroup end
 function! Ft_c() " {{{
   let b:rifle = {}
   let b:rifle.run = "gcc '%f' -o '%o' && { '%o'; rm '%o'; }"
+  setlocal noet sw=8 ts=8
   setlocal fdm=syntax
 endfunction " }}}
 function! Ft_cpp() " {{{
@@ -437,7 +439,8 @@ function! Ft_markdown() " {{{
   function! MarkdownFoldExpr(lnum)
     for level in range(1, 6)
       if getline(a:lnum) =~ '^'.repeat('#', level).' .*$'
-        return '>'.level
+        return '>1'
+        " return '>'.level
       endif
     endfo
     return "="
@@ -592,10 +595,14 @@ set timeoutlen=1000 ttimeoutlen=10
 
 " Mouse wheel scrolling
 if !g:is_android
-  noremap <ScrollWheelUp> <C-u>
-  noremap <ScrollWheelDown> <C-d>
-  noremap <RightMouse> <nop>
-  noremap <LeftMouse> <nop>
+  nnoremap <ScrollWheelUp> <C-u>
+  nnoremap <ScrollWheelDown> <C-d>
+  nnoremap <RightMouse> <nop>
+  nnoremap <LeftMouse> <nop>
+  inoremap <ScrollWheelUp> <C-u>
+  inoremap <ScrollWheelDown> <C-d>
+  inoremap <RightMouse> <nop>
+  inoremap <LeftMouse> <nop>
 endif
 
 " Clipboard versions of keymappings

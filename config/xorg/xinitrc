@@ -1,8 +1,10 @@
 #!/usr/bin/env sh
 
-# This file is ran when starting an X server.
+# This is the first file ran on xinit, apparently.
+# In a LARBS fashion, to be compatible with display managers, this file only
+# does what a display manager would do - source ~/.xprofile if it exists and
+# load the window manager.
 
-# Source xprofile,
 [ -f ~/.xprofile ] && . ~/.xprofile
 
 case "$WM" in
@@ -10,7 +12,7 @@ case "$WM" in
   bspwm) exec bspwm ;;
   dwm) exec dwm ;;
   *)
-    printf 'Window manager "%s" is not yet supported.\n' "$WM"
+    printf &>2 'Window manager "%s" is not yet supported.\n' "$WM"
     exit 1
     ;;
 esac

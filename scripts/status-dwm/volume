@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+line="$(amixer get Master | grep '[0-9]\{1,3\}%')"
+
+printf "vol "
+if [ "$(printf "%s" "$line" | awk '{print $6}')" = "[off]" ]; then
+  printf "OFF"
+else
+  printf "%s%%" "$(printf "%s" "$line" | awk '{print $3}')"
+fi

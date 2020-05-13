@@ -18,7 +18,7 @@ super + space
 
 # power menu
 super + shift + o
-    fzpow
+    runnsend fzpow
 
 # screenshot related
 Print
@@ -44,11 +44,11 @@ super + alt + p
 
 # audio
 XF86AudioLowerVolume
-    amixer set Master 5%-
+    amixer set Master 5%-; pkill -RTMIN+10 dwmblocks
 XF86AudioRaiseVolume
-    amixer set Master 5%+
+    amixer set Master 5%+; pkill -RTMIN+10 dwmblocks
 XF86AudioMute
-    amixer -D pulse set Master 1+ toggle
+    amixer -D pulse set Master 1+ toggle; pkill -RTMIN+10 dwmblocks
 
 # media player
 XF86AudioPlay
@@ -77,9 +77,15 @@ super + n
 super + b
     runnsend qutebrowser
 
+# toggle tray
+super + minus
+    pkill stalonetray || stalonetray
+
 # super-o apps
 super + o; c
     $TERMINAL -c float -g 65x10 -e runread cal -3
+super + o; shift + c
+    $TERMINAL -c float -g 65x10 -e pycalc
 super + o; b
     runnsend bkmk
 super + o; a

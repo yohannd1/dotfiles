@@ -179,6 +179,8 @@ register-dirfunc d "$DOTFILES"
 register-dirfunc k "$F_WIKI"
 register-dirfunc docs "$F_PERSIST/docs"
 
+xlog() { less "$XLOG"; }
+
 # }}}
 # Aliases {{{
 
@@ -192,6 +194,8 @@ alias jl='julia'
 alias G='git-check'
 alias e='$EDITOR'
 alias sy='dotsync'
+alias sx='start-xserver'
+alias of='openfork'
 
 exists nvim \
   && alias vi='nvim' vim='nvim' \
@@ -204,8 +208,8 @@ alias egrep='egrep --color=auto'
 # }}}
 # Settings {{{
 
-HISTFILE=~/.zhistory
-HISTSIZE=SAVEHIST=10000
+HISTFILE=~/.cache/zhistory
+HISTSIZE=SAVEHIST=100000
 setopt sharehistory
 setopt extendedhistory
 

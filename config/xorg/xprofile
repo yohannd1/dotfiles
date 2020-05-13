@@ -1,31 +1,45 @@
 #!/usr/bin/env sh
 
-# A collection of commands to run on the start of an X server.
+# A collection of commands to run on the start of an X session.
+# This should be sourced by ~/.xinitrc or your display manager, and not simply
+# loaded alone.
 
-# Environent variables
-source ~/.local/share/env.sh
-source ~/.local/lib/ystd.sh
+# load environment variables (necessary to detect $WM)
+. ~/.local/share/env.sh
 
-# Daemons
-picom -b & # Compositor
-dunst & # Notification daemon
-[ "$WM" != bspwm ] \
-  && start-sxhkd standard & # sxhkd when not on bspwm
+# wm-specific config
+case "$WM" in
+  bspwm)
+    # sxhkd is started in bspwmrc
+    # setbg is started in bspwmrc
+    ;;
+  dwm)
+    start-sxhkd standard &
+    setbg &
+    dwmblocks &
+    ;;
+  i3)
+    start-sxhkd standard &
+    setbg &
+    ;;
+esac
 
-# Background apps
-flameshot & # Screenshot app
+# background applications
+picom -b & # compositor
+dunst & # notification daemon
+flameshot & # screenshot app
+nm-applet & # network manager on tray
+battery-check & # battery check (TODO: make a lighter and more stable script)
+blueman-applet &
 
-# Applets
-nm-applet & # Network manager on tray
-blueman-applet & # Bluetooth
+# extra config (async)
+systemd-inhibit --what=handle-power-key sleep infinity & # disable power button
 
-# Configuration
-systemd-inhibit --what=handle-power-key sleep infinity & # Disable power button
-xset r rate 400 35 & # Speed up xrate
-xinput set-prop 16 325 1 & # Touchpad: tap to click
-xinput set-prop 16 307 1 & # Touchpad: natural scrolling
-setxkbmap -layout br & # Keyboard layout
-xrdb ~/.Xresources
+# extra config (not async)
+setxkbmap -layout br # set keyboard layout
+xset r rate 400 35 # speed up xrate
+xrdb ~/.Xresources # update X resources database
 
-# Scripts
-battery-check & # Battery check & etc.
+# TODO: find an even better way to make this portable
+xinput set-prop "Synaptics TM3096-006" "libinput Tapping Enabled" 1 # Touchpad: tap to click (not working)
+xinput set-prop "Synaptics TM3096-006" "libinput Natural Scrolling Enabled" 1 # Touchpad: natural scrolling

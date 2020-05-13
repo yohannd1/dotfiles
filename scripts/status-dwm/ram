@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+free -m | awk 'NR==2 {printf "ram %.0f%%", $3*100/$2 }'

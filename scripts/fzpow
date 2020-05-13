@@ -34,7 +34,6 @@ showHelp() { # {{{
   printf >&2 "%s %s\n" "Usage: $(basename $0)" \
     "[{lock | exit | suspend | hibernate | reboot | shutdown}]"
   printf >&2 "%s\n" "If no argument is specified, a dmenu pop-up is shown."
-  exit 1
 } # }}}
 
 # Actions
@@ -45,7 +44,14 @@ action_exit() { # {{{
   case "$WM" in
     i3) i3-msg exit ;;
     bspwm) bspc quit ;;
-    *) printf >&2 'Unknown wm "%s" - exiting will not work\n' "$wm" ;;
+    dwm)
+      printf >&2 "%s\n" "dwm has a specific key to be shut down - refer to your config.h file"
+      exit 1
+      ;;
+    *)
+      printf >&2 'Unknown wm "%s" - exiting will not work\n' "$WM"
+      exit 1
+      ;;
   esac
 } # }}}
 action_suspend() { # {{{

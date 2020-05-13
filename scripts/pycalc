@@ -1,0 +1,6 @@
+#!/usr/bin/env -S python3 -i
+# vim: ft=python
+
+from math import *
+
+PI = pi

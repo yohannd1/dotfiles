@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+printf >&2 "%s\n" \
+  "Start time: $(date +"%Y/%m/%d %H:%M:%S")"
+
+if [ -n "$DISPLAY" ]; then
+  printf >&2 "%s\n" "DISPLAY is set, an x server is probably already running; aborting..."
+  exit 1
+fi
+
+logfile="$(mktemp /tmp/xorg.XXXXXXXX)"
+
+printf >&2 "Log file: " "$logfile"
+printf "%s" "$logfile"
+printf >&2 "\n"
+
+export XLOG="$logfile"
+startx >"$logfile" 2>"$logfile"
+exitCode="$?"
+
+printf >&2 "%s\n" \
+  "End time: $(date +"%Y/%m/%d %H:%M:%S")"
+
+exit "$?"

@@ -45,7 +45,7 @@ export DOTSYNC_NO_BACKUP=1
 
 export KEYTIMEOUT=1
 export TERM="xterm-256color"
-export WM="bspwm"
+export WM="dwm"
 
 export GCC_COLORS=\
   'error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'

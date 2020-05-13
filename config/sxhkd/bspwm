@@ -11,10 +11,6 @@ super + alt + r; p
 super + shift + r
     bspc wm -r
 
-# toggle tray
-super + t
-    pkill stalonetray || stalonetray
-
 # toggle lemonbar (temporary measure)
 super + alt + b
     pkill lemonbar || start-lemonbar

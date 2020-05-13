@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# Prints all batteries, their status and their percentage.
+
+# Loop through all attached batteries.
+output() {
+  for battery in /sys/class/power_supply/BAT?; do
+    capacity="$(cat "$battery/capacity")"
+    case "$(cat "$battery/status")" in
+      [Dd]ischarging) status="bat" ;;
+      [Nn]"ot charging") status="err" ;;
+      [Cc]harging) status="chr" ;;
+      [Uu]nknown) status="???" ;;
+      [Ff]ull) status="max" ;;
+    esac
+
+    printf "%s %s%% " "$status" "$capacity"
+  done
+}
+
+o="$(output)"
+printf "%s" "${o::-1}"
