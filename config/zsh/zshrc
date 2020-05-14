@@ -83,7 +83,7 @@ fh() { # {{{
 } # }}}
 
 # Actual binding
-bindkey -s '^R' '\e0Di fh\n'
+bindkey -s '^R' '\e0Cfh\n'
 
 # }}}
 # Commands {{{
