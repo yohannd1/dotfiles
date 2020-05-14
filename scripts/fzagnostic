@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+
+. ~/.local/lib/ystd.sh
+
+while getopts "p:" o; do
+  case "$o" in
+    p) hasPrompt=1 prompt="$OPTARG" ;;
+    *)
+      printf >&2 "%s\n" "Usage: $(basename $0) [-p prompt]"
+      exit 1
+      ;;
+  esac
+done
+
+if [ ! -t 2 ] && exists dmenu; then
+  [ -z "$hasPrompt" ] && prompt="" # set prompt to default if not specified
+  dmenu -p "$prompt" < /dev/stdin
+elif [ -t 2 ] && exists fzf; then
+  [ -z "$hasPrompt" ] && prompt="> " # set prompt to default if not specified
+  printf '\033[2 q' # change cursor to block
+  fzf < /dev/stdin
+else
+  printf >&2 "%s\n" "Could not open dmenu or fzf."
+  exit 1
+fi

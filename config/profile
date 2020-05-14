@@ -1,10 +1,11 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env sh
 
 # Shell Profile
 # This is ran at login on a TTY.
 
 # Load environment variables.
-. ~/.local/share/env.sh
+. ~/.config/dots/env.sh
+. ~/.config/dots/path.sh
 
 # Set up SSH keychaing
 if [ -x /usr/bin/keychain ]; then
@@ -29,5 +30,3 @@ fi
 # printf '\e]PE8EC07C' # bright cyan
 # printf '\e]PFFBF1C7' # bright white
 printf '\e[?16;2;112c' # change cursor to block
-
-clear # redraw screen

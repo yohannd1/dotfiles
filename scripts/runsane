@@ -4,7 +4,7 @@
 # command. Sometimes there is a problem with opening vim, and I guess
 # this might help.
 
-source ~/.local/lib/ystd.sh
+. ~/.local/lib/ystd.sh
 
 if [ $# = 0 ]; then
   printf >&2 "%s\n" "Usage: $(basename $0) <command> [command]"

@@ -44,7 +44,7 @@ super + alt + p
 
 # audio
 XF86AudioLowerVolume
-    amixer set Master 5%-; pkill -RTMIN+10 dwmblocks
+    amixer set Master 5%-; pkill -RTMIN+10 dwmblocks # TODO: make these commands lighter by getting the PID of dwmblocks, storing it somewhere and then doing this
 XF86AudioRaiseVolume
     amixer set Master 5%+; pkill -RTMIN+10 dwmblocks
 XF86AudioMute
@@ -68,6 +68,7 @@ XF86AudioPrev
 super + F12
     redscr toggle 70
 
+# show a report (time, current window, CPU usage, battery etc.)
 super + equal
     display-report
 
@@ -79,7 +80,7 @@ super + b
 
 # toggle tray
 super + minus
-    pkill stalonetray || stalonetray
+    pkill stalonetray || stalonetray -c "$XDG_CONFIG_HOME/stalonetrayrc"
 
 # super-o apps
 super + o; c

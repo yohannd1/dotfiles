@@ -6,7 +6,7 @@
 # Reference:
 # https://unix.stackexchange.com/questions/103252/how-do-i-get-a-websites-title-using-command-line
 
-source ~/.local/lib/ystd.sh
+. ~/.local/lib/ystd.sh
 depCheck wget perl
 
 if [ $# = 0 ]; then

@@ -6,7 +6,7 @@
 
 # TODO: actually do the thing.
 
-source ~/.local/lib/ystd.sh
+. ~/.local/lib/ystd.sh
 depCheck broot
 
 cd "$1"

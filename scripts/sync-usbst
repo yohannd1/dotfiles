@@ -3,7 +3,7 @@
 # A simple script to sync some things from my USB station (local to actual USB)
 # I still have to explain this.
 
-source ~/.local/lib/ystd.sh
+. ~/.local/lib/ystd.sh
 depCheck rsync fd
 
 if [ -z "$F_USB_STATION" ]; then

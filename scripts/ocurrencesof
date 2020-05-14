@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-source ~/.local/lib/ystd.sh
+. ~/.local/lib/ystd.sh
 depCheck rg fd
 
 if [ $# != 2 ]; then

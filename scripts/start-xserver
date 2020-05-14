@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-source ~/.local/lib/ystd.sh
+. ~/.local/lib/ystd.sh
 depCheck startx
 
 if [ -n "$DISPLAY" ]; then

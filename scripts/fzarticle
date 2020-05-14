@@ -3,7 +3,7 @@
 # A script to find and load articles.
 # Works better with fuzzy finders.
 
-source ~/.local/lib/ystd.sh
+. ~/.local/lib/ystd.sh
 depCheck fd
 
 if [ $# != 0 ]; then

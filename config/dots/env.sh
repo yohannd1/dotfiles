@@ -1,13 +1,4 @@
 isAndroid() { test "$(uname -o)" = Android; }
-pathadd() {
-  [ $# != 1 ] && return 1
-
-  if [[ ":$PATH:" == *"$1"* ]]; then # TODO: make this POSIX-compliant
-    return 2
-  else
-    export PATH="${PATH:+"${PATH}:"}${1}"
-  fi
-}
 
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DOWNLOAD_DIR="$HOME/inbox"
@@ -43,6 +34,7 @@ export BAT_THEME="base16"
 export NNN_OPENER="$OPENER"
 export FLAMEDASH_SCR_FOLDER="$STORAGE/pictures/screenshots"
 export SETBG_WALLPAPER_DIR="$STORAGE/pictures/wallpapers"
+export SETBG_THEME="volcano"
 export BKMK_FILE="$WIKI/data/bookmarks"
 export DOTSYNC_NO_BACKUP=1
 
@@ -56,15 +48,3 @@ export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quo
 if [ -r ~/.local/share/dircolors ]; then
   eval "$(dircolors -b ~/.local/share/dircolors)"
 fi
-
-pathadd "$HOME/.local/bin"
-pathadd "$GOPATH"
-pathadd "$CARGO_HOME/bin"
-
-# Seems to be slowing down, so I'll use the ony below and update when needed.
-pathadd "${GEM_HOME:-$HOME/.gem}/ruby/2.7.0/bin"
-
-# Programs that I've installed in /opt
-for dir in /opt/*; do
-  pathadd "$dir/bin"
-done

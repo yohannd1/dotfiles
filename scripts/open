@@ -3,7 +3,7 @@
 # An opener script based off nuke.
 # https://github.com/jarun/nnn/blob/master/plugins/nuke
 
-source ~/.local/lib/ystd.sh
+. ~/.local/lib/ystd.sh
 depCheck termup runpage
 
 # Environment Variables

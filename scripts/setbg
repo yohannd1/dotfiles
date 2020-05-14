@@ -10,5 +10,5 @@ if [ -z "$SETBG_WALLPAPER_DIR" ]; then
   exit 1
 fi
 
-image="$(shuf -n1 -e "$SETBG_WALLPAPER_DIR"/*.jpg)"
+image="$(shuf -n1 -e "$SETBG_WALLPAPER_DIR"/"$SETBG_THEME"/*.jpg)" # there's no problem if SETBG_THEME is unset, since it would evaluate to simply the wallpapers path.
 feh --no-fehbg --bg-fill "$image"

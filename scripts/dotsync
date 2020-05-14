@@ -152,8 +152,9 @@ if [ -z "$NO_CONFIG_LINK" ]; then
   if isAndroid; then
     lfconf "termux" ~/.termux
   else
+
     # Startup-related configuration
-    lfconf "stalonetray/stalonetrayrc" ~/.stalonetrayrc
+    lfconf "stalonetrayrc" ~/.config/stalonetrayrc
     lfconf "profile" ~/.profile
     lfconf "profile" ~/.zprofile
 
@@ -181,6 +182,7 @@ if [ -z "$NO_CONFIG_LINK" ]; then
   lfconf "tmux.conf" ~/.tmux.conf
   lfconf "inputrc" ~/.config/inputrc
   lfconf "mimeapps.list" ~/.config/mimeapps.list
+  lfconf "dots" ~/.config/dots
 
   # Programs
   lfconf "broot" ~/.config/broot

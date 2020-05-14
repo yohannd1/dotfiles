@@ -8,7 +8,7 @@
 # Settings
 OPTIONS='lock\nexit\nsuspend\nhibernate\nreboot\nshutdown'
 
-source ~/.local/lib/ystd.sh
+. ~/.local/lib/ystd.sh
 depCheck dmenu systemctl betterlockscreen
 
 fuzzyMatch() { printf "$OPTIONS" | dmenu -p "Power: "; }

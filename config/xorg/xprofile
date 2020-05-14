@@ -4,8 +4,8 @@
 # This should be sourced by ~/.xinitrc or your display manager, and not simply
 # loaded alone.
 
-# load environment variables (necessary to detect $WM)
-. ~/.local/share/env.sh
+# reload environment variables
+. ~/.config/dots/env.sh
 
 # wm-specific config
 case "$WM" in

@@ -7,11 +7,8 @@
 source ~/.local/lib/ystd.sh &>/dev/null \
   || printf "Couldn't load library file.\n"
 
-# Set the shell title
-# setTitle "zsh"
-
 # Load some other libraries
-sourceIf "$HOME/.local/share/env.sh"
+sourceIf ~/.config/dots/env.sh
 sourceIf "$STORAGE/share/zshrc.personal"
 sourceIf "$HOME/.config/broot/launcher/bash/br"
 
