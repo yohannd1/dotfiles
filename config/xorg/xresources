@@ -23,7 +23,7 @@
     #define COL12 #CAA9FA
     #define COL13 #FF92D0
     #define COL14 #9AEDFE
-    #define COL15 #E6E6E6
+    #define COL15 #F8F8F2
 
 #elif defined(GRUVBOX_DARK)
     #define COL0  #282828
@@ -103,6 +103,7 @@
 #define COL_FG COL15
 #define COL_BG COL0
 
+!! st
 st.alpha: 0.8
 st.font: FONT
 
@@ -113,6 +114,10 @@ dwm.norm.border: COL0
 dwm.sel.bg: COL15
 dwm.sel.fg: COL0
 dwm.sel.border: COL15
+
+!! qutebrowser
+qutebrowser.border: COL_BG
+qutebrowser.selection: #44475a
 
 *.background: COL_BG
 *.foreground: COL_FG

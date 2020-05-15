@@ -228,7 +228,6 @@ if [ -z "$NO_NEOVIM_PLUGIN" ]; then
   ip "jsonc.vim" "https://github.com/neoclide/jsonc.vim"
   ip "lightline.vim" "https://github.com/itchyny/lightline.vim"
   ip "yats.vim" "https://github.com/HerringtonDarkholme/yats.vim"
-  ip "ctrlp.vim" "https://github.com/ctrlpvim/ctrlp.vim"
   ip "emmet-vim" "https://github.com/mattn/emmet-vim"
   ip "vim-hy" "https://github.com/hylang/vim-hy"
   ip "vim-fsharp" "https://github.com/fsharp/vim-fsharp"
@@ -249,9 +248,9 @@ if [ -z "$NO_NEOVIM_PLUGIN" ]; then
   ip "vim-vinegar" "https://github.com/tpope/vim-vinegar"
   ip "quick-scope" "https://github.com/unblevable/quick-scope"
   ip "haskell-vim" "https://github.com/neovimhaskell/haskell-vim"
-  ip "vim-orgmode" "https://github.com/jceb/vim-orgmode"
   ip "python-syntax" "https://github.com/vim-python/python-syntax"
   ip "vim-rsi" "https://github.com/tpope/vim-rsi"
+  ip "dracula" "https://github.com/dracula/vim"
 
   lf "$NVIM_PLUGS_FOLDER" ~/.config/nvim/bundle
 fi

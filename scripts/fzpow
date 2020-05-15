@@ -2,16 +2,16 @@
 # vim: fdm=marker
 
 # A simple script for power actions.
-# If no args are specified, dmenu / fzf is loaded.
+# If no args are specified, fzagnostic is opened.
 # If an arg is provided, this script tries to choose said option.
 
 # Settings
 OPTIONS='lock\nexit\nsuspend\nhibernate\nreboot\nshutdown'
 
 . ~/.local/lib/ystd.sh
-depCheck dmenu systemctl betterlockscreen
+depCheck fzagnostic systemctl betterlockscreen
 
-fuzzyMatch() { printf "$OPTIONS" | dmenu -p "Power: "; }
+fuzzyMatch() { printf "$OPTIONS" | fzagnostic -p "Power: "; }
 matchArgs() { # {{{
   case $# in
     0) local choice="$(fuzzyMatch)"
@@ -33,7 +33,7 @@ matchArgs() { # {{{
 showHelp() { # {{{
   printf >&2 "%s %s\n" "Usage: $(basename $0)" \
     "[{lock | exit | suspend | hibernate | reboot | shutdown}]"
-  printf >&2 "%s\n" "If no argument is specified, a dmenu pop-up is shown."
+  printf >&2 "%s\n" "If no argument is specified, a fzagnostic pop-up is shown."
 } # }}}
 
 # Actions

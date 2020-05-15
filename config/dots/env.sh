@@ -34,7 +34,7 @@ export BAT_THEME="base16"
 export NNN_OPENER="$OPENER"
 export FLAMEDASH_SCR_FOLDER="$STORAGE/pictures/screenshots"
 export SETBG_WALLPAPER_DIR="$STORAGE/pictures/wallpapers"
-export SETBG_THEME="volcano"
+export SETBG_THEME="ice"
 export BKMK_FILE="$WIKI/data/bookmarks"
 export DOTSYNC_NO_BACKUP=1
 
@@ -45,6 +45,6 @@ export WM="dwm"
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 # Dircolors
-if [ -r ~/.local/share/dircolors ]; then
-  eval "$(dircolors -b ~/.local/share/dircolors)"
+if [ -r ~/.config/dircolors ]; then
+  eval "$(dircolors -b ~/.config/dircolors)"
 fi

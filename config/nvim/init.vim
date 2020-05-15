@@ -259,7 +259,7 @@ let g:ctrlp_cmd = 'CtrlP'
 " Lightline
 let g:lightline = {}
 let g:lightline.active = {}
-let g:lightline.colorscheme = "gruvbox"
+let g:lightline.colorscheme = "wombat"
 let g:lightline.active.left = [["mode", "paste"], ["readonly", "filename"]]
 let g:lightline.active.right = [["lineinfo"], ["percent"], ["fileformat", "fileencoding", "filetype"]]
 
@@ -331,13 +331,24 @@ if g:is_first
   let &autochdir = !g:is_win
 
   syntax on
-  silent! colorscheme gruvbox
+  silent! colorscheme dracula
   let &background = g:is_win ? "light" : "dark" " I like to use light backgrounds on windows.
+
+  " Dracula patch
+  hi Comment ctermfg=7
+  hi Folded ctermfg=7 cterm=italic
+  hi LineNr ctermfg=7 cterm=italic
+  hi CursorLineNr cterm=italic
+  hi BufTabLineFill ctermbg=0
+  hi TabLineFill ctermbg=0 ctermfg=5
+  hi TabLineSel ctermbg=5 ctermfg=0
+  hi TabLine ctermfg=5 ctermbg=0 cterm=NONE
+
   if g:is_home
     " Disable background if I'm using vim at home, since my terminals
     " are transparent
     hi Normal guibg=NONE ctermbg=NONE
-    hi BufTabLineFill guibg=NONE ctermbg=NONE
+    " hi BufTabLineFill guibg=NONE ctermbg=NONE " not on dracula
     hi CursorLine guibg=NONE ctermbg=NONE
     hi CursorLineNr guibg=NONE ctermbg=NONE
   endif

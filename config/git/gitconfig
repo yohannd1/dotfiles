@@ -35,10 +35,10 @@
     contrib = shortlog -sn
 
 [diff]
-    tool = vimdiff
+    tool = nvim -d
 
 [merge]
-    tool = vimdiff
+    tool = nvim -d
 
 [include]
     path = ~/.gitconfig.local

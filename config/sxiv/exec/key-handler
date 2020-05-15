@@ -2,6 +2,6 @@
 
 while read file; do
   case "$1" in
-    "y") imgclip "$file" ;;
+    y) imgclip "$file" ;;
   esac
 done
