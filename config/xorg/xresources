@@ -1,45 +1,135 @@
 ! vim: ft=xdefaults
 
-*.font:	JetBrains Mono Medium:pixelsize=14.5:antialias=true:autohint=true;
-*.alpha: 0.8
+! #define DRACULA
+#define GRUVBOX_DARK
+! #define GRUVBOX_DARK_2
+! #define GRUVBOX_LIGHT
 
-!! Set the background, foreground and cursor colors as below:
-*.background: #282828
-*.foreground: #FBF1C7
-*.cursorColor: #FBF1C7
+#define FONT JetBrains Mono Medium:pixelsize=14.5:antialias=true:autohint=true;
 
-!! Gruvbox Dark (Better to use the default one, I guess)
-! *.color0: #282828
-! *.color1: #9D0006
-! *.color2: #79740E
-! *.color3: #B57614
-! *.color4: #076678
-! *.color5: #8F3F71
-! *.color6: #427B58
-! *.color7: #FBF1C7
-! *.color8: #32302F
-! *.color9: #FB4934
-! *.color10: #B8BB26
-! *.color11: #FABD2F
-! *.color12: #83A598
-! *.color13: #D3869B
-! *.color14: #8EC07C
-! *.color15: #FBF1C7
+#if defined(DRACULA)
+    #define COL0  #282A36
+    #define COL1  #FF5555
+    #define COL2  #50FA7B
+    #define COL3  #F1FA8C
+    #define COL4  #BD93F9
+    #define COL5  #FF79C6
+    #define COL6  #8BE9FD
+    #define COL7  #BFBFBF
+    #define COL8  #4D4D4D
+    #define COL9  #FF6E67
+    #define COL10 #5AF78E
+    #define COL11 #F4F99D
+    #define COL12 #CAA9FA
+    #define COL13 #FF92D0
+    #define COL14 #9AEDFE
+    #define COL15 #E6E6E6
 
-!! Gruvbox Light
-! *.color0: #fbf1c7
-! *.color1: #cc241d
-! *.color2: #98971a
-! *.color3: #d79921
-! *.color4: #458588
-! *.color5: #b16286
-! *.color6: #689d6a
-! *.color7: #7c6f64
-! *.color8: #928374
-! *.color9: #9d0006
-! *.color10: #79740e
-! *.color11: #b57614
-! *.color12: #076678
-! *.color13: #8f3f71
-! *.color14: #427b58
-! *.color15: #3c3836
+#elif defined(GRUVBOX_DARK)
+    #define COL0  #282828
+    #define COL1  #CC241D
+    #define COL2  #98971A
+    #define COL3  #D79921
+    #define COL4  #458588
+    #define COL5  #B16286
+    #define COL6  #689D6A
+    #define COL7  #A89984
+    #define COL8  #928374
+    #define COL9  #FB4934
+    #define COL10 #B8BB26
+    #define COL11 #FABD2F
+    #define COL12 #83A598
+    #define COL13 #D3869B
+    #define COL14 #8EC07C
+    #define COL15 #EBDBB2
+
+#elif defined(GRUVBOX_DARK_2)
+    #define COL0  #282828
+    #define COL1  #9D0006
+    #define COL2  #79740E
+    #define COL3  #B57614
+    #define COL4  #076678
+    #define COL5  #8F3F71
+    #define COL6  #427B58
+    #define COL7  #FBF1C7
+    #define COL8  #32302F
+    #define COL9  #FB4934
+    #define COL10 #B8BB26
+    #define COL11 #FABD2F
+    #define COL12 #83A598
+    #define COL13 #D3869B
+    #define COL14 #8EC07C
+    #define COL15 #FBF1C7
+
+!! This one is crappy
+#elif defined(GRUVBOX_LIGHT)
+    #define COL0  #FBF1C7
+    #define COL1  #CC241D
+    #define COL2  #98971A
+    #define COL3  #D79921
+    #define COL4  #458588
+    #define COL5  #B16286
+    #define COL6  #689D6A
+    #define COL7  #7C6F64
+    #define COL8  #928374
+    #define COL9  #9D0006
+    #define COL10 #79740E
+    #define COL11 #B57614
+    #define COL12 #076678
+    #define COL13 #8F3F71
+    #define COL14 #427B58
+    #define COL15 #3C3836
+
+#else
+    #define COL0
+    #define COL1
+    #define COL2
+    #define COL3
+    #define COL4
+    #define COL5
+    #define COL6
+    #define COL7
+    #define COL8
+    #define COL9
+    #define COL10
+    #define COL11
+    #define COL12
+    #define COL13
+    #define COL14
+    #define COL15
+#endif
+
+#define COL_CURSOR COL15
+#define COL_FG COL15
+#define COL_BG COL0
+
+st.alpha: 0.8
+st.font: FONT
+
+!! dwm-related
+dwm.norm.bg: COL0
+dwm.norm.fg: COL15
+dwm.norm.border: COL0
+dwm.sel.bg: COL3
+dwm.sel.fg: COL0
+dwm.sel.border: COL15
+
+*.background: COL_BG
+*.foreground: COL_FG
+*.cursorColor: COL_CURSOR
+*.color0:  COL0
+*.color1:  COL1
+*.color2:  COL2
+*.color3:  COL3
+*.color4:  COL4
+*.color5:  COL5
+*.color6:  COL6
+*.color7:  COL7
+*.color8:  COL8
+*.color9:  COL9
+*.color10: COL10
+*.color11: COL11
+*.color12: COL12
+*.color13: COL13
+*.color14: COL14
+*.color15: COL15
