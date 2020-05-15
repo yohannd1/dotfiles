@@ -164,14 +164,21 @@ n() { # {{{
     rm -f "$NNN_TMPFILE" > /dev/null
   fi
 } # }}}
+dp() { # {{{
+  case $# in
+    0) "$TERMINAL" &>/dev/null & disown ;;
+    1) (cd "$1" && "$TERMINAL" &>/dev/null) & disown ;;
+    *) exit 1 ;;
+  esac
+} # }}}
 rl() { source "${ZDOTDIR:-$HOME}/.zshrc"; }
 gt() { [ $# = 1 ] && (cd "$1" && rg "$(sed 's/1/T/g' <<<'1ODO:')"); }
 wp() { local c="$(select-project)"; [ -n "$c" ] && br "$c"; }
 Wp() { local c="$(select-project)"; [ -n "$c" ] && inspect-dir "$c" "$1"; }
 
 register-dirfunc d "$DOTFILES"
-register-dirfunc k "$F_WIKI"
-register-dirfunc docs "$F_PERSIST/docs"
+register-dirfunc k "$WIKI"
+register-dirfunc e "$STORAGE/ebooks"
 
 xlog() { less "$XLOG"; }
 xrl() { xrdb ~/.config/xorg/xresources; }

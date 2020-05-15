@@ -1,7 +1,7 @@
 ! vim: ft=xdefaults
 
-! #define DRACULA
-#define GRUVBOX_DARK
+#define DRACULA
+! #define GRUVBOX_DARK
 ! #define GRUVBOX_DARK_2
 ! #define GRUVBOX_LIGHT
 
@@ -110,7 +110,7 @@ st.font: FONT
 dwm.norm.bg: COL0
 dwm.norm.fg: COL15
 dwm.norm.border: COL0
-dwm.sel.bg: COL3
+dwm.sel.bg: COL15
 dwm.sel.fg: COL0
 dwm.sel.border: COL15
 
