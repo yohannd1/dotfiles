@@ -107,6 +107,13 @@
 st.alpha: 0.8
 st.font: FONT
 
+!! dmenu
+dmenu.font: FONT
+dmenu.norm.bg: COL0
+dmenu.norm.fg: COL15
+dmenu.sel.bg: COL15
+dmenu.sel.fg: COL0
+
 !! dwm-related
 dwm.norm.bg: COL0
 dwm.norm.fg: COL15

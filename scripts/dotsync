@@ -167,7 +167,7 @@ if [ -z "$NO_CONFIG_LINK" ]; then
     lfconf "picom" ~/.config/picom
     lfconf "xorg" ~/.config/xorg
 
-    lfconf "qutebrowser/config.py" ~/.config/qutebrowser/config.py
+    lfglob "$DOTFILES/config/qutebrowser" ~/.config/qutebrowser
     lfconf "zathura" ~/.config/zathura
     lfconf "taskwarrior" ~/.config/taskwarrior
     lfconf "sxiv" ~/.config/sxiv
