@@ -336,7 +336,7 @@ if g:is_first
 
   " Dracula patch
   hi Comment ctermfg=7
-  hi Folded ctermfg=7 cterm=italic
+  hi Folded ctermfg=7 ctermbg=0 cterm=italic
   hi LineNr ctermfg=7 cterm=italic
   hi CursorLineNr cterm=italic
   hi BufTabLineFill ctermbg=0

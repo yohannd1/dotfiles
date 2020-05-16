@@ -3,7 +3,10 @@ import theme
 
 def command_output(*args):
     proc = sp.Popen(args, encoding="UTF-8", stdout=sp.PIPE)
-    return proc.stdout.read().strip()
+    stdout = proc.stdout.read().strip()
+    proc.stdout.close()
+    proc.kill()
+    return stdout
 
 xgetres = lambda res: command_output("xgetres", res)
 

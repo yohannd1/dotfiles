@@ -104,7 +104,7 @@
 #define COL_BG COL0
 
 !! st
-st.alpha: 0.8
+st.alpha: 0.9
 st.font: FONT
 
 !! dmenu

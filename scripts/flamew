@@ -8,7 +8,7 @@ if [ $# != 1 ]; then
   exit 1
 fi
 
-BASE_FOLDER="${FLAMEDASH_SCR_FOLDER:-~/.cache/screenshots}"
+BASE_FOLDER="${FLAMEW_SCR_FOLDER:-~/.cache/screenshots}"
 folder="$BASE_FOLDER/$(date +%Y-%m)"
 
 if ! mkdir -p "$folder"; then
