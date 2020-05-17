@@ -37,7 +37,7 @@ export LESS="-RC"
 export KEYTIMEOUT=1
 export NNN_OPENER="$OPENER"
 export FZF_DEFAULT_OPTS='
-  --height=60% --layout=reverse --border
+  --height=80% --layout=reverse --border
   --color hl:4,hl+:2
   --color prompt:5,marker:5,spinner:5
 '
