@@ -3,7 +3,7 @@
 cacheDir="${XDG_CACHE_HOME:-"$HOME/.cache"}"
 cacheFile="$cachedir/pathbin"
 
-[ -r "$cacheDir" ] || mkdir -p "$cacheDir"
+[ -d "$cacheDir" ] || mkdir -p "$cacheDir"
 
 IFS=:
 if stest -dqr -n "$cache" $PATH; then

@@ -12,7 +12,7 @@ tempConf="$dataFolder/conf"
 tempLog="$dataFolder/log"
 
 # cleanup / kill current sxhkd on this display if it exists
-if [ -r "$dataFolder" ]; then
+if [ -d "$dataFolder" ]; then
   if [ -f "$dataFolder/pid" ]; then
     oldPid="$(cat "$dataFolder/pid")"
     kill "$oldPid" 2>/dev/null

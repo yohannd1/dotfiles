@@ -25,9 +25,7 @@ then
   fd . "$F_USB_STATION/config/nvim/bundle" -t d -d 1 \
     | while read plugin; do
       for file in .git .gitignore .github; do
-        if [ -r "$plugin/$file" ]; then
           rm -rf "$plugin/$file"
-        fi
       done
     done
 fi

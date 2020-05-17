@@ -17,8 +17,8 @@ exists() { command -v "$1" >/dev/null 2>/dev/null; }
 isAndroid() { [ "$(uname -o)" = "Android" ]; }
 
 installDotfiles() { # {{{
-  if [ -r "$DOTFILES" ]; then
-    printf >&2 "%s\n" "There is already a folder in $DOTFILES. If you want to install, manually remove said folder."
+  if [ -e "$DOTFILES" ]; then
+    printf >&2 "%s\n" "There is already a file/directory named $DOTFILES. If you want to install, manually remove it."
     exit 1
   else
     printf >&2 "SSH or HTTPS? [S/h] "
@@ -128,7 +128,7 @@ ip() { # {{{
 # Check if dotfiles are installed {{{
 
 if [ -z "$NO_INSTALL_CHECK" ]; then
-  if ! [ -r "$DOTFILES" ]; then
+  if [ ! -e "$DOTFILES" ]; then
     cat <<EOF
 Welcome to YohananDiamond's Dotfiles Setup!
 This is a personal script I've made that links some config files I have.
@@ -215,7 +215,7 @@ fi
 # NeoVim Plugins {{{
 
 if [ -z "$NO_NEOVIM_PLUGIN" ]; then
-  if ! [ -r "$NVIM_PLUGS_FOLDER" ]; then
+  if [ ! -d "$NVIM_PLUGS_FOLDER" ]; then
     printf >&2 "%s\n" "Making neovim plugin directory..."
     mkdir -p "$NVIM_PLUGS_FOLDER"
   fi
@@ -278,8 +278,8 @@ fi
 
 # Broken Symlinks
 for folder in ~/.local/{bin,lib,share}; do
-  if [ -r "$folder" ]; then
-    find "$folder" -mindepth 1 -maxdepth 1 |
+  if [ -d "$folder" ]; then
+    fd '.' "$folder" -d1 |
       while read file; do
         if file "$file" | grep -q "^$file: broken symbolic link"; then
           printf >&2 "Removing broken symlink: '$file'... "

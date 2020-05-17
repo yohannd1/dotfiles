@@ -13,5 +13,5 @@ Usage: $(basename $0) <directory> <pattern>"
 fi
 
 cd "$1"
-printf "In filenames:\n"; fd "$2"
-printf "In files:\n"; rg "$2"
+printf "In filenames:\n"; fd -- "$2"
+printf "In files:\n"; rg -- "$2"

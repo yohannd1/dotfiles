@@ -136,7 +136,7 @@ find-file() { # {{{
 
   if [ -f "$choice" ]; then
     "$prog" "$choice"
-  elif [ -r "$choice" ]; then
+  elif [ -d "$choice" ]; then
     cd "$choice"
   else
     exit 1
