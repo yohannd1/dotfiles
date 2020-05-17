@@ -1,10 +1,11 @@
 #!/usr/bin/env sh
 
-prog="$(pathbin | dmenu "$@")"
+choice="$(gen-pathbin | fzagnostic)" || exit 1
 
-if grep -q '!$' <<<"$prog"; then
-  prog="${prog%?}"
-  exec $TERMINAL -e "$prog"
+if printf "%s" "$choice" | grep -q '!$'; then
+  # choice ends with !, so it should be opened in a new instance
+  "$TERMINAL" -e "${choice%?}"
 else
-  exec "$prog"
+  # choice doesn't end with !, open silently
+  "$choice"
 fi

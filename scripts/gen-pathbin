@@ -1,10 +1,9 @@
 #!/usr/bin/env sh
 
-cachedir="${XDG_CACHE_HOME:-"$HOME/.cache"}"
-cache="$cachedir/pathbin"
+cacheDir="${XDG_CACHE_HOME:-"$HOME/.cache"}"
+cacheFile="$cachedir/pathbin"
 
-[ -e "$cachedir" ] \
-  || mkdir -p "$cachedir"
+[ -r "$cacheDir" ] || mkdir -p "$cacheDir"
 
 IFS=:
 if stest -dqr -n "$cache" $PATH; then

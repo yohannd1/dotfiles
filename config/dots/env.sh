@@ -44,6 +44,7 @@ export FZF_DEFAULT_OPTS='
 export GCC_COLORS='error=01;31:warning=01;33:note=01;34:caret=01;32:locus=01:quote=03'
 
 # dotfiles program options
+export DIR_BOOKMARKS="$STORAGE/share/dir-bookmarks"
 export FLAMEW_SCR_FOLDER="$STORAGE/pictures/screenshots"
 export SETBG_WALLPAPER_DIR="$STORAGE/pictures/wallpapers"
 export SETBG_THEME="ice"

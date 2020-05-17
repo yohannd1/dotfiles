@@ -88,100 +88,81 @@ bindkey -s '^R' '\e0Cfh\n'
 # }}}
 # Commands {{{
 
-function inspect-dir { # {{{
-  [ $# != 1 ] && [ $# != 2 ] \
-    && return 1
+assist::find-file.gen() { # {{{
+  printf "%s\n" ".."
+  fd
+} # }}}
+assist::where-to-go.gen() { # {{{
+  [ -r "$DIR_BOOKMARKS" ] \
+    && cat "$DIR_BOOKMARKS" | while read bookmark; do
+      eval 'printf "@bkmk %s\n" '"$bookmark" # yes, it's eval-unsafe.
+    done
 
-  local ch="$2"
-  local dir="$(realpath -m $1)"
-  if ! [ -r "$dir" ]; then
-    printf "Invalid directory: %s\n" "$dir"
+  [ -d "$PROJECTS" ] && \
+    (cd "$PROJECTS" && fd -d1 -td '.' | sed 's/^/@proj /g')
+} # }}}
+
+where-to-go() { # {{{
+  local choice tag body
+
+  choice="$(assist::where-to-go.gen | fzagnostic)" || return 1
+  tag=$(sed 's/^@\([aA-zZ0-9\-]\+\) .*$/\1/g' <<<"$choice")
+  body=$(sed 's/^@[aA-zZ0-9\-]\+ \(.*\)$/\1/g' <<<"$choice")
+
+  case "$tag" in
+    proj) cd "$PROJECTS/$body" ;;
+    bkmk) cd "$body" ;;
+  esac
+} # }}}
+nnn-explore() { # {{{
+  # block nesting of nnn in subshells
+  if [ -n $NNNLVL ] && [ "${NNNLVL:-0}" -ge 1 ]; then
+    printf "%s\n" "nnn is already running"
     return 1
   fi
 
-  printf '\e[2 q'
-  printf '\033[38;5;11m%s\033[m %s\n' "Directory:" "$dir"
-
-  while [ -z "$EXIT" ]; do
-    if [ -z "$ch" ]; then
-      printf "::::: [c]d, [b]root, [n]nn, [g]it-check, [q]uit\n"
-      printf '\e[38;5;11m(dir)\e[m λ> '
-      read -k1 ch
-      printf '\n'
-    fi
-
-    case "$ch" in
-      c) cd "$dir"; local EXIT=1 ;;
-      b) br "$dir"; local EXIT=1 ;;
-      n) n "$dir"; local EXIT=1 ;;
-      g) git-check "$dir" ;;
-      "") clear ;;
-      ) local EXIT=1 ;;
-      q) local EXIT=1 ;;
-      "") local EXIT=1 ;;
-      $'\n') local EXIT=1 ;;
-      *) printf 'Invalid option: "%s"\n' "$ch" ;;
-    esac
-  done
-} # }}}
-function select-project { # {{{
-  local projects="$(cd ~/projects && fd -d 1 -t d)"
-  local choice="$(fzf-tmux <<<"$projects")"
-  if [ -n "$choice" ]; then
-    printf "%s\n" "${HOME}/projects/$choice"
-  fi
-} # }}}
-function register-dirfunc { # {{{
-  [ $# != 2 ] && return 1
-  local commandWrapper="$(printf "%s%s() { %s %s; }" "%s" "$1" "%s" "$2")"
-  for cmd in br inspect-dir; do
-    [ "$cmd" = "inspect-dir" ] \
-      && local wordPrefix='W' \
-      || local wordPrefix='w'
-
-    local command="$(printf "$commandWrapper" "$wordPrefix" "$cmd")"
-    eval "$command"
-  done
-} # }}}
-
-n() { # {{{
-  # Block nesting of nnn in subshells
-  if [ -n $NNNLVL ] && [ "${NNNLVL:-0}" -ge 1 ]; then
-    printf "%s\n" "nnn is already running"
-    return
-  fi
-
-  # The default behaviour is to cd on quit (nnn checks if NNN_TMPFILE is set)
-  # To cd on quit only on ^G, remove the "export" as in:
-  #     NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
-  # NOTE: NNN_TMPFILE is fixed, should not be modified
-  NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
-
+  export NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
   nnn "$@"
-
   if [ -f "$NNN_TMPFILE" ]; then
-    source "$NNN_TMPFILE"
-    rm -f "$NNN_TMPFILE" > /dev/null
+    . "$NNN_TMPFILE"
+    rm -f "$NNN_TMPFILE" >/dev/null
   fi
 } # }}}
-dp() { # {{{
-  case $# in
-    0) "$TERMINAL" &>/dev/null & disown ;;
-    1) (cd "$1" && "$TERMINAL" &>/dev/null) & disown ;;
-    *) exit 1 ;;
-  esac
+find-file() { # {{{
+  local prog choice choices
+
+  prog="${1:-$EDITOR}"
+  choice="$(assist::find-file.gen | fzagnostic)" || return 1
+
+  if [ -f "$choice" ]; then
+    "$prog" "$choice"
+  elif [ -r "$choice" ]; then
+    cd "$choice"
+  else
+    exit 1
+  fi
 } # }}}
-rl() { source "${ZDOTDIR:-$HOME}/.zshrc"; }
-gt() { [ $# = 1 ] && (cd "$1" && rg "$(sed 's/1/T/g' <<<'1ODO:')"); }
-wp() { local c="$(select-project)"; [ -n "$c" ] && br "$c"; }
-Wp() { local c="$(select-project)"; [ -n "$c" ] && inspect-dir "$c" "$1"; }
+duplicate() { # {{{
+  case $# in
+    0) nohup "$TERMINAL" &>/dev/null ;;
+    1) (cd "$1" && nohup "$TERMINAL" &>/dev/null) ;;
+    *) exit 1 ;;
+  esac & disown
+} # }}}
 
-register-dirfunc d "$DOTFILES"
-register-dirfunc k "$WIKI"
-register-dirfunc e "$STORAGE/ebooks"
+shell::reload() { source "${ZDOTDIR:-$HOME}/.zshrc"; }
+xorg::log() { less "$XLOG"; }
+xorg::reload-db() { xrdb ~/.config/xorg/xresources; }
 
-xlog() { less "$XLOG"; }
-xrl() { xrdb ~/.config/xorg/xresources; }
+# related aliases
+alias \
+  w='where-to-go' \
+  n='nnn-explore' \
+  f='find-file' \
+  d='duplicate'
+alias rl='shell::reload'
+alias xlog='xorg::log'
+alias xrl='xorg::reload-db'
 
 # }}}
 # Aliases {{{
@@ -193,7 +174,7 @@ alias cpsync='cp -ur'
 
 alias p3='python3'
 alias jl='julia'
-alias G='git-check'
+alias g='git-check'
 alias e='$EDITOR'
 
 alias sy='dotsync'
