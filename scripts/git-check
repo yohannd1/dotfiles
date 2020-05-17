@@ -26,8 +26,8 @@ if git status -sb; then
       p) git pull ;;
       s) git push ;;
       f) git fetch ;;
-      "") EXIT=0 ;;
       q) EXIT=0 ;;
+      "") ;;
       ) EXIT=0 ;;
       "") clear ;;
       *) printf 'Invalid option: "%s"\n' "$ch" ;;
