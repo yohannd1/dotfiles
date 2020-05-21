@@ -1,13 +1,13 @@
 #!/usr/bin/env sh
 
 cacheDir="${XDG_CACHE_HOME:-"$HOME/.cache"}"
-cacheFile="$cachedir/pathbin"
+cacheFile="$cacheDir/pathbin"
 
 [ -d "$cacheDir" ] || mkdir -p "$cacheDir"
 
 IFS=:
-if stest -dqr -n "$cache" $PATH; then
-  stest -flx $PATH | sort -u | tee "$cache"
+if stest -dqr -n "$cacheFile" $PATH; then
+  stest -flx $PATH | sort -u | tee "$cacheFile"
 else
-  cat "$cache"
+  cat "$cacheFile"
 fi

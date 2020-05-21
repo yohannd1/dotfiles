@@ -111,8 +111,14 @@ st.font: FONT
 dmenu.font: FONT
 dmenu.norm.bg: COL0
 dmenu.norm.fg: COL15
+dmenu.norm.hl.bg: COL0
+dmenu.norm.hl.fg: COL3
 dmenu.sel.bg: COL15
 dmenu.sel.fg: COL0
+dmenu.sel.hl.bg: COL3
+dmenu.sel.hl.fg: COL0
+dmenu.out.bg: COL15
+dmenu.out.fg: COL15
 
 !! dwm-related
 dwm.norm.bg: COL0
@@ -129,6 +135,7 @@ qutebrowser.selection: #44475a
 *.background: COL_BG
 *.foreground: COL_FG
 *.cursorColor: COL_CURSOR
+*.cursor-color: COL_CURSOR
 *.color0:  COL0
 *.color1:  COL1
 *.color2:  COL2

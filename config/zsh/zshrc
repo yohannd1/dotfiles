@@ -90,7 +90,11 @@ bindkey -s '^R' '\e0Cfh\n'
 
 assist::find-file.gen() { # {{{
   printf "%s\n" ".."
-  fd
+  if [ "$1" = 1 ]; then
+    fd -H
+  else
+    fd
+  fi
 } # }}}
 assist::where-to-go.gen() { # {{{
   [ -r "$DIR_BOOKMARKS" ] \
@@ -98,6 +102,7 @@ assist::where-to-go.gen() { # {{{
       eval 'printf "@bkmk %s\n" '"$bookmark" # yes, it's eval-unsafe.
     done
 
+  printf "@bkmk %s\n" "$HOME"
   [ -d "$PROJECTS" ] && \
     (cd "$PROJECTS" && fd -d1 -td '.' | sed 's/^/@proj /g')
 } # }}}
@@ -129,10 +134,16 @@ nnn-explore() { # {{{
   fi
 } # }}}
 find-file() { # {{{
-  local prog choice choices
+  local prog choice choices hidden
+  hidden=0
+
+  if [ "$1" = "-H" ]; then
+    hidden=1
+    shift
+  fi
 
   prog="${1:-$EDITOR}"
-  choice="$(assist::find-file.gen | fzagnostic)" || return 1
+  choice="$(assist::find-file.gen "$hidden" | fzagnostic)" || return 1
 
   if [ -f "$choice" ]; then
     "$prog" "$choice"
@@ -159,6 +170,7 @@ alias \
   w='where-to-go' \
   n='nnn-explore' \
   f='find-file' \
+  fof='find-file openfork' \
   d='duplicate'
 alias rl='shell::reload'
 alias xlog='xorg::log'
@@ -171,6 +183,9 @@ alias ls='ls --color=auto'
 alias la='ls -A'
 alias du='du -shc'
 alias cpsync='cp -ur'
+
+alias trl='trash-list'
+alias trr='trash-restore'
 
 alias p3='python3'
 alias jl='julia'

@@ -4,8 +4,8 @@ choice="$(gen-pathbin | fzagnostic)" || exit 1
 
 if printf "%s" "$choice" | grep -q '!$'; then
   # choice ends with !, so it should be opened in a new instance
-  "$TERMINAL" -e "${choice%?}"
+  "$TERMINAL" -e sh -c "eval '${choice%?}'"
 else
   # choice doesn't end with !, open silently
-  "$choice"
+  eval "$choice"
 fi

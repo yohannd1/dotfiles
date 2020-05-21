@@ -1,11 +1,9 @@
 # vim: ft=conf fdm=marker
-#
-# a set of keybindings for general use (in any wm I might use, not only
-# bspwm)
-# keys to use someday, maybe: XF86PowerOff
+
+# a set of keybindings for general use, working idnependently of wm
 
 # restart picom
-super + r; c
+super + control + shift + c
     pkill picom; picom -b
 
 # terminal
@@ -14,7 +12,7 @@ super + Return
 
 # program launcher
 super + space
-    dmenurun
+    fzrun
 
 # power menu
 super + shift + o
@@ -79,7 +77,7 @@ super + b
     runnsend qutebrowser
 
 # toggle tray
-super + minus
+super + y
     pkill stalonetray || stalonetray -c "$XDG_CONFIG_HOME/stalonetrayrc"
 
 # super-o apps

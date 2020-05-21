@@ -9,14 +9,17 @@ pathadd() {
   }
 }
 
+globpathadd() {
+  [ -d "$1" ] || return 1
+  cd "$1" || return 1
+  fd -td -d1 | while read pack; do pathadd "$1/$pack/bin"; done
+  cd - >/dev/null 2>/dev/null
+}
+
 pathadd "$HOME/.local/bin"
 pathadd "$GOPATH"
 pathadd "$CARGO_HOME/bin"
-
-# Seems to be slowing down, so I'll use the ony below and update when needed.
 pathadd "${GEM_HOME:-$HOME/.gem}/ruby/2.7.0/bin"
 
-# Programs installed in /opt
-for dir in /opt/*; do
-  pathadd "$dir/bin"
-done
+globpathadd "/opt"
+globpathadd "${XDG_CACHE_HOME:-$HOME/.cache}/packs"

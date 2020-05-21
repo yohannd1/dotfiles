@@ -246,15 +246,8 @@ if g:is_first
   call pathogen#infect()
 endif
 
-" Vim AutoPopMenu
-let g:apc_enable_ft = {'*': 1}
-
 " Emmet
 let g:user_emmet_leader_key='<C-c>'
-
-" CtrlP
-let g:ctrlp_map = '<C-o>'
-let g:ctrlp_cmd = 'CtrlP'
 
 " Lightline
 let g:lightline = {}
@@ -286,9 +279,6 @@ let g:gruvbox_italics = 1
 " Buftabline
 let g:buftabline_indicators = 1
 
-" QuickScope
-let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
-
 " Rifle
 let g:rifle_use_termup = 1
 
@@ -318,7 +308,7 @@ if g:is_first
   set belloff+=ctrlg
   set mouse=a
   set display+=lastline
-  set complete=.,w,b,u,t
+  set complete=.,w,b,u,t,k
   set completeopt-=preview
   set completeopt+=menuone,noselect
   set noshowmode
@@ -381,6 +371,7 @@ augroup buffer_load
   au FileType * if exists("*Ft_".&ft) | exec 'call Ft_'.&ft.'()' | endif
   au FileType * call SetupMakefileRifle()
   " au BufNewFile,BufRead,BufEnter * if line('$') > 5000 | syntax off | endif " Not really working well
+  au BufNewFile,BufRead,BufEnter * ApcEnable
   au BufNewFile,BufRead,BufEnter *.fx set filetype=c
   au BufNewFile,BufRead,BufEnter *.clj set filetype=clojure
   au BufNewFile,BufRead,BufEnter *.alg set filetype=visualg
@@ -619,7 +610,7 @@ endif
 " Clipboard versions of keymappings
 for mapmode in ['n', 'v']
   for mapkey in split('y Y p P d D x X')
-    exec mapmode."noremap <silent> <Leader>".mapkey.' "+'.mapkey
+    exec mapmode."noremap <silent> <Space>".mapkey.' "+'.mapkey
   endfor
 endfor
 

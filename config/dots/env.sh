@@ -36,6 +36,7 @@ export LESSHISTFILE="-"
 export LESS="-RC"
 export KEYTIMEOUT=1
 export NNN_OPENER="$OPENER"
+export NNN_TRASH=1
 export FZF_DEFAULT_OPTS='
   --height=80% --layout=reverse --border
   --color hl:4,hl+:2
