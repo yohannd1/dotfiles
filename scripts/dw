@@ -1,0 +1,34 @@
+#!/usr/bin/env sh
+
+. ~/.local/lib/ystd.sh
+
+showHelp() {
+  printf >&2 "Usage: %s %s\n" "$(basename $0)" "<url> [output_file]"
+  exit 1
+}
+
+case $# in
+  1)
+    [ "$1" = "-h" ] && showHelp
+    url="$1" output=$(printf "%s" "$1" | sed 's/?.*$//g')
+    [ -t 1 ] && output="-" # send to stdout if on a pipe
+    ;;
+  2) url="$1" output="$2" ;;
+  *)
+    printf >&2 "%s: %s\n" "$(basename $0)" "invalid amount of arguments"
+    showHelp
+    ;;
+esac
+
+if [ "$output" != "-" ] && [ -e "$output" ]; then
+  printf >&2 '%s: output file "%s" already exists\n' "$(basename $0)" "$output"
+  exit 2
+fi
+
+if exists curl; then
+  curl "$url" --output "$output"
+elif exists wget; then
+  wget "$url" -O "$output"
+else
+  printf >&2 "%s\n" "Neither curl nor wget was found. Please install them or implement support for them on this script."
+fi
