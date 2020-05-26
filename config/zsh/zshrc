@@ -28,23 +28,22 @@ _comp_options+=(globdots) # Include hidden files in autocomplete
 # Prompt {{{
 
 precmd() {
-  # Use beam shape cursor for each new prompt.
-  printf '\033[5 q'
-
-  # Update title
+  # get cwd
   local cwd="$(pwd)"
   if grep -q '^'"$HOME" <<<"$cwd"; then
-    local cwd="$(sed 's/^'"$(sed 's/\//\\\//g' <<<"$HOME")"'/~/g' <<<"$cwd")"
+    cwd="$(sed 's/^'"$(sed 's|/|\\/|g' <<<"$HOME")"'/~/g' <<<"$cwd")"
   fi
-  setTitle "$(whoami)@$(hostname):$cwd"
+
+  printf '\033[5 q' # use beam shape cursor for each new prompt.
+  setTitle "$(whoami)@$(hostname):$cwd" # set title
 }
 
 [ "$(uname -o)" = "Android" ] && SHORT_PROMPT=1
 
 if [ -n "$SHORT_PROMPT" ]; then
-  PS1="%B%{$fg[green]%}[:%{$fg[magenta]%}%~%{$fg[green]%}]%{$reset_color%}%b\$ "
+  PS1="%B%{$fg[green]%}(:%{$fg[magenta]%}%~%{$fg[green]%})%{$reset_color%}%b: "
 else
-  PS1="%B%{$fg[green]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M:%{$fg[magenta]%}%~%{$fg[green]%}]%{$reset_color%}%b\$ "
+  PS1="%B%{$fg[green]%}(%{$fg[yellow]%}%n@%M:%{$fg[magenta]%}%~%{$fg[green]%})%{$reset_color%}%b: "
 fi
 
 PS2='  '
