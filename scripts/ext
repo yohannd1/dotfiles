@@ -6,6 +6,10 @@
 # Default behavior: Extract archive into new directory
 # Behavior with `-c` option: Extract contents into current directory
 
+# showHelp() { # TODO: make help in this way
+#   printf >&2 "Usage: %s" "$(basename $0) [-c] <file>"
+# }
+
 while getopts "hc" o; do case "$o" in
   c) extracthere="True" ;;
   *) printf "Options:\\n   -c: Extract archive into current directory rather than a new one.\\n" && exit ;;

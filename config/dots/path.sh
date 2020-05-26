@@ -20,6 +20,7 @@ pathadd "$HOME/.local/bin"
 pathadd "$GOPATH"
 pathadd "$CARGO_HOME/bin"
 pathadd "${GEM_HOME:-$HOME/.gem}/ruby/2.7.0/bin"
+pathadd "$HOME/.nimble/bin"
 
 globpathadd "/opt"
 globpathadd "${XDG_CACHE_HOME:-$HOME/.cache}/packs"

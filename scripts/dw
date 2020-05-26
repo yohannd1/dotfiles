@@ -10,8 +10,8 @@ showHelp() {
 case $# in
   1)
     [ "$1" = "-h" ] && showHelp
-    url="$1" output=$(printf "%s" "$1" | sed 's/?.*$//g')
-    [ -t 1 ] && output="-" # send to stdout if on a pipe
+    url="$1" output="$(basename "$1" | sed 's/?.*$//g')"
+    [ -t 1 ] || output="-" # send to stdout if on a pipe
     ;;
   2) url="$1" output="$2" ;;
   *)

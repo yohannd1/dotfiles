@@ -521,10 +521,10 @@ function! Ft_lua() " {{{
   let b:rifle.run = "lua '%f'"
 endfunction " }}}
 function! Ft_nim() " {{{
-  setlocal shiftwidth=2 softtabstop=2
+  setlocal sw=2 ts=2 expandtab
   let b:rifle = {}
-  let b:rifle.run = "nim -c -r '%f'"
-  let b:rifle.build = "nim -c '%f'"
+  let b:rifle.run = "nim compile -r '%f'"
+  let b:rifle.build = "nim compile '%f'"
 endfunction " }}}
 function! Ft_ruby() " {{{
   let b:rifle = {}
