@@ -29,7 +29,7 @@ picom -b & # compositor
 dunst & # notification daemon
 flameshot & # screenshot app
 nm-applet & # network manager on tray
-battery-check & # battery check (TODO: make a lighter and more stable script)
+monitor-battery &
 blueman-applet &
 
 # extra config (async)
