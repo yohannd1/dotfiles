@@ -71,13 +71,18 @@ lfglob() { # {{{
   local GLOB_FOLDER="$1"
   local TARGET_FOLDER="$2"
 
+  if [ ! -d "$GLOB_FOLDER" ]; then
+    printf >&2 '%s: warning: folder "%s" %s exist\n' "$(basename $0)" "$GLOB_FOLDER" "doesn't"
+    return 1
+  fi
+
   find "$GLOB_FOLDER" -mindepth 1 -maxdepth 1 |
     while read glob_file; do
       local ADDRESS="$(realpath "$glob_file")"
       local POINTER="$TARGET_FOLDER/$(basename "$glob_file")"
 
       lf "$ADDRESS" "$POINTER"
-    done 
+    done
 } # }}}
 lfconf() { # {{{
   if [ $# != 2 ]; then
@@ -144,6 +149,8 @@ EOF
     fi
   fi
 fi
+
+. "$DOTFILES/config/dots/path.sh"
 
 # }}}
 # Config Files {{{
