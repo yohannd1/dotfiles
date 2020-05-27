@@ -12,7 +12,7 @@ else
 fi
 
 case $# in
-  0) cat /dev/stdin | col -b | editor -c "PagerMode" - ;;
+  0) col -b | editor -c "PagerMode" - ;; # it reads stdin by default
   1) cat "$1" | col -b | editor -c "PagerMode" - ;;
   2) cat "$1" | col -b | editor -c "PagerMode $2" - ;;
   *) echo "Invalid number of arguments." ;;

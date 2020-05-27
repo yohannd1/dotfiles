@@ -20,7 +20,7 @@ fi
 # GNU recode was having problems with utf-8, so I'm making my own
 # function. Might take a look at it later, but for now I'll use this.
 recodeHTML() {
-  cat /dev/stdin \
+  cat \
     | sed 's/&gt\;/>/g' \
     | sed 's/&lt\;/</g' \
     | sed "s/&#039\\;/'/g" \
