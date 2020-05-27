@@ -14,11 +14,11 @@ done
 
 if [ ! -t 2 ] && exists dmenu; then
   [ -z "$hasPrompt" ] && prompt="" # set prompt to default if not specified
-  dmenu -p "$prompt" < /dev/stdin
+  dmenu -p "$prompt" <&0
 elif [ -t 2 ] && exists fzf; then
   [ -z "$hasPrompt" ] && prompt="> " # set prompt to default if not specified
   printf >&2 '\033[2 q' # change cursor to block
-  fzf < /dev/stdin
+  fzf <&0
 else
   printf >&2 "%s\n" "Could not open dmenu or fzf."
   exit 1

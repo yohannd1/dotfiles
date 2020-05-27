@@ -1,6 +1,8 @@
-[ "$(uname -o)" = Android ] \
-  && type zsh &>/dev/null \
-  && exec zsh
+if [ "$(uname -o)" = Android ]; then
+  . ~/.config/dots/env.sh
+  . ~/.config/dots/path.sh
+  type zsh &>/dev/null && exec zsh
+fi
 
 HISTFILE=~/.cache/bash_history
 PS1='[\u@\h]\$ ' PS2='  '
