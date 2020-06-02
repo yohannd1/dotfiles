@@ -185,6 +185,7 @@ if [ -z "$NO_CONFIG_LINK" ]; then
 
   # Shells, interfaces
   lfconf "zsh/zshrc" ~/.config/zsh/.zshrc
+  lfconf "zsh/zlogout" ~/.config/zsh/.zlogout
   lfconf "bash/bashrc" ~/.bashrc
   lfconf "tmux.conf" ~/.tmux.conf
   lfconf "inputrc" ~/.config/inputrc
@@ -255,6 +256,7 @@ if [ -z "$NO_NEOVIM_PLUGIN" ]; then
   ip "python-syntax" "https://github.com/vim-python/python-syntax"
   ip "vim-rsi" "https://github.com/tpope/vim-rsi"
   ip "dracula" "https://github.com/dracula/vim"
+  ip "vim-syntax-extra" "https://github.com/justinmk/vim-syntax-extra"
 
   lf "$NVIM_PLUGS_FOLDER" ~/.config/nvim/bundle
 fi

@@ -27,7 +27,6 @@ warn() {
 # state can be: critical normal low high
 state=normal
 
-# main loop
 while :; do
   level=$(cat "$BATTERY_PATH")
 
@@ -52,6 +51,9 @@ while :; do
       state=critical
       warn critical "Battery is almost empty!"
     fi
+  elif [ "$state" -gt "$LEVEL_LOW" ] && [ "$state" -lt "$LEVEL_HIGH" ]; then
+    # I'm not sure if this part is good but I'm trying it
+    state=normal
   fi
 
   sleep "$DELAY"

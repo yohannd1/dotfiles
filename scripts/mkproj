@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+
+. ~/.local/lib/ystd.sh
+depCheck git
+
+if [ $# != 1 ]; then
+  printf >&2 "Usage: %s\n" "$(basename $0) <project_folder>"
+fi
+
+if [ -e "$1" ]; then
+  printf >&2 '"%s" already exists' "$1"
+fi
+
+mkdir -p "$1" && cd "$1" && git init
