@@ -13,15 +13,16 @@ esac
 if git status -sb; then
   printf >&2 '\e[2 q'
   while [ -z "$EXIT" ]; do
-    printf "%s\n" 'Options: [d]iff, [a]dd-commit, [p]ull, pu[s]h, [f]etch, [l]og, [q]uit'
-    printf ' choice> '
-    read -n1 ch; echo
-    case "$ch" in
-      d) git add .
+    printf >&2 "Options: %s\n" "(d diff) (a add-and-commit) (p pull) (s push) (f fetch) (l log) (q quit)"
+    printf >&2 "       > "
+    read -n1 option
+    printf >&2 "\n"
+    case "$option" in
+      d)
+        git add .
         git diff HEAD
         ;;
-      a) git add . \
-        && git commit ;;
+      a) git add . && git commit ;;
       l) git log --all --oneline ;;
       p) git pull ;;
       s) git push ;;
@@ -30,7 +31,7 @@ if git status -sb; then
       "") ;;
       ) EXIT=0 ;;
       "") clear ;;
-      *) printf 'Invalid option: "%s"\n' "$ch" ;;
+      *) printf 'Invalid option: "%s"\n' "$option" ;;
     esac
   done
   exit "$EXIT"
