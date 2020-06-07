@@ -38,7 +38,7 @@ showHelp() { # {{{
 
 # Actions
 action_lock() { # {{{
-  betterlockscreen -l
+  betterlockscreen -l && [ "$WM" = dwm ] && pkill -RTMIN+1 dwmblocks
 } # }}}
 action_exit() { # {{{
   case "$WM" in
@@ -56,7 +56,7 @@ action_exit() { # {{{
 } # }}}
 action_suspend() { # {{{
   action_lock &
-  sleep 1 # Small delay
+  sleep 1
   systemctl suspend
 } # }}}
 action_hibernate() { # {{{

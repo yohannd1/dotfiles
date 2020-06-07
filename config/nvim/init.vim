@@ -470,7 +470,7 @@ function! Ft_markdown() " {{{
 endfunction " }}}
 function! Ft_sh() " {{{
   let b:rifle = {}
-  let b:rifle.run = "if [ -x '%f' ]; then '%f'; else bash '%f'; fi"
+  let b:rifle.run = "if [ -x '%f' ]; then $(realpath '%f'); else bash '%f'; fi"
   " let g:is_bash = 1
   " let g:sh_fold_enabled = 0
   setlocal tabstop=2 shiftwidth=2 fdm=syntax
