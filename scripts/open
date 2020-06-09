@@ -110,6 +110,9 @@ handleExt() {
     odt|ods|odp|sxw)
       tryRunTerm runpage odt2txt "$FILE" ;;
 
+    txt|log)
+      tryRunTermGraph runpage cat "$FILE" ;;
+
     kra) tryRunGraph krita "$FILE" ;;
 
     md)
