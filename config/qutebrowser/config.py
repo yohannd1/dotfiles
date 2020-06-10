@@ -1,14 +1,13 @@
 import subprocess as sp
 import theme
 
-def command_output(*args):
-    proc = sp.Popen(args, encoding="UTF-8", stdout=sp.PIPE)
+def xgetres(*args):
+    proc = sp.Popen(["xgetres", *args], encoding="UTF-8", stdout=sp.PIPE, stdin=sp.PIPE, stderr=sp.PIPE)
+    proc.stdin.close()
     stdout = proc.stdout.read().strip()
     proc.stdout.close()
-    proc.kill()
+    proc.stderr.close()
     return stdout
-
-xgetres = lambda res: command_output("xgetres", res)
 
 c.downloads.location.directory = "~/inbox"
 

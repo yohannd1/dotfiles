@@ -71,8 +71,6 @@ super + equal
     display-report
 
 # quick apps
-super + n
-    termup nnn
 super + b
     runnsend qutebrowser
 
