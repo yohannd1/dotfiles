@@ -25,19 +25,20 @@ case "$MD_PREVIEW_MODE" in
     ;;
 
   1)
+    MDEXPORTS="$XDG_CACHE_HOME/md-exports"
     DIRNAME="$(dirname "$1")"
     BASENAME="$(basename "$1")"
 
-    # Delete old files stored in /tmp/md-exports
-    if [ -e /tmp/md-exports ]; then
+    # Delete old files stored in $MDEXPORTS
+    if [ -e "$MDEXPORTS" ]; then
       while read garbage; do
         [ -e "$garbage" ] && rm "$garbage"
-      done < /tmp/md-exports
-      rm /tmp/md-exports
+      done < "$MDEXPORTS"
+      rm < "$MDEXPORTS"
     fi
 
     FILE="$(realpath -m "$DIRNAME/.md-export.$BASENAME.html")"
-    printf "%s\n" "$FILE" >> /tmp/md-exports
+    printf "%s\n" "$FILE" >> "$MDEXPORTS"
     ;;
 esac
 

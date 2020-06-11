@@ -42,8 +42,8 @@ color.tagged=
 
 # Due
 color.due=
-color.due.today=color2
-color.overdue=color1
+color.due.today=
+color.overdue=
 
 # Report: burndown
 color.burndown.done=color0 on color6

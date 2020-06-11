@@ -655,6 +655,8 @@ tnoremap <silent> <C-w>l <C-\><C-n><C-w>l
 " Use perl-ish regexes (I guess)
 nnoremap / /\v
 vnoremap / /\v
+nnoremap ? ?\v
+vnoremap ? ?\v
 
 " Quick character inserts
 inoremap <silent> <C-l>d <C-r>=strftime("20%y-%m-%d")<CR>
