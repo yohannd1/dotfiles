@@ -44,32 +44,3 @@ something.
 * https://github.com/jdhao/nvim-config
 * https://bitbucket.org/sjl/dotfiles/src/tip/vim/vimrc
 
-## Commit Conventions
-
-### Type I: Complex
-
-* Header: a summary of the changes, sometimes not very useful
-
-* Description: a list of changes and/or an argument
-
-  The changes list consists on list items with the format:
-
-  ```
-  * Namespace#subItem: description... ... 72chars wide.................
-    continuing the line...
-  ```
-
-  Where `Namespace` is the type of change - program name (like `Zsh`,
-  `Neovim`) or a category (like `Meta` or `Script`) - and `subItem` is
-  the subcategory, like a script name or something like (it's nto always
-  used).
-
-  Every item should end with a dot, not a semicolon or something else.
-  That is because sometimes I write more than one sentence in a single
-  one.
-
-### Type II: Lazy
-
-Sometimes I don't care, so there might be some ultra lazy commit
-messages, maybe even without description. It might also just be that
-there aren't any big changes to be documented.
