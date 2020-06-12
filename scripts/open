@@ -35,26 +35,12 @@ tryRun() {
     exit
   fi
 }
+
 tryRunTerm() { [ -z "$OPEN_GUI" ] && tryRun "$@"; }
 tryRunGraph() { [ -n "$OPEN_GUI" ] && tryRun "$@"; }
 tryRunTermGraph() { tryRunTerm "$@"; tryRunGraph termup "$@"; }
 tryXdgOpen() { VIA_OPEN=1 tryRunGraph xdg-open "$@"; }
-
-IFS="$(printf '%b_' '\n')"; IFS="${IFS%_}" # protect trailing \n
-PATH=$PATH:"${XDG_CONFIG_HOME:-$HOME/.config}/nnn/plugins"
-
-if [ $# != 1 ]; then
-  printf >&2 "Usage: %s %s\n" "$(basename $0)" "<file>"
-  exit 1
-fi
-
-FILE="$1"
-
-FILENAME=$(basename "$1")
-EXT="${FILENAME##*.}"
-if ! [ -z "$EXT" ]; then
-  EXT="$(printf "%s" "$EXT" | tr '[:upper:]' '[:lower:]')"
-fi
+printMsg() { [ "$OPEN_GUI" ] && notify-send "$(printf "$@")" || printf >&2 "$@"; }
 
 handleUrl() {
   if grep -q '^http\(s\)\?://' <<<"$FILE" \
@@ -116,7 +102,7 @@ handleExt() {
     kra) tryRunGraph krita "$FILE" ;;
 
     md)
-      tryRunTerm runpage glowrapper "$FILE" 
+      tryRunTerm runpage glowrapper "$FILE"
       tryRunGraph md-preview "$FILE"
       ;;
 
@@ -153,9 +139,10 @@ handleMultimedia() {
 handleMIME() {
   case "$1" in
     inode/directory) tryRunTermGraph nnn "$FILE" ;;
-    text/troff) tryRunTerm runpage man -l "$FILE" ;;
-    text/*) tryRunTermGraph $PAGER "$FILE" ;;
-    */xml) tryRunTerm runpage cat "$FILE" ;;
+    inode/x-empty) tryRunTermGraph runpage cat "$FILE" ;;
+    text/troff) tryRunTermGraph runpage man -l "$FILE" ;;
+    text/*) tryRunTermGraph runpage cat "$FILE" ;;
+    */xml) tryRunTermGraph runpage cat "$FILE" ;;
     image/vnd.djvu)
       tryRunTerm runpage djvutxt "$FILE"
       tryRunTerm runpage exiftool "$FILE"
@@ -164,8 +151,9 @@ handleMIME() {
 }
 
 handleFallback() {
+  printMsg 'failed to open file "%s", type "%s", mime type "%s"; falling back to xdg-open\n' "$FILE" "$FILETYPE" "$MIMETYPE"
   tryXdgOpen "$FILE"
-  tryRunTerm runpage printf "*** File Details ***\n%s" "$(file --dereference --brief $FILE)"
+  printMsg 'fallback to xdg-open failed\n'
 }
 
 handleBlocked() {
@@ -177,11 +165,35 @@ handleBlocked() {
   esac
 }
 
-MIMETYPE="$(file --dereference --brief --mime-type -- $FILE)"
+IFS="$(printf '%b_' '\n')"; IFS="${IFS%_}" # protect trailing \n
+PATH=$PATH:"${XDG_CONFIG_HOME:-$HOME/.config}/nnn/plugins"
+
+if [ $# != 1 ]; then
+  printf >&2 "Usage: %s %s\n" "$(basename $0)" "<file>"
+  exit 1
+fi
+
+FILE="$1"
+
+FILENAME=$(basename "$1")
+EXT="${FILENAME##*.}"
+if ! [ -z "$EXT" ]; then
+  EXT="$(printf "%s" "$EXT" | tr '[:upper:]' '[:lower:]')"
+fi
+
+FILETYPE=$(file --dereference --brief -- "$FILE")
+MIMETYPE=$(file --dereference --brief --mime-type -- "$FILE")
+
+if [ ! -e "$FILE" ]; then
+  printMsg 'failed to open "%s": no such file or directory\n' "$FILE"
+  exit 1
+fi
+
 handleBlocked "$MIMETYPE"
 handleUrl
 handleExt
 handleMultimedia "$MIMETYPE"
 handleMIME "$MIMETYPE"
 handleFallback
+
 exit 1

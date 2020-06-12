@@ -8,5 +8,5 @@ if [ $# = 0 ]; then
   exit 1
 fi
 
-width="$(($(tput cols) - "${GLOWRAPPER_MARGIN:-2}"))"
+width="$(($(tput cols) - ${GLOWRAPPER_MARGIN:-2}))"
 glow -sdark -w "$width" "$@"
