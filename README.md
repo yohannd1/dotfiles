@@ -2,6 +2,9 @@
 
 ![A screenshot of my desktop](img/screenshot.png)
 
+(Beware - I rarely update this screenshot image, so it might be
+completely different right now.)
+
 This repository contains most of my config files, including also my
 scripts and my Arch Linux environment.
 
