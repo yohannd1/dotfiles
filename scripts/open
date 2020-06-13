@@ -184,13 +184,14 @@ fi
 FILETYPE=$(file --dereference --brief -- "$FILE")
 MIMETYPE=$(file --dereference --brief --mime-type -- "$FILE")
 
+handleBlocked "$MIMETYPE"
+handleUrl
+
 if [ ! -e "$FILE" ]; then
   printMsg 'failed to open "%s": no such file or directory\n' "$FILE"
   exit 1
 fi
 
-handleBlocked "$MIMETYPE"
-handleUrl
 handleExt
 handleMultimedia "$MIMETYPE"
 handleMIME "$MIMETYPE"

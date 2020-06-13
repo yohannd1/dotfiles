@@ -555,6 +555,7 @@ function! Ft_rust() " {{{
   if ReverseRSearch(expand("%:p:h"), "Cargo.toml")
     let b:rifle.run = "cd '".expand("%:p:h")."' && cargo run"
     let b:rifle.build = "cd '".expand("%:p:h")."' && cargo build"
+    let b:rifle.test = "cd '".expand("%:p:h")."' && cargo test"
   else
     let b:rifle.run = "rustc '%f' -o '%o' && { '%o'; rm '%o'; }"
     let b:rifle.build = "rustc '%f' -o '%o'"
@@ -638,6 +639,7 @@ inoremap <expr> <C-m> pumvisible() ? "\<C-y>" : "<C-m>"
 
 " Rifle Commands
 nnoremap <silent> <Leader>r :Rifle "run"<CR>
+nnoremap <silent> <Leader>t :Rifle "test"<CR>
 nnoremap <silent> <Leader>R :Rifle "build"<CR>
 nnoremap <Leader><C-r> :Rifle ""<Left>
 

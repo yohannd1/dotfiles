@@ -51,7 +51,7 @@ while :; do
       state=critical
       warn critical "Battery is almost empty!"
     fi
-  elif [ "$state" -gt "$LEVEL_LOW" ] && [ "$state" -lt "$LEVEL_HIGH" ]; then
+  elif [ "$level" -gt "$LEVEL_LOW" ] && [ "$level" -lt "$LEVEL_HIGH" ]; then
     # I'm not sure if this part is good but I'm trying it
     state=normal
   fi
