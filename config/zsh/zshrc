@@ -97,7 +97,7 @@ assist::find-file.gen() { # {{{
 } # }}}
 assist::where-to-go.gen() { # {{{
   [ -r "$DIR_BOOKMARKS" ] \
-    && cat "$DIR_BOOKMARKS" | while read bookmark; do
+    && sh "$DIR_BOOKMARKS" | while read bookmark; do
       eval 'printf "@bkmk %s\n" '"$bookmark" # yes, it's eval-unsafe.
     done
 
@@ -162,7 +162,7 @@ duplicate() { # {{{
 
 shell::reload() { source "${ZDOTDIR:-$HOME}/.zshrc"; }
 xorg::log() { less "$XLOG"; }
-xorg::reload-db() { xrdb ~/.config/xorg/xresources; }
+xorg::reload-db() { gen-xres | xrdb; }
 
 # related aliases
 alias \

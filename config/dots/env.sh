@@ -20,6 +20,7 @@ export BROWSER="qutebrowser"
 export PAGER="less"
 export OPENER="openfork"
 export READER="zathura"
+export CURRENT_THEME="dracula"
 
 # configuration files/folders
 export GOPATH="$XDG_CACHE_HOME/go"

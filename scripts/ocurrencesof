@@ -3,15 +3,18 @@
 . ~/.local/lib/ystd.sh
 depCheck rg fd
 
-if [ $# != 2 ]; then
-  printf >&2 "%s\n" \
-    "$(basename $0): checks for ocurrences of a pattern in filenames inside a
-directory and their contents.
+usage() {
+  printf >&2 "%s\n" "$(basename $0): checks for ocurrences of a pattern in
+filenames inside a directory and their contents.
 
-Usage: $(basename $0) <directory> <pattern>"
-  exit 1
-fi
+Usage: $(basename $0) <pattern> [directory]"
+}
 
-cd "$1"
-printf "In filenames:\n"; fd -- "$2"
-printf "In files:\n"; rg -- "$2"
+case $# in
+  1) ;;
+  2) cd "$2" || exit 1 ;;
+  *) usage; exit 1 ;;
+esac
+
+printf >&2 "In filenames:\n"; fd -- "$1"
+printf >&2 "In files:\n"; rg -- "$1"

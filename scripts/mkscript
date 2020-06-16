@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+
+if [ $# != 1 ]; then
+  printf >&2 "Usage: %s\n" "$(basename $0) <script_name>"
+  exit 1
+fi
+
+script="$DOTFILES/scripts/$1"
+"$EDITOR" "$script"
+
+if [ -e "$script" ]; then
+  chmod +x "$script"
+else
+  printf >&2 "script creation cancelled\n"
+fi
