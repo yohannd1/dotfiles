@@ -237,8 +237,6 @@ if [ -z "$NO_NEOVIM_PLUGIN" ]; then
   ip "lightline.vim" "https://github.com/itchyny/lightline.vim"
   ip "yats.vim" "https://github.com/HerringtonDarkholme/yats.vim"
   ip "emmet-vim" "https://github.com/mattn/emmet-vim"
-  # ip "vim-hy" "https://github.com/hylang/vim-hy"
-  # ip "vim-fsharp" "https://github.com/fsharp/vim-fsharp"
   ip "julia-vim" "https://github.com/JuliaEditorSupport/julia-vim"
   ip "nvim-nim" "https://github.com/baabelfish/nvim-nim"
   ip "tabular" "https://github.com/godlygeek/tabular"
@@ -249,7 +247,6 @@ if [ -z "$NO_NEOVIM_PLUGIN" ]; then
   ip "scribble.vim" "https://github.com/vim-scripts/scribble.vim"
   ip "vim-python-pep8-indent" "https://github.com/Vimjas/vim-python-pep8-indent"
   ip "pear-tree" "https://github.com/tmsvg/pear-tree"
-  # ip "auto-pairs" "https://github.com/jiangmiao/auto-pairs"
   ip "vim-buftabline" "https://github.com/ap/vim-buftabline"
   ip "vim-vinegar" "https://github.com/tpope/vim-vinegar"
   ip "haskell-vim" "https://github.com/neovimhaskell/haskell-vim"
@@ -258,6 +255,9 @@ if [ -z "$NO_NEOVIM_PLUGIN" ]; then
   ip "dracula" "https://github.com/dracula/vim"
   ip "vim-syntax-extra" "https://github.com/justinmk/vim-syntax-extra"
   ip "base16-vim" "https://github.com/chriskempson/base16-vim"
+  # ip "vim-hy" "https://github.com/hylang/vim-hy"
+  # ip "vim-fsharp" "https://github.com/fsharp/vim-fsharp"
+  # ip "auto-pairs" "https://github.com/jiangmiao/auto-pairs"
 
   lf "$NVIM_PLUGS_FOLDER" ~/.config/nvim/bundle
 fi

@@ -96,14 +96,14 @@ assist::find-file.gen() { # {{{
   fi
 } # }}}
 assist::where-to-go.gen() { # {{{
-  [ -r "$DIR_BOOKMARKS" ] \
-    && sh "$DIR_BOOKMARKS" | while read bookmark; do
-      eval 'printf "@bkmk %s\n" '"$bookmark" # yes, it's eval-unsafe.
-    done
-
   printf "@bkmk %s\n" "$HOME"
   [ -d "$PROJECTS" ] && \
     (cd "$PROJECTS" && fd -d1 -td '.' | sed 's/^/@proj /g')
+
+  [ -r "$DIR_BOOKMARKS" ] \
+    && sh "$DIR_BOOKMARKS" | while read bookmark; do
+      eval 'printf "@bkmk %s\n" '"$bookmark"
+    done
 } # }}}
 
 where-to-go() { # {{{
