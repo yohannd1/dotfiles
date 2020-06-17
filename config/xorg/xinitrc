@@ -6,8 +6,8 @@
 # load the window manager.
 
 # source xprofile
-if [ -f "${XDG_CONFIG_HOME}/xorg/xprofile" ]; then
-  . "${XDG_CONFIG_HOME}/xorg/xprofile"
+if [ -f "$XDG_CONFIG_HOME/xorg/xprofile" ]; then
+  . "$XDG_CONFIG_HOME/xorg/xprofile"
 elif [ -f ~/.xprofile ]; then
   . ~/.xprofile
 fi

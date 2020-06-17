@@ -26,7 +26,7 @@ esac
 
 # background applications
 picom -b & # compositor
-dunst & # notification daemon
+dunst -config "$XDG_CACHE_HOME/gen/dunstrc" & # notification daemon
 flameshot & # screenshot app
 nm-applet & # network manager on tray
 monitor-battery &

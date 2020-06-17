@@ -1,31 +1,13 @@
+class ThemeOpt:
+    PALETTE = 0
+    SPACING = 1
+    PADDING = 2
+
 def load(c, options = {}):
-    # default theme: dracula
-    palette = options.get("palette", {
-        "background": "#282a36",
-        "background-alt": "#282a36",
-        "background-attention": "#181920",
-        "border": "#282a36",
-        "current-line": "#44475a",
-        "selection": "#44475a",
-        "foreground": "#f8f8f2",
-        "foreground-alt": "#e0e0e0",
-        "foreground-attention": "#ffffff",
-        "comment": "#6272a4",
-        "cyan": "#8be9fd",
-        "green": "#50fa7b",
-        "orange": "#ffb86c",
-        "pink": "#ff79c6",
-        "purple": "#bd93f9",
-        "red": "#ff5555",
-        "yellow": "#f1fa8c"
-    })
+    palette = options[ThemeOpt.PALETTE]
+    spacing = options[ThemeOpt.SPACING]
 
-    spacing = options.get("spacing", {
-        "vertical": 5,
-        "horizontal": 5
-    })
-
-    padding = options.get("padding", {
+    padding = options.get(ThemeOpt.PADDING, {
         "top": spacing["vertical"],
         "right": spacing["horizontal"],
         "bottom": spacing["vertical"],

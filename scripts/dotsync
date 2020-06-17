@@ -150,7 +150,10 @@ EOF
   fi
 fi
 
+. "$DOTFILES/config/dots/env.sh"
 . "$DOTFILES/config/dots/path.sh"
+EXPORT_THEME=1
+. "$DOTFILES/config/dots/theme.sh"
 
 # }}}
 # Config Files {{{
@@ -159,9 +162,7 @@ if [ -z "$NO_CONFIG_LINK" ]; then
   if isAndroid; then
     lfconf "termux" ~/.termux
   else
-
     # Startup-related configuration
-    lfconf "stalonetrayrc" ~/.config/stalonetrayrc
     lfconf "profile" ~/.profile
     lfconf "profile" ~/.zprofile
 
@@ -170,7 +171,6 @@ if [ -z "$NO_CONFIG_LINK" ]; then
     lfconf "polybar" ~/.config/polybar
     lfconf "sxhkd" ~/.config/sxhkd
     lfconf "alacritty" ~/.config/alacritty
-    lfconf "dunst" ~/.config/dunst
     lfconf "picom" ~/.config/picom
     lfconf "xorg" ~/.config/xorg
 
@@ -257,6 +257,7 @@ if [ -z "$NO_NEOVIM_PLUGIN" ]; then
   ip "vim-rsi" "https://github.com/tpope/vim-rsi"
   ip "dracula" "https://github.com/dracula/vim"
   ip "vim-syntax-extra" "https://github.com/justinmk/vim-syntax-extra"
+  ip "base16-vim" "https://github.com/chriskempson/base16-vim"
 
   lf "$NVIM_PLUGS_FOLDER" ~/.config/nvim/bundle
 fi
@@ -298,5 +299,12 @@ for folder in ~/.local/{bin,lib,share}; do
       printf >&2 'Target folder "%s" %s exist.\n' "$folder" "doesn't"
   fi
 done
+
+# }}}
+# Config Gen {{{
+
+mkdir -p "$XDG_CACHE_HOME/gen"
+pp "$DOTFILES/config/gen/stalonetrayrc" > "$XDG_CACHE_HOME/gen/stalonetrayrc"
+pp "$DOTFILES/config/gen/dunstrc" > "$XDG_CACHE_HOME/gen/dunstrc"
 
 # }}}

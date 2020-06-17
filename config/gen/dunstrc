@@ -275,25 +275,23 @@
     context = mod4+mod1+o
 
 [urgency_low]
-    # IMPORTANT: colors have to be defined in quotation marks.
-    # Otherwise the "#" and following would be interpreted as a comment.
-    background = "#282A36"
-    foreground = "#F1FA8C"
-    frame_color = "#282A36"
-    timeout = 25
+!! echo background = \"$COL0\"
+!! echo foreground = \"$COL3\"
+!! echo frame_color = \"$COL0\"
+    timeout = 15
     fullscreen = show
 
 [urgency_normal]
-    background = "#282A36"
-    foreground = "#F8F8F2"
-    frame_color = "#282A36"
+!! echo background = \"$COL0\"
+!! echo foreground = \"$COL15\"
+!! echo frame_color = \"$COL0\"
     timeout = 30
     fullscreen = show
 
 [urgency_critical]
-    background = "#282A36"
-    foreground = "#FF5555"
-    frame_color = "#282A36"
+!! echo background = \"$COL0\"
+!! echo foreground = \"$COL1\"
+!! echo frame_color = \"$COL0\"
     timeout = 0
     fullscreen = show
 
@@ -352,7 +350,3 @@
 [transient_history_ignore]
     match_transient = yes
     history_ignore = yes
-
-[display-report]
-    appname = "display-report"
-    set_stack_tag = "display-report"

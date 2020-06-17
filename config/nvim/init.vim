@@ -321,7 +321,8 @@ if g:is_first
   let &autochdir = !g:is_win
 
   syntax on
-  silent! colorscheme dracula
+  " let base16colorspace=256 " Access colors present in 256 colorspace
+  silent! colorscheme base16-default-dark
   let &background = g:is_win ? "light" : "dark" " I like to use light backgrounds on windows.
 
   " Dracula patch

@@ -76,7 +76,7 @@ super + b
 
 # toggle tray
 super + y
-    pkill stalonetray || stalonetray -c "$XDG_CONFIG_HOME/stalonetrayrc"
+    pkill stalonetray || stalonetray -c "$XDG_CACHE_HOME/gen/stalonetrayrc"
 
 # super-o apps
 super + o; c

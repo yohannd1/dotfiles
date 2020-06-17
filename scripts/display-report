@@ -1,16 +1,18 @@
 #!/usr/bin/env sh
 
 message() {
-  printf "[%s]\n" "$(xtitle)"
-  printf "%s\n" "$(date +"%Y/%m/%d %H:%M")"
-  printf "%s: %.0f%%\n" \
-    "Battery" "$(cat /sys/class/power_supply/BAT0/capacity)" \
-    "CPU" "$(grep 'cpu ' /proc/stat \
-            | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}')" \
-    "RAM" "$(free -m \
-            | awk 'NR==2{print $3*100/$2}')" \
-    "Swap" "$(free -m \
-            | awk 'NR==3{print $3*100/$2}')"
+  title=$(xtitle)
+  date=$(date +"%Y/%m/%d %H:%M")
+  bat=$(cat /sys/class/power_supply/BAT0/capacity)
+  cpu=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}')
+  ram=$(free -m | awk 'NR==2{print $3*100/$2}')
+  swap=$(free -m | awk 'NR==3{print $3*100/$2}')
+
+  [ "$title" ] && printf "%s\n\n" "$title"
+  printf "%s\n" "$date"
+  printf "Battery: %.0f%%\n" "$bat"
+  printf "CPU: %.0f%%\n" "$cpu"
+  printf "RAM: %.0f%%, SWAP: %.0f%%\n" "$ram" "$swap"
 }
 
 notify-send "$(message)"

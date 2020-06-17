@@ -159,6 +159,16 @@ duplicate() { # {{{
     *) exit 1 ;;
   esac & disown
 } # }}}
+cd-to-file() { # {{{
+  [ $# = 1 ] || exit 1
+  if [ -f "$1" ]; then
+    cd "$(dirname "$1")"
+  elif [ -d "$1" ]; then
+    cd "$1"
+  else
+    printf >&2 "cd-to-file: invalid file\n"
+  fi
+} # }}}
 
 shell::reload() { source "${ZDOTDIR:-$HOME}/.zshrc"; }
 xorg::log() { less "$XLOG"; }
@@ -170,6 +180,7 @@ alias \
   n='nnn-explore' \
   f='find-file' \
   fof='find-file openfork' \
+  fcd='find-file cd-to-file' \
   d='duplicate'
 alias rl='shell::reload'
 alias xlog='xorg::log'

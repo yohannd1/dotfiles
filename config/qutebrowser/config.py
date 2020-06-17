@@ -1,5 +1,6 @@
 import subprocess as sp
 import theme
+from theme import ThemeOpt
 
 bindings = [
     ("D", "tab-close"),
@@ -11,12 +12,13 @@ bindings = [
 
 def main():
     c.downloads.location.directory = "~/inbox"
-    for (k, cmd) in bindings: config.bind(k, cmd)
+    for (k, cmd) in bindings:
+        config.bind(k, cmd)
 
     theme.load(c, {
-        "pallete": {
-            "background": xgetres("qutebrowser.background"),
-            "background-alt": xgetres("qutebrowser.background"),
+        ThemeOpt.PALETTE: {
+            "background": xgetres("qutebrowser.color0"),
+            "background-alt": xgetres("qutebrowser.color0"),
             "border": xgetres("qutebrowser.border"),
             "current-line": xgetres("qutebrowser.selection"),
             "selection": xgetres("qutebrowser.selection"),
@@ -30,11 +32,11 @@ def main():
             "cyan": xgetres("qutebrowser.color6"),
             "purple": xgetres("qutebrowser.color4"),
 
-            "background-attention": "#181920",
+            "background-attention": xgetres("qutebrowser.color0"),
             "foreground-attention": "#ffffff",
             "comment": "#6272a4",
         },
-        "spacing": {
+        ThemeOpt.SPACING: {
             "vertical": 2,
             "horizontal": 2,
         },

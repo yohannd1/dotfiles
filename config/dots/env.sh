@@ -20,7 +20,6 @@ export BROWSER="qutebrowser"
 export PAGER="less"
 export OPENER="openfork"
 export READER="zathura"
-export CURRENT_THEME="dracula"
 
 # configuration files/folders
 export GOPATH="$XDG_CACHE_HOME/go"
@@ -49,9 +48,10 @@ export GCC_COLORS='error=01;31:warning=01;33:note=01;34:caret=01;32:locus=01:quo
 export DIR_BOOKMARKS="$STORAGE/share/dir-bookmarks"
 export FLAMEW_SCR_FOLDER="$STORAGE/pictures/screenshots"
 export SETBG_WALLPAPER_DIR="$STORAGE/pictures/wallpapers"
-export SETBG_THEME="ice"
+export SETBG_THEME="storm"
 export BKMK_FILE="$WIKI/data/bookmarks"
 export DOTSYNC_NO_BACKUP=1
+export CURRENT_THEME="tomorrow_night"
 
 # dircolors
 if [ -r ~/.config/dircolors ]; then
