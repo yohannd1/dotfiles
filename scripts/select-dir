@@ -1,0 +1,47 @@
+#!/usr/bin/env sh
+
+. ~/.local/lib/ystd.sh
+depCheck fd fzagnostic
+
+if [ $# != 0 ]; then
+  printf >&2 "Usage: %s\n" "$(basename $0)"
+fi
+
+HOME_ESCAPED=$(echo "$HOME/" | sed 's|/|\\/|g')
+
+genDirs() {
+  if [ -d "$PROJECTS" ]; then
+    (cd "$PROJECTS" && fd -d1 -td '.' | prepend "pj: ")
+  fi
+
+  if [ -r "$DIR_BOOKMARKS" ]; then
+    sh "$DIR_BOOKMARKS" | prepend "cd: "
+  fi
+}
+
+hmTag() {
+  while read line; do
+    if echo "$line" | grep -q "^cd: $HOME_ESCAPED"; then
+      echo "$line" | sed "s/^cd: $HOME_ESCAPED/hm: /g"
+    else
+      echo "$line"
+    fi
+  done
+}
+
+prepend() {
+  while read line; do
+    printf "%s%s\n" "$1" "$line"
+  done
+}
+
+choice=$(genDirs | hmTag | fzagnostic) || exit 1
+tag=$(echo "$choice" | sed 's/^\([aA-zZ0-9\-]\+\): \(.*\)/\1/g')
+body=$(echo "$choice" | sed 's/^\([aA-zZ0-9\-]\+\): \(.*\)/\2/g')
+
+case "$tag" in
+  cd) echo "$body" ;;
+  pj) echo "$PROJECTS/$body" ;;
+  hm) echo "$HOME/$body" ;;
+  *) exit 1 ;;
+esac

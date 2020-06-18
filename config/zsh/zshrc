@@ -95,28 +95,10 @@ assist::find-file.gen() { # {{{
     fd
   fi
 } # }}}
-assist::where-to-go.gen() { # {{{
-  printf "@bkmk %s\n" "$HOME"
-  [ -d "$PROJECTS" ] && \
-    (cd "$PROJECTS" && fd -d1 -td '.' | sed 's/^/@proj /g')
-
-  [ -r "$DIR_BOOKMARKS" ] \
-    && sh "$DIR_BOOKMARKS" | while read bookmark; do
-      eval 'printf "@bkmk %s\n" '"$bookmark"
-    done
-} # }}}
 
 where-to-go() { # {{{
-  local choice tag body
-
-  choice="$(assist::where-to-go.gen | fzagnostic)" || return 1
-  tag=$(sed 's/^@\([aA-zZ0-9\-]\+\) .*$/\1/g' <<<"$choice")
-  body=$(sed 's/^@[aA-zZ0-9\-]\+ \(.*\)$/\1/g' <<<"$choice")
-
-  case "$tag" in
-    proj) cd "$PROJECTS/$body" ;;
-    bkmk) cd "$body" ;;
-  esac
+  gen=$(select-dir) || return 1
+  cd "$gen"
 } # }}}
 nnn-explore() { # {{{
   # block nesting of nnn in subshells
@@ -174,7 +156,6 @@ shell::reload() { source "${ZDOTDIR:-$HOME}/.zshrc"; }
 xorg::log() { less "$XLOG"; }
 xorg::reload-db() { gen-xres | xrdb; }
 
-# related aliases
 alias \
   w='where-to-go' \
   n='nnn-explore' \
@@ -182,6 +163,7 @@ alias \
   fof='find-file openfork' \
   fcd='find-file cd-to-file' \
   d='duplicate'
+
 alias rl='shell::reload'
 alias xlog='xorg::log'
 alias xrl='xorg::reload-db'
