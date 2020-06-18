@@ -34,7 +34,7 @@ case "$MD_PREVIEW_MODE" in
       while read garbage; do
         [ -e "$garbage" ] && rm "$garbage"
       done < "$MDEXPORTS"
-      rm < "$MDEXPORTS"
+      rm "$MDEXPORTS"
     fi
 
     FILE="$(realpath -m "$DIRNAME/.md-export.$BASENAME.html")"

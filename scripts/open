@@ -43,10 +43,9 @@ tryXdgOpen() { VIA_OPEN=1 tryRunGraph xdg-open "$@"; }
 printMsg() { [ "$OPEN_GUI" ] && notify-send "$(printf "$@")" || printf >&2 "$@"; }
 
 handleUrl() {
-  if grep -q '^http\(s\)\?://' <<<"$FILE" \
-    || grep -q '^ftp://' <<<"$FILE"; then
-      tryRunGraph $BROWSER "$FILE"
-      tryRunTerm w3m "$FILE" # Temporary measure. Might set an env var for CLI browsers later.
+  if echo "$FILE" | grep -q '^\(https\?\|ftp\)://'; then
+    tryRunGraph $BROWSER "$FILE"
+    tryRunTerm $TERMBROWSER "$FILE"
   fi
 }
 
@@ -122,7 +121,7 @@ handleExt() {
 }
 
 handleMultimedia() {
-  case "$1" in
+  case "$MIMETYPE" in
     image/*)
       tryRunGraph sxiv "$FILE"
       tryRunTerm runpage viu -n "$FILE"
@@ -137,7 +136,7 @@ handleMultimedia() {
 }
 
 handleMIME() {
-  case "$1" in
+  case "$MIMETYPE" in
     inode/directory) tryRunTermGraph nnn "$FILE" ;;
     inode/x-empty) tryRunTermGraph runpage cat "$FILE" ;;
     text/troff) tryRunTermGraph runpage man -l "$FILE" ;;
@@ -165,16 +164,14 @@ handleBlocked() {
   esac
 }
 
-IFS="$(printf '%b_' '\n')"; IFS="${IFS%_}" # protect trailing \n
-PATH=$PATH:"${XDG_CONFIG_HOME:-$HOME/.config}/nnn/plugins"
-
 if [ $# != 1 ]; then
   printf >&2 "Usage: %s %s\n" "$(basename $0)" "<file>"
   exit 1
 fi
 
-FILE="$1"
+IFS="$(printf '%b_' '\n')"; IFS="${IFS%_}" # protect trailing \n
 
+FILE="$1"
 FILENAME=$(basename "$1")
 EXT="${FILENAME##*.}"
 if ! [ -z "$EXT" ]; then
@@ -193,8 +190,8 @@ if [ ! -e "$FILE" ]; then
 fi
 
 handleExt
-handleMultimedia "$MIMETYPE"
-handleMIME "$MIMETYPE"
+handleMultimedia
+handleMIME
 handleFallback
 
 exit 1
