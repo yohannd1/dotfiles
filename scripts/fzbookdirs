@@ -11,7 +11,7 @@ HOME_ESCAPED=$(echo "$HOME/" | sed 's|/|\\/|g')
 
 genDirs() {
   if [ -d "$PROJECTS" ]; then
-    (cd "$PROJECTS" && fd -d1 -td '.' | prepend "pj: ")
+    (cd "$PROJECTS" && ls | prepend "pj: ")
   fi
 
   if [ -r "$DIR_BOOKMARKS" ]; then

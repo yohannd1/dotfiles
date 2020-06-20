@@ -1,4 +1,5 @@
 # this file simply has a register of some themes.
+# TODO: rename COL10 to COL_A and etc.
 
 case "$CURRENT_THEME" in
   dracula)
@@ -98,5 +99,6 @@ case "$CURRENT_THEME" in
 esac
 
 if [ "$EXPORT_THEME" ]; then
-  export COL0 COL1 COL2 COL3 COL4 COL5 COL6 COL7 COL8 COL9 COL10 COL11 COL12 COL13 COL14 COL15
+  export COL0 COL1 COL2 COL3 COL4 COL5 COL6 COL7 COL8 COL9
+  export COL10 COL11 COL12 COL13 COL14 COL15
 fi

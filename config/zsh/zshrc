@@ -97,7 +97,7 @@ assist::find-file.gen() { # {{{
 } # }}}
 
 where-to-go() { # {{{
-  gen=$(select-dir) || return 1
+  gen=$(fzbookdirs) || return 1
   cd "$gen"
 } # }}}
 nnn-explore() { # {{{
