@@ -28,9 +28,9 @@ ctrl + Print
 
 # mounting
 super + F10
-    fzmount
+    termup -f runread fzmount -m
 super + shift + F10
-    fzumount
+    termup -f runread fzmount -u
 
 # wallpaper
 super + w
