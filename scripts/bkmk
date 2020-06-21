@@ -5,12 +5,23 @@ require "ssv-parser"
 require "open3"
 include SSV
 
+ACTIONS = {
+  0 => "openfork",
+  1 => "archive",
+}
+
 def parse_tokens(line)
-  if line.length == 0
-    nil
-  else
-    Bookmark.new(line)
-  end
+  line.length == 0 ? nil : Bookmark.new(line)
+end
+
+def dmenu_prompt(prompt, input, height = nil)
+  height_args = height == nil ? [] : ["-h", height.to_s]
+  Open3::popen2("fzagnostic", *height_args, "-p", prompt) {
+    |stdin, stdout, wait_thr|
+    stdin.puts(input)
+    stdin.close
+    [stdout.read, wait_thr.value]
+  }
 end
 
 class Bookmark
@@ -70,59 +81,30 @@ if __FILE__ == $0
     end
   }
 
-  # Use the dmenu to let the user select a bookmark
-  chosen_str, exit_code =
-    Open3::popen2("fzagnostic", "-p", "Bookmark:", "-h", "30") { |stdin, stdout, wait_thr|
-      digit_len = bookmarks_map.length.to_s.length # Cool hack
-      bookmarks_map.each do |k, v|
-        if !v.state
-          stdin.puts "%0#{digit_len}d #{v.name}#{v.tags_to_s}" % "#{k}"
-        end
-      end
-      stdin.close
-      [stdout.read, wait_thr.value]
-  }
+  # select bookmark
+  maxlen = bookmarks_map.length.to_s.length
+  input = bookmarks_map
+    .select { |k, v| !v.state }
+    .map { |k, v| "%0#{maxlen}d #{v.name}#{v.tags_to_s}" % "#{k}" }
+    .join("\n")
+  pre_choice, code = dmenu_prompt("Bookmark:", input, 30)
+  exit 1 if code != 0
+  chosen = bookmarks_map[pre_choice.split(" ")[0].to_i]
 
-  # Exit if the dmenu prompt was cancelled.
-  if exit_code.to_i != 0
-    exit 1
-  end
+  # select action
+  maxlen = ACTIONS.length.to_s.length
+  input = ACTIONS
+    .map { |k, v| "%0#{maxlen}d #{v}" % "#{k}" }
+    .join("\n")
+  pre_choice, code = dmenu_prompt("Action:", input, 30)
+  exit 1 if code != 0
+  action_id = pre_choice.split(" ")[0].to_i
 
-  # Parse the selected bookmark and get its id
-  chosen_bookmark = bookmarks_map[chosen_str.split(" ")[0].to_i]
-
-  # List some actions here
-  actions = {
-    0 => "open url",
-    # 1 => "delete", # TODO
-    # 2 => "mark as done", # TODO
-  }
-
-  # Use the dmenu to let the user select an action
-  chosen_str, exit_code =
-    Open3::popen2("fzagnostic", "-p", "Action:") { |stdin, stdout, wait_thr|
-      digit_len = actions.length.to_s.length
-      actions.each do |k, v|
-        stdin.puts "%0#{digit_len}d #{v}" % "#{k}"
-      end
-      stdin.close
-      [stdout.read, wait_thr.value]
-  }
-
-  # Exit if the dmenu prompt was cancelled.
-  if exit_code.to_i != 0
-    exit 1
-  end
-
-  # Parse the selected action and get its id
-  chosen_action_id = chosen_str.split(" ")[0].to_i
-
-  case chosen_action_id
+  # process action
+  case action_id
   when 0
-    # This one is pretty unsafe if opener is defined, but I still
-    # haven't found a better way to call shell commands.
-    system "'#{opener}' '#{chosen_bookmark.link}'"
+    IO.popen([opener, chosen.link]) {|f| puts f.gets }
   else
-    raise "Unknown action: #{chosen_action_id.inspect}"
+    raise "Unknown action: #{action_id.inspect}"
   end
 end
