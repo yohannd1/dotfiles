@@ -164,7 +164,7 @@ handleBlocked() {
   esac
 }
 
-if [ $# != 1 ]; then
+if [ $# != 1 ] || [ -z "$1" ]; then
   printf >&2 "Usage: %s %s\n" "$(basename $0)" "<file>"
   exit 1
 fi

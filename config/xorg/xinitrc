@@ -5,6 +5,8 @@
 # does what a display manager would do - source ~/.xprofile if it exists and
 # load the window manager.
 
+printf >&2 "Display: %s\n" "${DISPLAY}"
+
 # source xprofile
 if [ -f "$XDG_CONFIG_HOME/xorg/xprofile" ]; then
   . "$XDG_CONFIG_HOME/xorg/xprofile"

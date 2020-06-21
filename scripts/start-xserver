@@ -30,7 +30,7 @@ export XLOG="$logfile"
 printf >&2 "Start time: %s\n" "$(date +"%Y/%m/%d %H:%M:%S")"
 printf >&2 "Log file: %s\n" "$logfile"
 
-startx "$initrc" >"$logfile" 2>"$logfile"
+startx "$initrc" >"$logfile" 2>&1
 exitCode="$?"
 
 printf >&2 "End time: %s\n" "$(date +"%Y/%m/%d %H:%M:%S")"
