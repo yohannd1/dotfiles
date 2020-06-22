@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 showHelp() {
-  cat >&2 <<"  EOF"
+  cat >&2 <<EOF
 $(basename $0): a program to recursively search and run an executable
 script from parent directories.
 
-Usage: $(basename $0) <mode> <cmd> [args...]
+Usage: $(basename $0) <mode> <cmd...>
 
 Where <mode> is:
   0, if <cmd> is a script to be found and it should be ran at current
@@ -14,7 +14,7 @@ Where <mode> is:
   directory; and
   2, if <cmd> is a file to be found, but arg1 is a command to be ran at
   <cmd>'s directory and arg2+ are the arguments.
-  EOF
+EOF
 
   exit 1
 }
