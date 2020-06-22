@@ -42,13 +42,6 @@ tryRunTermGraph() { tryRunTerm "$@"; tryRunGraph termup "$@"; }
 tryXdgOpen() { VIA_OPEN=1 tryRunGraph xdg-open "$@"; }
 printMsg() { [ "$OPEN_GUI" ] && notify-send "$(printf "$@")" || printf >&2 "$@"; }
 
-handleUrl() {
-  if echo "$FILE" | grep -q '^\(https\?\|ftp\)://'; then
-    tryRunGraph $BROWSER "$FILE"
-    tryRunTerm $TERMBROWSER "$FILE"
-  fi
-}
-
 handlePdf() {
   tryRunGraph zathura "$FILE"
   tryRunTerm runpage pdftotext -l 10 -nopgbrk -q -- "$FILE" -
@@ -71,99 +64,6 @@ handleVideo() {
   tryRunTerm runpage mediainfo "$FILE"
 }
 
-handleExt() {
-  case "$EXT" in
-    a|ace|alz|arc|arj|bz|bz2|cab|cpio|deb|gz|jar|lha|lz|lzh|lzma|lzo|rpm|rz|t7z|tar|tbz|tbz2|tgz|tlz|txz|tZ|tzo|war|xpi|xz|Z|zip)
-      tryRunTerm runpage atool --list -- "$FILE"
-      tryRunTerm runpage bsdtar --list --file "$FILE"
-      ;;
-    rar) tryRunTermGraph runpage unrar l -p- -- "$FILE" ;;
-    7z) tryRunTerm runpage 7z l -p -- "$FILE" ;;
-    pdf) handlePdf ;;
-
-    aac|flac|m4a|mid|midi|mpa|mp2|mp3|ogg|wav|wma)
-      handleAudio ;;
-
-    avi|mkv|mp4)
-      handleVideo ;;
-
-    torrent)
-      tryRunTerm rtorrent "$FILE"
-      tryRunTerm transmission-show -- "$FILE"
-      ;;
-
-    odt|ods|odp|sxw)
-      tryRunTerm runpage odt2txt "$FILE" ;;
-
-    txt|log)
-      tryRunTermGraph runpage cat "$FILE" ;;
-
-    kra) tryRunGraph krita "$FILE" ;;
-
-    md)
-      tryRunTerm runpage glowrapper "$FILE"
-      tryRunGraph md-preview "$FILE"
-      ;;
-
-    htm|html|xhtml)
-      tryRunTerm runpage w3m -dump "$FILE"
-      tryRunTerm runpage lynx -dump -- "$FILE"
-      tryRunTerm runpage elinks -dump "$FILE"
-      tryRunGraph $BROWSER "$FILE"
-      tryXdgOpen "$FILE"
-      ;;
-
-    json)
-      tryRunTerm runpage jq --color-output . "$FILE"
-      tryRunTerm runpage python -m json.tool -- "$FILE"
-      ;;
-  esac
-}
-
-handleMultimedia() {
-  case "$MIMETYPE" in
-    image/*)
-      tryRunGraph sxiv "$FILE"
-      tryRunTerm runpage viu -n "$FILE"
-      tryRunTerm runpage img2txt --gamma=0.6 -- "$FILE"
-      tryRunTerm runpage exiftool "$FILE"
-      ;;
-
-    application/pdf) handlePdf ;;
-    audio/*) handleAudio ;;
-    video/*) handleVideo ;;
-  esac
-}
-
-handleMIME() {
-  case "$MIMETYPE" in
-    inode/directory) tryRunTermGraph nnn "$FILE" ;;
-    inode/x-empty) tryRunTermGraph runpage cat "$FILE" ;;
-    text/troff) tryRunTermGraph runpage man -l "$FILE" ;;
-    text/*) tryRunTermGraph runpage cat "$FILE" ;;
-    */xml) tryRunTermGraph runpage cat "$FILE" ;;
-    image/vnd.djvu)
-      tryRunTerm runpage djvutxt "$FILE"
-      tryRunTerm runpage exiftool "$FILE"
-      ;;
-  esac
-}
-
-handleFallback() {
-  printMsg 'failed to open file "%s", type "%s", mime type "%s"; falling back to xdg-open\n' "$FILE" "$FILETYPE" "$MIMETYPE"
-  tryXdgOpen "$FILE"
-  printMsg 'fallback to xdg-open failed\n'
-}
-
-handleBlocked() {
-  case "$1" in
-    application/x-sharedlib) exit 1 ;;
-    application/x-shared-library-la) exit 1 ;;
-    application/x-executable) exit 1 ;;
-    application/x-shellscript) exit 1 ;;
-  esac
-}
-
 if [ $# != 1 ] || [ -z "$1" ]; then
   printf >&2 "Usage: %s %s\n" "$(basename $0)" "<file>"
   exit 1
@@ -181,17 +81,98 @@ fi
 FILETYPE=$(file --dereference --brief -- "$FILE")
 MIMETYPE=$(file --dereference --brief --mime-type -- "$FILE")
 
-handleBlocked "$MIMETYPE"
-handleUrl
+# blocked apps
+case "$1" in
+  application/x-sharedlib) exit 1 ;;
+  application/x-shared-library-la) exit 1 ;;
+  application/x-executable) exit 1 ;;
+  application/x-shellscript) exit 1 ;;
+esac
+
+# URLs
+if echo "$FILE" | grep -q '^\(https\?\|ftp\)://'; then
+  tryRunGraph $BROWSER "$FILE"
+  tryRunTerm $TERMBROWSER "$FILE"
+fi
 
 if [ ! -e "$FILE" ]; then
   printMsg 'failed to open "%s": no such file or directory\n' "$FILE"
   exit 1
 fi
 
-handleExt
-handleMultimedia
-handleMIME
-handleFallback
+# extensions
+case "$EXT" in
+  a|ace|alz|arc|arj|bz|bz2|cab|cpio|deb|gz|jar|lha|lz|lzh|lzma|lzo|rpm|rz|t7z|tar|tbz|tbz2|tgz|tlz|txz|tZ|tzo|war|xpi|xz|Z|zip)
+    tryRunTerm runpage atool --list -- "$FILE"
+    tryRunTerm runpage bsdtar --list --file "$FILE"
+    ;;
+  rar) tryRunTermGraph runpage unrar l -p- -- "$FILE" ;;
+  7z) tryRunTerm runpage 7z l -p -- "$FILE" ;;
+  pdf) handlePdf ;;
+
+  aac|flac|m4a|mid|midi|mpa|mp2|mp3|ogg|wav|wma)
+    handleAudio ;;
+
+  avi|mkv|mp4)
+    handleVideo ;;
+
+  torrent)
+    tryRunTerm rtorrent "$FILE"
+    tryRunTerm transmission-show -- "$FILE"
+    ;;
+
+  odt|ods|odp|sxw)
+    tryRunTerm runpage odt2txt "$FILE" ;;
+
+  txt|log)
+    tryRunTermGraph runpage cat "$FILE" ;;
+
+  kra) tryRunGraph krita "$FILE" ;;
+
+  md)
+    tryRunTerm runpage glowrapper "$FILE"
+    tryRunGraph md-preview "$FILE"
+    ;;
+
+  htm|html|xhtml)
+    tryRunTerm runpage w3m -dump "$FILE"
+    tryRunTerm runpage lynx -dump -- "$FILE"
+    tryRunTerm runpage elinks -dump "$FILE"
+    tryRunGraph $BROWSER "$FILE"
+    ;;
+
+  json)
+    tryRunTerm runpage jq --color-output . "$FILE"
+    tryRunTerm runpage python -m json.tool -- "$FILE"
+    ;;
+esac
+
+case "$MIMETYPE" in
+  # multimedia
+  image/vnd.djvu)
+    tryRunTerm runpage djvutxt "$FILE"
+    tryRunTerm runpage exiftool "$FILE"
+    ;;
+  image/*)
+    tryRunGraph sxiv "$FILE"
+    tryRunTerm runpage viu -n "$FILE"
+    tryRunTerm runpage img2txt --gamma=0.6 -- "$FILE"
+    tryRunTerm runpage exiftool "$FILE"
+    ;;
+  application/pdf) handlePdf ;;
+  audio/*) handleAudio ;;
+  video/*) handleVideo ;;
+
+  # misc
+  inode/directory) tryRunTermGraph nnn "$FILE" ;;
+  inode/x-empty) tryRunTermGraph runpage cat "$FILE" ;;
+  text/troff) tryRunTermGraph runpage man -l "$FILE" ;;
+  text/*) tryRunTermGraph runpage cat "$FILE" ;;
+  */xml) tryRunTermGraph runpage cat "$FILE" ;;
+esac
+
+printMsg 'failed to open file "%s", type "%s", mime type "%s"; falling back to xdg-open\n' "$FILE" "$FILETYPE" "$MIMETYPE"
+tryXdgOpen "$FILE"
+printMsg "fallback to xdg-open failed\n"
 
 exit 1

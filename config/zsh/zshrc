@@ -45,6 +45,7 @@ if [ -n "$SHORT_PROMPT" ]; then
 else
   PS1="%B%{$fg[green]%}(%{$fg[yellow]%}%n@%M:%{$fg[magenta]%}%~%{$fg[green]%})%{$reset_color%}%b: "
 fi
+[ "${NNNLVL:-0}" -ge 1 ] && PS1="%B%{$fg[green]%}(%{$reset_color%}%Bn%{$fg[green]%})%{$reset_color%}%b $PS1"
 
 PS2='  '
 RPROMPT="%(?..%?)"
@@ -102,7 +103,7 @@ where-to-go() { # {{{
 } # }}}
 nnn-explore() { # {{{
   # block nesting of nnn in subshells
-  if [ -n $NNNLVL ] && [ "${NNNLVL:-0}" -ge 1 ]; then
+  if [ -n "$NNNLVL" ] && [ "${NNNLVL:-0}" -ge 1 ]; then
     printf "%s\n" "nnn is already running"
     return 1
   fi

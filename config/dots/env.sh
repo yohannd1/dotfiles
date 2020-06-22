@@ -29,7 +29,7 @@ export RUSTUP_HOME="$XDG_CACHE_HOME/rustup"
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export TASKRC="$XDG_CONFIG_HOME/taskwarrior/taskrc"
 export INPUTRC="$XDG_CONFIG_HOME/inputrc"
-export WINEPREFIX="$XDG_CACHE_HOME/wine" # TODO: move to DATA_DIR
+export WINEPREFIX="$XDG_DATA_DIR/wine"
 export XAUTHORITY="$XDG_DATA_DIR/Xauthority" # might break some display managers, but I don't use them.
 export LESSHISTFILE="-"
 
