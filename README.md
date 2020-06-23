@@ -61,3 +61,5 @@ something.
   less and less);
 
 * [ ] Find a license to put here;
+
+* [ ] Remake `dotsync` into something bigger, but not _that_ big;
