@@ -275,23 +275,23 @@
     context = mod4+mod1+o
 
 [urgency_low]
-!! echo background = \"$COL0\"
-!! echo foreground = \"$COL3\"
-!! echo frame_color = \"$COL0\"
+!! echo background = \"$base00\"
+!! echo foreground = \"$base03\"
+!! echo frame_color = \"$base00\"
     timeout = 15
     fullscreen = show
 
 [urgency_normal]
-!! echo background = \"$COL0\"
-!! echo foreground = \"$COL15\"
-!! echo frame_color = \"$COL0\"
+!! echo background = \"$base00\"
+!! echo foreground = \"$base05\"
+!! echo frame_color = \"$base00\"
     timeout = 30
     fullscreen = show
 
 [urgency_critical]
-!! echo background = \"$COL0\"
-!! echo foreground = \"$COL1\"
-!! echo frame_color = \"$COL0\"
+!! echo background = \"$base00\"
+!! echo foreground = \"$base08\"
+!! echo frame_color = \"$base00\"
     timeout = 0
     fullscreen = show
 

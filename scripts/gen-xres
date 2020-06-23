@@ -5,51 +5,85 @@
 # I made this because managing a raw xresources file is very annoying specially because the C
 # preprocessor is annoying af.
 
+# Meanings:
+# base00 - Default Background
+# base01 - Lighter Background (Used for status bars)
+# base02 - Selection Background
+# base03 - Comments, Invisibles, Line Highlighting
+# base04 - Dark Foreground (Used for status bars)
+# base05 - Default Foreground, Caret, Delimiters, Operators
+# base06 - Light Foreground
+# base07 - Light Background
+# base08 - Variables, XML Tags, Markup Link Text, Markup Lists, Diff Deleted
+# base09 - Integers, Boolean, Constants, XML Attributes, Markup Link Url
+# base0A - Classes, Markup Bold, Search Text Background
+# base0B - Strings, Inherited Class, Markup Code, Diff Inserted
+# base0C - Support, Regular Expressions, Escape Characters, Markup Quotes
+# base0D - Functions, Methods, Attribute IDs, Headings
+# base0E - Keywords, Storage, Selector, Markup Italic, Diff Changed
+# base0F - Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?>
+
 . ~/.config/dots/env.sh
-. ~/.config/dots/theme.sh
+eval "$(load-base16-theme)"
 
 xset() { printf "%s: %s\n" "$1" "$2"; }
 
-FONT="JetBrains Mono Medium:pixelsize=14.5:antialias=true:autohint=true;"
-COL_CURSOR="$COL15"
-COL_FG="$COL15"
-COL_BG="$COL0"
+font="JetBrains Mono Medium:pixelsize=14.5:antialias=true:autohint=true;"
 
 # st
 xset 'st.alpha' "0.9"
-xset 'st.font' "$FONT"
-
-# dmenu
-xset 'dmenu.font' "$FONT"
-xset 'dmenu.norm.bg' "$COL0"
-xset 'dmenu.norm.fg' "$COL15"
-xset 'dmenu.norm.hl.bg' "$COL0"
-xset 'dmenu.norm.hl.fg' "$COL3"
-xset 'dmenu.sel.bg' "$COL15"
-xset 'dmenu.sel.fg' "$COL0"
-xset 'dmenu.sel.hl.bg' "$COL3"
-xset 'dmenu.sel.hl.fg' "$COL0"
-xset 'dmenu.out.bg' "$COL15"
-xset 'dmenu.out.fg' "$COL15"
+xset 'st.cursor' "$base05"
+xset 'st.font' "$font"
 
 # dwm
-xset 'dwm.norm.bg' "$COL0"
-xset 'dwm.norm.fg' "$COL15"
-xset 'dwm.norm.border' "$COL0"
-xset 'dwm.sel.bg' "$COL3"
-xset 'dwm.sel.fg' "$COL0"
-xset 'dwm.sel.border' "$COL3"
+xset 'dwm.norm.bg' "$base00"
+xset 'dwm.norm.fg' "$base05"
+xset 'dwm.norm.border' "$base00"
+xset 'dwm.sel.bg' "$base02"
+xset 'dwm.sel.fg' "$base05"
+xset 'dwm.sel.border' "$base05"
+
+# dmenu
+xset 'dmenu.font' "$font"
+xset 'dmenu.norm.bg' "$base00"
+xset 'dmenu.norm.fg' "$base05"
+xset 'dmenu.norm.hl.bg' "$base00"
+xset 'dmenu.norm.hl.fg' "$base09"
+xset 'dmenu.sel.bg' "$base02"
+xset 'dmenu.sel.fg' "$base04"
+xset 'dmenu.sel.hl.bg' "$base02"
+xset 'dmenu.sel.hl.fg' "$base09"
+xset 'dmenu.out.bg' "$base0F"
+xset 'dmenu.out.fg' "$base0F"
 
 # qutebrowser
-xset 'qutebrowser.border' "$COL_BG"
-xset 'qutebrowser.selection' '#44475a'
+xset 'qutebrowser.bg' "$base00"
+xset 'qutebrowser.fg' "$base05"
+xset 'qutebrowser.bg-alt' "$base01" # not sure
+xset 'qutebrowser.fg-alt' "$base04" # not sure
+xset 'qutebrowser.bg-attention' "$base01" # not sure
+xset 'qutebrowser.fg-attention' "$base04" # not sure
+xset 'qutebrowser.sel.bg' "$base02"
+xset 'qutebrowser.sel.fg' "$base05"
+xset 'qutebrowser.match.fg' "$base09"
+xset 'qutebrowser.error' "$base08"
+xset 'qutebrowser.warning' "$base09"
+xset 'qutebrowser.info' "$base0D"
+xset 'qutebrowser.success' "$base0B"
 
 # general
-xset '*.background' "$COL_BG"
-xset '*.foreground' "$COL_FG"
-xset '*.cursorColor' "$COL_CURSOR"
-xset '*.cursor-color' "$COL_CURSOR"
+xset '*.background' "$base00"
+xset '*.foreground' "$base05"
+xset '*.bg' "$base00"
+xset '*.fg' "$base05"
+xset '*.cursor-color' "$cursor"
 
-for n in {0..15}; do
-  xset "*.color${n}" "$(eval 'echo $COL'"${n}")"
+for n in {0..9}; do
+  xset "*.color$n" "$(eval 'echo $base0'$n)"
 done
+xset '*.color10' "$base0A"
+xset '*.color11' "$base0B"
+xset '*.color12' "$base0C"
+xset '*.color13' "$base0D"
+xset '*.color14' "$base0E"
+xset '*.color15' "$base0F"

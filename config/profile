@@ -3,30 +3,19 @@
 # Shell Profile
 # This is ran at login on a TTY.
 
-# Load environment variables.
+# load libraries, env vars and PATH
+. ~/.local/lib/ystd.sh
 . ~/.config/dots/env.sh
 . ~/.config/dots/path.sh
+eval "$(load-base16-theme --noprefix)"
 
-# Set up SSH keychaing
+# set up SSH keychaing
 if [ -x /usr/bin/keychain ]; then
   eval "$(keychain --eval --ignore-missing ~/.ssh/id_rsa 2>/dev/null)"
 fi
 
-# Terminal Properties
-# printf '\e]P0282828' # black
-# printf '\e]P19D0006' # red
-# printf '\e]P279740E' # green
-# printf '\e]P3B57614' # yellow
-# printf '\e]P4076678' # blue
-# printf '\e]P58F3F71' # magenta
-# printf '\e]P6427B58' # cyan
-# printf '\e]P7FBF1C7' # white
-# printf '\e]P832302F' # bright black
-# printf '\e]P9FB4934' # bright red
-# printf '\e]PAB8BB26' # bright green
-# printf '\e]PBFABD2F' # bright yellow
-# printf '\e]PC83A598' # bright blue
-# printf '\e]PDD3869B' # bright magenta
-# printf '\e]PE8EC07C' # bright cyan
-# printf '\e]PFFBF1C7' # bright white
-printf '\e[?16;2;112c' # change cursor to block
+# load colors (needs setcolors-git from AUR)
+if exists setcolors; then
+  gen-setcolors && setcolors "$XDG_CACHE_HOME/gen/setcolorsrc"
+  printf '\e[?16;2;112c' # change cursor to block
+fi

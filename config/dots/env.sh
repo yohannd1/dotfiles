@@ -13,7 +13,7 @@ export DOTFILES="$PROJECTS/dotfiles"
 
 # global options
 export WM="dwm"
-export TERM="xterm-256color"
+[ -z "$LOGIN" ] && export TERM="xterm-256color"
 export EDITOR="nvim"
 export TERMINAL="st"
 export BROWSER="qutebrowser"
@@ -21,6 +21,7 @@ export TERMBROWSER="w3m"
 export PAGER="less"
 export OPENER="openfork"
 export READER="zathura"
+export THEME="tomorrow-night"
 
 # configuration files/folders
 export GOPATH="$XDG_CACHE_HOME/go"
@@ -40,10 +41,12 @@ export NNN_OPENER="$OPENER"
 export NNN_TRASH=1
 export FZF_DEFAULT_OPTS='
   --height=80% --layout=reverse --border
-  --color hl:4,hl+:2
-  --color prompt:5,marker:5,spinner:5
+  --color fg:4,fg+:5
+  --color hl:6,hl+:7
+  --color prompt:8,marker:5,pointer:8
+  --color spinner:3,gutter:1,info:3
 '
-export GCC_COLORS='error=01;31:warning=01;33:note=01;34:caret=01;32:locus=01:quote=03'
+export GCC_COLORS='error=01;38;5;8:warning=01;38;5;9:note=01;38;5;12:caret=01;32:locus=01;38;5;11:quote=03'
 
 # dotfiles program options
 export DIR_BOOKMARKS="$STORAGE/share/dir-bookmarks"
@@ -52,7 +55,6 @@ export SETBG_WALLPAPER_DIR="$STORAGE/pictures/wallpapers"
 export SETBG_THEME="storm"
 export BKMK_FILE="$WIKI/data/bookmarks"
 export DOTSYNC_NO_BACKUP=1
-export CURRENT_THEME="tomorrow_night"
 
 # dircolors
 if [ -r ~/.config/dircolors ]; then

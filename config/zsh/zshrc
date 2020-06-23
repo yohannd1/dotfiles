@@ -206,11 +206,11 @@ setopt sharehistory
 setopt extendedhistory
 
 # }}}
-# After {{{
+# Plugins {{{
 
-sourceAlt \
-  /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
-  /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# sourceAlt \
+#   /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
+#   /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # }}}
 : # Assert first prompt doesn't show any non-zero return value

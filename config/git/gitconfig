@@ -3,10 +3,10 @@
     ui = auto
 
 [color "diff"]
-    meta = white bold
-    frag = cyan bold
-    old = red bold
-    new = green bold
+    meta = 3
+    frag = 9 bold
+    old = 8
+    new = 11
 
 [core]
     editor = $EDITOR

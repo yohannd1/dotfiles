@@ -1,6 +1,6 @@
 import subprocess as sp
 import theme
-from theme import ThemeOpt
+from theme import ThemeOpt, Palette
 
 bindings = [
     ("D", "tab-close"),
@@ -16,44 +16,32 @@ def main():
         config.bind(k, cmd)
 
     theme.load(c, {
-        ThemeOpt.PALETTE: {
-            "background": xgetres("qutebrowser.color0"),
-            "background-alt": xgetres("qutebrowser.color0"),
-            "border": xgetres("qutebrowser.border"),
-            "current-line": xgetres("qutebrowser.selection"),
-            "selection": xgetres("qutebrowser.selection"),
-            "foreground": xgetres("qutebrowser.foreground"),
-            "foreground-alt": xgetres("qutebrowser.foreground"),
-            "red": xgetres("qutebrowser.color1"),
-            "green": xgetres("qutebrowser.color2"),
-            "orange": xgetres("qutebrowser.color3"),
-            "yellow": xgetres("qutebrowser.color3"),
-            "pink": xgetres("qutebrowser.color5"),
-            "cyan": xgetres("qutebrowser.color6"),
-            "purple": xgetres("qutebrowser.color4"),
-
-            "background-attention": xgetres("qutebrowser.color0"),
-            "foreground-attention": "#ffffff",
-            "comment": "#6272a4",
-        },
+        ThemeOpt.PALETTE: Palette(
+            bg=xgetres("qutebrowser.bg"),
+            fg=xgetres("qutebrowser.fg"),
+            bg_alt=xgetres("qutebrowser.bg-alt"),
+            fg_alt=xgetres("qutebrowser.fg-alt"),
+            bg_attention=xgetres("qutebrowser.bg-attention"),
+            fg_attention=xgetres("qutebrowser.fg-attention"),
+            sel_fg=xgetres("qutebrowser.sel.fg"),
+            sel_bg=xgetres("qutebrowser.sel.bg"),
+            match_fg=xgetres("qutebrowser.match.fg"),
+            error=xgetres("qutebrowser.error"),
+            warning=xgetres("qutebrowser.warning"),
+            info=xgetres("qutebrowser.info"),
+            success=xgetres("qutebrowser.success"),
+        ),
         ThemeOpt.SPACING: {
             "vertical": 2,
             "horizontal": 2,
         },
     })
 
-def xgetres(*args):
-    proc = sp.Popen(
-        ["xgetres", *args],
-        encoding="UTF-8",
-        stdout=sp.PIPE,
-        stdin=sp.PIPE,
-        stderr=sp.PIPE,
-    )
-    proc.stdin.close()
-    stdout = proc.stdout.read().strip()
-    proc.stdout.close()
-    proc.stderr.close()
-    return stdout
+def xgetres(resource):
+    command = sp.run(["xgetres", resource], stdout=sp.PIPE, encoding="UTF-8").stdout.strip()
+    if command == "":
+        raise ValueError(f"Resource '{resource}' seems to be undefined...")
+    else:
+        return command
 
 main()

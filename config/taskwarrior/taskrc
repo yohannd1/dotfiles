@@ -10,33 +10,33 @@ report.next.filter=status:pending limit:page -hold
 
 # General decoration
 color.label=color4
-color.alternate=on color0
-color.header=color4
-color.footnote=color6
+color.alternate=on color1
+color.header=color3
+color.footnote=color3
 color.warning=color0 on color3
-color.error=color0 on color1
+color.error=color0 on color8
 color.debug=color0 on color6
 
 # Task state
 color.completed=
 color.deleted=
-color.active=bold color0 on color5
+color.active=color5
 color.recurring=
 color.scheduled=
 color.until=
-color.blocked=color1
-color.blocking=bold
+color.blocked=color8
+color.blocking=bold color6
 
 # Project
 color.project.none=
 
 # Priority
-color.uda.priority.H=bold cyan
+color.uda.priority.H=bold
 color.uda.priority.M=
 color.uda.priority.L=
 
 # Tags
-color.tag.next=cyan
+color.tag.next=color13
 color.tag.none=
 color.tagged=
 
@@ -76,11 +76,3 @@ color.sync.rejected=color13
 # Command: undo
 color.undo.after=color2
 color.undo.before=color1
-
-# Tasksh Review Report
-uda.reviewed.type=date
-uda.reviewed.label=Reviewed
-report._reviewed.description=Tasksh Review Report
-report._reviewed.columns=uuid
-report._reviewed.sort=reviewed+,modified+
-report._reviewed.filter=( reviewed.none: or reviewed.before:now-6days ) and ( +PENDING or +WAITING )

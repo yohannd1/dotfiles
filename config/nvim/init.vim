@@ -9,7 +9,7 @@ let g:is_first = exists("g:is_first") ? 0 : 1
 if g:is_first
   " Cancel if this is not being sourced by NeoVim
   if !has("nvim")
-    echoerr "You are not using NeoVim. Please source this init file with it or remove this bit on the code."
+    echoerr "You are not using NeoVim. This configuration does not work properly with Vim."
     finish
   endif
 
@@ -252,7 +252,7 @@ let g:user_emmet_leader_key='<C-c>'
 " Lightline
 let g:lightline = {}
 let g:lightline.active = {}
-let g:lightline.colorscheme = "wombat"
+" let g:lightline.colorscheme = "base16"
 let g:lightline.active.left = [["mode", "paste"], ["readonly", "filename"]]
 let g:lightline.active.right = [["lineinfo"], ["percent"], ["fileformat", "fileencoding", "filetype"]]
 
@@ -302,7 +302,7 @@ if g:is_first
   set autoindent
   set hlsearch incsearch
   set linebreak wrap
-  set cursorline
+  set nocursorline
   set showcmd
   set shortmess+=atcI
   set belloff+=ctrlg
@@ -314,35 +314,22 @@ if g:is_first
   set noshowmode
   set list
 
-  " Try to make italics work
+  " That's how the italics work (or not)
   let &t_ZH = "\<Esc>[3m"
   let &t_ZR = "\<Esc>[23m"
 
   let &autochdir = !g:is_win
 
   syntax on
-  " let base16colorspace=256 " Access colors present in 256 colorspace
-  silent! colorscheme base16-default-dark
-  let &background = g:is_win ? "light" : "dark" " I like to use light backgrounds on windows.
+  let &background = g:is_win ? "light" : "dark" " I like to use light backgrounds on windows. FIXME: this is useless right now
+  colorscheme base16 " TODO: make a small lazy color parser from .yaml files - do it in vimscript to use in windows machines
 
-  " Dracula patch
-  hi Comment ctermfg=7
-  hi Folded ctermfg=7 ctermbg=0 cterm=italic
-  hi LineNr ctermfg=7 cterm=italic
-  hi CursorLineNr cterm=italic
-  hi BufTabLineFill ctermbg=0
-  hi TabLineFill ctermbg=0 ctermfg=5
-  hi TabLineSel ctermbg=5 ctermfg=0
-  hi TabLine ctermfg=5 ctermbg=0 cterm=NONE
-
-  if g:is_home
-    " Disable background if I'm using vim at home, since my terminals
-    " are transparent
-    hi Normal guibg=NONE ctermbg=NONE
-    " hi BufTabLineFill guibg=NONE ctermbg=NONE " not on dracula
-    hi CursorLine guibg=NONE ctermbg=NONE
-    hi CursorLineNr guibg=NONE ctermbg=NONE
-  endif
+  " if g:is_home
+  "   " FIXME: maybe use this? maybe not...
+  "   " Disable background if I'm using vim at home, since my terminals
+  "   " are transparent
+  "   hi Normal guibg=NONE ctermbg=NONE
+  " endif
 
   filetype plugin indent on
   set foldtext=MyFoldText()
@@ -692,18 +679,18 @@ if g:is_first
     echo "You have unread startup messages."
   endif
 
-  if g:is_tty
-    hi Comment ctermfg=2
-    hi Folded ctermfg=2
-    hi LineNr ctermfg=2
-  else
-    hi Comment cterm=italic
-    hi Folded cterm=italic
-    hi LineNr cterm=italic
-    hi CursorLineNr cterm=italic
-  endif
+  " if g:is_tty
+  "   hi Comment ctermfg=2
+  "   hi Folded ctermfg=2
+  "   hi LineNr ctermfg=2
+  " else
+  "   hi Comment cterm=italic
+  "   hi Folded cterm=italic
+  "   hi LineNr cterm=italic
+  "   hi CursorLineNr cterm=italic
+  " endif
 
-  hi link SpecialComment Comment
+  " hi link SpecialComment Comment
 endif
 
 " }}}

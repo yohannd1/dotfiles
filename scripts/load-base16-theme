@@ -1,0 +1,42 @@
+#!/usr/bin/env sh
+
+B16PAT='[a-fA-F0-9]'
+EXPORT_TAG=''
+PREFIX='#'
+
+main() {
+  while read line; do
+    printf "%s" "$line" | grep '^base0[a-zA-Z0-9]:' | sed 's/^\(base0'$B16PAT'\): "\('$B16PAT'\{6\}\)"/'"$EXPORT_TAG"'\1="'"$PREFIX"'\2"/g'
+  done
+}
+
+showHelp() {
+  printf >&2 "Usage: %s\n" "$(basename $0) [-h | --help] [-e | --export] [ -e | --noprefix ]"
+  printf >&2 "The theme data is loaded from %s\n" '$XDG_CONFIG_HOME/dots/themes/$THEME.yaml'
+  exit 1
+}
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --export|-e) EXPORT_TAG='export ' ;;
+    --noprefix|-n) PREFIX='' ;;
+    --help|-h) showHelp ;;
+    *)
+      printf >&2 "Invalid argument: %s\n" "$1"
+      showHelp
+      ;;
+  esac
+
+  shift
+done
+
+case $# in
+  0)
+    if [ -z "$THEME" ]; then
+      printf >&2 "Failed to get theme; please environment variable %s\n" '$THEME'
+      exit 1
+    fi
+    main < "${XDG_CONFIG_HOME:-$HOME/.config}/dots/themes/${THEME}.yaml"
+    ;;
+  *)
+esac

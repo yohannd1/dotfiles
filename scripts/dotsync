@@ -152,8 +152,7 @@ fi
 
 . "$DOTFILES/config/dots/env.sh"
 . "$DOTFILES/config/dots/path.sh"
-EXPORT_THEME=1
-. "$DOTFILES/config/dots/theme.sh"
+eval "$(load-base16-theme --export)"
 
 # }}}
 # Config Files {{{
@@ -189,6 +188,7 @@ if [ -z "$NO_CONFIG_LINK" ]; then
   lfconf "bash/bashrc" ~/.bashrc
   lfconf "tmux.conf" ~/.tmux.conf
   lfconf "inputrc" ~/.config/inputrc
+  lfconf "dircolors" ~/.config/dircolors
   lfconf "mimeapps.list" ~/.config/mimeapps.list
   lfconf "dots" ~/.config/dots
 
