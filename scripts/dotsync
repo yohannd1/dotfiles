@@ -210,7 +210,7 @@ if [ -z "$NO_CONFIG_LINK" ]; then
   done
 
   # lfconf "vifm" ~/.config/vifm
-  # lfglob "$DOTFILES/config/emacs" ~/.emacs.d
+  lfglob "$DOTFILES/config/emacs" ~/.emacs.d
   # lfglob "$DOTFILES/config/vscode" ~/.config/Code/User
   # lfglob "$HOME/.config/kak" ~/.config/kak
 

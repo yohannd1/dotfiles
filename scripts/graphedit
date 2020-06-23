@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+. ~/.local/lib/ystd.sh
+depCheck termup
+
+case "$EDITOR" in
+  emacs) emacs -- "$@" ;;
+  vi|vim|nvim) termup "$EDITOR" -- "$@" ;;
+esac

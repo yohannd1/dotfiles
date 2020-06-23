@@ -78,6 +78,10 @@ super + b
 super + y
     pkill stalonetray || stalonetray -c "$XDG_CACHE_HOME/gen/stalonetrayrc"
 
+# editor
+super + e
+    graphedit
+
 # super-o apps
 super + o; c
     $TERMINAL -c float -g 65x10 -e runread cal -3
