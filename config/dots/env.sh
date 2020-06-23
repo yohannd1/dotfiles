@@ -13,7 +13,7 @@ export DOTFILES="$PROJECTS/dotfiles"
 
 # global options
 export WM="dwm"
-[ -z "$LOGIN" ] && export TERM="xterm-256color"
+export TERM="xterm-256color"
 export EDITOR="nvim"
 export TERMINAL="st"
 export BROWSER="qutebrowser"
