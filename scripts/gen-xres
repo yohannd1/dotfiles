@@ -59,10 +59,10 @@ xset 'dmenu.out.fg' "$base0F"
 # qutebrowser
 xset 'qutebrowser.bg' "$base00"
 xset 'qutebrowser.fg' "$base05"
-xset 'qutebrowser.bg-alt' "$base01" # not sure
-xset 'qutebrowser.fg-alt' "$base04" # not sure
-xset 'qutebrowser.bg-attention' "$base01" # not sure
-xset 'qutebrowser.fg-attention' "$base04" # not sure
+xset 'qutebrowser.bg-alt' "$base01"
+xset 'qutebrowser.fg-alt' "$base04"
+xset 'qutebrowser.bg-attention' "$base01"
+xset 'qutebrowser.fg-attention' "$base04"
 xset 'qutebrowser.sel.bg' "$base02"
 xset 'qutebrowser.sel.fg' "$base05"
 xset 'qutebrowser.match.fg' "$base09"

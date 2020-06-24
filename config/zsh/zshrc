@@ -38,17 +38,19 @@ precmd() {
   setTitle "$(whoami)@$(hostname):$cwd" # set title
 }
 
+# set SHORT_PROMPT to true if on Android
 [ "$(uname -o)" = "Android" ] && SHORT_PROMPT=1
 
-if [ -n "$SHORT_PROMPT" ]; then
-  PS1="%B%{$fg[green]%}(:%{$fg[magenta]%}%~%{$fg[green]%})%{$reset_color%}%b: "
-else
-  PS1="%B%{$fg[green]%}(%{$fg[yellow]%}%n@%M:%{$fg[magenta]%}%~%{$fg[green]%})%{$reset_color%}%b: "
-fi
-[ "${NNNLVL:-0}" -ge 1 ] && PS1="%B%{$fg[green]%}(%{$reset_color%}%Bn%{$fg[green]%})%{$reset_color%}%b $PS1"
+# prompt blocks
+PROMPT_LEFT="%B%F{3}("
+[ -z "$SHORT_PROMPT" ] && PROMPT_LONG="%F{5}%n@%M%F{3}:"
+PROMPT_RIGHT="%F{13}%~%F{3})%F{5}%b: "
 
-PS2='  '
+# some other things
+PS1="$PROMPT_LEFT$PROMPT_LONG$PROMPT_RIGHT"
+PS2="%B%F{3}---%{$reset_color%} "
 RPROMPT="%(?..%?)"
+[ "${NNNLVL:-0}" -ge 1 ] && PS1="%B%F{3}(%F{5}n%F{3})%b $PS1"
 
 # }}}
 # Keybindings Config {{{
