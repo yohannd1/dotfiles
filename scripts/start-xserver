@@ -1,38 +1,38 @@
 #!/usr/bin/env sh
 
 . ~/.local/lib/ystd.sh
-depCheck startx
+depCheck startx mktemp
 
-if [ -n "$DISPLAY" ]; then
-  printf >&2 "%s\n" "DISPLAY is set, an x server is probably already running; aborting..."
+if [ "$DISPLAY" ]; then
+  printf >&2 "%s is set, an X server is probably already running; aborting...\n" '$DISPLAY'
   exit 1
 fi
 
 case $# in
   0)
     standardInit="${XDG_CONFIG_HOME:-$HOME/.config}/xorg/xinitrc"
-    [ -f "$standardInit" ] && initrc="$standardInit" || initrc="$HOME/.xinitrc"
+    [ -r "$standardInit" ] && initrc="$standardInit" || initrc="$HOME/.xinitrc"
     ;;
   1)
     initrc="$1"
     ;;
   2)
-    printf >&2 "%s\n" "$(basename $0): invalid amount of arguments"
-    printf >&2 "%s\n" "Usage: $(basename $0) [init_file]"
-    printf >&2 "%s\n" "init_file defaults to \$XDG_CONFIG_HOME/xorg/xinitrc or ~/.xinitrc."
+    printf >&2 "%s: invalid amount of argument\n" "$(basename $0)"
+    printf >&2 "Usage: %s\n" "$(basename $0) [init_file]"
+    printf >&2 "init_file defaults to %s/xorg/xinitrc or ~/.xinitrc.\n" '$XDG_CONFIG_HOME'
     exit 1
     ;;
 esac
 
-logfile="$(mktemp /tmp/xorg.XXXXXXXX)"
+logfile="$(mktemp /tmp/xorg.XXXXXXXX)" || exit 1
 export XLOG="$logfile"
 
-printf >&2 "Start time: %s\n" "$(date +"%Y/%m/%d %H:%M:%S")"
+printf >&2 "Starting at %s\n" "$(date +"%Y/%m/%d %H:%M:%S")"
 printf >&2 "Log file: %s\n" "$logfile"
 
 startx "$initrc" >"$logfile" 2>&1
 exitCode="$?"
 
-printf >&2 "End time: %s\n" "$(date +"%Y/%m/%d %H:%M:%S")"
+printf >&2 "Finished at %s\n" "$(date +"%Y/%m/%d %H:%M:%S")"
 
 exit "$exitCode"

@@ -190,6 +190,7 @@ if [ -z "$NO_CONFIG_LINK" ]; then
   lfconf "inputrc" ~/.config/inputrc
   lfconf "dircolors" ~/.config/dircolors
   lfconf "mimeapps.list" ~/.config/mimeapps.list
+  lfconf "ripgreprc" ~/.config/ripgreprc
   lfconf "dots" ~/.config/dots
 
   # Programs

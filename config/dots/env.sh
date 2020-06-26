@@ -55,6 +55,7 @@ export SETBG_WALLPAPER_DIR="$STORAGE/pictures/wallpapers"
 export SETBG_THEME="storm"
 export BKMK_FILE="$WIKI/data/bookmarks"
 export DOTSYNC_NO_BACKUP=1
+export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"
 
 # dircolors
 if [ -r ~/.config/dircolors ]; then

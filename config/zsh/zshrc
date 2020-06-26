@@ -8,7 +8,7 @@ source ~/.local/lib/ystd.sh &>/dev/null \
   || printf "Couldn't load library file.\n"
 
 # Load some other libraries
-sourceIf ~/.config/dots/env.sh
+sourceIf "$XDG_CONFIG_HOME/dots/env.sh"
 sourceIf "$STORAGE/share/zshrc.personal"
 sourceIf "$HOME/.config/broot/launcher/bash/br"
 

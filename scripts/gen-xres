@@ -28,7 +28,7 @@ eval "$(load-base16-theme)"
 
 xset() { printf "%s: %s\n" "$1" "$2"; }
 
-font="JetBrains Mono Medium:pixelsize=14.5:antialias=true:autohint=true;"
+font="JetBrains Mono Medium:pixelsize=13:antialias=true:autohint=true;"
 
 # st
 xset 'st.alpha' "0.9"
