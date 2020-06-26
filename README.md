@@ -58,8 +58,16 @@ something.
 ## To Do
 
 * [ ] Maybe remove the `desktop` folder (as the time passes, I'm using it
-  less and less);
+  less and less)
 
-* [ ] Find a license to put here;
+* [ ] Find a license to put here
 
-* [ ] Remake `dotsync` into something bigger, but not _that_ big;
+* [ ] Remake `dotsync` into something bigger, but not _that_ big
+
+* [ ] Add base16 support for Emacs
+
+* [ ] Add base16 support for NeoVim's Lightline
+
+* [ ] Add base16 support for NeoVim on Graphical Environments
+
+* [ ] Add base16 support for NeoVim on Windows (without XResources)
