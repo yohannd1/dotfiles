@@ -1,46 +1,11 @@
 #!/usr/bin/env sh
 
 # starts an X server
-# "low-level" part (use of $tty, xauth & Xorg) taken from https://github.com/Earnestly/sx
-
-# Copyright 2017 Earnestly
 # Copyright 2020 Yohanan
 
-# Permission is hereby granted, free of charge, to any person obtaining a copy of
-# this software and associated documentation files (the "Software"), to deal in
-# the Software without restriction, including without limitation the rights to
-# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-# of the Software, and to permit persons to whom the Software is furnished to do
-# so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
+. ~/.config/dots/env.sh
 . ~/.local/lib/ystd.sh
-depCheck xauth Xorg
-
-cleanup() {
-  if [ "$pid" ] && kill -0 "$pid" 2> /dev/null; then
-    kill -s TERM "$pid"
-    wait "$pid"
-    r=$?
-  fi
-
-  if ! stty "$stty"; then
-    stty sane
-  fi
-
-  xauth remove :"$tty"
-  exit "${r:-$?}"
-}
+depCheck startx
 
 case $# in
   0) initrc="${XDG_CONFIG_HOME:-$HOME/.config}/xorg/initrc" ;;
@@ -63,33 +28,21 @@ if [ "$DISPLAY" ]; then
   exit 1
 fi
 
+# generate config
+gen-config || exit 1
+
 # get tty numbers
 stty=$(stty -g)
 tty=$(tty)
 tty=${tty#/dev/tty}
 
 export XSESSIONDIR=/tmp/xsessions/$tty
-export XAUTHORITY=${XAUTHORITY:-$HOME/.local/share/xauthority}
-
-touch "$XAUTHORITY"
+[ -d "$XSESSIONDIR" ] && rm -r "$XSESSIONDIR"
 mkdir -p "$XSESSIONDIR"
-trap 'cleanup' EXIT
-
-# generate config
-gen-config || exit 1
-
-xauth add :"$tty" MIT-MAGIC-COOKIE-1 "$(od -An -N16 -tx /dev/urandom | tr -d ' ')" || exit 1
 
 printf >&2 "Starting at %s\n" "$(date +"%Y/%m/%d %H:%M:%S")"
 printf >&2 "Using display ID %s\n" ":$tty"
 
-# Xorg will check if its SIGUSR1 disposition is SIG_IGN and use this state to
-# reply back to the parent process with its own SIGUSR1 as an indication it is
-# ready to accept connections.
-# Taking advantage of this feature allows us to launch our client directly
-# from a SIGUSR1 handler and avoid the need to poll for server readiness.
-trap 'DISPLAY=:$tty "$initrc"' USR1
-(trap '' USR1 && exec Xorg :"$tty" -keeptty vt"$tty" -noreset -auth "$XAUTHORITY" 2>"$XSESSIONDIR/xlog") & pid=$!
-wait "$pid"
+startx "$initrc" -- :"$tty" >"$XSESSIONDIR/xlog" 2>&1
 
 printf >&2 "Finished at %s\n" "$(date +"%Y/%m/%d %H:%M:%S")"
