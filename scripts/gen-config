@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+eval "$(load-base16-theme --export)"
+
+mkdir -p "$XDG_CACHE_HOME/gen"
+pp "$DOTFILES/config/gen/stalonetrayrc" > "$XDG_CACHE_HOME/gen/stalonetrayrc"
+pp "$DOTFILES/config/gen/dunstrc" > "$XDG_CACHE_HOME/gen/dunstrc"

@@ -7,7 +7,7 @@
 depCheck gen-sxhkd sxhkd mktemp
 
 # get data folder based on current display
-dataFolder="/tmp/sxhkd.${DISPLAY}"
+dataFolder="$XSESSIONDIR/sxhkd"
 tempConf="$dataFolder/conf"
 tempLog="$dataFolder/log"
 

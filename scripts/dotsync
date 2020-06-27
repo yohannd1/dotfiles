@@ -152,7 +152,6 @@ fi
 
 . "$DOTFILES/config/dots/env.sh"
 . "$DOTFILES/config/dots/path.sh"
-eval "$(load-base16-theme --export)"
 
 # }}}
 # Config Files {{{
@@ -302,10 +301,4 @@ for folder in ~/.local/{bin,lib,share}; do
 done
 
 # }}}
-# Config Gen {{{
-
-mkdir -p "$XDG_CACHE_HOME/gen"
-pp "$DOTFILES/config/gen/stalonetrayrc" > "$XDG_CACHE_HOME/gen/stalonetrayrc"
-pp "$DOTFILES/config/gen/dunstrc" > "$XDG_CACHE_HOME/gen/dunstrc"
-
-# }}}
+gen-config

@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+
+# TODO: support for pulseaudio (?)
+
+showHelp() {
+  printf >&2 "Usage: %s\n" "$(basename $0) { inc | dec | togglemute }"
+  exit 1
+}
+
+[ $# != 1 ] && showHelp
+
+case "$1" in
+  inc) amixer set Master 5%- ;;
+  dec) amixer set Master 5%+ ;;
+  togglemute) amixer -D pulse set Master 1+ toggle ;;
+  *)
+    printf >&2 "Invalid option: %s\n" "$1"
+    showHelp
+    ;;
+esac
+
+[ "$WM" = dwm ] && pkill -RTMIN+10 dwmblocks

@@ -156,7 +156,6 @@ cd-to-file() { # {{{
 } # }}}
 
 shell::reload() { source "${ZDOTDIR:-$HOME}/.zshrc"; }
-xorg::log() { less "$XLOG"; }
 xorg::reload-db() { gen-xres | xrdb; }
 
 alias \
@@ -168,7 +167,6 @@ alias \
   d='duplicate'
 
 alias rl='shell::reload'
-alias xlog='xorg::log'
 alias xrl='xorg::reload-db'
 
 # }}}
@@ -206,6 +204,7 @@ HISTFILE=~/.cache/zhistory
 HISTSIZE=SAVEHIST=100000
 setopt sharehistory
 setopt extendedhistory
+setopt HIST_IGNORE_DUPS
 
 # }}}
 # Plugins {{{

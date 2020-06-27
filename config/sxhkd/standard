@@ -40,15 +40,15 @@ super + w
 super + alt + p
     xcalib -clear
 
-# audio
+# volume management
 XF86AudioLowerVolume
-    amixer set Master 5%-; pkill -RTMIN+10 dwmblocks # TODO: make these commands lighter by getting the PID of dwmblocks, storing it somewhere and then doing this
+    volumectl dec
 XF86AudioRaiseVolume
-    amixer set Master 5%+; pkill -RTMIN+10 dwmblocks
+    volumectl inc
 XF86AudioMute
-    amixer -D pulse set Master 1+ toggle; pkill -RTMIN+10 dwmblocks
+    volumectl togglemute
 
-# media player
+# music player
 XF86AudioPlay
     playerctl play-pause
 XF86AudioNext
