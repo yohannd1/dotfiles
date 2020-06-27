@@ -9,6 +9,11 @@ block mime 'application/x-shared-library-la'
 block mime 'application/x-executable'
 block mime 'application/x-shellscript'
 
+if match url 'http|https'; then
+  try gui "$BROWSER" "$FILE"
+  try tty "$TERMBROWSER" "$FILE"
+fi
+
 if match ext 'pdf' || match mime 'application/pdf'; then
   try gui zathura "$FILE"
   try tty runpage pdftotext -l 10 -nopgbrk -q -- "$FILE" -
@@ -32,13 +37,8 @@ if match mime 'video/*' ||
   try tty runpage mediainfo "$FILE"
 fi
 
-if match url 'http|https'; then
-  try gui "$BROWSER" "$FILE"
-  try tty "$TERMBROWSER" "$FILE"
-fi
-
-if match ext 'a|ace|alz|arc|arj|bz|bz2|cab|cpio|deb|gz|jar|lha|lz|lzh|lzma\
-              |lzo|rpm|rz|t7z|tar|tbz|tbz2|tgz|tlz|txz|tZ|tzo|war|xpi|xz|Z|zip'; then
+if match ext 'a|ace|alz|arc|arj|bz|bz2|cab|cpio|deb|gz|jar|lha|lz|lzh|lzma'\
+             '|lzo|rpm|rz|t7z|tar|tbz|tbz2|tgz|tlz|txz|tZ|tzo|war|xpi|xz|Z|zip'; then
   try runpage atool --list -- "$FILE"
   try runpage bsdtar --list --file "$FILE"
 fi

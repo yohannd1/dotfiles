@@ -10,7 +10,7 @@ depCheck termup runpage
 
 warn() {
   local out=$(printf "$@")
-  if [ -t 2 ]; then
+  if [ "$OPEN_GUI" ]; then
     notify-send "$out"
   else
     printf >&2 "%s\n" "$out"
@@ -22,8 +22,8 @@ match() {
   shift 2
 
   case "$ptype" in
-    mime) caseMatch "$pat" "$MIMETYPE" ;;
-    ext) caseMatch "$pat" "$EXT" ;;
+    mime) [ -z "$URL_PREFIX" ] && caseMatch "$pat" "$MIMETYPE" ;;
+    ext) [ -z "$URL_PREFIX" ] && caseMatch "$pat" "$EXT" ;;
     url) [ "$URL_PREFIX" ] && caseMatch "$pat" "$URL_PREFIX" ;;
     *)
       printf >&2 "Invalid pattern type: %s\n" "$action"
@@ -47,9 +47,9 @@ try() {
   # pop <prog...>: pop up a new terminal using the 'termup' script
   # fallback: starts the alt program specified in $ALT_OPENER
   case "$action" in
-    gui) [ "$OPEN_GUI" ] && openGui "$@" || return ;;
-    tty) [ -z "$OPEN_GUI" ] && openTty "$@" || return ;;
-    pop) openPop "$@"; return ;;
+    gui) [ "$OPEN_GUI" ] && openGui "$@" ;;
+    tty) [ -z "$OPEN_GUI" ] && openTty "$@" ;;
+    pop) openPop "$@" ;;
     fallback) openFallback ;;
     *)
       printf >&2 "Invalid action: %s\n" "$action"
@@ -59,24 +59,23 @@ try() {
       exit 1
       ;;
   esac
-
-  exit # exits if it matched, avoiding other attempts
 }
 
 block() {
   if match "$@"; then
     warn "Attempted to open blocked file/url %s (%s)\n" "$FILE" "$MIMETYPE"
-    echo "$@"
     exit 1
   fi
 }
 
 openGui() {
-  "$@" >/dev/null 2>/dev/null
+  "$@" >/dev/null 2>&1
+  exit
 }
 
 openTty() {
   "$@"
+  exit
 }
 
 openPop() {
@@ -85,23 +84,24 @@ openPop() {
   else
     openTty "$@"
   fi
+  exit
 }
 
 openFallback() {
-  warn "Falling back to %s (file %s, type %s)\n" "$ALT_OPENER" "$FILE" "$MIMETYPE"
+  warn "Falling back to %s (%s)\n" "$ALT_OPENER" "$FILE"
   VIA_OPEN=1 "$ALT_OPENER" "$FILE"
 }
 
 caseMatch() {
   if [ $# != 2 ]; then
-    printf >&2 "Usage: %s\n" "$(basename $0) <pattern> <data>"
+    printf >&2 "Usage: %s\n" "caseMatch <pattern> <data>"
     return 1
   fi
 
-  case "$2" in
-    $1) return 0 ;;
-    *) return 1 ;;
-  esac
+  pattern=$(printf "%s" "$1" | sed 's \* .* g;s \. . g;s | \\| g;s \(.*\) ^\\(\1\\)$ g')
+  data=$2
+
+  printf "%s" "$data" | grep -q "$pattern"
 }
 
 checkExists() {
@@ -138,12 +138,13 @@ if [ "$EXT" ]; then
   EXT="$(printf "%s" "$EXT" | tr '[:upper:]' '[:lower:]')"
 fi
 
-if echo "$FILE" | grep -q '^\(\w*\)://.*'; then
-  URL_PREFIX=$(echo "$FILE" | sed 's ^\(\w*\)://.* \1 g')
+if printf "%s" "$FILE" | grep -q '^\(\w*\)://.*'; then
+  URL_PREFIX=$(printf "%s" "$FILE" | sed 's ^\(\w*\)://.* \1 g')
 fi
 
 if [ $# != 1 ]; then
-  showHelp main
+  usage
+  exit 1
 else
   if [ -z "$URL_PREFIX" ] && [ ! -e "$FILE" ]; then
     warn 'Could not open "%s": no such file or directory\n' "$FILE"
