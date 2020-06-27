@@ -10,8 +10,8 @@ showHelp() {
 [ $# != 1 ] && showHelp
 
 case "$1" in
-  inc) amixer set Master 5%- ;;
-  dec) amixer set Master 5%+ ;;
+  dec) amixer set Master 5%- ;;
+  inc) amixer set Master 5%+ ;;
   togglemute) amixer -D pulse set Master 1+ toggle ;;
   *)
     printf >&2 "Invalid option: %s\n" "$1"
