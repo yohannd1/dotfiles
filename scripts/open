@@ -1,178 +1,161 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
+# vim: fdm=marker foldmarker={,}
 
-# An opener script based off nuke.
-# https://github.com/jarun/nnn/blob/master/plugins/nuke
+# an opener script based off nuke
+# (https://github.com/jarun/nnn/blob/master/plugins/nuke)
+# TODO: finish documentation
 
 . ~/.local/lib/ystd.sh
 depCheck termup runpage
 
-# Environment Variables
-# OPEN_GUI: whether the file should be always opened on a GUI
-# application.
-
-# Options
-set -f -o noclobber -o noglob
-
-# Assist Functions
-#   exists: if a command exists
-#   tryRun: checks if a command exists. If it exists, run it and exit the
-# script.
-#   tryRunTerm: only runs if OPEN_GUI is unset
-#   tryRunGraph: only runs if OPEN_GUI is set
-#   tryRunTermGraph: runs if OPEN_GUI is unset, but also runs if OPEN_GUI is
-# set, but through the "termup" script.
-tryRun() {
-  if exists "$1"; then
-    if [ "$1" = "runpage" ]; then
-      exists "$2" || return
-    fi
-
-    if [ -n "$OPEN_GUI" ]; then
-      "$@" >/dev/null 2>&1
-    else
-      "$@"
-    fi
-    exit
+warn() {
+  local out=$(printf "$@")
+  if [ -t 2 ]; then
+    notify-send "$out"
+  else
+    printf >&2 "%s\n" "$out"
   fi
 }
 
-tryRunTerm() { [ -z "$OPEN_GUI" ] && tryRun "$@"; }
-tryRunGraph() { [ -n "$OPEN_GUI" ] && tryRun "$@"; }
-tryRunTermGraph() { tryRunTerm "$@"; tryRunGraph termup "$@"; }
-tryXdgOpen() { VIA_OPEN=1 tryRunGraph xdg-open "$@"; }
-printMsg() { [ "$OPEN_GUI" ] && notify-send "$(printf "$@")" || printf >&2 "$@"; }
+match() {
+  local ptype="$1" pat="$2"
+  shift 2
 
-handlePdf() {
-  tryRunGraph zathura "$FILE"
-  tryRunTerm runpage pdftotext -l 10 -nopgbrk -q -- "$FILE" -
-  tryRunTerm mutool draw -F txt -i -- "$FILE" 1-10
-  tryRunTerm exiftool "$FILE"
+  case "$ptype" in
+    mime) caseMatch "$pat" "$MIMETYPE" ;;
+    ext) caseMatch "$pat" "$EXT" ;;
+    url) [ "$URL_PREFIX" ] && caseMatch "$pat" "$URL_PREFIX" ;;
+    *)
+      printf >&2 "Invalid pattern type: %s\n" "$action"
+      printf >&2 "Args: "
+      printf >&2 '"%s" ' "$ptype" "$pat" "$@"
+      printf >&2 "\n"
+      exit 1
+      ;;
+  esac
 }
 
-handleAudio() {
-  exists mocp && tryRunTerm mocplay "$FILE" "opener"
-  tryRunTermGraph mpv --no-video "$FILE"
-  tryRunTerm mediainfo "$FILE"
-  tryRunTerm exiftool "$FILE"
+try() {
+  local action="$1"
+  shift
+
+  # special cases for first arg
+  checkExists "$@" || return
+
+  # gui <prog...>: block stdout and stderr; see the 'openfork' script for automatic dettachment
+  # tty <prog...>: don't block anything - opens the program in current terminal
+  # pop <prog...>: pop up a new terminal using the 'termup' script
+  # fallback: starts the alt program specified in $ALT_OPENER
+  case "$action" in
+    gui) [ "$OPEN_GUI" ] && openGui "$@" || return ;;
+    tty) [ -z "$OPEN_GUI" ] && openTty "$@" || return ;;
+    pop) openPop "$@"; return ;;
+    fallback) openFallback ;;
+    *)
+      printf >&2 "Invalid action: %s\n" "$action"
+      printf >&2 "Args: "
+      printf >&2 '"%s" ' "$action" "$@"
+      printf >&2 "\n"
+      exit 1
+      ;;
+  esac
+
+  exit # exits if it matched, avoiding other attempts
 }
 
-handleVideo() {
-  tryRunGraph smplayer "$FILE"
-  tryRunGraph mpv "$FILE"
-  tryRunTerm mpv --no-video "$FILE"
-  tryRunTerm runpage mediainfo "$FILE"
-  tryRunTerm runpage mediainfo "$FILE"
+block() {
+  if match "$@"; then
+    warn "Attempted to open blocked file/url %s (%s)\n" "$FILE" "$MIMETYPE"
+    echo "$@"
+    exit 1
+  fi
 }
 
-if [ $# != 1 ] || [ -z "$1" ]; then
-  printf >&2 "Usage: %s %s\n" "$(basename $0)" "<file>"
-  exit 1
-fi
+openGui() {
+  "$@" >/dev/null 2>/dev/null
+}
 
+openTty() {
+  "$@"
+}
+
+openPop() {
+  if [ "$OPEN_GUI" ]; then
+    openGui termup "$@"
+  else
+    openTty "$@"
+  fi
+}
+
+openFallback() {
+  warn "Falling back to %s (file %s, type %s)\n" "$ALT_OPENER" "$FILE" "$MIMETYPE"
+  VIA_OPEN=1 "$ALT_OPENER" "$FILE"
+}
+
+caseMatch() {
+  if [ $# != 2 ]; then
+    printf >&2 "Usage: %s\n" "$(basename $0) <pattern> <data>"
+    return 1
+  fi
+
+  case "$2" in
+    $1) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+checkExists() {
+  case "$1" in
+    runpage) exists "$2" ;;
+    *) exists "$1" ;;
+  esac
+}
+
+usage() {
+  cat >&2 <<EOF
+Usage: $PROGNAME { <file> | <url> }
+Files:
+  $RULES: used to store the rules, being sourced after functions are loaded. See the (incomplete) documentation of this script for help on how to use.
+Environment variables:
+  OPEN_GUI: forces to open only apps in GUI mode.
+  ALT_OPENER: a fallback opener; default is xdg-open
+EOF
+}
+
+set -f -o noclobber -o noglob # option
 IFS="$(printf '%b_' '\n')"; IFS="${IFS%_}" # protect trailing \n
 
+PROGNAME=$(basename $0)
+RULES=${XDG_CONFIG_HOME:-$HOME/.config}/dots/open-rules.sh
+ALT_OPENER=${ALT_OPENER:-"xdg-open"}
+
 FILE="$1"
-FILENAME=$(basename "$1")
+FILENAME=$(basename "$FILE")
+FILETYPE=$(file --dereference --brief -- "$FILE")
+MIMETYPE=$(file --dereference --brief --mime-type -- "$FILE")
 EXT="${FILENAME##*.}"
-if ! [ -z "$EXT" ]; then
+if [ "$EXT" ]; then
   EXT="$(printf "%s" "$EXT" | tr '[:upper:]' '[:lower:]')"
 fi
 
-FILETYPE=$(file --dereference --brief -- "$FILE")
-MIMETYPE=$(file --dereference --brief --mime-type -- "$FILE")
-
-# blocked apps
-case "$1" in
-  application/x-sharedlib) exit 1 ;;
-  application/x-shared-library-la) exit 1 ;;
-  application/x-executable) exit 1 ;;
-  application/x-shellscript) exit 1 ;;
-esac
-
-# URLs
-if echo "$FILE" | grep -q '^\(https\?\|ftp\)://'; then
-  tryRunGraph $BROWSER "$FILE"
-  tryRunTerm $TERMBROWSER "$FILE"
+if echo "$FILE" | grep -q '^\(\w*\)://.*'; then
+  URL_PREFIX=$(echo "$FILE" | sed 's ^\(\w*\)://.* \1 g')
 fi
 
-if [ ! -e "$FILE" ]; then
-  printMsg 'failed to open "%s": no such file or directory\n' "$FILE"
-  exit 1
+if [ $# != 1 ]; then
+  showHelp main
+else
+  if [ -z "$URL_PREFIX" ] && [ ! -e "$FILE" ]; then
+    warn 'Could not open "%s": no such file or directory\n' "$FILE"
+    exit 1
+  fi
+
+  if [ -e "$RULES" ]; then
+    . "$RULES"
+    openFallback
+    exit 1
+  else
+    printf >&2 "Could not find rules file. Please create said file at %s." "$RULES"
+    exit 1
+  fi
 fi
-
-# extensions
-case "$EXT" in
-  a|ace|alz|arc|arj|bz|bz2|cab|cpio|deb|gz|jar|lha|lz|lzh|lzma|lzo|rpm|rz|t7z|tar|tbz|tbz2|tgz|tlz|txz|tZ|tzo|war|xpi|xz|Z|zip)
-    tryRunTerm runpage atool --list -- "$FILE"
-    tryRunTerm runpage bsdtar --list --file "$FILE"
-    ;;
-  rar) tryRunTermGraph runpage unrar l -p- -- "$FILE" ;;
-  7z) tryRunTerm runpage 7z l -p -- "$FILE" ;;
-  pdf) handlePdf ;;
-
-  aac|flac|m4a|mid|midi|mpa|mp2|mp3|ogg|wav|wma)
-    handleAudio ;;
-
-  avi|mkv|mp4)
-    handleVideo ;;
-
-  torrent)
-    tryRunTerm rtorrent "$FILE"
-    tryRunTerm transmission-show -- "$FILE"
-    ;;
-
-  odt|ods|odp|sxw)
-    tryRunTerm runpage odt2txt "$FILE" ;;
-
-  txt|log)
-    tryRunTermGraph runpage cat "$FILE" ;;
-
-  kra) tryRunGraph krita "$FILE" ;;
-
-  md)
-    tryRunTerm runpage glowrapper "$FILE"
-    tryRunGraph md-preview "$FILE"
-    ;;
-
-  htm|html|xhtml)
-    tryRunTerm runpage w3m -dump "$FILE"
-    tryRunTerm runpage lynx -dump -- "$FILE"
-    tryRunTerm runpage elinks -dump "$FILE"
-    tryRunGraph $BROWSER "$FILE"
-    ;;
-
-  json)
-    tryRunTerm runpage jq --color-output . "$FILE"
-    tryRunTerm runpage python -m json.tool -- "$FILE"
-    ;;
-esac
-
-case "$MIMETYPE" in
-  # multimedia
-  image/vnd.djvu)
-    tryRunTerm runpage djvutxt "$FILE"
-    tryRunTerm runpage exiftool "$FILE"
-    ;;
-  image/*)
-    tryRunGraph sxiv "$FILE"
-    tryRunTerm runpage viu -n "$FILE"
-    tryRunTerm runpage img2txt --gamma=0.6 -- "$FILE"
-    tryRunTerm runpage exiftool "$FILE"
-    ;;
-  application/pdf) handlePdf ;;
-  audio/*) handleAudio ;;
-  video/*) handleVideo ;;
-
-  # misc
-  inode/directory) tryRunTermGraph nnn "$FILE" ;;
-  inode/x-empty) tryRunTermGraph runpage cat "$FILE" ;;
-  text/troff) tryRunTermGraph runpage man -l "$FILE" ;;
-  text/*) tryRunTermGraph runpage cat "$FILE" ;;
-  */xml) tryRunTermGraph runpage cat "$FILE" ;;
-esac
-
-printMsg 'failed to open file "%s", type "%s", mime type "%s"; falling back to xdg-open\n' "$FILE" "$FILETYPE" "$MIMETYPE"
-tryXdgOpen "$FILE"
-printMsg "fallback to xdg-open failed\n"
-
-exit 1

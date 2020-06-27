@@ -76,7 +76,7 @@ mkdir -p "$XSESSIONDIR"
 trap 'cleanup' EXIT
 
 # generate config
-gen-config
+gen-config || exit 1
 
 xauth add :"$tty" MIT-MAGIC-COOKIE-1 "$(od -An -N16 -tx /dev/urandom | tr -d ' ')" || exit 1
 
