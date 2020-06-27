@@ -383,6 +383,10 @@ function! Ft_cpp() " {{{
   let b:rifle.run = "g++ '%f' -o '%o' && { '%o'; rm '%o'; }"
   setlocal fdm=syntax
 endfunction " }}}
+function! Ft_cs() " {{{
+  let b:rifle = {}
+  let b:rifle.run = "csc '%f' -out:'%o' -debug+ && { mono '%o'; rm '%o'; }"
+endfunction! " }}}
 function! Ft_clojure() " {{{
   let b:rifle = {}
   let b:rifle.run = "clojure '%f'"
