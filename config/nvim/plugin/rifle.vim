@@ -1,11 +1,9 @@
-if exists("g:loaded_rifle")
+if exists("g:loaded_rifle") || g:is_win
+  finish
+elseif !executable("rifle-run")
+  echo "(rifle) could not find `rifle-run` in PATH."
   finish
 endif
-
-let s:is_windows = exists("g:is_windows")
-  \ ? g:is_windows
-  \ : isdirectory('C:\')
-let s:has_display = $DISPLAY != ""
 
 let s:save_cpo = &cpo " Save user coptions
 set cpo&vim " Reset them to their defaults
@@ -16,60 +14,38 @@ augroup plug_rifle
 augroup end
 
 function! s:RifleInit()
-  let b:rifle_use_termup = exists("b:rifle_use_termup")
-                         \ ? b:rifle_use_termup
-                         \ : (exists("g:rifle_use_termup")
-                           \ ? g:rifle_use_termup
-                           \ : (!s:is_windows && s:has_display && executable("termup") && executable("rifle-run")
-                           \ )
-                         \ )
+  let s:has_display = ($DISPLAY != "") || ($WAYLAND_DISPLAY != "")
+
+  if !exists("b:rifle_mode")
+    if exists("g:rifle_mode")
+      let b:rifle_mode = g:rifle_mode
+    else
+      let b:rifle_mode = s:has_display ? "popup" : "buffer"
+    endif
+  endif
 endfunction
 
 function! g:Rifle(command)
-  if !exists("b:rifle")
-    echo "[Rifle] b:rifle dictionary not found."
-    return
+  if !exists("b:rifle_ft")
+    let b:rifle_ft = &filetype
   endif
 
-  if !has_key(b:rifle, a:command)
-    echo printf('[Rifle] key "%s" not found in b:rifle', a:command)
-    return
-  endif
-
-  " NOTE: Any changes to l:rifle_cmd should not include quote
-  " characters, since termopen doesn't accept shell operators if it is
-  " an argument list. I might be able to patch it someday, but for now
-  " it's not gonna work.
-  let l:rifle_cmd = b:rifle[a:command]
-  let l:rifle_cmd = substitute(l:rifle_cmd, '%f', expand("%"), "g")
-
-  " Get temp dir and/or file
-  if l:rifle_cmd =~ '\v(\%o|\%t)'
-    let l:temp = s:GenTemp()
-    " if len(l:temp) == 0
-    "   echo "[Rifle] could not generate output file."
-    "   return
-    " endif
-
-    let l:rifle_cmd = substitute(l:rifle_cmd, '%o', l:temp[0]."/".l:temp[1], "g")
-    let l:rifle_cmd = substitute(l:rifle_cmd, '%t', l:temp[0], "g")
-  endif
-
-  if b:rifle_use_termup
-    call jobstart(["rifle-run", l:rifle_cmd])
-  else
+  let l:command = ["rifle-run", a:command, b:rifle_ft, expand("%:p")]
+  if b:rifle_mode == "popup"
+    call jobstart(["termup", "runread"] + l:command)
+  elseif b:rifle_mode == "buffer"
     split
     wincmd j
     enew
-    call termopen(l:rifle_cmd) " TODO: turn this into a list
+    call termopen(l:command)
     normal i
+  elseif b:rifle_mode == "silent"
+    call jobstart(l:command)
+    echo "(rifle) started background job for" l:command
+  else
+    echo "(rifle) invalid mode: " . b:rifle_mode
+    return
   endif
-endfunction
-
-function! s:GenTemp()
-  let l:temp_dir = expand("~/.cache")
-  let l:temp_name = "tmp-output"
-  return [l:temp_dir, l:temp_name]
 endfunction
 
 command! -nargs=1 Rifle call g:Rifle(eval(<f-args>))

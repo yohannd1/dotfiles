@@ -280,7 +280,7 @@ let g:gruvbox_italics = 1
 let g:buftabline_indicators = 1
 
 " Rifle
-let g:rifle_use_termup = 1
+let g:rifle_mode = "popup"
 
 " }}}
 " Settings {{{
@@ -373,23 +373,11 @@ augroup end
 " Filetypes {{{
 
 function! Ft_c() " {{{
-  let b:rifle = {}
-  let b:rifle.run = "gcc '%f' -o '%o' && { '%o'; rm '%o'; }"
   setlocal noet sw=8 ts=8
   setlocal fdm=syntax
 endfunction " }}}
 function! Ft_cpp() " {{{
-  let b:rifle = {}
-  let b:rifle.run = "g++ '%f' -o '%o' && { '%o'; rm '%o'; }"
   setlocal fdm=syntax
-endfunction " }}}
-function! Ft_cs() " {{{
-  let b:rifle = {}
-  let b:rifle.run = "csc '%f' -out:'%o' -debug+ && { mono '%o'; rm '%o'; }"
-endfunction! " }}}
-function! Ft_clojure() " {{{
-  let b:rifle = {}
-  let b:rifle.run = "clojure '%f'"
 endfunction " }}}
 function! Ft_markdown() " {{{
   " Thanks to https://gist.github.com/olmokramer/feadbf14a055efd46a8e1bf1e4be4447
@@ -440,10 +428,8 @@ function! Ft_markdown() " {{{
     return "="
   endfunction
 
-  let b:rifle_use_termup = 0
-  let b:rifle = {}
-  let b:rifle.run = "runread md-preview '%f'"
-  let b:rifle.build = "md-compile '%f' > ~/".expand("%:t:r").".".strftime("%Y-%m-%d").".html"
+  let b:rifle_mode = "silent"
+  let b:rifle_ft = "markdown"
 
   setlocal fdm=expr foldexpr=MarkdownFoldExpr(v:lnum)
   setlocal textwidth=72 noautoindent
@@ -461,11 +447,9 @@ function! Ft_markdown() " {{{
   vnoremap <silent> <buffer> <Leader>O :call MarkdownCheckboxRemove()<CR>
 endfunction " }}}
 function! Ft_sh() " {{{
-  let b:rifle = {}
-  let b:rifle.run = "if [ -x '%f' ]; then $(realpath '%f'); else bash '%f'; fi"
+  setlocal tabstop=2 shiftwidth=2 fdm=syntax
   " let g:is_bash = 1
   " let g:sh_fold_enabled = 0
-  setlocal tabstop=2 shiftwidth=2 fdm=syntax
 
   " 1 (001): fold functions
   " let g:sh_fold_enabled += 1
@@ -477,80 +461,34 @@ function! Ft_sh() " {{{
   " let g:sh_fold_enabled += 4
 endfunction " }}}
 function! Ft_zsh() " {{{
-  let b:rifle = {}
-  let b:rifle.run = "if [ -x '%f' ]; then '%f'; else zsh '%f'; fi"
   setlocal tabstop=2 shiftwidth=2 fdm=syntax
 endfunction " }}}
 function! Ft_visualg() " {{{
   setlocal tabstop=4 shiftwidth=4 syntax=c
 endfunction " }}}
-function! Ft_julia() " {{{
-  let b:rifle = {}
-  let b:rifle.run = "julia '%f'"
-endfunction " }}}
 function! Ft_vim() " {{{
-  let b:rifle = {}
-  let b:rifle.run = "nvim -u '%f'"
   setlocal fdm=marker tw=72
 endfunction " }}}
-function! Ft_python() " {{{
-  let b:rifle = {}
-  let b:rifle.run = "python3 '%f'"
-endfunction " }}}
 function! Ft_hy() " {{{
-  let b:rifle = {}
-  let b:rifle.run = "hy '%f'"
   setlocal tabstop=2 shiftwidth=2
-endfunction " }}}
-function! Ft_fsharp() " {{{
-  " To be honest I wanted to compile to the .exe and run it... sadly I can't
-  " without writing some substitutions script and I'm too lazy.
-  let b:rifle = {}
-  let b:rifle.run = "fsharpi '%f'"
-endfunction " }}}
-function! Ft_lua() " {{{
-  let b:rifle = {}
-  let b:rifle.run = "lua '%f'"
 endfunction " }}}
 function! Ft_nim() " {{{
   setlocal sw=2 ts=2 expandtab
-  let b:rifle = {}
-  let b:rifle.run = "nim compile -r '%f'"
-  let b:rifle.build = "nim compile '%f'"
 endfunction " }}}
 function! Ft_ruby() " {{{
-  let b:rifle = {}
-  let b:rifle.run = "ruby '%f'"
   setlocal fdm=syntax
 endfunction " }}}
 function! Ft_haskell() " {{{
   setlocal ts=2 sw=2
 endfunction " }}}
-function! Ft_racket() " {{{
-  let b:rifle = {}
-  let b:rifle.run = "racket '%f'"
-endfunction " }}}
-function! Ft_scribble() " {{{
-  " Nothing lol
-endfunction " }}}
 function! Ft_html() " {{{
-  let b:rifle_use_termup = 0
-  let b:rifle = {}
-  if g:is_win
-    let b:rifle.run = "start %f"
-  else
-    let b:rifle.run = "OPEN_GUI=1 runread openfork '%f'"
-  endif
+  let b:rifle_mode = "silent"
 endfunction " }}}
 function! Ft_rust() " {{{
-  let b:rifle = {}
   if ReverseRSearch(expand("%:p:h"), "Cargo.toml")
-    let b:rifle.run = "cd '".expand("%:p:h")."' && cargo run"
-    let b:rifle.build = "cd '".expand("%:p:h")."' && cargo build"
-    let b:rifle.test = "cd '".expand("%:p:h")."' && cargo test"
+    let b:rifle_ft = "@cargo"
   else
-    let b:rifle.run = "rustc '%f' -o '%o' && { '%o'; rm '%o'; }"
-    let b:rifle.build = "rustc '%f' -o '%o'"
+    let b:rifle_ft = "rust"
   endif
 
   let b:format_command = "rustfmt"
@@ -558,9 +496,7 @@ function! Ft_rust() " {{{
 endfunction " }}}
 function! Ft_java() " {{{
   if ReverseRSearch(expand("%:p:h"), "gradlew")
-    let b:rifle = {}
-    let b:rifle.run = "rrsrun 1 gradlew run"
-    let b:rifle.build = "rrsrun 1 gradlew build"
+    let b:rifle_ft = "@gradlew"
   endif
 
   setlocal fdm=syntax
@@ -569,9 +505,8 @@ function! Ft_make() " {{{
   setlocal sw=8 ts=8 noet
 endfunction " }}}
 function! Ft_tex() " {{{
-  " let b:rifle = {}
-  " let l:subst_command = printf('$(basename $(echo %s | sed %s))', Surround("%f", "'"), Surround('s/\.tex$//g', "'"))
-  " let b:rifle.run = "pdflatex '%f' -output_directory '%t' && openfork '%t'/" . l:subst_command . ".pdf"
+  let b:rifle_ft = "tex"
+  let b:rifle_mode = "buffer"
 endfunction
 function! Ft_plaintex()
   call Ft_tex()
@@ -682,19 +617,6 @@ if g:is_first
   if exists("g:messages") && len("g:messages") != 0
     echo "You have unread startup messages."
   endif
-
-  " if g:is_tty
-  "   hi Comment ctermfg=2
-  "   hi Folded ctermfg=2
-  "   hi LineNr ctermfg=2
-  " else
-  "   hi Comment cterm=italic
-  "   hi Folded cterm=italic
-  "   hi LineNr cterm=italic
-  "   hi CursorLineNr cterm=italic
-  " endif
-
-  " hi link SpecialComment Comment
 endif
 
 " }}}

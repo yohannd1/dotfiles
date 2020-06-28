@@ -1,13 +1,96 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-# Intended for the "rifle" neovim plugin I made, this script opens a
-# termup and disowns it.
+# a script that runs debug actions based on the specified filetype
+# intented for editors like vim and emacs
 
-if [ $# != 1 ]; then
-  printf >&2 "%s\n" "Usage: $(basename $0) <command>"
-  printf >&2 "%s\n" "The command should be entirely in one argument."
-  exit 1
+# TODO: remake rrsrun because oh god it is terribly ugly
+# TODO: make aliases to open zsh function
+
+. ~/.local/lib/ystd.sh
+
+if [ $# != 3 ]; then
+  printf >&2 "Usage: %s\n" "$(basename $0) <ACTION> <FILETYPE> <FILENAME>"
+  printf >&2 "The ACTION and FILETYPE fields are handled based on the code of this script.\n"
 fi
 
-termup runread eval "$1" &
-disown
+tmp=$(mktemp) || {
+  printf >&2 "Could not generate temp file.\n"
+  exit 1
+}
+
+file=$(realpath -m "$3") || exit 1
+
+printf >&2 "NOTE: temp file lies at %s\n" "$tmp"
+rm -f "$tmp" # remove temp file for preventing any errors related to "file already exists"
+
+cleanup() {
+  [ -f "$tmp" ] && rm -f "$tmp"
+  [ -d "$tmp" ] && rm -rf "$tmp"
+}
+
+die() {
+  printf >&2 "$@"
+  cleanup
+  exit 1
+}
+
+case "$1" in
+  run)
+    case "$2" in
+      @make) rrsrun 2 Makefile make run ;;
+      @cargo) rrsrun 2 cargo run ;;
+      @gradlew) rrsrun 1 gradlew run ;;
+      rust) rustc "$file" -o "$tmp" && "$tmp" ;;
+      c) gcc "$file" -o "$tmp" && "$tmp" ;;
+      cpp) g++ "$file" -o "$tmp" && "$tmp" ;;
+      cs) csc "$file" -out:"$tmp" && mono "$tmp" ;;
+      clojure) clojure "$file" ;;
+      markdown) md-preview "$file" ;;
+      sh) if [ -x "$file" ]; then "$file"; else sh "$file"; fi ;;
+      zsh) if [ -x "$file" ]; then "$file"; else zsh "$file"; fi ;;
+      julia) julia "$file" ;;
+      vim) nvim -u "$file" ;;
+      tex)
+        name=$(basename "${file%.*}")
+        mkdir "$tmp"
+        cd "$tmp" \
+          && pdflatex "$file" \
+          && OPEN_GUI=1 open "$name.pdf"
+        ;;
+      python)
+        if exists python3; then
+          python3 "$file"
+        elif exists python2; then
+          printf >&2 "WARNING: using python2 to debug\n"
+          python2 "$file"
+        elif exists python; then
+          printf >&2 "WARNING: using python (unknown version) to debug\n"
+          python "$file"
+        else
+          die "Could not find a suitable python version\n"
+        fi ;;
+      hy) hy "$file" ;;
+      fsharp) fsharpi "$file" ;;
+      lua) lua "$file" ;;
+      nim) nim compile -r "$file" ;;
+      ruby) ruby "$file" ;;
+      racket) racket "$file" ;;
+      html) openfork "$file" ;;
+      *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
+    esac ;;
+  build)
+    case "$2" in
+      @make) rrsrun 2 Makefile make ;;
+      @cargo) rrsrun 2 cargo build ;;
+      @gradlew) rrsrun 1 gradlew build ;;
+      rust) rustc "$file" -o "$tmp" ;;
+      markdown) md-compile "$file" > "$HOME/$(basename "$file").$(date +%Y-%m-%d).html" ;;
+      *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
+    esac ;;
+  test)
+    case "$2" in
+      @cargo) rrsrun 2 cargo test ;;
+      *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
+    esac ;;
+  *) die "Invalid action: %s\n" "$1" ;;
+esac
