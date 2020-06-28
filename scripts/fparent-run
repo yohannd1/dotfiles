@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+usage() {
+  cat >&2 <<EOF
+$(basename $0): find a file on parent directories and do something with it.
+
+Usage: $(basename $0) <FILE>
+       { run-file | run-command }
+       { current-dir | file-dir }
+       <ARGS...>
+
+Explanations:
+  run-file: run the found file, with args ARGS; only works if it is executable.
+  run-command: run the command (and args) ARGS after finding the file.
+  current-dir: run the command/file on current directory
+  file-dir: run the command/file on the script directory
+EOF
+
+  exit 1
+}
+
+[ $# -lt 4 ] && usage
+
+# get args
+file="$1"
+actionType="$2"
+actionDir="$3"
+shift 3
+
+# analyze args
+case "$actionType" in
+  run-file|run-command) ;;
+  *) usage ;;
+esac
+case "$actionDir" in
+  current-dir|file-dir) ;;
+  *) usage ;;
+esac
+
+# find the file
+path="$PWD"
+while :; do
+  if [ -f "$path/$file" ]; then
+    case "$actionType" in
+      run-file) [ -x "$path/$file" ] && break ;;
+      run-command) break ;;
+    esac
+  fi
+
+  [ "$path" = / ] && exit 1
+  path=$(realpath -m "$path/..")
+done
+
+case "$actionDir" in
+  current-dir) ;;
+  file-dir) cd "$path" || exit 1 ;;
+esac
+
+case "$actionType" in
+  run-file) "$path/$file" "$@" ;;
+  run-command) "$@" ;;
+esac

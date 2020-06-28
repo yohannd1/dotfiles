@@ -170,9 +170,7 @@ function! ListMessages() " {{{
 endfunction " }}}
 function! SetupMakefileRifle() " {{{
   if ReverseRSearch(expand("%:p:h"), "Makefile")
-    let b:rifle = {}
-    let b:rifle.run = "rrsrun 2 Makefile make run"
-    let b:rifle.build = "rrsrun 2 Makefile make"
+    let b:rifle_ft = "make"
   endif
 endfunction " }}}
 function! Surround(...) " {{{
@@ -358,7 +356,6 @@ augroup buffer_load
   au!
   au FileType * if exists("*Ft_".&ft) | exec 'call Ft_'.&ft.'()' | endif
   au FileType * call SetupMakefileRifle()
-  " au BufNewFile,BufRead,BufEnter * if line('$') > 5000 | syntax off | endif " Not really working well
   au BufNewFile,BufRead,BufEnter * ApcEnable
   au BufNewFile,BufRead,BufEnter *.fx set filetype=c
   au BufNewFile,BufRead,BufEnter *.clj set filetype=clojure

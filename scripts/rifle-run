@@ -37,9 +37,9 @@ die() {
 case "$1" in
   run)
     case "$2" in
-      @make) rrsrun 2 Makefile make run ;;
-      @cargo) rrsrun 2 cargo run ;;
-      @gradlew) rrsrun 1 gradlew run ;;
+      @make) fparent-run "Makefile" run-command file-dir make run ;;
+      @cargo) fparent-run "Cargo.toml" run-command file-dir cargo run ;;
+      @gradlew) fparent-run "gradlew" run-file script-dir run ;;
       rust) rustc "$file" -o "$tmp" && "$tmp" ;;
       c) gcc "$file" -o "$tmp" && "$tmp" ;;
       cpp) g++ "$file" -o "$tmp" && "$tmp" ;;
@@ -80,16 +80,17 @@ case "$1" in
     esac ;;
   build)
     case "$2" in
-      @make) rrsrun 2 Makefile make ;;
-      @cargo) rrsrun 2 cargo build ;;
-      @gradlew) rrsrun 1 gradlew build ;;
+      @make) fparent-run "Makefile" run-command file-dir make ;;
+      @cargo) fparent-run "Cargo.toml" run-command file-dir cargo build ;;
+      @gradlew) fparent-run "gradlew" run-file script-dir build ;;
       rust) rustc "$file" -o "$tmp" ;;
       markdown) md-compile "$file" > "$HOME/$(basename "$file").$(date +%Y-%m-%d).html" ;;
       *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
     esac ;;
   test)
     case "$2" in
-      @cargo) rrsrun 2 cargo test ;;
+      @make) fparent-run "Makefile" run-command file-dir make test ;;
+      @cargo) fparent-run "Cargo.toml" run-command file-dir cargo test ;;
       *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
     esac ;;
   *) die "Invalid action: %s\n" "$1" ;;
