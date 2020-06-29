@@ -18,11 +18,17 @@
 (load "lib.el")
 (load "packages.el")
 (load "config.el")
+(load "rifle.el")
 
 (tool-bar-mode 0)
 (menu-bar-mode 0)
 (when (display-graphic-p)
   (scroll-bar-mode 0))
+
+;; Bindings
+(defvar evil-leader-map (make-sparse-keymap))
+(define-key evil-normal-state-map (kbd "SPC") evil-leader-map)
+(define-key evil-leader-map "r" #'rifle-run)
 
 (when at-startup
   (if (daemonp)
