@@ -73,7 +73,7 @@ if __FILE__ == $0
   file_contents = File::read(bookmark_path)
   bookmarks_map = Hash.new
   token_lines = SSV::tokenize_lines(file_contents, allow_raise: true)
-  token_lines.each{ |tokens|
+  token_lines.each { |tokens|
     parsed = parse_tokens(tokens)
     if parsed != nil
       bookmark = Bookmark.new(tokens)
@@ -83,11 +83,11 @@ if __FILE__ == $0
 
   # select bookmark
   maxlen = bookmarks_map.length.to_s.length
-  input = bookmarks_map
-    .select { |k, v| !v.state }
+  _input = bookmarks_map.select { |k, v| !v.state }
+  input = _input
     .map { |k, v| "%0#{maxlen}d #{v.name}#{v.tags_to_s}" % "#{k}" }
     .join("\n")
-  pre_choice, code = dmenu_prompt("Bookmark:", input, 30)
+  pre_choice, code = dmenu_prompt("#{_input.length} bkmk. available:", input, 30)
   exit 1 if code != 0
   chosen = bookmarks_map[pre_choice.split(" ")[0].to_i]
 

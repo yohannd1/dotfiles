@@ -79,6 +79,9 @@ module SSV
     tokens
   end
 
+  # options =>
+  # prohibit_comments: bool
+
   def tokenize_lines(lines, allow_raise = false)
     lines_list = lines.split("\n")
 

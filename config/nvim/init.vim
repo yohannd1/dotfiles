@@ -170,7 +170,7 @@ function! ListMessages() " {{{
 endfunction " }}}
 function! SetupMakefileRifle() " {{{
   if ReverseRSearch(expand("%:p:h"), "Makefile")
-    let b:rifle_ft = "make"
+    let b:rifle_ft = "@make"
   endif
 endfunction " }}}
 function! Surround(...) " {{{
