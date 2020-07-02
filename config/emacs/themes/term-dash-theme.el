@@ -1,24 +1,18 @@
 (deftheme term-dash
-  "Yohanan's dashy terminal theme.")
+ "Yohanan's dashy terminal theme.")
 
-(custom-theme-set-faces
- 'term-dash
- ;; Standard
- '(default ((t (:background "black" :foreground "white"))))
- '(cursor ((((background light)) (:background "black")) (((background dark)) (:background "white"))))
- '(fixed-pitch ((t (:family "JetBrains Mono Medium"))))
- '(variable-pitch ((t (:family "Sans Serif"))))
- ;; Emacs thingies
- '(minibuffer-prompt ((t (:foreground "yellow"))))
- '(trailing-whitespace ((t (:background "red"))))
- '(link ((t (:foreground "blue" :underline t :bold t))))
- '(link-visited ((t (:inherit link :foreground "magenta" :underline t :bold t))))
- '(region ((t (:background "yellow" :foreground "black"))))
+(custom-theme-set-faces 'term-dash
+ '(default ((t (:background "0" :foreground "5"))))
+ '(minibuffer-prompt ((t (:foreground "2"))))
+ '(trailing-whitespace ((t (:background "3"))))
+ '(link ((t (:foreground "13" :bold t))))
+ '(link-visited ((t (:inherit link :foreground "12" :bold t))))
+ '(region ((t (:background "green" :foreground "5"))))
+
  '(font-lock-negation-char-face ((t nil)))
  '(font-lock-regexp-grouping-backslash ((t (:inherit (bold)))))
  '(font-lock-regexp-grouping-construct ((t (:inherit (bold)))))
  '(font-lock-warning-face ((t (:background "red" :foreground "black"))))
- ;; Code-related
  '(font-lock-comment-face ((t (:foreground "color-245"))))
  '(font-lock-doc-face ((t (:foreground "color-248"))))
  '(font-lock-builtin-face ((t (:foreground "magenta"))))
@@ -29,7 +23,6 @@
  '(font-lock-type-face ((t (:foreground "yellow"))))
  '(font-lock-variable-name-face ((t (:foreground "yellow"))))
  '(font-lock-preprocessor-face ((t (:foreground "yellow"))))
- ;; Modeline
  '(mode-line ((t (:background "black"))))
  '(mode-line-inactive ((t (:inherit 'mode-line :background "color-239"))))
  '(mode-line-emphasis ((t (:background "magenta" :foreground "black" :bold t))))
