@@ -370,7 +370,7 @@ augroup end
 " Filetypes {{{
 
 function! Ft_c() " {{{
-  setlocal noet sw=8 ts=8
+  setlocal noet sw=4 ts=4
   setlocal fdm=syntax
 endfunction " }}}
 function! Ft_cpp() " {{{
