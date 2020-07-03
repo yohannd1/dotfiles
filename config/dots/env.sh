@@ -53,7 +53,7 @@ export DIR_BOOKMARKS="$STORAGE/share/dir-bookmarks"
 export FLAMEW_SCR_FOLDER="$STORAGE/pictures/screenshots"
 export SETBG_WALLPAPER_DIR="$STORAGE/pictures/wallpapers"
 export SETBG_THEME="art"
-export BKMK_FILE="$WIKI/data/bookmarks"
+export BKMK_FILE="$WIKI/data/bookmarks.json"
 export DOTSYNC_NO_BACKUP=1
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"
 
