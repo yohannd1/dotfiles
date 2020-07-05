@@ -7,5 +7,6 @@
 		 "run"
 		 (pcase major-mode
 		   ('rust-mode "rust")
+		   ('haskell-mode "haskell")
 		   (major-mode (error (concat "invalid filetype: " (symbol-name major-mode)))))
 		 (buffer-file-name)))

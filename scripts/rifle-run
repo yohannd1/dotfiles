@@ -3,9 +3,6 @@
 # a script that runs debug actions based on the specified filetype
 # intented for editors like vim and emacs
 
-# TODO: remake rrsrun because oh god it is terribly ugly
-# TODO: make aliases to open zsh function
-
 . ~/.local/lib/ystd.sh
 
 if [ $# != 3 ]; then
@@ -41,6 +38,13 @@ case "$1" in
       @cargo) fparent-run "Cargo.toml" run-command file-dir cargo run ;;
       @gradlew) fparent-run "gradlew" run-file script-dir run ;;
       rust) rustc "$file" -o "$tmp" && "$tmp" ;;
+      haskell)
+        nameFull=${file%.*}
+        name=$(basename "${file%.*}")
+        ghc -o "$tmp" -dynamic "$file" \
+          && rm "$nameFull.o" "$nameFull.hi" \
+          && "$tmp"
+        ;;
       c) gcc "$file" -o "$tmp" && "$tmp" ;;
       cpp) g++ "$file" -o "$tmp" && "$tmp" ;;
       cs) csc "$file" -out:"$tmp" && mono "$tmp" ;;
@@ -95,3 +99,5 @@ case "$1" in
     esac ;;
   *) die "Invalid action: %s\n" "$1" ;;
 esac
+
+cleanup
