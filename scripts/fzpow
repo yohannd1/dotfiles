@@ -6,12 +6,17 @@
 # If an arg is provided, this script tries to choose said option.
 
 # Settings
-OPTIONS='lock\nexit\nsuspend\nhibernate\nreboot\nshutdown'
+OPTIONS='lock
+exit
+suspend
+hibernate
+reboot
+shutdown'
 
 . ~/.local/lib/ystd.sh
 depCheck fzagnostic systemctl betterlockscreen
 
-fuzzyMatch() { printf "$OPTIONS" | fzagnostic -p "Power: "; }
+fuzzyMatch() { printf "%s" "$OPTIONS" | fzagnostic -p "Power: "; }
 matchArgs() { # {{{
   case $# in
     0) local choice="$(fuzzyMatch)"
