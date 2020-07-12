@@ -1,5 +1,4 @@
 " vim: fdm=marker sw=2 sts=2
-" YohananDiamond's main neovim config file
 
 " Setup {{{
 
@@ -241,6 +240,7 @@ if g:is_first
   " Pathogen Config
   let g:pathogen_disabled = []
   call add(g:pathogen_disabled, executable("nim") ? "" : "nvim-nim")
+  call add(g:pathogen_disabled, "lightline.vim")
   call pathogen#infect()
 endif
 
@@ -510,6 +510,51 @@ function! Ft_plaintex()
 endfunction " }}}
 
 " }}}
+
+" }}}
+" Status Line {{{
+
+let g:mode_map = {
+      \ 'n'      : 'NORMAL',
+      \ 'no'     : 'NORMAL (OP)',
+      \ 'v'      : 'VISUAL',
+      \ 'V'      : 'VISUAL LINE',
+      \ '\<C-V>' : 'VISUAL BLOCK',
+      \ 's'      : 'SELECT',
+      \ 'S'      : 'SELECTION LINE',
+      \ '\<C-S>' : 'SELECTION BLOCK',
+      \ 'i'      : 'INSERT',
+      \ 'R'      : 'REPLACE',
+      \ 'Rv'     : 'VISUAL REPLACE',
+      \ 'c'      : 'COMMAND',
+      \ 'cv'     : 'VIM EX',
+      \ 'ce'     : 'EX',
+      \ 'r'      : 'PROMPT',
+      \ 'rm'     : 'MORE',
+      \ 'r?'     : 'CONFIRM',
+      \ '!'      : 'SHELL',
+      \ 't'      : 'TERMINAL',
+      \ }
+
+function! SLFiletype()
+  return &filetype == "" ? "no ft" : &filetype
+endfunction
+
+function! SLGetMode()
+  if has_key(g:mode_map, mode())
+    return g:mode_map[mode()]
+  else
+    return "{" . mode() . "}"
+  endif
+endfunction
+
+let &statusline = ""
+      \ . "%#TabLineSel# %{SLGetMode()} "
+      \ . "%#Normal# %r "
+      \ . "%#Normal# %="
+      \ . "%#Normal# %{SLFiletype()} (%{&fileformat}) "
+      \ . "%#TabLine# %p%% "
+      \ . "%#TabLineSel# %3l:%-3c "
 
 " }}}
 " Mappings {{{

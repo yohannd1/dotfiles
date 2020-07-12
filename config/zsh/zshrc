@@ -156,6 +156,18 @@ cd-to-file() { # {{{
 } # }}}
 
 shell::reload() { source "${ZDOTDIR:-$HOME}/.zshrc"; }
+
+xdb() {
+  case $# in
+    1)
+      case "$1" in
+        -r) gen-xres | xrdb ;;
+        -e) vi =gen-xres && xdb -r ;;
+      esac ;;
+    *) return 1 ;;
+  esac
+}
+
 xorg::reload-db() { gen-xres | xrdb; }
 
 alias \
