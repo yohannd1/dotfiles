@@ -1,6 +1,6 @@
 # YohananDiamond's Dotfiles
 
-![A screenshot of my desktop](img/screenshot.png)
+![A screenshot of my desktop](.resources/screenshot.png)
 
 (Beware - I rarely update this screenshot image, so it might be
 completely different right now.)
@@ -24,10 +24,6 @@ and I can't even assure the backups feature will work well.
 ## Folder structure
 
 * `config`: config files, mostly symlinked to `~` and `~/.config`;
-
-* `desktop`: where some `.desktop` files are stored.
-
-* `img`: some internal images (for example, the screenshot shown above);
 
 * `trash`: old files that I don't want to delete right now, but aren't
   being used in the repo;
