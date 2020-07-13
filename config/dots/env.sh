@@ -12,7 +12,7 @@ export PROJECTS="$HOME/projects"
 export DOTFILES="$PROJECTS/dotfiles"
 
 # global options
-export WM="dwm"
+export WM="qtile"
 export TERM="xterm-256color"
 export EDITOR="nvim"
 export TERMINAL="st"
@@ -52,7 +52,7 @@ export GCC_COLORS='error=01;38;5;8:warning=01;38;5;9:note=01;38;5;12:caret=01;32
 export DIR_BOOKMARKS="$STORAGE/share/dir-bookmarks"
 export FLAMEW_SCR_FOLDER="$STORAGE/pictures/screenshots"
 export SETBG_WALLPAPER_DIR="$STORAGE/pictures/wallpapers"
-export SETBG_THEME="art"
+export SETBG_THEME="volcano"
 export BKMK_FILE="$WIKI/data/bookmarks.json"
 export DOTSYNC_NO_BACKUP=1
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"

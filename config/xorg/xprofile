@@ -18,10 +18,9 @@ case "$WM" in
     setbg &
     dwmblocks &
     ;;
-  i3)
+  i3|qtile)
     start-sxhkd standard &
     setbg &
-    ;;
 esac
 
 # background applications
