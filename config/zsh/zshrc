@@ -168,8 +168,6 @@ xdb() {
   esac
 }
 
-xorg::reload-db() { gen-xres | xrdb; }
-
 alias \
   w='where-to-go' \
   n='nnn-explore' \
@@ -179,7 +177,6 @@ alias \
   d='duplicate'
 
 alias rl='shell::reload'
-alias xrl='xorg::reload-db'
 
 # }}}
 # Aliases {{{
