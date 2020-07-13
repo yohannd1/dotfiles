@@ -12,7 +12,7 @@ export PROJECTS="$HOME/projects"
 export DOTFILES="$PROJECTS/dotfiles"
 
 # global options
-export WM="qtile"
+export WM="awesome"
 export TERM="xterm-256color"
 export EDITOR="nvim"
 export TERMINAL="st"

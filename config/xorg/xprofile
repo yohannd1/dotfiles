@@ -21,6 +21,8 @@ case "$WM" in
   i3|qtile)
     start-sxhkd standard &
     setbg &
+    ;;
+  awesome) ;;
 esac
 
 # background applications

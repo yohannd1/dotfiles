@@ -19,6 +19,7 @@ case "$WM" in
   bspwm) exec bspwm ;;
   dwm) exec dwm ;;
   qtile) exec qtile ;;
+  awesome) exec awesome ;;
   *)
     printf &>2 'Window manager "%s" is not yet supported.\n' "$WM"
     exit 1
