@@ -95,9 +95,9 @@ call <sid>hi("CursorLineNr",  "", "", "italic", "")
 call <sid>hi("QuickFixLine",  s:base01, "none", "", "")
 call <sid>hi("PMenu",         s:base05, s:base01, "none", "")
 call <sid>hi("PMenuSel",      s:base01, s:base05, "", "")
-call <sid>hi("TabLine",       s:base03, s:base01, "none", "")
+call <sid>hi("TabLine",       s:base05, s:base01, "none", "")
 call <sid>hi("TabLineFill",   s:base03, "", "none", "")
-call <sid>hi("TabLineSel",    s:base0B, s:base02, "none", "")
+call <sid>hi("TabLineSel",    s:base06, s:base02, "none", "")
 
 " Standard syntax highlighting
 call <sid>hi("Boolean",      s:base09, "", "", "")

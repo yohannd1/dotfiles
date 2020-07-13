@@ -39,7 +39,7 @@ xset 'st.font' "$font"
 xset 'dwm.norm.bg' "$base00"
 xset 'dwm.norm.fg' "$base05"
 xset 'dwm.norm.border' "$base00"
-xset 'dwm.sel.bg' "$base03"
+xset 'dwm.sel.bg' "$base02"
 xset 'dwm.sel.fg' "$base06"
 xset 'dwm.sel.border' "$base08"
 
