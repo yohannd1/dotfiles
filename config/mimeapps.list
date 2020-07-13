@@ -10,4 +10,3 @@ x-scheme-handler/discord-430794114037055489=discord-430794114037055489.desktop
 x-scheme-handler/http=browser.desktop
 x-scheme-handler/https=browser.desktop
 x-scheme-handler/file=filemanager.desktop
-application/pdf=org.pwmt.zathura.desktop
