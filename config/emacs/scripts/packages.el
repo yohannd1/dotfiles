@@ -31,6 +31,9 @@
   :config
   (evil-commentary-mode 1))
 
+(use-package lua-mode
+  :ensure t)
+
 (use-package origami
   :ensure t
   :config

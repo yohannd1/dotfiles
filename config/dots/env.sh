@@ -21,7 +21,7 @@ export TERMBROWSER="w3m"
 export PAGER="less"
 export OPENER="openfork"
 export READER="zathura"
-export THEME="gruvbox"
+export THEME="tomorrow-night"
 
 # configuration files/folders
 export GOPATH="$XDG_CACHE_HOME/go"
