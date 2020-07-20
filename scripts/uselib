@@ -1,0 +1,27 @@
+#!/usr/bin/env sh
+#
+# a small script to load shell libraries
+
+if [ $# != 1 ]; then
+  printf >&2 "Usage: %s\n" "$(basename $0) <LIBNAME>"
+  exit 1
+fi
+
+LIBNAME="$1"
+
+for libfolder in "$DOTFILES/lib" "$HOME/.local/lib"; do
+  libpath="$libfolder/$LIBNAME"
+  if [ -e "$libpath.sh" ]; then
+    printf "%s" "$libpath.sh"
+    exit
+  elif [ -e "$libpath.bash" ]; then
+    printf "%s" "$libpath.bash"
+    exit
+  elif [ -e "$libpath" ]; then
+    printf "%s" "$libpath"
+    exit
+  fi
+done
+
+printf >&2 "Could not find library.\n"
+exit 1

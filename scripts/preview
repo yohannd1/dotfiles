@@ -1,0 +1,70 @@
+#!/usr/bin/env sh
+# vim: fdm=marker foldmarker={,}
+
+. "$(uselib ystd)" || exit 127
+. "$(uselib filematch)" || exit 127
+
+# Library {
+
+try() {
+  # special cases for first arg
+  exists "$@" || return
+  "$@" && exit
+}
+
+fileInfo() {
+  file "$1"
+}
+urlInfo() {
+  printf "Url: %s\n" "$1"
+}
+
+# }
+
+set -f -o noclobber -o noglob
+
+if [ $# != 1 ] && [ $# != 2 ]; then
+  cat >&2 <<EOF
+Usage: $(basename $0) { <FILE> | <URL> } [_DISCARD]
+EOF
+  exit 1
+fi
+
+FILE="$1"
+filematch_initialize "$FILE"
+
+match url '*' && try urlInfo "$FILE"
+
+if match ext 'pdf' || match mime 'application/pdf'; then
+  try pdftotext -l 10 -nopgbrk -q -- "$FILE" -
+  try mutool draw -F txt -i -- "$FILE" 1-10
+fi
+
+if match mime 'audio/*' \
+  || match ext 'aac|flac|m4a|mid|midi|mpa|mp2|mp3|ogg|wav|wma' \
+  || match mime 'video/*' \
+  || match ext 'avi|mkv|mp4' \
+  || match mime 'image/*'; then
+  try mediainfo "$FILE"
+fi
+
+if match ext 'a|ace|alz|arc|arj|bz|bz2|cab|cpio|deb|gz|jar|lha|lz|lzh|lzma' \
+|| match ext '|lzo|rpm|rz|t7z|tar|tbz|tbz2|tgz|tlz|txz|tZ|tzo|war|xpi|xz|Z|zip'; then
+  try atool --list -- "$FILE"
+  try bsdtar --list --file "$FILE"
+fi
+
+if match ext 'htm|html|xhtml'; then
+  try w3m -dump "$FILE"
+  try lynx -dump -- "$FILE"
+  try elinks -dump "$FILE"
+fi
+
+match ext 'rar' && try unrar l -p- -- "$FILE"
+match ext '7z' && try 7z l -p -- "$FILE"
+match ext 'torrent' && try transmission-show -- "$FILE"
+match ext 'odt|ods|odp|sxw' && try odt2txt "$FILE"
+match mime 'inode/directory' && try fd -d1 "$FILE"
+match mime 'text/troff' && try man -l "$FILE"
+
+try cat "$FILE"

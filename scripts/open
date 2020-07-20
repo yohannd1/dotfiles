@@ -1,12 +1,11 @@
 #!/usr/bin/env sh
 # vim: fdm=marker foldmarker={,}
 
-# an opener script based off nuke
-# (https://github.com/jarun/nnn/blob/master/plugins/nuke)
-# TODO: finish documentation
-
-. ~/.local/lib/ystd.sh
+. "$(uselib ystd)" || exit 127
+. "$(uselib filematch)" || exit 127
 depCheck termup runpage
+
+# Library {
 
 warn() {
   local out=$(printf "$@")
@@ -16,25 +15,6 @@ warn() {
     printf >&2 "%s\n" "$out"
   fi
 }
-
-match() {
-  local ptype="$1" pat="$2"
-  shift 2
-
-  case "$ptype" in
-    mime) [ -z "$URL_PREFIX" ] && caseMatch "$pat" "$MIMETYPE" ;;
-    ext) [ -z "$URL_PREFIX" ] && caseMatch "$pat" "$EXT" ;;
-    url) [ "$URL_PREFIX" ] && caseMatch "$pat" "$URL_PREFIX" ;;
-    *)
-      printf >&2 "Invalid pattern type: %s\n" "$action"
-      printf >&2 "Args: "
-      printf >&2 '"%s" ' "$ptype" "$pat" "$@"
-      printf >&2 "\n"
-      exit 1
-      ;;
-  esac
-}
-
 try() {
   local action="$1"
   shift
@@ -42,8 +22,8 @@ try() {
   # special cases for first arg
   checkExists "$@" || return
 
-  # gui <prog...>: block stdout and stderr; see the 'openfork' script for automatic dettachment
-  # tty <prog...>: don't block anything - opens the program in current terminal
+  # gui <prog...>: block stdout and stderr; see 'openfork' script for automatic dettachment
+  # tty <prog...>: don't block anything: open the program in the current terminal
   # pop <prog...>: pop up a new terminal using the 'termup' script
   # fallback: starts the alt program specified in $ALT_OPENER
   case "$action" in
@@ -60,24 +40,20 @@ try() {
       ;;
   esac
 }
-
 block() {
   if match "$@"; then
-    warn "Attempted to open blocked file/url %s (%s)\n" "$FILE" "$MIMETYPE"
+    warn "Attempted to open blocked file/url %s (%s)\n" "$FILE" "$_filematch_mimetype"
     exit 1
   fi
 }
-
 openGui() {
   "$@" >/dev/null 2>&1
   exit
 }
-
 openTty() {
   "$@"
   exit
 }
-
 openPop() {
   if [ "$OPEN_GUI" ]; then
     openGui termup "$@"
@@ -86,24 +62,10 @@ openPop() {
   fi
   exit
 }
-
 openFallback() {
   warn "Falling back to %s (%s)\n" "$ALT_OPENER" "$FILE"
   VIA_OPEN=1 "$ALT_OPENER" "$FILE"
 }
-
-caseMatch() {
-  if [ $# != 2 ]; then
-    printf >&2 "Usage: %s\n" "$(basename $0) <pattern> <data>"
-    return 1
-  fi
-
-  pattern=$(printf "%s" "$1" | sed 's \* .* g;s \. . g;s | \\| g;s \(.*\) ^\\(\1\\)$ g')
-  data=$2
-
-  printf "%s" "$data" | grep -q "$pattern"
-}
-
 checkExists() {
   case "$1" in
     runpage) exists "$2" ;;
@@ -111,52 +73,109 @@ checkExists() {
   esac
 }
 
-usage() {
+# }
+
+set -f -o noclobber -o noglob
+ALT_OPENER=${ALT_OPENER:-"xdg-open"}
+
+if [ $# != 1 ]; then
   cat >&2 <<EOF
-Usage: $PROGNAME { <file> | <url> }
-Files:
-  $RULES: used to store the rules, being sourced after functions are loaded. See the (incomplete) documentation of this script for help on how to use.
+Usage: $(basename $0) { <FILE> | <URL> }
+$*
 Environment variables:
   OPEN_GUI: forces to open only apps in GUI mode.
   ALT_OPENER: a fallback opener; default is xdg-open
 EOF
-}
-
-set -f -o noclobber -o noglob # option
-IFS="$(printf '%b_' '\n')"; IFS="${IFS%_}" # protect trailing \n
-
-PROGNAME=$(basename $0)
-RULES=${XDG_CONFIG_HOME:-$HOME/.config}/dots/open-rules.sh
-ALT_OPENER=${ALT_OPENER:-"xdg-open"}
+  exit 1
+fi
 
 FILE="$1"
-FILENAME=$(basename "$FILE")
-FILETYPE=$(file --dereference --brief -- "$FILE")
-MIMETYPE=$(file --dereference --brief --mime-type -- "$FILE")
-EXT="${FILENAME##*.}"
-if [ "$EXT" ]; then
-  EXT="$(printf "%s" "$EXT" | tr '[:upper:]' '[:lower:]')"
+filematch_initialize "$FILE"
+
+block mime 'application/x-sharedlib'
+block mime 'application/x-shared-library-la'
+block mime 'application/x-executable'
+block mime 'application/x-shellscript'
+
+if match url 'http|https'; then
+  try gui "$BROWSER" "$FILE"
+  try tty "$TERMBROWSER" "$FILE"
 fi
 
-if printf "%s" "$FILE" | grep -q '^\(\w*\)://.*'; then
-  URL_PREFIX=$(printf "%s" "$FILE" | sed 's ^\(\w*\)://.* \1 g')
+if match ext 'pdf' || match mime 'application/pdf'; then
+  try gui zathura "$FILE"
+  try pop runpage pdftotext -l 10 -nopgbrk -q -- "$FILE" -
+  try pop runpage mutool draw -F txt -i -- "$FILE" 1-10
+  try pop runpage exiftool "$FILE"
 fi
 
-if [ $# != 1 ]; then
-  usage
-  exit 1
-else
-  if [ -z "$URL_PREFIX" ] && [ ! -e "$FILE" ]; then
-    warn 'Could not open "%s": no such file or directory\n' "$FILE"
-    exit 1
-  fi
-
-  if [ -e "$RULES" ]; then
-    . "$RULES"
-    openFallback
-    exit 1
-  else
-    printf >&2 "Could not find rules file. Please create said file at %s." "$RULES"
-    exit 1
-  fi
+if match mime 'audio/*' ||
+  match ext 'aac|flac|m4a|mid|midi|mpa|mp2|mp3|ogg|wav|wma'; then
+  try pop mpv --no-video "$FILE"
+  try pop mocplay "$FILE" "opener"
+  try tty exiftool "$FILE"
+  try pop runpage mediainfo "$FILE"
 fi
+
+if match mime 'video/*' ||
+  match ext 'avi|mkv|mp4'; then
+  try gui smplayer "$FILE"
+  try gui mpv "$FILE"
+  try tty mpv --no-video "$FILE"
+  try pop runpage mediainfo "$FILE"
+fi
+
+if match ext 'a|ace|alz|arc|arj|bz|bz2|cab|cpio|deb|gz|jar|lha|lz|lzh|lzma' \
+|| match ext '|lzo|rpm|rz|t7z|tar|tbz|tbz2|tgz|tlz|txz|tZ|tzo|war|xpi|xz|Z|zip'; then
+  try pop runpage atool --list -- "$FILE"
+  try pop runpage bsdtar --list --file "$FILE"
+fi
+
+match ext 'rar' && try pop runpage unrar l -p- -- "$FILE"
+match ext '7z' && try pop runpage 7z l -p -- "$FILE"
+
+if match ext 'torrent'; then
+  try pop rtorrent "$FILE"
+  try pop runpage transmission-show -- "$FILE"
+fi
+
+match ext 'odt|ods|odp|sxw' && try pop runpage odt2txt "$FILE"
+match ext 'txt|log' && try pop runpage cat "$FILE"
+match ext 'kra' && try gui krita "$FILE"
+
+if match ext 'md'; then
+  try tty runpage glowrapper "$FILE"
+  try gui md-preview "$FILE"
+fi
+
+if match ext 'htm|html|xhtml'; then
+  try tty runpage w3m -dump "$FILE"
+  try tty runpage lynx -dump -- "$FILE"
+  try tty runpage elinks -dump "$FILE"
+  try gui "$BROWSER" "$FILE"
+fi
+
+if match ext 'json'; then
+  try pop runpage jq --color-output . "$FILE"
+  try pop runpage python -m json.tool -- "$FILE"
+fi
+
+if match mime 'image/vnd.djvu'; then
+  try tty runpage djvutxt "$FILE"
+  try tty runpage exiftool "$FILE"
+fi
+
+if match mime 'image/*'; then
+  try gui sxiv "$FILE"
+  try tty runpage viu -n "$FILE"
+  try tty runpage img2txt --gamma=0.6 -- "$FILE"
+  try tty runpage exiftool "$FILE"
+fi
+
+match mime 'inode/directory' && try pop "$FILEMAN" "$FILE"
+match mime 'inode/x-empty' && try pop runpage cat "$FILE"
+match mime 'text/troff' && try pop runpage man -l "$FILE"
+match mime 'text/*' && try pop runpage cat "$FILE"
+match mime '*/xml' && try pop runpage cat "$FILE"
+
+openFallback
