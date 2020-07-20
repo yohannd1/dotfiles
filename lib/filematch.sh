@@ -1,5 +1,4 @@
 ## Filematch library
-## TODO: description
 ## Needed features: local functions
 
 # Clean up some variables

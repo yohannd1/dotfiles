@@ -1,7 +1,5 @@
-## ystd: Yohanan's Shell Standard Library
 ## A collection of useful utilities for scripts.
-## Might make them less protable, but makes the code less painful too.
-## Code here should work with dash, bash and zsh.
+## Works with dash.
 
 # check if a program exists
 exists() { command -v "$1" >/dev/null 2>/dev/null; }

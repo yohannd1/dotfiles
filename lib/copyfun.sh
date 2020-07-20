@@ -1,5 +1,6 @@
-# This function can be used to copy functions to other names.
-# Based off somebody's answer at https://stackoverflow.com/questions/1203583/how-do-i-rename-a-bash-function
+## Bash (non-POSIX) required.
+## This function can be used to copy functions to other names.
+## Based off somebody's answer at https://stackoverflow.com/questions/1203583/how-do-i-rename-a-bash-function
 
 copyfun() {
   if [ $# != 2 ]; then
