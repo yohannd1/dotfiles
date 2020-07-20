@@ -41,7 +41,7 @@ function! MyFoldText() " {{{
   let l:foldmarker = split(&foldmarker, ',')
   let l:tab_char = strpart(' ', shiftwidth())
   let l:line_contents = substitute(getline(v:foldstart), '\t', l:tab_char, 'g')
-  let l:line_contents = substitute(l:line_contents, l:foldmarker[0].'\d*', '', 'g')
+  let l:line_contents = substitute(l:line_contents, ' *'.l:foldmarker[0].'\d* *', '', 'g')
 
   let l:numbers_width = &foldcolumn + &number * &numberwidth
   let l:window_width = winwidth(0) - numbers_width - 1

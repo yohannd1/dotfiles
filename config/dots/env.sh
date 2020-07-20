@@ -12,16 +12,17 @@ export PROJECTS="$HOME/projects"
 export DOTFILES="$PROJECTS/dotfiles"
 
 # global options
-export WM="awesome"
-export TERM="xterm-256color"
-export EDITOR="nvim"
-export TERMINAL="st"
-export BROWSER="qutebrowser"
-export TERMBROWSER="w3m"
-export PAGER="less"
-export OPENER="openfork"
-export READER="zathura"
-export THEME="tomorrow-night"
+export WM=awesome
+export TERM=xterm-256color
+export EDITOR=nvim
+export TERMINAL=st
+export BROWSER=qutebrowser
+export TERMBROWSER=w3m
+export PAGER=less
+export OPENER=openfork
+export READER=zathura
+export THEME=tomorrow-night
+export FILEMAN=lf
 
 # configuration files/folders
 export GOPATH="$XDG_CACHE_HOME/go"

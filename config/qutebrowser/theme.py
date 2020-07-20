@@ -125,15 +125,15 @@ def load(c, options = {}):
     c.colors.statusbar.url.success.https.fg = p.success
     c.colors.statusbar.url.warn.fg = p.warning
 
-    c.colors.tabs.bar.bg = p.sel_bg
-    c.colors.tabs.even.bg = p.sel_bg
-    c.colors.tabs.even.fg = p.sel_fg
-    c.colors.tabs.odd.bg = p.sel_bg
-    c.colors.tabs.odd.fg = p.sel_fg
-    c.colors.tabs.selected.even.bg = p.bg
-    c.colors.tabs.selected.even.fg = p.fg
-    c.colors.tabs.selected.odd.bg = p.bg
-    c.colors.tabs.selected.odd.fg = p.fg
+    c.colors.tabs.bar.bg = p.bg
+    c.colors.tabs.even.bg = p.bg
+    c.colors.tabs.even.fg = p.fg_alt
+    c.colors.tabs.odd.bg = p.bg
+    c.colors.tabs.odd.fg = p.fg_alt
+    c.colors.tabs.selected.even.bg = p.sel_bg
+    c.colors.tabs.selected.even.fg = p.sel_fg
+    c.colors.tabs.selected.odd.bg = p.sel_bg
+    c.colors.tabs.selected.odd.fg = p.sel_fg
 
     # Tab bar - indicator (for page loading)
     c.colors.tabs.indicator.error = p.error

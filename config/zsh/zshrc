@@ -41,13 +41,8 @@ precmd() {
 # set SHORT_PROMPT to true if on Android
 [ "$(uname -o)" = "Android" ] && SHORT_PROMPT=1
 
-# prompt blocks
-PROMPT_LEFT="%B%F{3}("
-[ -z "$SHORT_PROMPT" ] && PROMPT_LONG="%F{5}%n@%M%F{3}:"
-PROMPT_RIGHT="%F{13}%~%F{3})%F{5}%b: "
-
 # some other things
-PS1="$PROMPT_LEFT$PROMPT_LONG$PROMPT_RIGHT"
+PS1="%F{13}%~%F{5}%b "
 PS2="%B%F{3}---%{$reset_color%} "
 RPROMPT="%(?..%?)"
 [ "${NNNLVL:-0}" -ge 1 ] && PS1="%B%F{3}(%F{5}n%F{3})%b $PS1"

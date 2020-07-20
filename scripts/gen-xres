@@ -27,13 +27,12 @@
 eval "$(load-base16-theme)"
 
 xset() { printf "%s: %s\n" "$1" "$2"; }
-
-font="JetBrains Mono Medium:pixelsize=13:antialias=true:autohint=true;"
+font() { printf "JetBrains Mono Medium:pixelsize=%s:antialias=true:autohint=true;" "$1"; }
 
 # st
-xset 'st.alpha' "0.85"
+xset 'st.alpha' "0.7"
 xset 'st.cursor' "$base05"
-xset 'st.font' "$font"
+xset 'st.font' "$(font 13.5)"
 
 # dwm
 xset 'dwm.norm.bg' "$base00"
@@ -44,7 +43,7 @@ xset 'dwm.sel.fg' "$base06"
 xset 'dwm.sel.border' "$base08"
 
 # dmenu
-xset 'dmenu.font' "$font"
+xset 'dmenu.font' "$(font 13)"
 xset 'dmenu.norm.bg' "$base00"
 xset 'dmenu.norm.fg' "$base05"
 xset 'dmenu.norm.hl.bg' "$base00"

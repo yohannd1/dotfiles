@@ -88,7 +88,7 @@ super + o; c
 super + o; shift + c
     $TERMINAL -c float -g 75x25 -e calc
 super + o; b
-    runnsend bkmk
+    runnsend bkmk menu
 super + o; a
     runnsend action-launcher
 super + o; j

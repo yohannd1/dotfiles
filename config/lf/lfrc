@@ -1,0 +1,16 @@
+# vim: ft=sh fdm=marker foldmarker={{,}}
+
+set preview
+# set hidden
+set color256
+# set drawbox
+set icons
+set ignorecase
+
+map H set hidden!
+
+map gd cd ~/projects/dotfiles
+map gs cd ~/storage
+map gh cd ~
+
+# TODO: make a preview script (maybe even integrate w/ Script#open)

@@ -80,6 +80,7 @@ case "$1" in
       ruby) ruby "$file" ;;
       racket) racket "$file" ;;
       html) openfork "$file" ;;
+      moon) moon "$file" ;;
       *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
     esac ;;
   build)

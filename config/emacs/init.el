@@ -17,6 +17,8 @@
  ;; If there is more than one, they won't work right.
  )
 
+(setq frame-resize-pixelwise t)
+
 (when (boundp 'at-startup)
     (setq at-startup nil))
 

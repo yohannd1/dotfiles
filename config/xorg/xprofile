@@ -22,6 +22,7 @@ case "$WM" in
     start-sxhkd standard &
     setbg &
     ;;
+  xmonad) ;;
 esac
 
 # background applications

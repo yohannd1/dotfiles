@@ -84,7 +84,7 @@ if match mime 'image/*'; then
   try tty runpage exiftool "$FILE"
 fi
 
-match mime 'inode/directory' && try pop nnn "$FILE"
+match mime 'inode/directory' && try pop "$FILEMAN" "$FILE"
 match mime 'inode/x-empty' && try pop runpage cat "$FILE"
 match mime 'text/troff' && try pop runpage man -l "$FILE"
 match mime 'text/*' && try pop runpage cat "$FILE"

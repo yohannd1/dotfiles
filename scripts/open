@@ -94,7 +94,7 @@ openFallback() {
 
 caseMatch() {
   if [ $# != 2 ]; then
-    printf >&2 "Usage: %s\n" "caseMatch <pattern> <data>"
+    printf >&2 "Usage: %s\n" "$(basename $0) <pattern> <data>"
     return 1
   fi
 
