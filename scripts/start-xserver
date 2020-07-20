@@ -4,7 +4,7 @@
 # Copyright 2020 Yohanan
 
 . ~/.config/dots/env.sh
-. ~/.local/lib/ystd.sh
+. "$(uselib std)"
 depCheck startx
 
 case $# in

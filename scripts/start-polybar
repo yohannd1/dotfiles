@@ -2,7 +2,7 @@
 
 # A script to start up polybar.
 
-. ~/.local/lib/ystd.sh
+. "$(uselib std)"
 depCheck polybar mktemp
 
 tempLog="$(mktemp "/tmp/polybar.log.XXXXXXXX")"

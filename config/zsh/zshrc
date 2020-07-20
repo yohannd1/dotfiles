@@ -4,7 +4,7 @@
 # Init {{{
 
 # Load the library file
-source ~/.local/lib/ystd.sh &>/dev/null \
+source "$(uselib std)" &>/dev/null \
   || printf "Couldn't load library file.\n"
 
 # Load some other libraries

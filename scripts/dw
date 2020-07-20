@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-. ~/.local/lib/ystd.sh
+. "$(uselib std)"
 
 showHelp() {
   printf >&2 "Usage: %s %s\n" "$(basename $0)" "<url> [output_file]"

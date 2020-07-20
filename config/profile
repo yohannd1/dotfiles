@@ -4,7 +4,7 @@
 # This is ran at login on a TTY.
 
 # load libraries, env vars and PATH
-. ~/.local/lib/ystd.sh
+. "$(uselib std)"
 . ~/.config/dots/env.sh
 . ~/.config/dots/path.sh
 eval "$(load-base16-theme --noprefix)"

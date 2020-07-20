@@ -13,7 +13,7 @@ hibernate
 reboot
 shutdown'
 
-. ~/.local/lib/ystd.sh
+. "$(uselib std)"
 depCheck fzagnostic systemctl betterlockscreen
 
 fuzzyMatch() { printf "%s" "$OPTIONS" | fzagnostic -p "Power: "; }

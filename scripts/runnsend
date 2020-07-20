@@ -3,7 +3,7 @@
 # Runs a command silently, but sends a notification with the stderr if
 # the exit code is not 0.
 
-. ~/.local/lib/ystd.sh
+. "$(uselib std)"
 depCheck notify-send
 
 commandStderr="$("$@" 2>&1 >/dev/null)"

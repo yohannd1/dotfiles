@@ -2,7 +2,7 @@
 
 # A script to load sxhkd based off the gen-sxhkd script.
 
-. ~/.local/lib/ystd.sh
+. "$(uselib std)"
 . ~/.config/dots/env.sh
 depCheck gen-sxhkd sxhkd mktemp
 

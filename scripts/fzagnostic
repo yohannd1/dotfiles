@@ -3,7 +3,7 @@
 # A wrapper for fzf and dmenu.
 # Needs arrays.
 
-. ~/.local/lib/ystd.sh
+. "$(uselib std)"
 
 while getopts "p:h:" o; do
   case "$o" in

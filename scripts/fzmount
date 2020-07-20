@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-. ~/.local/lib/ystd.sh
+. "$(uselib std)"
 depCheck udisksctl
 
 showHelp() {

@@ -3,7 +3,7 @@
 # a script that runs debug actions based on the specified filetype
 # intented for editors like vim and emacs
 
-. ~/.local/lib/ystd.sh
+. "$(uselib std)"
 
 if [ $# != 3 ]; then
   printf >&2 "Usage: %s\n" "$(basename $0) <ACTION> <FILETYPE> <FILENAME>"

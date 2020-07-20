@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-. ~/.local/lib/ystd.sh
+. "$(uselib std)"
 
 if exists nvim; then
   alias editor=nvim

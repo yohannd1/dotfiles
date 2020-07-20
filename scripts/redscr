@@ -22,7 +22,7 @@
 # License along with this program.
 # If not, see <http://www.gnu.org/licenses/>.
 
-. ~/.local/lib/ystd.sh
+. "$(uselib std)"
 depCheck xcalib
 
 TOGGLE_TEMP=/tmp/redscr-toggle
