@@ -4,9 +4,9 @@
 # This is ran at login on a TTY.
 
 # load libraries, env vars and PATH
-. "$(uselib std)"
 . ~/.config/dots/env.sh
 . ~/.config/dots/path.sh
+. "$(uselib std)"
 eval "$(load-base16-theme --noprefix)"
 
 # set up SSH keychaing

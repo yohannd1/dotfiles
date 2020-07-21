@@ -23,5 +23,5 @@ for libfolder in "$DOTFILES/lib" "$HOME/.local/lib"; do
   fi
 done
 
-printf >&2 "Could not find library.\n"
+printf >&2 'Could not find library: "%s".\n' "$LIBNAME"
 exit 1

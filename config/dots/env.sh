@@ -48,6 +48,7 @@ export FZF_DEFAULT_OPTS='
   --color spinner:3,gutter:1,info:3
 '
 export GCC_COLORS='error=01;38;5;8:warning=01;38;5;9:note=01;38;5;12:caret=01;32:locus=01;38;5;11:quote=03'
+export RUSTC_WRAPPER=sccache
 
 # dotfiles program options
 export DIR_BOOKMARKS="$STORAGE/share/dir-bookmarks"

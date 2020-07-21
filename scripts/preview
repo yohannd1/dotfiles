@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 # vim: fdm=marker foldmarker={,}
 
-. "$(uselib ystd)" || exit 127
+. "$(uselib std)" || exit 127
 . "$(uselib filematch)" || exit 127
 
 # Library {

@@ -80,7 +80,8 @@ fh() { # {{{
 } # }}}
 
 # Actual binding
-bindkey -s '^R' '\e0Cfh\n'
+bindkey -s '^R' '\eSfh\n'
+bindkey -s '^o' '\eSlfcd\n'
 
 # }}}
 # Commands {{{
@@ -161,6 +162,16 @@ xdb() {
       esac ;;
     *) return 1 ;;
   esac
+}
+
+lfcd() {
+  local tmp="$(mktemp)"
+  lf -last-dir-path="$tmp" "$@"
+  if [ -f "$tmp" ]; then
+    dir="$(cat "$tmp")"
+    rm -f "$tmp" >/dev/null
+    [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
+  fi
 }
 
 alias \
