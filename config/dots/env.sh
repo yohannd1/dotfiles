@@ -21,7 +21,7 @@ export TERMBROWSER=w3m
 export PAGER=less
 export OPENER=openfork
 export READER=zathura
-export THEME=tomorrow-night
+export THEME=onedark
 export FILEMAN=lf
 
 # configuration files/folders

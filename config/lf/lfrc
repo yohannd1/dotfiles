@@ -1,5 +1,6 @@
-# vim: ft=sh fdm=marker foldmarker={{,}}
+# vim: ft=conf fdm=marker foldmarker={{,}}
 
+set shell bash
 set previewer preview
 set preview
 # set hidden
@@ -8,8 +9,108 @@ set color256
 set icons
 set ignorecase
 
-map H set hidden!
+# commands
+cmd new ${{
+  clear; set -f
 
+  while true; do
+    printf "(f)ile or (d)ir => "
+    read -n1 answer
+    printf "\n"
+
+    case "$answer" in
+      f|d) break ;;
+      ) exit ;;
+      *) ;;
+    esac
+  done
+
+  printf "filename => "
+  read filename
+  printf "\n"
+
+  [ -z "$filename" ] && exit
+
+  if [ -e "$filename" ]; then
+    printf "Filename already exists.\n"
+    read _
+  else
+    case "$answer" in
+      f) touch "$filename" ;;
+      d) mkdir "$filename" ;;
+    esac
+
+    if [ $? != 0 ]; then
+      printf "Failed to create file.\n"
+      read _
+    fi
+  fi
+}}
+cmd trash ${{
+  clear; set -f
+
+  IFS=$(printf '\n\t')
+  printf "Selected files:\n"
+  printf "  %s\n" $fx
+  printf "Would you like to send them to the TRASH?\n"
+
+  while true; do
+    printf "(y)es or (n)o => "
+    read -n1 answer
+    printf "\n"
+
+    case "$answer" in
+      y) trash-put $fx; break ;;
+      n) break ;;
+      *) ;;
+    esac
+  done
+}}
+cmd delete ${{
+  clear; set -f
+
+  IFS=$(printf '\n\t')
+  printf "Selected files:\n"
+  printf "  %s\n" $fx
+  printf "Would you like to PERMANENTLY DELETE them?\n"
+
+  while true; do
+    printf "(y)es or (n)o => "
+    read -n1 answer
+    printf "\n"
+
+    case "$answer" in
+      y) rm -rvf $fx; break ;;
+      n) break ;;
+      *) ;;
+    esac
+  done
+}}
+cmd move-here ${{
+  clear; set -f
+  IFS=$(printf '\n\t')
+  for file in $fs; do
+    mv -vt . -- "$file"
+  done
+}}
+cmd copy-here ${{
+  clear; set -f
+  IFS=$(printf '\n\t')
+  for file in $fs; do
+    cp -vrt . -- "$file"
+  done
+}}
+
+# command mappings
+map H set hidden!
+map n new
+map <c-n> search-next
+map x trash
+map X delete
+map v :move-here; unselect
+map p :copy-here; unselect
+
+# bookmark mappings
 map gd cd ~/projects/dotfiles
 map gs cd ~/storage
 map gh cd ~
