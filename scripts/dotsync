@@ -171,6 +171,7 @@ if [ -z "$NO_CONFIG_LINK" ]; then
     lfconf "alacritty" ~/.config/alacritty
     lfconf "picom" ~/.config/picom
     lfconf "xorg" ~/.config/xorg
+    lfconf "awesome" ~/.config/awesome
 
     lfglob "$DOTFILES/config/qutebrowser" ~/.config/qutebrowser
     lfconf "zathura" ~/.config/zathura
