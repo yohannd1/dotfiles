@@ -48,45 +48,12 @@ local kb = require("kb")
 awful.layout.layouts = {
     awful.layout.suit.tile,
     awful.layout.suit.max,
-    -- awful.layout.suit.tile.left,
-    -- awful.layout.suit.tile.bottom,
-    -- awful.layout.suit.tile.top,
-    -- awful.layout.suit.fair,
-    -- awful.layout.suit.fair.horizontal,
-    -- awful.layout.suit.spiral,
-    -- awful.layout.suit.spiral.dwindle,
-    -- awful.layout.suit.max.fullscreen,
-    -- awful.layout.suit.magnifier,
-    -- awful.layout.suit.corner.nw,
-    -- awful.layout.suit.floating,
-    -- awful.layout.suit.corner.ne,
-    -- awful.layout.suit.corner.sw,
-    -- awful.layout.suit.corner.se,
-}
-
-local submenus = {
-    core = {
-        {"Hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end},
-        {"Edit Config", user.terminal .. "-e" .. user.editor .. " " .. awesome.conffile},
-        {"Restart", awesome.restart},
-        {"Quit", awesome.quit},
-    },
-}
-
-local launcher = awful.widget.launcher {
-    image = beautiful.awesome_icon,
-    menu = awful.menu {
-        items = {
-            {"Core", submenus.core, beautiful.awesome_icon},
-            {"Terminal", terminal},
-        }
-    }
 }
 
 -- Menubar configuration
 menubar.utils.terminal = terminal -- Set the terminal for applications that require it
 
--- {{{ Wibar
+-- Wibar {{{
 
 -- Create a textclock widget
 mytextclock = wibox.widget.textclock()
@@ -134,8 +101,7 @@ local tasklist_buttons = gears.table.join(
 -- screen.connect_signal("property::geometry", set_wallpaper)
 
 awful.screen.connect_for_each_screen(function(s)
-    -- Each screen has its own tag table.
-    awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[1])
+    awful.tag({"1", "2", "3", "4", "5", "6", "7", "8", "9"}, s, awful.layout.layouts[1])
 
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
@@ -149,18 +115,52 @@ awful.screen.connect_for_each_screen(function(s)
         awful.button({}, 4, function() awful.layout.inc( 1) end),
         awful.button({}, 5, function() awful.layout.inc(-1) end))
     )
-    -- Create a taglist widget
+
     s.mytaglist = awful.widget.taglist {
         screen  = s,
         filter  = awful.widget.taglist.filter.all,
-        buttons = taglist_buttons
+        buttons = taglist_buttons,
+        layout  = { layout = wibox.layout.fixed.horizontal },
     }
 
-    -- Create a tasklist widget
     s.mytasklist = awful.widget.tasklist {
-        screen  = s,
-        filter  = awful.widget.tasklist.filter.currenttags,
-        buttons = tasklist_buttons
+        screen   = s,
+        filter   = awful.widget.tasklist.filter.currenttags,
+        buttons  = tasklist_buttons,
+        style    = {
+            shape  = gears.shape.rounded_bar,
+        },
+        layout   = {
+            spacing = 10,
+            spacing_widget = {
+                {
+                    forced_width = 5,
+                    shape        = gears.shape.circle,
+                    widget       = wibox.widget.separator
+                },
+                valign = 'center',
+                halign = 'center',
+                widget = wibox.container.place,
+            },
+            layout  = wibox.layout.flex.horizontal
+        },
+
+        widget_template = {
+            {
+                {
+                    {
+                        id     = 'text_role',
+                        widget = wibox.widget.textbox,
+                    },
+                    layout = wibox.layout.fixed.horizontal,
+                },
+                left  = 10,
+                right = 10,
+                widget = wibox.container.margin
+            },
+            id     = 'background_role',
+            widget = wibox.container.background,
+        },
     }
 
     -- Create the wibox
@@ -175,7 +175,7 @@ awful.screen.connect_for_each_screen(function(s)
         layout = wibox.layout.align.horizontal,
         { -- Left widgets
             layout = wibox.layout.fixed.horizontal,
-            launcher,
+            -- launcher,
             s.mytaglist,
             s.mypromptbox,
         },
@@ -192,7 +192,7 @@ end)
 
 -- }}}
 
--- {{{ Rules
+-- Rules {{{
 
 -- Rules to apply to new clients (through the "manage" signal).
 awful.rules.rules = {
@@ -261,7 +261,7 @@ awful.rules.rules = {
 
 -- }}}
 
--- {{{ Signals
+-- Signals {{{
 
 -- Signal function to execute when a new client appears.
 client.connect_signal("manage", function(c)

@@ -100,6 +100,10 @@ cmd copy-here ${{
     cp -vrt . -- "$file"
   done
 }}
+cmd extract-this ${{
+  clear; set -f
+  [ "$f" ] && ext "$f"
+}}
 
 # command mappings
 map H set hidden!
@@ -109,6 +113,9 @@ map x trash
 map X delete
 map v :move-here; unselect
 map p :copy-here; unselect
+map R ${{ vidir }}
+map E extract-this
+map <enter> open
 
 # bookmark mappings
 map gd cd ~/projects/dotfiles
