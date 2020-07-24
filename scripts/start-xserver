@@ -3,7 +3,6 @@
 # starts an X server
 # Copyright 2020 Yohanan
 
-. ~/.config/dots/env.sh
 . "$(uselib std)"
 depCheck startx
 

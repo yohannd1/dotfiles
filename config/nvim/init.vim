@@ -610,6 +610,7 @@ inoremap <expr> <C-m> pumvisible() ? "\<C-y>" : "<C-m>"
 nnoremap <silent> <Leader>r :Rifle "run"<CR>
 nnoremap <silent> <Leader>t :Rifle "test"<CR>
 nnoremap <silent> <Leader>R :Rifle "build"<CR>
+nnoremap <silent> <Leader>c :Rifle "check"<CR>
 nnoremap <Leader><C-r> :Rifle ""<Left>
 
 " Formatting Commands

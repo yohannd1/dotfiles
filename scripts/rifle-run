@@ -98,6 +98,11 @@ case "$1" in
       @cargo) fparent-run "Cargo.toml" run-command file-dir cargo test ;;
       *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
     esac ;;
+  check)
+    case "$2" in
+      @make) make check ;;
+      @cargo) cargo check ;;
+    esac ;;
   *) die "Invalid action: %s\n" "$1" ;;
 esac
 

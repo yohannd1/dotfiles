@@ -4,25 +4,18 @@
 # This should be sourced by ~/.xinitrc or your display manager, and not simply
 # loaded alone.
 
-# reload environment variables
-. ~/.config/dots/env.sh
-
 # wm-specific config
 case "$WM" in
-  bspwm)
-    # sxhkd is started in bspwmrc
-    # setbg is started in bspwmrc
-    ;;
   dwm)
     start-sxhkd standard &
     setbg &
     dwmblocks &
     ;;
-  i3|qtile|awesome)
+  i3|qtile|awesome|penrose-personal)
     start-sxhkd standard &
     setbg &
     ;;
-  xmonad) ;;
+  *) ;;
 esac
 
 # background applications
@@ -38,7 +31,7 @@ systemd-inhibit --what=handle-power-key sleep infinity & # disable power button
 
 # extra config (not async)
 setxkbmap -layout br # set keyboard layout
-xset r rate 400 35 # speed up xrate
+xset r rate 350 40 # speed up xrate
 gen-xres | xrdb # update xresources database
 
 # TODO: find an even better way to make this portable

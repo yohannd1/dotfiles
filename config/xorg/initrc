@@ -15,13 +15,8 @@ elif [ -f ~/.xprofile ]; then
 fi
 
 case "$WM" in
-  i3) exec i3 ;;
-  bspwm) exec bspwm ;;
-  dwm) exec dwm ;;
-  qtile) exec qtile ;;
-  awesome) exec awesome ;;
-  *)
-    printf &>2 'Window manager "%s" is not yet supported.\n' "$WM"
-    exit 1
-    ;;
+  i3|bspwm|dwm|qtile|awesome) ;;
+  *) printf >&2 'WARNING: window manager "%s" is not yet supported - it might fail terribly.\n' "$WM" ;;
 esac
+
+exec "$WM"
