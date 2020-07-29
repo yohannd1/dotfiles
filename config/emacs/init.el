@@ -62,7 +62,7 @@
 
 (setq theme-current/gui 'base16-tomorrow-night)
 (setq theme-current/term 'term-dash)
-(setq current-font "JetBrains Mono Medium 11")
+(setq current-font "JetBrains Mono Medium 10")
 
 (evil-set-initial-state 'term-mode 'emacs) ; emacs bindings for term-mode
 
@@ -75,6 +75,7 @@
 (defvar evil-leader-map (make-sparse-keymap))
 (define-key evil-normal-state-map (kbd "SPC") evil-leader-map)
 (define-key evil-leader-map "r" #'rifle-run)
+(define-key evil-leader-map "ed" (lambda () (interactive) (dired "~/.emacs.d")))
 
 (when at-startup
   (if (daemonp)

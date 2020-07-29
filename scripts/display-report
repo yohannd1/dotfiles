@@ -13,6 +13,7 @@ message() {
   printf "Battery: %.0f%%\n" "$bat"
   printf "CPU: %.0f%%\n" "$cpu"
   printf "RAM: %.0f%%, SWAP: %.0f%%\n" "$ram" "$swap"
+  printf "%s\n" "$(dwmblocks-volume)"
 }
 
 notify-send "$(message)"

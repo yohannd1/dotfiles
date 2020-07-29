@@ -2,12 +2,12 @@
  "Yohanan's dashy terminal theme.")
 
 (custom-theme-set-faces 'term-dash
- '(default ((t (:background "0" :foreground "5"))))
+ '(default ((t (:background "color-0" :foreground "5"))))
  '(minibuffer-prompt ((t (:foreground "2"))))
  '(trailing-whitespace ((t (:background "3"))))
  '(link ((t (:foreground "13" :bold t))))
  '(link-visited ((t (:inherit link :foreground "12" :bold t))))
- '(region ((t (:background "green" :foreground "5"))))
+ '(region ((t (:background "color-2" :foreground "5"))))
 
  '(font-lock-negation-char-face ((t nil)))
  '(font-lock-regexp-grouping-backslash ((t (:inherit (bold)))))
