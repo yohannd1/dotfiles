@@ -1,6 +1,24 @@
 (deftheme term-dash
  "Yohanan's dashy terminal theme.")
 
+(setq
+  base00 "black"
+  base01 "brightgreen"
+  base02 "brightyellow"
+  base03 "brightblack"
+  base04 "brightblue"
+  base05 "white"
+  base06 "brightmagenta"
+  base07 "brightwhite"
+  base08 "red"
+  base09 "brightred"
+  base0A "yellow"
+  base0B "green"
+  base0C "cyan"
+  base0D "blue"
+  base0E "magenta"
+  base0F "brightcyan")
+
 (custom-theme-set-faces 'term-dash
  '(default ((t (:background "color-0" :foreground "5"))))
  '(minibuffer-prompt ((t (:foreground "2"))))

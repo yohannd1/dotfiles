@@ -10,7 +10,9 @@
   (package-install 'use-package))
 
 (use-package base16-theme
-  :ensure t)
+  :ensure t
+  :config
+  (load-theme 'base16-default-dark t))
 
 (use-package evil
   :ensure t

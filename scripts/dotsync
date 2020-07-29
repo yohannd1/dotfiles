@@ -258,6 +258,8 @@ if [ -z "$NO_NEOVIM_PLUGIN" ]; then
   ip "base16-vim" "https://github.com/chriskempson/base16-vim"
   ip "vim-lua-indent" "https://github.com/raymond-w-ko/vim-lua-indent"
   ip "moonscript-vim" "https://github.com/leafo/moonscript-vim"
+  ip "rust.vim" "https://github.com/rust-lang/rust.vim"
+  # ip "AutoClose" "https://github.com/vim-scripts/AutoClose"
   # ip "vim-lua-ftplugin" "https://github.com/xolox/vim-lua-ftplugin"
   # ip "vim-lua" "https://github.com/tbastos/vim-lua"
   # ip "vim-hy" "https://github.com/hylang/vim-hy"
