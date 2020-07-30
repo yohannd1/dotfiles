@@ -76,6 +76,7 @@
 (define-key evil-normal-state-map (kbd "SPC") evil-leader-map)
 (define-key evil-leader-map "r" #'rifle-run)
 (define-key evil-leader-map "ed" (lambda () (interactive) (dired "~/.emacs.d")))
+(define-key evil-normal-state-map (kbd "C-j") #'next-buffer)
 
 (when at-startup
   (if (daemonp)
