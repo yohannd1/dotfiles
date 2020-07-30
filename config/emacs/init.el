@@ -1,3 +1,26 @@
+;; Set startup variable to false if it has been defined previously
+(when (boundp 'at-startup)
+  (setq at-startup nil))
+
+;; Set startup variable to true at first call
+(defvar at-startup t
+  "Whether the config file is being ran for the first time in the session.")
+
+;; Get the config folder path
+(defvar emacs-folder
+  (file-name-directory (or load-file-name buffer-file-name))
+  "The place where all the config files are stored.")
+
+;; Add places to the load path
+(when at-startup
+  (add-to-list 'custom-theme-load-path (concat emacs-folder "/themes"))
+  (add-to-list 'load-path (concat emacs-folder "/elisp")))
+
+;; Load core and main configuration
+(load "core.el")
+(load "main.el")
+
+;; Had to place this here - before the theme loading - for "safe theme" signature issues
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -5,11 +28,10 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("3380a2766cf0590d50d6366c5a91e976bdc3c413df963a0ab9952314b4577299" "16dd114a84d0aeccc5ad6fd64752a11ea2e841e3853234f19dc02a7b91f5d661" default)))
+    ("3380a2766cf0590d50d6366c5a91e976bdc3c413df963a0ab9952314b4577299" default)))
  '(package-selected-packages
    (quote
-    (lua-mode which-key use-package typescript-mode try rust-mode rainbow-delimiters origami markdown-mode julia-mode helm haskell-mode evil-commentary csharp-mode clojure-mode base16-theme auto-complete)))
- '(safe-local-variable-values (quote ((origami-fold-style . triple-braces)))))
+    (centaur-tabs linum-relative which-key use-package typescript-mode try rust-mode rainbow-delimiters origami markdown-mode lua-mode julia-mode helm haskell-mode evil-commentary csharp-mode clojure-mode base16-theme auto-complete))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -17,74 +39,21 @@
  ;; If there is more than one, they won't work right.
  )
 
-(setq frame-resize-pixelwise t)
-
-(when (boundp 'at-startup)
-    (setq at-startup nil))
-
-(defvar at-startup t
-  "Whether the current execution is at startup.")
-
-(when at-startup
-  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-  (add-to-list 'load-path "~/.emacs.d/scripts"))
-
-(load "lib.el")
-(load "packages.el")
-(load "rifle.el")
-
-(global-visual-line-mode 1)
-(global-linum-mode 1)
-(electric-pair-mode 1)
-
-(unless (display-graphic-p)
-  (xterm-mouse-mode))
-
-(setq inhibit-startup-message t)
-(setq vc-follow-symlinks nil)
-(setq linum-format "%3d ")
-
-;; Backup and autosave files
-(setq version-control t
-      kept-new-versions 5
-      kept-old-versions 3
-      delete-old-versions t
-      backup-by-copying t
-      vc-make-backup-files t
-      backup-directory-alist '(("" . "~/.cache/emacs/backup"))
-      auto-save-file-name-transforms '((".*" "~/.cache/emacs/saves" t)))
-
-(setq c-default-style "linux"
-      c-basic-offset 4)
-
-(setq scroll-step 1
-      scroll-margin 5)
-
-(setq theme-current/gui 'base16-tomorrow-night)
-(setq theme-current/term 'term-dash)
-(setq current-font "JetBrains Mono Medium 10")
-
-(evil-set-initial-state 'term-mode 'emacs) ; emacs bindings for term-mode
-
-(tool-bar-mode 0)
-(menu-bar-mode 0)
-(when (display-graphic-p)
-  (scroll-bar-mode 0))
-
-;; Bindings
-(defvar evil-leader-map (make-sparse-keymap))
-(define-key evil-normal-state-map (kbd "SPC") evil-leader-map)
-(define-key evil-leader-map "r" #'rifle-run)
-(define-key evil-leader-map "ed" (lambda () (interactive) (dired "~/.emacs.d")))
-(define-key evil-normal-state-map (kbd "C-j") #'next-buffer)
-
+;; Some messy hook code
 (when at-startup
   (if (daemonp)
-      (add-hook 'after-make-frame-functions
-		(lambda (frame) (with-selected-frame frame (theme-update))))
+      (progn
+	(add-hook 'after-make-frame-functions
+		  (lambda (frame)
+		    (with-selected-frame frame (theme-update))))
+	(add-hook 'after-make-frame-functions
+		  (lambda (_)
+		    (unless (display-graphic-p)
+		      (define-key evil-motion-state-map (kbd "ç") #'evil-ex)))))
     (theme-update))
 
   (unless (display-graphic-p)
+    ;; Cursor changing code for terminal
     (add-hook 'evil-normal-state-entry-hook #'change-cursor)
     (add-hook 'evil-motion-state-entry-hook #'change-cursor)
     (add-hook 'evil-replace-state-entry-hook #'change-cursor)
