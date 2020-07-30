@@ -18,10 +18,11 @@
 
 (defun theme-update ()
   "Detects whether the current frame is graphical or on a terminal and then loads the corresponding theme to it."
+  (message (concat "Updating Theme :: " (symbol-name current-theme-gui)))
   (if (display-graphic-p)
       (progn
 	(when current-theme-gui
-	  (load-theme current-theme-gui))
+	  (load-theme current-theme-gui t))
 	(when current-font-gui
 	  (set-frame-font current-font-gui)))
     (progn
@@ -32,7 +33,7 @@
   "Runs the 'rifle-run' command on a popup, via a background buffer."
   (interactive)
   (let ((mode (replace-regexp-in-string "-mode$" ""
-					(symbol-name-p major-mode))))
+					(symbol-name major-mode))))
     (start-process "rifle" "Rifle Background Process"
 		   (or (getenv "TERMINAL") "xterm") "-e" "runread" "rifle-run" "run"
 		   (pcase mode

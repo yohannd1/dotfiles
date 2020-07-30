@@ -1,3 +1,7 @@
+;; My personal emacs config!
+;; Big inspirations for this config:
+;; - Doom Emacs (https://github.com/hlissner/doom-emacs) :: stole some things from here.
+
 ;; Set startup variable to false if it has been defined previously
 (when (boundp 'at-startup)
   (setq at-startup nil))
@@ -28,7 +32,7 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("3380a2766cf0590d50d6366c5a91e976bdc3c413df963a0ab9952314b4577299" default)))
+    ("04a400a5130f31a54fa871c0409b7a457bb69a42def002a5117456e224210d09" "3380a2766cf0590d50d6366c5a91e976bdc3c413df963a0ab9952314b4577299" default)))
  '(package-selected-packages
    (quote
     (centaur-tabs linum-relative which-key use-package typescript-mode try rust-mode rainbow-delimiters origami markdown-mode lua-mode julia-mode helm haskell-mode evil-commentary csharp-mode clojure-mode base16-theme auto-complete))))

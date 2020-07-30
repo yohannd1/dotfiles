@@ -3,8 +3,7 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-;; TODO: stop using this (make my own version of the theme)
-(use-package base16-theme
+(use-package base16-theme ;; TODO: stop using this (make my own version of the theme)
   :ensure t
   :config
   (load-theme 'base16-default-dark t))
@@ -27,7 +26,9 @@
     (defvar evil-leader-map (make-sparse-keymap))
     (define-key evil-normal-state-map (kbd "SPC") evil-leader-map)
     (define-key evil-leader-map "rr" #'rifle-run)
-    (define-key evil-leader-map "ed" #'dired-emacs-folder)))
+    (define-key evil-leader-map "ed" #'dired-emacs-folder)
+    (which-key-add-key-based-replacements "SPC ed" "test")
+    (define-key evil-leader-map "cr" #'config-reload)))
 
 (use-package evil-commentary
   :ensure t
@@ -46,13 +47,13 @@
 ;;   (define-key evil-normal-state-map (kbd "TAB") 'nin-origami-toggle-node)
 ;;   (define-key evil-normal-state-map (kbd "<backtab>") 'origami-close-all-nodes))
 
-(use-package rust-mode
+(use-package rust-mode ;; TODO: autoload
   :ensure t)
 
-(use-package haskell-mode
+(use-package haskell-mode ;; TODO: autoload
   :ensure t)
 
-(use-package markdown-mode
+(use-package markdown-mode ;; TODO: autoload
   :ensure t
   :mode (("README\\.md\\'" . gfm-mode)
 	 ("\\.md\\'" . markdown-mode)
@@ -60,16 +61,16 @@
   :init
   (setq markdown-command "multimarkdown"))
 
-(use-package clojure-mode
+(use-package clojure-mode ;; TODO: autoload
   :ensure t)
 
-(use-package julia-mode
+(use-package julia-mode ;; TODO: autoload
   :ensure t)
 
-(use-package csharp-mode
+(use-package csharp-mode ;; TODO: autoload
   :ensure t)
 
-(use-package typescript-mode
+(use-package typescript-mode ;; TODO: autoload
   :ensure t)
 
 (use-package rainbow-delimiters
@@ -77,18 +78,18 @@
   :config
   (add-hook 'after-change-major-mode-hook #'rainbow-delimiters-mode-enable))
 
-(use-package auto-complete
+(use-package auto-complete ;; TODO: setup
   :ensure t
   :config
   (global-auto-complete-mode))
 
-(use-package helm
+(use-package helm ;; TODO: setup
   :ensure t)
 
 (use-package try
   :ensure t)
 
-(use-package which-key
+(use-package which-key ;; TODO: setup
   :ensure t
   :config
   (which-key-mode))
@@ -96,19 +97,53 @@
 (use-package linum-relative
   :ensure t
   :config
-  (add-hook 'after-change-major-mode-hook #'linum-relative-mode))
+  (add-hook 'after-change-major-mode-hook #'linum-relative-mode)
+  (add-hook 'minibuffer-setup-hook #'linum-relative-off))
 
-(use-package centaur-tabs
+(use-package centaur-tabs ;; TODO: cleanup
   :ensure t
   :config
-  ;; Options
-  ;; (setq centaur-tabs-set-bar 'over) 
-  (setq centaur-tabs-set-close-button nil)
-  (setq centaur-tabs-set-modified-marker t)
-  (defun centaur-tabs-buffer-groups () '("Emacs"))
-  ;; Enable
+  (setq centaur-tabs-set-bar 'under
+	centaur-tabs-style "bar"
+	x-underline-at-descent-line t
+	centaur-tabs-set-close-button nil
+	centaur-tabs-set-modified-marker t
+	centaur-tabs-modified-marker "+"
+	centaur-tabs-adjust-buffer-order t
+	centaur-tabs-set-icons t)
+  (centaur-tabs-enable-buffer-reordering)
+  ;; TODO: tab titles
+  (defun centaur-tabs-buffer-groups ()
+    (list
+     (cond
+      ((derived-mode-p 'dired-mode) "Dired")
+      (t "Main"))))
+  (defun centaur-tabs-hide-tab (x)
+    (let ((name (format "%s" x)))
+      (or
+       ;; Current window is not dedicated window.
+       (window-dedicated-p (selected-window))
+
+       ;; Buffer name not match below blacklist.
+       (string-prefix-p "*epc" name)
+       (string-prefix-p "*helm" name)
+       (string-prefix-p "*Helm" name)
+       (string-prefix-p "*Compile-Log*" name)
+       (string-prefix-p "*lsp" name)
+       (string-prefix-p "*company" name)
+       (string-prefix-p "*Flycheck" name)
+       (string-prefix-p "*tramp" name)
+       (string-prefix-p " *Mini" name)
+       (string-prefix-p "*help" name)
+       (string-prefix-p "*straight" name)
+       (string-prefix-p " *temp" name)
+       (string-prefix-p "*Help" name)
+       (string-prefix-p "*Completions" name)
+
+       ;; Is not magit buffer.
+       (and (string-prefix-p "magit" name)
+	    (not (file-name-extension name))))))
   (centaur-tabs-mode t)
-  ;; Bindings
   (define-key global-map (kbd "C-j") #'centaur-tabs-forward)
   (define-key global-map (kbd "C-k") #'centaur-tabs-backward)
   (define-key evil-motion-state-map (kbd "C-j") #'centaur-tabs-forward)
@@ -136,10 +171,7 @@
       frame-resize-pixelwise t
       window-resize-pixelwise t
       inhibit-startup-message t
-      vc-follow-symlinks nil
-      linum-format "%3d "
-      scroll-step 1
-      scroll-margin 5)
+      vc-follow-symlinks nil)
 
 ;; Minor mode changes
 (tool-bar-mode 0)
@@ -158,3 +190,20 @@
       current-theme-tty 'term-dash
       current-font-gui "JetBrains Mono Medium 10")
 
+;; Fix scrolling (stolen from Doom Emacs)
+(setq hscroll-margin 2
+      hscroll-step 1
+      ;; Emacs spends too much effort recentering the screen if you scroll the
+      ;; cursor more than N lines past window edges (where N is the settings of
+      ;; `scroll-conservatively'). This is especially slow in larger files
+      ;; during large-scale scrolling commands. If kept over 100, the window is
+      ;; never automatically recentered.
+      scroll-conservatively 101
+      scroll-margin 0
+      scroll-preserve-screen-position t
+      ;; Reduce cursor lag by a tiny bit by not auto-adjusting `window-vscroll'
+      ;; for tall lines.
+      auto-window-vscroll nil
+      ;; mouse
+      mouse-wheel-scroll-amount '(5 ((shift) . 2))
+      mouse-wheel-progressive-speed nil)  ; don't accelerate scrolling
