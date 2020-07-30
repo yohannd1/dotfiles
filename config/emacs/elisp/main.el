@@ -97,15 +97,16 @@
 (use-package linum-relative
   :ensure t
   :config
+  (setq linum-relative-format "%3s ")
   (add-hook 'after-change-major-mode-hook #'linum-relative-mode)
   (add-hook 'minibuffer-setup-hook #'linum-relative-off))
 
 (use-package centaur-tabs ;; TODO: cleanup
   :ensure t
   :config
-  (setq centaur-tabs-set-bar 'under
-	centaur-tabs-style "bar"
-	x-underline-at-descent-line t
+  (setq centaur-tabs-style "bar"
+	;; centaur-tabs-set-bar 'under
+	;; x-underline-at-descent-line t
 	centaur-tabs-set-close-button nil
 	centaur-tabs-set-modified-marker t
 	centaur-tabs-modified-marker "+"
@@ -186,7 +187,7 @@
     (xterm-mouse-mode))) ;; Enable mouse support in terminal mode
 
 ;; Configuration
-(setq current-theme-gui 'base16-tomorrow-night
+(setq current-theme-gui 'base16-onedark
       current-theme-tty 'term-dash
       current-font-gui "JetBrains Mono Medium 10")
 

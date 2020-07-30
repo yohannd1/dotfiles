@@ -16,9 +16,8 @@
 				     (number-to-string (or code 2))
 				     " q"))))
 
-(defun theme-update ()
+(defun theme-update () ;; TODO: simplifly this cuz term-dash now works on GUI!!!!! (at least with X, so I need to check if I'm on Linux + Xorg too)
   "Detects whether the current frame is graphical or on a terminal and then loads the corresponding theme to it."
-  (message (concat "Updating Theme :: " (symbol-name current-theme-gui)))
   (if (display-graphic-p)
       (progn
 	(when current-theme-gui

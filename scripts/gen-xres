@@ -79,6 +79,7 @@ xset '*cursor-color' "$cursor"
 
 for n in {0..9}; do
   xset "*color$n" "$(eval 'echo $base0'$n)"
+  xset "*base0$n" "$(eval 'echo $base0'$n)"
 done
 xset '*color10' "$base0A"
 xset '*color11' "$base0B"
@@ -86,3 +87,9 @@ xset '*color12' "$base0C"
 xset '*color13' "$base0D"
 xset '*color14' "$base0E"
 xset '*color15' "$base0F"
+xset '*base0A' "$base0A"
+xset '*base0B' "$base0B"
+xset '*base0C' "$base0C"
+xset '*base0D' "$base0D"
+xset '*base0E' "$base0E"
+xset '*base0F' "$base0F"
