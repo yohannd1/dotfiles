@@ -21,6 +21,7 @@
 	  base0D (x-get-resource "emacs.base0D" "")
 	  base0E (x-get-resource "emacs.base0E" "")
 	  base0F (x-get-resource "emacs.base0F" ""))
+  ;; Only seen to have worked with TERM=xterm-16color:
   (setq base00 "black"
   	base01 "red"
   	base02 "green"
@@ -71,6 +72,7 @@
    (compilation-mode-line-exit                   :foreground ,base0B)
    (compilation-mode-line-fail                   :foreground ,base08)
    (compilation-mode-line-run                    :foreground ,base0D)
+   (show-paren-match                             :foreground ,base00 :background ,base0C)
 
    (custom-variable-tag                          :foreground ,base0D)
    (custom-group-tag                             :foreground ,base0D)
@@ -105,14 +107,17 @@
    (line-number                                  :foreground ,base03 :background ,base01)
    (line-number-current-line                     :inverse-video t)
 
-   ;; Third party:
-
-   ;; Modeline
+   ;; modeline
    (mode-line                                    :foreground ,base05 :background ,base02) ; :box base16-settings-mode-line-box)
    (mode-line-buffer-id                          :foreground ,base0B :background nil)
    (mode-line-emphasis                           :foreground ,base06 :slant italic)
    (mode-line-highlight                          :foreground ,base0E :box nil :weight bold)
    (mode-line-inactive                           :foreground ,base03 :background ,base01 :box nil)
+
+   ;; Third party:
+
+   ;; linum-relative
+   (linum-relative-current-face                  :foreground ,base05 :background ,base02)
 
    ;; anzu-mode
    (anzu-mode-line                               :foreground ,base0E)

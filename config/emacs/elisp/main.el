@@ -3,11 +3,6 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-(use-package base16-theme ;; TODO: stop using this (make my own version of the theme)
-  :ensure t
-  :config
-  (load-theme 'base16-default-dark t))
-
 (use-package evil
   :ensure t
   :init
@@ -25,10 +20,24 @@
 
     (defvar evil-leader-map (make-sparse-keymap))
     (define-key evil-normal-state-map (kbd "SPC") evil-leader-map)
-    (define-key evil-leader-map "rr" #'rifle-run)
-    (define-key evil-leader-map "ed" #'dired-emacs-folder)
-    (which-key-add-key-based-replacements "SPC ed" "test")
-    (define-key evil-leader-map "cr" #'config-reload)))
+    (define-key evil-leader-map "rr" #'(lambda ()
+					 (interactive)
+					 (rifle-run)))
+    (define-key evil-leader-map "de" #'(lambda ()
+					 (interactive)
+					 (dired emacs-folder)))
+    (define-key evil-leader-map "cr" #'config-reload)
+    (define-key evil-leader-map "ce" #'(lambda ()
+					 (interactive)
+					 (find-file (concat emacs-folder "/elisp/main.el"))))
+
+    (which-key-add-key-based-replacements "SPC r" "rifle commands")
+    (which-key-add-key-based-replacements "SPC rr" "rifle run")
+    (which-key-add-key-based-replacements "SPC d" "dired aliases")
+    (which-key-add-key-based-replacements "SPC de" "dired - emacs folder")
+    (which-key-add-key-based-replacements "SPC c" "config commands")
+    (which-key-add-key-based-replacements "SPC cr" "reload config")
+    (which-key-add-key-based-replacements "SPC ce" "edit config - main.el")))
 
 (use-package evil-commentary
   :ensure t
@@ -140,6 +149,7 @@
        (string-prefix-p " *temp" name)
        (string-prefix-p "*Help" name)
        (string-prefix-p "*Completions" name)
+       (string-prefix-p "*Backtrace*" name)
 
        ;; Is not magit buffer.
        (and (string-prefix-p "magit" name)
@@ -187,9 +197,8 @@
     (xterm-mouse-mode))) ;; Enable mouse support in terminal mode
 
 ;; Configuration
-(setq current-theme-gui 'base16-onedark
-      current-theme-tty 'term-dash
-      current-font-gui "JetBrains Mono Medium 10")
+(setq current-theme 'term-dash
+      current-font "JetBrains Mono Medium 10")
 
 ;; Fix scrolling (stolen from Doom Emacs)
 (setq hscroll-margin 2
@@ -208,3 +217,7 @@
       ;; mouse
       mouse-wheel-scroll-amount '(5 ((shift) . 2))
       mouse-wheel-progressive-speed nil)  ; don't accelerate scrolling
+
+;; Title
+(setq frame-title-format '("%b – Emacs")
+      icon-title-format frame-title-format)

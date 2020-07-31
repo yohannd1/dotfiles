@@ -1,3 +1,5 @@
+;; TODO: refactor this to load multiple libraries with different functions
+
 ;; Set up package manager
 (when at-startup
   (require 'package)
@@ -16,17 +18,11 @@
 				     (number-to-string (or code 2))
 				     " q"))))
 
-(defun theme-update () ;; TODO: simplifly this cuz term-dash now works on GUI!!!!! (at least with X, so I need to check if I'm on Linux + Xorg too)
-  "Detects whether the current frame is graphical or on a terminal and then loads the corresponding theme to it."
-  (if (display-graphic-p)
-      (progn
-	(when current-theme-gui
-	  (load-theme current-theme-gui t))
-	(when current-font-gui
-	  (set-frame-font current-font-gui)))
-    (progn
-      (when current-theme-tty
-	(load-theme current-theme-tty t)))))
+(defun core/load-theme ()
+  (interactive)
+  (load-theme current-theme t)
+  (when (display-graphic-p)
+    (set-frame-font current-font)))
 
 (defun rifle-run ()
   "Runs the 'rifle-run' command on a popup, via a background buffer."
@@ -39,11 +35,8 @@
 		     ;; Insert extra patterns here
 		     (mode mode)))))
 
-(defvar current-theme-gui nil
-  "The theme to be used on graphical mode.")
+(defvar current-theme 'wombat
+  "The theme to load with core/load-theme")
 
-(defvar current-theme-tty nil
-  "The theme to be used on terminals.")
-
-(defvar current-font-gui nil
-  "The font used on graphical mode.")
+(defvar current-font "monospace 10"
+  "The font to load if the GUI is available")
