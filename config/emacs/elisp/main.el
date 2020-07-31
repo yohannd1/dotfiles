@@ -26,15 +26,24 @@
     (define-key evil-leader-map "de" #'(lambda ()
 					 (interactive)
 					 (dired emacs-folder)))
+    (define-key evil-leader-map "dh" #'(lambda ()
+					 (interactive)
+					 (dired "~")))
     (define-key evil-leader-map "cr" #'config-reload)
     (define-key evil-leader-map "ce" #'(lambda ()
 					 (interactive)
 					 (find-file (concat emacs-folder "/elisp/main.el"))))
+    (define-key evil-leader-map "d." #'(lambda ()
+					 (interactive)
+					 (dired ".")))
+    (define-key evil-leader-map "." #'helm-find-files)
 
     (which-key-add-key-based-replacements "SPC r" "rifle commands")
     (which-key-add-key-based-replacements "SPC rr" "rifle run")
     (which-key-add-key-based-replacements "SPC d" "dired aliases")
+    (which-key-add-key-based-replacements "SPC d." "dired - current folder")
     (which-key-add-key-based-replacements "SPC de" "dired - emacs folder")
+    (which-key-add-key-based-replacements "SPC dh" "dired - home folder")
     (which-key-add-key-based-replacements "SPC c" "config commands")
     (which-key-add-key-based-replacements "SPC cr" "reload config")
     (which-key-add-key-based-replacements "SPC ce" "edit config - main.el")))
@@ -93,7 +102,11 @@
   (global-auto-complete-mode))
 
 (use-package helm ;; TODO: setup
-  :ensure t)
+  :ensure t
+  :config
+  (global-set-key (kbd "M-x") #'helm-M-x)
+  (setq helm-M-x-fuzzy-match t
+	helm-buffers-fuzzy-matching t))
 
 (use-package try
   :ensure t)
@@ -102,6 +115,11 @@
   :ensure t
   :config
   (which-key-mode))
+
+(use-package format-all
+  :ensure t
+  :config
+  (define-key evil-leader-map "f" #'format-all-buffer))
 
 (use-package linum-relative
   :ensure t
@@ -122,7 +140,7 @@
 	centaur-tabs-adjust-buffer-order t
 	centaur-tabs-set-icons t)
   (centaur-tabs-enable-buffer-reordering)
-  ;; TODO: tab titles
+  ;; TODO: tab category titles
   (defun centaur-tabs-buffer-groups ()
     (list
      (cond
@@ -150,6 +168,7 @@
        (string-prefix-p "*Help" name)
        (string-prefix-p "*Completions" name)
        (string-prefix-p "*Backtrace*" name)
+       (string-prefix-p "*Command Line*" name)
 
        ;; Is not magit buffer.
        (and (string-prefix-p "magit" name)
@@ -221,3 +240,9 @@
 ;; Title
 (setq frame-title-format '("%b – Emacs")
       icon-title-format frame-title-format)
+
+;; Use ESC for cancelling commands
+(if (display-graphic-p) ;; on isearch
+    (define-key isearch-mode-map [escape] 'isearch-abort)
+  (define-key isearch-mode-map "\e" 'isearch-abort))
+(global-set-key [escape] 'keyboard-escape-quit) ;; everywhere else
