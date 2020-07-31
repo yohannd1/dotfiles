@@ -1,8 +1,11 @@
+;; base16 theme (custom version)
 ;; Based off: https://github.com/belak/base16-emacs/blob/master/base16-theme.el
-;; Currently GUI only works on Xorg.
+;; 
+;; GUI version only works on X (it uses Xresources)
+;; Terminal version only has been seen working with TERM=xterm-16color
 
-(deftheme term-dash
-  "Yohanan's dashy terminal theme.")
+(deftheme base16
+  "A custom base16 theme that works on my machines.")
 
 (if (display-graphic-p)
     (setq base00 (x-get-resource "emacs.base00" "")
@@ -21,7 +24,6 @@
 	  base0D (x-get-resource "emacs.base0D" "")
 	  base0E (x-get-resource "emacs.base0E" "")
 	  base0F (x-get-resource "emacs.base0F" ""))
-  ;; Only seen to have worked with TERM=xterm-16color:
   (setq base00 "black"
   	base01 "red"
   	base02 "green"
@@ -39,11 +41,11 @@
   	base0E "brightcyan"
   	base0F "brightwhite"))
 
-(defun term-dash/apply-specs (spec-list)
+(defun base16/apply-specs (spec-list)
   (dolist (spec spec-list)
-    (custom-theme-set-faces 'term-dash `(,(car spec) ((t ,(cdr spec)))))))
+    (custom-theme-set-faces 'base16 `(,(car spec) ((t ,(cdr spec)))))))
 
-(term-dash/apply-specs
+(base16/apply-specs
  `((border                                       :background ,base03)
    (cursor                                       :background ,base0D)
    (default                                      :foreground ,base05 :background ,base00)
@@ -788,4 +790,4 @@
    (whitespace-tab                               :foreground ,base03 :background ,base01)
    (whitespace-trailing                          :foreground ,base0A :background ,base08)))
 
-(provide-theme 'term-dash)
+(provide-theme 'base16)

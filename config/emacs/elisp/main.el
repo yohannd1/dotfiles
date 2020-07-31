@@ -221,7 +221,7 @@
 (show-paren-mode 1)
 
 ;; Configuration
-(setq current-theme 'term-dash
+(setq current-theme 'base16
       current-font "JetBrains Mono Medium 10")
 
 ;; Fix scrolling (stolen from Doom Emacs)
