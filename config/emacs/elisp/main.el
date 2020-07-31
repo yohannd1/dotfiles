@@ -65,31 +65,42 @@
 ;;   (define-key evil-normal-state-map (kbd "TAB") 'nin-origami-toggle-node)
 ;;   (define-key evil-normal-state-map (kbd "<backtab>") 'origami-close-all-nodes))
 
-(use-package rust-mode ;; TODO: autoload
-  :ensure t)
-
-(use-package haskell-mode ;; TODO: autoload
-  :ensure t)
-
-(use-package markdown-mode ;; TODO: autoload
+(use-package esup
   :ensure t
+  :defer t)
+
+(use-package rust-mode
+  :ensure t
+  :defer t)
+
+(use-package haskell-mode
+  :ensure t
+  :defer t)
+
+(use-package markdown-mode
+  :ensure t
+  :defer t
   :mode (("README\\.md\\'" . gfm-mode)
 	 ("\\.md\\'" . markdown-mode)
 	 ("\\.markdown\\'" . markdown-mode))
   :init
   (setq markdown-command "multimarkdown"))
 
-(use-package clojure-mode ;; TODO: autoload
-  :ensure t)
+(use-package clojure-mode
+  :ensure t
+  :defer t)
 
-(use-package julia-mode ;; TODO: autoload
-  :ensure t)
+(use-package julia-mode
+  :ensure t
+  :defer t)
 
-(use-package csharp-mode ;; TODO: autoload
-  :ensure t)
+(use-package csharp-mode
+  :ensure t
+  :defer t)
 
-(use-package typescript-mode ;; TODO: autoload
-  :ensure t)
+(use-package typescript-mode
+  :ensure t
+  :defer t)
 
 (use-package rainbow-delimiters
   :ensure t
@@ -101,7 +112,7 @@
   :config
   (global-auto-complete-mode))
 
-(use-package helm ;; TODO: setup
+(use-package helm
   :ensure t
   :config
   (global-set-key (kbd "M-x") #'helm-M-x)
@@ -109,7 +120,8 @@
 	helm-buffers-fuzzy-matching t))
 
 (use-package try
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package which-key ;; TODO: setup
   :ensure t
@@ -132,13 +144,12 @@
   :ensure t
   :config
   (setq centaur-tabs-style "bar"
-	;; centaur-tabs-set-bar 'under
-	;; x-underline-at-descent-line t
 	centaur-tabs-set-close-button nil
 	centaur-tabs-set-modified-marker t
 	centaur-tabs-modified-marker "+"
 	centaur-tabs-adjust-buffer-order t
 	centaur-tabs-set-icons t)
+  (centaur-tabs-headline-match)
   (centaur-tabs-enable-buffer-reordering)
   ;; TODO: tab category titles
   (defun centaur-tabs-buffer-groups ()
@@ -148,31 +159,32 @@
       (t "Main"))))
   (defun centaur-tabs-hide-tab (x)
     (let ((name (format "%s" x)))
-      (or
-       ;; Current window is not dedicated window.
-       (window-dedicated-p (selected-window))
+       (or
+	;; Current window is not dedicated window.
+	(window-dedicated-p (selected-window))
 
-       ;; Buffer name not match below blacklist.
-       (string-prefix-p "*epc" name)
-       (string-prefix-p "*helm" name)
-       (string-prefix-p "*Helm" name)
-       (string-prefix-p "*Compile-Log*" name)
-       (string-prefix-p "*lsp" name)
-       (string-prefix-p "*company" name)
-       (string-prefix-p "*Flycheck" name)
-       (string-prefix-p "*tramp" name)
-       (string-prefix-p " *Mini" name)
-       (string-prefix-p "*help" name)
-       (string-prefix-p "*straight" name)
-       (string-prefix-p " *temp" name)
-       (string-prefix-p "*Help" name)
-       (string-prefix-p "*Completions" name)
-       (string-prefix-p "*Backtrace*" name)
-       (string-prefix-p "*Command Line*" name)
+	;; Buffer name not match below blacklist.
+	(string-prefix-p "*epc" name)
+	(string-prefix-p "*helm" name)
+	(string-prefix-p "*Helm" name)
+	(string-prefix-p "*Compile-Log*" name)
+	(string-prefix-p "*lsp" name)
+	(string-prefix-p "*company" name)
+	(string-prefix-p "*Flycheck" name)
+	(string-prefix-p "*tramp" name)
+	(string-prefix-p " *Mini" name)
+	(string-prefix-p "*help" name)
+	(string-prefix-p "*straight" name)
+	(string-prefix-p " *temp" name)
+	(string-prefix-p "*Help" name)
+	(string-prefix-p "*Completions" name)
+	(string-prefix-p "*Backtrace*" name)
+	(string-prefix-p "*Command Line*" name)
+	(string-prefix-p "*eldoc for" name)
 
-       ;; Is not magit buffer.
-       (and (string-prefix-p "magit" name)
-	    (not (file-name-extension name))))))
+	;; Is not magit buffer.
+	(and (string-prefix-p "magit" name)
+	     (not (file-name-extension name))))))
   (centaur-tabs-mode t)
   (define-key global-map (kbd "C-j") #'centaur-tabs-forward)
   (define-key global-map (kbd "C-k") #'centaur-tabs-backward)
@@ -204,16 +216,16 @@
       vc-follow-symlinks nil)
 
 ;; Minor mode changes
-(tool-bar-mode 0)
-(menu-bar-mode 0)
+;; (tool-bar-mode 0)
+;; (menu-bar-mode 0)
 (global-visual-line-mode 1)
 (electric-pair-mode 1)
 (show-paren-mode 1)
-(if (display-graphic-p)
-    (progn
-      (scroll-bar-mode 0)) ;; Disable scroll bar only in graphical mode because it doesn't even exist in terminal mode
-  (progn
-    (xterm-mouse-mode))) ;; Enable mouse support in terminal mode
+;; (if (display-graphic-p)
+;;     (progn
+;;       (scroll-bar-mode 0)) ;; Disable scroll bar only in graphical mode because it doesn't even exist in terminal mode
+;;   (progn
+;;     (xterm-mouse-mode))) ;; Enable mouse support in terminal mode
 
 ;; Configuration
 (setq current-theme 'term-dash
@@ -246,3 +258,19 @@
     (define-key isearch-mode-map [escape] 'isearch-abort)
   (define-key isearch-mode-map "\e" 'isearch-abort))
 (global-set-key [escape] 'keyboard-escape-quit) ;; everywhere else
+
+(unless (assq 'menu-bar-lines default-frame-alist)
+  ;; We do this in early-init.el too, but in case the user is on Emacs 26 we do
+  ;; it here too: disable tool and scrollbars, as Doom encourages
+  ;; keyboard-centric workflows, so these are just clutter (the scrollbar also
+  ;; impacts performance).
+  (add-to-list 'default-frame-alist '(menu-bar-lines . 0))
+  (add-to-list 'default-frame-alist '(tool-bar-lines . 0))
+  (add-to-list 'default-frame-alist '(vertical-scroll-bars)))
+
+;; These are disabled directly through their frame parameters, to avoid the
+;; extra work their minor modes do, but we have to unset these variables
+;; ourselves, otherwise users will have to cycle them twice to re-enable them.
+(setq menu-bar-mode nil
+      tool-bar-mode nil
+      scroll-bar-mode nil)

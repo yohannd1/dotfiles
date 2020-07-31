@@ -143,14 +143,18 @@
    (TeX-error-description-warning                :inherit warning)
 
    ;; centaur-tabs
-   (centaur-tabs-default                         :background ,base01 :foreground ,base01)
-   (centaur-tabs-selected                        :background ,base00 :foreground ,base06)
-   (centaur-tabs-unselected                      :background ,base01 :foreground ,base05)
-   (centaur-tabs-selected-modified               :background ,base00 :foreground ,base0D)
-   (centaur-tabs-unselected-modified             :background ,base01 :foreground ,base0D)
-   (centaur-tabs-active-bar-face                 :background ,base0D)
+   (centaur-tabs-default                         :background ,base00 :foreground ,base05)
+   (centaur-tabs-selected                        :background ,base01 :foreground ,base06 :bold t)
+   (centaur-tabs-unselected                      :background ,base00 :foreground ,base05)
+   (centaur-tabs-selected-modified               :background ,base01 :foreground ,base0D :bold t)
+   (centaur-tabs-unselected-modified             :background ,base00 :foreground ,base0D)
+   (centaur-tabs-active-bar-face                 :background ,base00)
+   (centaur-tabs-background-color                :background ,base00)
    (centaur-tabs-modified-marker-selected        :inherit 'centaur-tabs-selected :foreground ,base0D)
    (centaur-tabs-modified-marker-unselected      :inherit 'centaur-tabs-unselected :foreground ,base0D)
+   ;; centaur-tabs-close-unselected
+   ;; centaur-tabs-close-selected
+   ;; centaur-tabs-close-mouse-face
 
    ;; circe-mode
    (circe-fool-face                              :foreground ,base02)
