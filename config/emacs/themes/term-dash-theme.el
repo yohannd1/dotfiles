@@ -2,7 +2,7 @@
 ;; Currently GUI only works on Xorg.
 
 (deftheme term-dash
- "Yohanan's dashy terminal theme.")
+  "Yohanan's dashy terminal theme.")
 
 (if (display-graphic-p)
     (setq base00 (x-get-resource "emacs.base00" "")
@@ -45,7 +45,7 @@
 
 (term-dash/apply-specs
  `((border                                       :background ,base03)
-   (cursor                                       :background ,base08)
+   (cursor                                       :background ,base0D)
    (default                                      :foreground ,base05 :background ,base00)
    (fringe                                       :background ,base01)
    (gui-element                                  :background ,base01)
@@ -72,7 +72,7 @@
    (compilation-mode-line-exit                   :foreground ,base0B)
    (compilation-mode-line-fail                   :foreground ,base08)
    (compilation-mode-line-run                    :foreground ,base0D)
-   (show-paren-match                             :foreground ,base00 :background ,base0C)
+   (show-paren-match                             :foreground ,base0B :background ,base03)
 
    (custom-variable-tag                          :foreground ,base0D)
    (custom-group-tag                             :foreground ,base0D)
@@ -143,7 +143,7 @@
    (TeX-error-description-warning                :inherit warning)
 
    ;; centaur-tabs
-   (centaur-tabs-default                         :background ,base00 :foreground ,base05)
+   (centaur-tabs-default                         :background ,base00 :foreground ,base05 :family "monospace")
    (centaur-tabs-selected                        :background ,base01 :foreground ,base06 :bold t)
    (centaur-tabs-unselected                      :background ,base00 :foreground ,base05)
    (centaur-tabs-selected-modified               :background ,base01 :foreground ,base0D :bold t)
@@ -518,7 +518,7 @@
    ;; lsp-ui-doc
    (lsp-ui-doc-header                            :inherit org-document-title)
    (lsp-ui-doc-background                        :background ,base01)
-   
+
    ;; lui-mode
    (lui-button-face                              :foreground ,base0D)
    (lui-highlight-face                           :background ,base01)
@@ -744,7 +744,7 @@
 
    ;; tooltip
    (tooltip                                      :background ,base01 :inherit default)
-   
+
    ;; tuareg-mode
    (tuareg-font-lock-governing-face              :weight bold :inherit font-lock-keyword-face)
 

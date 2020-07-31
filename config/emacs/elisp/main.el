@@ -159,32 +159,32 @@
       (t "Main"))))
   (defun centaur-tabs-hide-tab (x)
     (let ((name (format "%s" x)))
-       (or
-	;; Current window is not dedicated window.
-	(window-dedicated-p (selected-window))
+      (or
+       ;; Current window is not dedicated window.
+       (window-dedicated-p (selected-window))
 
-	;; Buffer name not match below blacklist.
-	(string-prefix-p "*epc" name)
-	(string-prefix-p "*helm" name)
-	(string-prefix-p "*Helm" name)
-	(string-prefix-p "*Compile-Log*" name)
-	(string-prefix-p "*lsp" name)
-	(string-prefix-p "*company" name)
-	(string-prefix-p "*Flycheck" name)
-	(string-prefix-p "*tramp" name)
-	(string-prefix-p " *Mini" name)
-	(string-prefix-p "*help" name)
-	(string-prefix-p "*straight" name)
-	(string-prefix-p " *temp" name)
-	(string-prefix-p "*Help" name)
-	(string-prefix-p "*Completions" name)
-	(string-prefix-p "*Backtrace*" name)
-	(string-prefix-p "*Command Line*" name)
-	(string-prefix-p "*eldoc for" name)
+       ;; Buffer name not match below blacklist.
+       (string-prefix-p "*epc" name)
+       (string-prefix-p "*helm" name)
+       (string-prefix-p "*Helm" name)
+       (string-prefix-p "*Compile-Log*" name)
+       (string-prefix-p "*lsp" name)
+       (string-prefix-p "*company" name)
+       (string-prefix-p "*Flycheck" name)
+       (string-prefix-p "*tramp" name)
+       (string-prefix-p " *Mini" name)
+       (string-prefix-p "*help" name)
+       (string-prefix-p "*straight" name)
+       (string-prefix-p " *temp" name)
+       (string-prefix-p "*Help" name)
+       (string-prefix-p "*Completions" name)
+       (string-prefix-p "*Backtrace*" name)
+       (string-prefix-p "*Command Line*" name)
+       (string-prefix-p "*eldoc for" name)
 
-	;; Is not magit buffer.
-	(and (string-prefix-p "magit" name)
-	     (not (file-name-extension name))))))
+       ;; Is not magit buffer.
+       (and (string-prefix-p "magit" name)
+	    (not (file-name-extension name))))))
   (centaur-tabs-mode t)
   (define-key global-map (kbd "C-j") #'centaur-tabs-forward)
   (define-key global-map (kbd "C-k") #'centaur-tabs-backward)
@@ -216,16 +216,9 @@
       vc-follow-symlinks nil)
 
 ;; Minor mode changes
-;; (tool-bar-mode 0)
-;; (menu-bar-mode 0)
 (global-visual-line-mode 1)
 (electric-pair-mode 1)
 (show-paren-mode 1)
-;; (if (display-graphic-p)
-;;     (progn
-;;       (scroll-bar-mode 0)) ;; Disable scroll bar only in graphical mode because it doesn't even exist in terminal mode
-;;   (progn
-;;     (xterm-mouse-mode))) ;; Enable mouse support in terminal mode
 
 ;; Configuration
 (setq current-theme 'term-dash
@@ -274,3 +267,49 @@
 (setq menu-bar-mode nil
       tool-bar-mode nil
       scroll-bar-mode nil)
+
+;; Always avoid GUI
+(setq use-dialog-box nil)
+
+;; Don't display floating tooltips; display their contents in the echo-area,
+;; because native tooltips are ugly.
+(when (bound-and-true-p tooltip-mode)
+  (tooltip-mode -1))
+
+;; Show current key-sequence in minibuffer ala 'set showcmd' in vim. Any
+;; feedback after typing is better UX than no feedback at all.
+(setq echo-keystrokes 0.02)
+
+;; Don't prompt for confirmation when we create a new file or buffer (assume the
+;; user knows what they're doing).
+(setq confirm-nonexistent-file-or-buffer nil)
+
+;; Stop blinking things
+(blink-cursor-mode -1)
+(setq blink-matching-paren nil)
+
+;; Buffer name styles
+(setq uniquify-buffer-name-style 'forward)
+
+;; Prevent blinking
+(setq ring-bell-function #'ignore
+      visible-bell nil)
+
+;; Replace yes/no with y/n
+(advice-add #'yes-or-no-p :override #'y-or-n-p)
+
+;; Some terminals offer two different cursors: a “visible” static cursor and a
+;; “very visible” blinking one. By default, Emacs uses the very visible cursor
+;; and switches to it when you start or resume Emacs. If `visible-cursor' is nil
+;; when Emacs starts or resumes, it uses the normal cursor.
+(setq visible-cursor nil)
+
+;; Allow for minibuffer-ception. Sometimes we need another minibuffer command
+;; while we're in the minibuffer.
+(setq enable-recursive-minibuffers t)
+
+;; Expand the minibuffer to fit multi-line text displayed in the echo-area. This
+;; doesn't look too great with direnv, however...
+(setq resize-mini-windows 'grow-only
+      ;; But don't let the minibuffer grow beyond this size
+      max-mini-window-height 0.15)
