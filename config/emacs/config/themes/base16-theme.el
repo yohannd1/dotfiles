@@ -74,7 +74,7 @@
    (compilation-mode-line-exit                   :foreground ,base0B)
    (compilation-mode-line-fail                   :foreground ,base08)
    (compilation-mode-line-run                    :foreground ,base0D)
-   (show-paren-match                             :foreground ,base0B :background ,base03)
+   (show-paren-match                             :background ,base03)
 
    (custom-variable-tag                          :foreground ,base0D)
    (custom-group-tag                             :foreground ,base0D)
@@ -107,7 +107,7 @@
 
    ;; Line Numbers
    (line-number                                  :foreground ,base03 :background ,base01)
-   (line-number-current-line                     :inverse-video t)
+   (line-number-current-line                     :background ,base02)
 
    ;; modeline
    (mode-line                                    :foreground ,base05 :background ,base02) ; :box base16-settings-mode-line-box)
@@ -145,7 +145,7 @@
    (TeX-error-description-warning                :inherit warning)
 
    ;; centaur-tabs
-   (centaur-tabs-default                         :background ,base00 :foreground ,base05 :family "monospace")
+   (centaur-tabs-default                         :background ,base00 :foreground ,base05)
    (centaur-tabs-selected                        :background ,base01 :foreground ,base06 :bold t)
    (centaur-tabs-unselected                      :background ,base00 :foreground ,base05)
    (centaur-tabs-selected-modified               :background ,base01 :foreground ,base0D :bold t)

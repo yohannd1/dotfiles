@@ -1,7 +1,5 @@
-;; Stolen from: https://github.com/hlissner/doom-emacs/blob/a0a7c34517db81b3f8c83ac87c882c4f0b0b72ee/early-init.el
-
 ;; Defer garbage collection further back in the startup process
-(setq gc-cons-threshold most-positive-fixnum)
+; (setq gc-cons-threshold most-positive-fixnum)
 
 ;; Prevent the glimpse of un-styled Emacs by disabling these UI elements early.
 (push '(menu-bar-lines . 0) default-frame-alist)
@@ -13,7 +11,5 @@
 ;; larger than the system default.
 (setq frame-inhibit-implied-resize t)
 
-;; Ignore X resources; its settings would be redundant with the other settings
-;; in this file and can conflict with later config (particularly where the
-;; cursor color is concerned).
+;; Ignore manual loading of X resources.
 (advice-add #'x-apply-session-resources :override #'ignore)
