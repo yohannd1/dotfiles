@@ -65,10 +65,18 @@
   :config
   (add-hook 'after-change-major-mode-hook #'rainbow-delimiters-mode-enable))
 
-;; (use-package auto-complete ;; TODO: setup
-;;   :ensure t
-;;   :config
-;;   (global-auto-complete-mode))
+(use-package auto-complete
+  :ensure t
+  :config
+  (ac-config-default)
+  (ac-set-trigger-key "TAB")
+  (setq ac-auto-start 2)
+  (setq ac-auto-show-menu t)
+  (setq ac-use-menu-map t)
+  (global-auto-complete-mode)
+  (define-key ac-menu-map (kbd "<backtab>") 'ac-previous)
+  (define-key ac-completing-map "\t" 'ac-complete)
+  (define-key ac-completing-map "\r" nil))
 
 (use-package counsel
   :ensure t)
