@@ -37,5 +37,6 @@ To be honest, almost no program supports this.")
 
 (defun ice-finish ()
   "Make some final touches on emacs after configuring."
-  (ice--style-update)) ;; apply the style changes
+  (unless (daemonp)
+  (ice--style-update))) ;; apply the style changes
 

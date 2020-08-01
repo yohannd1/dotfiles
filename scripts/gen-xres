@@ -31,7 +31,7 @@ font() { printf "JetBrains Mono Medium:pixelsize=%s:antialias=true:autohint=true
 
 # st
 xset 'st.alpha' "1.0"
-xset 'st.cursor' "$base05"
+xset 'st.cursor' "$base0D"
 xset 'st.font' "$(font 13.5)"
 
 # dwm

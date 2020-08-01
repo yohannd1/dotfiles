@@ -14,7 +14,7 @@ export DOTFILES="$PROJECTS/dotfiles"
 # global options
 export WM=awesome
 export TERM=xterm-256color
-export EDITOR=nvim
+export EDITOR=emacs-custom
 export TERMINAL=st
 export BROWSER=qutebrowser
 export TERMBROWSER=w3m

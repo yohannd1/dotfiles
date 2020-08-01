@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+
+. "$(uselib std)"
+depCheck xdo
+
+if [ $# = 0 ]; then
+  printf >&2 "Usage: %s" "$(basename $0) <program...>"
+  exit 1
+fi
+
+if [ -z "$DISPLAY" ]; then
+  printf >&2 "DISPLAY is not set. Aborting...\n"
+  exit 1
+fi
+
+id=$(xdo id)   # get ID of this terminal window
+xdo hide       # hide it
+"$@" &         # start the program
+sleep 1; wait  # wait for the program to close
+xdo show "$id" # show the terminal back
