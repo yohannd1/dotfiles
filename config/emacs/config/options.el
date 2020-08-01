@@ -48,7 +48,6 @@
 (global-display-line-numbers-mode 1)
 
 ;; Electric pairs - automatically close brackets, quotes etc.
-;; TODO: maybe find a better alternative because this one is kinda annoying sometimes
 (electric-pair-mode 1)
 
 ;; Show matching pairs

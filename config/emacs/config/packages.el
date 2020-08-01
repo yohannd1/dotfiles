@@ -11,6 +11,11 @@
   :config
   (evil-commentary-mode 1))
 
+(use-package evil-surround
+  :ensure t
+  :config
+  (global-evil-surround-mode 1))
+
 (use-package visual-regexp
   :ensure t)
 
@@ -60,17 +65,18 @@
   :config
   (add-hook 'after-change-major-mode-hook #'rainbow-delimiters-mode-enable))
 
-(use-package auto-complete ;; TODO: setup
-  :ensure t
-  :config
-  (global-auto-complete-mode))
+;; (use-package auto-complete ;; TODO: setup
+;;   :ensure t
+;;   :config
+;;   (global-auto-complete-mode))
 
-(use-package helm ;; TODO: move & remake
+(use-package counsel
+  :ensure t)
+
+(use-package ivy
   :ensure t
   :config
-  (global-set-key (kbd "M-x") #'helm-M-x)
-  (setq helm-M-x-fuzzy-match t
-	helm-buffers-fuzzy-matching t))
+  (ivy-mode 1))
 
 (use-package try
   :ensure t
@@ -84,6 +90,33 @@
 (use-package format-all
   :ensure t
   :defer t)
+
+;; From https://github.com/DiegoVicen/my-emacs/blob/master/README.org
+(use-package minions
+  :ensure t
+  :config
+  (setq minions-mode-line-lighter "(...)")
+  (minions-mode))
+
+;; From https://github.com/DiegoVicen/my-emacs/blob/master/README.org
+(use-package moody
+  :ensure t
+  :config
+  (moody-replace-mode-line-buffer-identification)
+  (moody-replace-vc-mode)
+
+  (defun set-moody-face (frame)
+    (let ((line (face-attribute 'mode-line :underline frame)))
+      (set-face-attribute 'mode-line          frame :overline line)
+      (set-face-attribute 'mode-line-inactive frame :overline line)
+      (set-face-attribute 'mode-line-inactive frame :underline line)
+      (set-face-attribute 'mode-line          frame :box nil)
+      (set-face-attribute 'mode-line-inactive frame :box nil)))
+
+  (setq-default x-underline-at-descent-line t
+                column-number-mode t)
+
+  (add-to-list 'after-make-frame-functions 'set-moody-face t))
 
 (use-package centaur-tabs ;; TODO: move & remake
   :ensure t
