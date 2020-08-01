@@ -43,7 +43,8 @@
 
 ;; Relative line numbers
 (setq display-line-numbers-type 'relative
-      display-line-numbers-grow-only t)
+      display-line-numbers-grow-only t
+      display-line-numbers-width 3)
 (global-display-line-numbers-mode 1)
 
 ;; Electric pairs - automatically close brackets, quotes etc.

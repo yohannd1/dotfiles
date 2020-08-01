@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 
 . "$(uselib std)"
-depCheck termup
 
 case "$EDITOR" in
+  emacs-custom) emacs-custom "$@" ;;
   emacs) emacs -- "$@" ;;
   vi|vim|nvim) termup "$EDITOR" -- "$@" ;;
 esac

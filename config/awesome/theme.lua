@@ -22,7 +22,7 @@ local theme = {
     fg_urgent   = xrdb.color5,
     fg_minimize = xrdb.color5,
 
-    useless_gap   = dpi(3),
+    useless_gap   = dpi(0),
     border_width  = dpi(1),
     border_normal = xrdb.color0,
     border_focus  = xrdb.color2,
