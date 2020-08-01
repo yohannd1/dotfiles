@@ -1,51 +1,41 @@
-(defun wk-describe (key-string description)
-  "A simple alias to `which-key-add-based-replacements'."
-  (which-key-add-key-based-replacements key-string description))
+;; Remap ESC to cancelling commands
+(global-set-key [remap keyboard-quit] #'ice-escape)
+(if (display-graphic-p) ;; on isearch
+    (define-key isearch-mode-map [escape] 'isearch-abort)
+  (define-key isearch-mode-map "\e" 'isearch-abort))
 
-(defun map (map key-string action &optional which-key-description) ;; TODO: flesh out this function
-  (define-key map (kbd key-string) action)
-  (when which-key-description
-    (wk-describe key-string which-key-description)))
+(defvar evil-leader-map (make-sparse-keymap)
+  "A keymap with common functions.")
 
-(defun map-dired (key directory)
-  "Maps (kbd (concat \"SPC d\" KEY)) to opening dired on DIRECTORY."
-  (map evil-motion-state-map
-       (concat "SPC d" key) #'(lambda ()
-				(interactive)
-				(dired directory))
-       (format "dired: %s" directory)))
+;; Switch to the leader map
+(define-key evil-motion-state-map (kbd "SPC") evil-leader-map)
 
-(with-eval-after-load 'evil-maps
-  ;; General commands
-  (map evil-motion-state-map "ç" #'evil-ex)
-  (map evil-motion-state-map "M-j" #'evil-window-down)
-  (map evil-motion-state-map "M-k" #'evil-window-up)
-  (map evil-motion-state-map "M-l" #'evil-window-right)
-  (map evil-motion-state-map "M-h" #'evil-window-left)
-  (map evil-normal-state-map "SPC ." #'helm-find-files)
-  (map evil-normal-state-map "SPC e" #'eval-expression)
+;; General commands
+(define-key evil-motion-state-map (kbd "ç") #'evil-ex)
+(define-key evil-motion-state-map (kbd "M-j") #'evil-window-down)
+(define-key evil-motion-state-map (kbd "M-k") #'evil-window-up)
+(define-key evil-motion-state-map (kbd "M-l") #'evil-window-right)
+(define-key evil-motion-state-map (kbd "M-h") #'evil-window-left)
+(define-key evil-leader-map (kbd ".") #'helm-find-files)
+(define-key evil-leader-map (kbd "e") #'eval-expression)
+(define-key evil-leader-map (kbd "d") #'dired)
 
-  ;; Insert mode
-  (map evil-insert-state-map "C-y" #'evil-paste-after)
+;; Insert mode
+(define-key evil-insert-state-map (kbd "C-y") #'evil-paste-after)
 
-  ;; Rifle commands
-  (wk-describe "SPC r" "rifle")
-  (map evil-normal-state-map "SPC rr" #'ice-rifle-run)
+;; Rifle commands
+(define-key evil-leader-map (kbd "rr") #'ice-rifle-run)
 
-  ;; Dired commands
-  ;; (wk-describe "SPC d" "dired")
-  ;; (map-dired "c" user-config-directory)
-  ;; (map-dired "." ".")
+;; Config commands
+(define-key evil-leader-map (kbd "cr") #'ice-config-reload)
+(define-key evil-leader-map (kbd "ce") #'(lambda ()
+                                           (interactive)
+                                           (find-file (f-join user-config-directory "main.el"))))
 
-  ;; Config commands
-  (wk-describe "SPC c" "config")
-  (map evil-normal-state-map "SPC cr" #'ice-config-reload)
-  (map evil-normal-state-map "SPC ce" #'(lambda ()
-					  (interactive)
-					  (find-file (f-join user-config-directory "main.el"))) "edit main.el")
-  (map evil-normal-state-map "SPC s" #'vr/replace)
-  (map evil-normal-state-map "SPC f" #'format-all-buffer)
-  (map global-map "C-j" #'centaur-tabs-forward)
-  (map global-map "C-k" #'centaur-tabs-backward)
-  (map evil-motion-state-map "C-j" #'centaur-tabs-forward)
-  (map evil-motion-state-map "C-k" #'centaur-tabs-backward))
+;; Etc.
+(define-key evil-leader-map (kbd "s") #'vr/replace)
+(define-key evil-leader-map (kbd "f") #'format-all-buffer)
+(define-key global-map (kbd "C-j") #'centaur-tabs-forward)
+(define-key global-map (kbd "C-k") #'centaur-tabs-backward)
+(define-key evil-motion-state-map (kbd "C-j") #'centaur-tabs-forward)
+(define-key evil-motion-state-map (kbd "C-k") #'centaur-tabs-backward)

@@ -9,3 +9,15 @@
   (f-traverse-upwards (lambda (path)
 			(f-exists? (f-expand file path)))
 		      (or starting-directory ".")))
+
+(defun ice-escape ()
+  "Aborts current functions."
+  ;; (from Doom Emacs)
+  (interactive)
+  (cond ((minibuffer-window-active-p (minibuffer-window))
+         ;; quit the minibuffer if open.
+         (abort-recursive-edit))
+        ;; don't abort macros
+        ((or defining-kbd-macro executing-kbd-macro) nil)
+        ;; Back to the default
+        ((keyboard-quit))))

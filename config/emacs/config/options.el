@@ -44,7 +44,7 @@
 ;; Relative line numbers
 (setq display-line-numbers-type 'relative
       display-line-numbers-grow-only t
-      display-line-numbers-width 3)
+      display-line-numbers-width-start 3)
 (global-display-line-numbers-mode 1)
 
 ;; Electric pairs - automatically close brackets, quotes etc.
@@ -78,12 +78,6 @@
 ;; (from Doom Emacs)
 (setq frame-title-format '("%b :: emacs")
       icon-title-format frame-title-format)
-
-;; Map ESC for cancelling commands
-(if (display-graphic-p) ;; on isearch
-    (define-key isearch-mode-map [escape] 'isearch-abort)
-  (define-key isearch-mode-map "\e" 'isearch-abort))
-(global-set-key [escape] 'keyboard-escape-quit) ;; everywhere else
 
 ;; Get rid of GUI widgets again (this time working on Emacs 26)
 ;; (from Doom Emacs)
@@ -161,3 +155,6 @@
 ;; (from Doom Emacs)
 (setq-default indent-tabs-mode nil
               tab-width 4)
+
+;; Line highlighting
+(global-hl-line-mode)

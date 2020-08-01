@@ -5,9 +5,8 @@
 (defconst EMACS27+ (> emacs-major-version 26))
 (defconst IS-WIN   (memq system-type '(cygwin windows-nt ms-dos)))
 (defconst IS-LINUX (eq system-type 'gnu-linux))
-(defconst TERMINAL (if IS-WIN
-		       "cmd"
-		     (or (getenv "TERMINAL") "xterm")))
+(defconst TERMINAL (if IS-WIN "cmd"
+                     (or (getenv "TERMINAL") "xterm")))
 
 ;; Some other constants
 (defconst user-cache-directory (concat user-emacs-directory "cache/")
@@ -38,5 +37,5 @@ To be honest, almost no program supports this.")
 (defun ice-finish ()
   "Make some final touches on emacs after configuring."
   (unless (daemonp)
-  (ice--style-update))) ;; apply the style changes
+    (ice--style-update))) ;; apply the style changes
 
