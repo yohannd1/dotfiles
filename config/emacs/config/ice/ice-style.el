@@ -9,7 +9,7 @@
 
 (defun ice-style-update ()
   (interactive)
-  (run-hooks 'ice-style-update-hook)
+  (run-hooks 'ice-style-update-pre-hook)
   (when ice-style-theme
     (load-theme ice-style-theme t))
   ;; Update face - main font
@@ -28,4 +28,5 @@
                       'centaur-tabs-modified-marker-unselected))
     (set-face-attribute face nil
                         :family ice-style-font-family
-                        :height 90)))
+                        :height 90))
+  (run-hooks 'ice-style-update-hook))

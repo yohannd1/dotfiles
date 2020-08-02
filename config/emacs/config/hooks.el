@@ -6,7 +6,8 @@
                 (ice-style-update)))))
 
 ;; Handle ice-tty cursor changing on terminals
-(add-hook 'ice-style-update-hook #'style-options)
+(add-hook 'ice-style-update-pre-hook #'style-options)
+(add-hook 'ice-style-update-hook #'centaur-tabs-headline-match)
 (add-hook 'evil-normal-state-entry-hook #'ice-tty-change-cursor)
 (add-hook 'evil-motion-state-entry-hook #'ice-tty-change-cursor)
 (add-hook 'evil-replace-state-entry-hook #'ice-tty-change-cursor)

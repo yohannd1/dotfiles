@@ -112,13 +112,11 @@
   :ensure t
   :config
   (setq centaur-tabs-style "bar"
-	centaur-tabs-set-close-button nil
-	centaur-tabs-set-modified-marker t
-	centaur-tabs-modified-marker "+"
-	centaur-tabs-adjust-buffer-order t
-	centaur-tabs-set-icons nil)
-  (centaur-tabs-headline-match)
-  (centaur-tabs-enable-buffer-reordering)
+        centaur-tabs-set-close-button nil
+        centaur-tabs-set-modified-marker t
+        centaur-tabs-modified-marker "+"
+        centaur-tabs-adjust-buffer-order t
+        centaur-tabs-set-icons nil)
   ;; TODO: tab category titles
   (defun centaur-tabs-buffer-groups ()
     (list
@@ -153,7 +151,8 @@
        ;; Is not magit buffer.
        (and (string-prefix-p "magit" name)
 	    (not (file-name-extension name))))))
-  (centaur-tabs-mode t))
+  (centaur-tabs-mode t)
+  (centaur-tabs-enable-buffer-reordering))
 
 ;; (use-package origami
 ;;   :ensure t

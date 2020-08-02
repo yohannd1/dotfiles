@@ -161,7 +161,7 @@
    (TeX-error-description-tex-said               :inherit font-lock-function-name-face)
    (TeX-error-description-warning                :inherit warning)
 
-   ;; centaur-tabs
+   ; centaur-tabs
    (centaur-tabs-default                         :background ,base00 :foreground ,base05)
    (centaur-tabs-selected                        :background ,base01 :foreground ,base06)
    (centaur-tabs-unselected                      :background ,base00 :foreground ,base05)
