@@ -40,10 +40,13 @@
   :ensure t
   :defer t
   :mode (("README\\.md\\'" . gfm-mode)
-	 ("\\.md\\'" . markdown-mode)
-	 ("\\.markdown\\'" . markdown-mode))
-  :init
-  (setq markdown-command "multimarkdown"))
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode)))
+
+(use-package git-commit-message
+  :ensure nil
+  :defer t
+  :mode (("COMMIT_EDITMSG" . conf-unix-mode)))
 
 (use-package clojure-mode
   :ensure t
