@@ -163,3 +163,6 @@
 
 ;; Line highlighting
 (global-hl-line-mode)
+
+;; Disable automatic copy-to-clipboard behavior
+(setq x-select-enable-clipboard nil)

@@ -6,10 +6,11 @@
 ;; TODO: support for three rifle modes: silent, popup and buffer-term
 
 (defun ice-rifle (command &optional mode)
-  "Runs the `rifle-run' shell command, as [rifle-run action]."
+  "Runs the `rifle-run' shell command, as [rifle-run COMMAND]."
     (start-process "rifle" "*Rifle (Background)*"
-		   TERMINAL "-e" "runread" "rifle-run" action
-		   (ice--get-name-for-mode (or mode major-mode))))
+		   TERMINAL "-e" "runread" "rifle-run" command
+		   (ice--get-name-for-mode (or mode major-mode))
+           (buffer-file-name)))
 
 (defun ice--get-name-for-mode (mode)
   "Gets the rifle name for the major mode `mode'.

@@ -8,6 +8,7 @@
 if [ $# != 3 ]; then
   printf >&2 "Usage: %s\n" "$(basename $0) <ACTION> <FILETYPE> <FILENAME>"
   printf >&2 "The ACTION and FILETYPE fields are handled based on the code of this script.\n"
+  exit 1
 fi
 
 tmp=$(mktemp) || {
