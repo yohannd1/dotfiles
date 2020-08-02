@@ -1,4 +1,6 @@
 ;; Remap ESC to cancelling commands
+(define-key key-translation-map (kbd "ESC") (kbd "C-g")) ;; translation (currently testing to see if it works well)
+(define-key key-translation-map (kbd "C-g") nil) ;; I don't want the pinky problem
 (global-set-key [remap keyboard-quit] #'ice-escape)
 (if (display-graphic-p) ;; on isearch
     (define-key isearch-mode-map [escape] 'isearch-abort)
@@ -16,7 +18,7 @@
 (define-key evil-motion-state-map (kbd "M-k") #'evil-window-up)
 (define-key evil-motion-state-map (kbd "M-l") #'evil-window-right)
 (define-key evil-motion-state-map (kbd "M-h") #'evil-window-left)
-(define-key evil-leader-map (kbd ".") #'helm-find-files)
+(define-key evil-leader-map (kbd ".") #'find-file)
 (define-key evil-leader-map (kbd "e") #'eval-expression)
 (define-key evil-leader-map (kbd "d") #'dired)
 

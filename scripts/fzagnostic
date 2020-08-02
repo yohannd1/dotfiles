@@ -19,7 +19,7 @@ done
 if [ ! -t 2 ] && exists dmenu; then
   [ "$hasPrompt" ] && prompt=(-p "$prompt") || prompt=()
   [ "$hasHeight" ] && height=(-l "$height") || height=()
-  dmenu "${prompt[@]}" "${height[@]}"
+  dmenu -F "${prompt[@]}" "${height[@]}"
 elif [ -t 2 ] && exists fzf; then
   [ "$hasPrompt" ] && prompt=(--prompt "$prompt ") || prompt=()
   [ "$hasHeight" ] && height=(--height "$height") || height=()

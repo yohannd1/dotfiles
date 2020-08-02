@@ -4,7 +4,7 @@
 ;; Platform-related constants
 (defconst EMACS27+ (> emacs-major-version 26))
 (defconst IS-WIN   (memq system-type '(cygwin windows-nt ms-dos)))
-(defconst IS-LINUX (eq system-type 'gnu-linux))
+(defconst IS-LINUX (eq system-type 'gnu/linux))
 (defconst TERMINAL (if IS-WIN "cmd"
                      (or (getenv "TERMINAL") "xterm")))
 
@@ -37,5 +37,5 @@ To be honest, almost no program supports this.")
 (defun ice-finish ()
   "Make some final touches on emacs after configuring."
   (unless (daemonp)
-    (ice--style-update))) ;; apply the style changes
+    (ice-style-update))) ;; apply the style changes
 

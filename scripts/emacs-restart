@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+if [ $# != 0 ]; then
+  printf >&2 "Usage: %s\n" "$(basename $0)"
+  exit 1
+fi
+
+emacsclient --eval "(save-buffers-kill-emacs)" \
+  && emacs --daemon
+

@@ -3,10 +3,17 @@
 ;; This file (and the ones called by it) focus more on loading
 ;; packages and setting options, in contrast to ice.el, where most
 ;; things are functions, constants and default options.
+;;
+;; Starting point: ../init.el
 
 ;; Style options
-(setq ice-style-theme 'base16
-      ice-style-font "JetBrains Mono Medium 10")
+(defun style-options ()
+  (setq ice-style-theme 'base16
+        ice-style-font-family (ice-get-xres "font" ice-style-font-family)
+        ice-style-font-height 100))
+
+;; Temporary thingy
+(setq find-function-C-source-directory "~/storage/git/emacs-mirror/src/")
 
 ;; Set some options, like disabling cursor blink or disabling symlink
 ;; follows.

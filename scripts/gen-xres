@@ -26,8 +26,10 @@
 . ~/.config/dots/env.sh
 eval "$(load-base16-theme)"
 
+FONT="JetBrains Mono Medium"
+
 xset() { printf "%s: %s\n" "$1" "$2"; }
-font() { printf "JetBrains Mono Medium:pixelsize=%s:antialias=true:autohint=true;" "$1"; }
+font() { printf "%s:pixelsize=%s:antialias=true:autohint=true;" "$FONT" "$1"; }
 
 # st
 xset 'st.alpha' "1.0"
@@ -69,6 +71,9 @@ xset 'qutebrowser.error' "$base08"
 xset 'qutebrowser.warning' "$base09"
 xset 'qutebrowser.info' "$base0D"
 xset 'qutebrowser.success' "$base0B"
+
+# emacs
+xset 'Emacs.font' "$FONT"
 
 # general
 xset '*background' "$base00"

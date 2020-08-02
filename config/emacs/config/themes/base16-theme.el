@@ -7,45 +7,62 @@
 (deftheme base16
   "A custom base16 theme that works on my machines.")
 
-(if (display-graphic-p)
-    (setq base00 (x-get-resource "emacs.base00" "")
-	  base01 (x-get-resource "emacs.base01" "")
-	  base02 (x-get-resource "emacs.base02" "")
-	  base03 (x-get-resource "emacs.base03" "")
-	  base04 (x-get-resource "emacs.base04" "")
-	  base05 (x-get-resource "emacs.base05" "")
-	  base06 (x-get-resource "emacs.base06" "")
-	  base07 (x-get-resource "emacs.base07" "")
-	  base08 (x-get-resource "emacs.base08" "")
-	  base09 (x-get-resource "emacs.base09" "")
-	  base0A (x-get-resource "emacs.base0A" "")
-	  base0B (x-get-resource "emacs.base0B" "")
-	  base0C (x-get-resource "emacs.base0C" "")
-	  base0D (x-get-resource "emacs.base0D" "")
-	  base0E (x-get-resource "emacs.base0E" "")
-	  base0F (x-get-resource "emacs.base0F" ""))
-  (setq base00 "black"
-  	base01 "red"
-  	base02 "green"
-  	base03 "yellow"
-  	base04 "blue"
-  	base05 "purple"
-  	base06 "cyan"
-  	base07 "white"
-  	base08 "brightblack"
-  	base09 "brightred"
-  	base0A "brightgreen"
-  	base0B "brightyellow"
-  	base0C "brightblue"
-  	base0D "brightpurple"
-  	base0E "brightcyan"
-  	base0F "brightwhite"))
+(setq base16-fallback-base00 "#f2e5bc"
+      base16-fallback-base01 "#ebdbb2"
+      base16-fallback-base02 "#d5c4a1"
+      base16-fallback-base03 "#bdae93"
+      base16-fallback-base04 "#665c54"
+      base16-fallback-base05 "#504945"
+      base16-fallback-base06 "#3c3836"
+      base16-fallback-base07 "#282828"
+      base16-fallback-base08 "#9d0006"
+      base16-fallback-base09 "#af3a03"
+      base16-fallback-base0A "#b57614"
+      base16-fallback-base0B "#79740e"
+      base16-fallback-base0C "#427b58"
+      base16-fallback-base0D "#076678"
+      base16-fallback-base0E "#8f3f71"
+      base16-fallback-base0F "#d65d0e")
 
-(defun base16/apply-specs (spec-list)
+(if (display-graphic-p)
+    (setq base00 (ice-get-xres "base00" base16-fallback-base00)
+          base01 (ice-get-xres "base01" base16-fallback-base01)
+          base02 (ice-get-xres "base02" base16-fallback-base02)
+          base03 (ice-get-xres "base03" base16-fallback-base03)
+          base04 (ice-get-xres "base04" base16-fallback-base04)
+          base05 (ice-get-xres "base05" base16-fallback-base05)
+          base06 (ice-get-xres "base06" base16-fallback-base06)
+          base07 (ice-get-xres "base07" base16-fallback-base07)
+          base08 (ice-get-xres "base08" base16-fallback-base08)
+          base09 (ice-get-xres "base09" base16-fallback-base09)
+          base0A (ice-get-xres "base0A" base16-fallback-base0A)
+          base0B (ice-get-xres "base0B" base16-fallback-base0B)
+          base0C (ice-get-xres "base0C" base16-fallback-base0C)
+          base0D (ice-get-xres "base0D" base16-fallback-base0D)
+          base0E (ice-get-xres "base0E" base16-fallback-base0E)
+          base0F (ice-get-xres "base0F" base16-fallback-base0F))
+  (setq base00 "black"
+        base01 "red"
+        base02 "green"
+        base03 "yellow"
+        base04 "blue"
+        base05 "purple"
+        base06 "cyan"
+        base07 "white"
+        base08 "brightblack"
+        base09 "brightred"
+        base0A "brightgreen"
+        base0B "brightyellow"
+        base0C "brightblue"
+        base0D "brightpurple"
+  	    base0E "brightcyan"
+  	    base0F "brightwhite"))
+
+(defun base16--apply-specs (spec-list)
   (dolist (spec spec-list)
     (custom-theme-set-faces 'base16 `(,(car spec) ((t ,(cdr spec)))))))
 
-(base16/apply-specs
+(base16--apply-specs
  `((border                                       :background ,base03)
    (cursor                                       :background ,base0D)
    (default                                      :foreground ,base05 :background ,base00)
@@ -146,12 +163,11 @@
 
    ;; centaur-tabs
    (centaur-tabs-default                         :background ,base00 :foreground ,base05)
-   (centaur-tabs-selected                        :background ,base01 :foreground ,base06 :bold t)
+   (centaur-tabs-selected                        :background ,base01 :foreground ,base06)
    (centaur-tabs-unselected                      :background ,base00 :foreground ,base05)
-   (centaur-tabs-selected-modified               :background ,base01 :foreground ,base0D :bold t)
+   (centaur-tabs-selected-modified               :background ,base01 :foreground ,base0D)
    (centaur-tabs-unselected-modified             :background ,base00 :foreground ,base0D)
    (centaur-tabs-active-bar-face                 :background ,base00)
-   (centaur-tabs-background-color                :background ,base00)
    (centaur-tabs-modified-marker-selected        :inherit 'centaur-tabs-selected :foreground ,base0D)
    (centaur-tabs-modified-marker-unselected      :inherit 'centaur-tabs-unselected :foreground ,base0D)
    ;; centaur-tabs-close-unselected

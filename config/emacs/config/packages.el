@@ -1,6 +1,7 @@
 (use-package evil
   :ensure t
   :init
+  (setq evil-want-C-i-jump nil)
   (setq evil-want-C-u-scroll t)
   :config
   (evil-mode 1)
@@ -85,6 +86,7 @@
   :ensure t
   :config
   (ivy-mode 1))
+  ;; (define-key ivy-mode-map (kbd "ESC") #'ice-escape))
 
 (use-package try
   :ensure t
@@ -99,32 +101,9 @@
   :ensure t
   :defer t)
 
-;; From https://github.com/DiegoVicen/my-emacs/blob/master/README.org
-(use-package minions
+(use-package doom-modeline
   :ensure t
-  :config
-  (setq minions-mode-line-lighter "(...)")
-  (minions-mode))
-
-;; From https://github.com/DiegoVicen/my-emacs/blob/master/README.org
-(use-package moody
-  :ensure t
-  :config
-  (moody-replace-mode-line-buffer-identification)
-  (moody-replace-vc-mode)
-
-  (defun set-moody-face (frame)
-    (let ((line (face-attribute 'mode-line :underline frame)))
-      (set-face-attribute 'mode-line          frame :overline line)
-      (set-face-attribute 'mode-line-inactive frame :overline line)
-      (set-face-attribute 'mode-line-inactive frame :underline line)
-      (set-face-attribute 'mode-line          frame :box nil)
-      (set-face-attribute 'mode-line-inactive frame :box nil)))
-
-  (setq-default x-underline-at-descent-line t
-                column-number-mode t)
-
-  (add-to-list 'after-make-frame-functions 'set-moody-face t))
+  :init (doom-modeline-mode 1))
 
 (use-package centaur-tabs ;; TODO: move & remake
   :ensure t
@@ -134,7 +113,7 @@
 	centaur-tabs-set-modified-marker t
 	centaur-tabs-modified-marker "+"
 	centaur-tabs-adjust-buffer-order t
-	centaur-tabs-set-icons t)
+	centaur-tabs-set-icons nil)
   (centaur-tabs-headline-match)
   (centaur-tabs-enable-buffer-reordering)
   ;; TODO: tab category titles
@@ -172,13 +151,6 @@
        (and (string-prefix-p "magit" name)
 	    (not (file-name-extension name))))))
   (centaur-tabs-mode t))
-
-;; (use-package linum-relative
-;;   :ensure t
-;;   :config
-;;   (setq linum-relative-format "%3s ")
-;;   (add-hook 'after-change-major-mode-hook #'linum-relative-mode)
-;;   (add-hook 'minibuffer-setup-hook #'linum-relative-off))
 
 ;; (use-package origami
 ;;   :ensure t

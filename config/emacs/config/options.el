@@ -9,9 +9,12 @@
       backup-directory-alist `(("" . ,(f-join user-cache-directory "backups")))
       auto-save-file-name-transforms `((".*" ,(f-join user-cache-directory "saves") t)))
 
-;; Coding styles (for built-in modes)
+;; Options for c-mode
 (setq c-default-style "linux"
       c-basic-offset 4)
+
+;; Options for sh-mode
+(setq sh-basic-offset 2)
 
 ;; Automatically create a file/buffer when called if it doesn't exist
 (setq confirm-nonexistent-file-or-buffer nil)
@@ -154,6 +157,9 @@
 ;; (from Doom Emacs)
 (setq-default indent-tabs-mode nil
               tab-width 4)
+
+;; Stretch the cursor for tab characters.
+(setq x-stretch-cursor t)
 
 ;; Line highlighting
 (global-hl-line-mode)

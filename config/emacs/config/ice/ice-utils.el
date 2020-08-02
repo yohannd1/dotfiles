@@ -10,6 +10,13 @@
 			(f-exists? (f-expand file path)))
 		      (or starting-directory ".")))
 
+(defun ice-get-xres (resource fallback)
+  "Attempts to get an X resource, falling back to `FALLBACK' if any error occurs.
+On non-linux platforms `FALLBACK' is always returned."
+  (if (and IS-LINUX (display-graphic-p))
+      (or (x-get-resource resource "") fallback)
+    fallback))
+
 (defun ice-escape ()
   "Aborts current functions."
   ;; (from Doom Emacs)
