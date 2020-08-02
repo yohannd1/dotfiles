@@ -6,10 +6,10 @@
  ;; If there is more than one, they won't work right.
  '(company-auto-complete ''company-explicit-action-p)
  '(custom-safe-themes
-   '("291cdab7188b0c85e4b5cad96e51a920535a049f1e71b4cd922fa7a33f21e082" default))
+   '("637e21f1a89bfd8282a168fc4fa59aefd51b35ab780850260007cef702bab38c" "291cdab7188b0c85e4b5cad96e51a920535a049f1e71b4cd922fa7a33f21e082" default))
  '(global-hl-line-mode t)
  '(package-selected-packages
-   '(doom-modeline moody minions visual-regexp which-key use-package typescript-mode try rust-mode rainbow-delimiters origami markdown-mode lua-mode linum-relative julia-mode helm haskell-mode format-all f evil-commentary esup csharp-mode clojure-mode centaur-tabs base16-theme auto-complete)))
+   '(ace-window doom-modeline moody minions visual-regexp which-key use-package typescript-mode try rust-mode rainbow-delimiters origami markdown-mode lua-mode linum-relative julia-mode helm haskell-mode format-all f evil-commentary esup csharp-mode clojure-mode centaur-tabs base16-theme auto-complete)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

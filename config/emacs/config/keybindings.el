@@ -20,6 +20,8 @@
 (define-key evil-motion-state-map (kbd "M-h") #'evil-window-left)
 (define-key evil-leader-map (kbd ".") #'find-file)
 (define-key evil-leader-map (kbd "e") #'eval-expression)
+(define-key evil-motion-state-map (kbd "M-n") #'ido-switch-buffer-other-frame)
+(define-key evil-motion-state-map (kbd "M-b") #'ido-switch-buffer)
 
 ;; Clipboard commands
 (define-key evil-leader-map (kbd "p") #'(lambda ()
@@ -46,6 +48,9 @@
                                           (interactive)
                                           (evil-use-register ?+)
                                           (call-interactively #'evil-delete-line)))
+
+;; Open url (with xdg-open)
+(define-key evil-leader-map (kbd "o") #'browse-url-xdg-open)
 
 ;; Insert mode
 (define-key evil-insert-state-map (kbd "C-y") #'evil-paste-after)
