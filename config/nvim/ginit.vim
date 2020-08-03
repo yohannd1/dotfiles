@@ -7,6 +7,4 @@ if exists("g:GuiLoaded")
   GuiPopupmenu 0
   GuiLinespace 2
   silent! GuiFont! Fixedsys:h11
-
-  inoremap <silent> <C-S-v> <C-r>+
 endif

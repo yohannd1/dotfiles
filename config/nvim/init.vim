@@ -23,20 +23,11 @@ if g:is_first
   let g:is_mac = has("macunix")
   let g:is_android = isdirectory("/sdcard")
   let g:is_tty = $DISPLAY == "" && !g:is_android
-
-  " If I'm at home
-  let g:is_home = isdirectory(expand("~/projects"))
 endif
 
 " }}}
 " Functions {{{
 
-function! SpawnTerminal(command) " {{{
-  let l:command_string = "terminal " . a:command
-  split | exec "normal! \<C-w>j"
-  exec l:command_string
-  normal! i
-endfunction " }}}
 function! MyFoldText() " {{{
   let l:foldmarker = split(&foldmarker, ',')
   let l:tab_char = strpart(' ', shiftwidth())
@@ -85,31 +76,6 @@ function! PagerMode(...) " {{{
   nnoremap <buffer> <silent> k <C-y>
   normal M
 endfunction " }}}
-function! TryCD(...) " {{{
-  for dir in a:000
-    if isdirectory(dir)
-      call LogMessage("Found directory: ".dir)
-      exec "cd ".dir
-      break
-    endif
-  endfor
-endfunction " }}}
-function! TryCustomShell(...) " {{{
-  for shell in a:000
-    if executable(shell)
-      call LogMessage("Found shell: ".shell)
-      let g:custom_shell = shell
-      break
-    endif
-  endfor
-endfunction " }}}
-function! SpawnCustomShell(args) " {{{
-  if !exists("g:custom_shell")
-    echo "[SpawnCustomShell()]: `g:custom_shell` not defined."
-  else
-    call SpawnTerminal(g:custom_shell." ".a:args)
-  endif
-endfunction " }}}}
 function! PathAppend(...) " {{{
   " Appends to Vim's PATH.
   " Good for subshells, specially on Windows.
@@ -152,41 +118,9 @@ function! ListMatch(list, pattern) " {{{
   endfor
   return 0
 endfunction " }}}
-function! LogMessage(message) " {{{
-  if !exists("g:messages")
-    let g:messages = []
-  endif
-  call add(g:messages, a:message)
-endfunction " }}}
-function! ListMessages() " {{{
-  if !exists("g:messages") || len(g:messages) == 0
-    echo "You have no messages."
-    return
-  endif
-  for message in g:messages
-    echo message
-  endfor
-endfunction " }}}
 function! SetupMakefileRifle() " {{{
   if ReverseRSearch(expand("%:p:h"), "Makefile")
     let b:rifle_ft = "@make"
-  endif
-endfunction " }}}
-function! Surround(...) " {{{
-  let l:ls = a:000
-  let l:len = len(l:ls)
-
-  if l:len == 0
-    echoerr "Specify at least one argument"
-  elseif l:len == 1
-    " Surround l:ls[0] with double quotes
-    return '"' . l:ls[0] . '"'
-  elseif l:len == 2
-    " Surround l:ls[0] with l:ls[1]
-    return l:ls[1] . l:ls[0] . l:ls[1]
-  elseif l:len == 3
-    " Prepend l:ls[1] and append l:ls[2] to l:ls[0]
-    return l:ls[1] . l:ls[0] . l:ls[2]
   endif
 endfunction " }}}
 function! FormatFile() " {{{
@@ -213,13 +147,6 @@ endfunction | endif
 
 if g:is_first
   call AddBookmark("v", '$VIM_INIT') " I can put the environment variable quoted because it'll then be evaluated at key press.
-
-  if g:is_win
-    call TryCustomShell($HOME.'\AppData\Local\Programs\Git\bin\sh', 'powershell')
-    call TryCD('E:\home', $HOME)
-    call PathAppend('C:\Program Files (x86)\CodeBlocks\MinGW\bin')
-  endif
-
 endif
 
 " }}}
@@ -227,7 +154,6 @@ endif
 
 command! -nargs=0 Reload call SourceIf($VIM_INIT, $GVIM_INIT)
 command! -nargs=* PagerMode call PagerMode(<f-args>)
-command! -nargs=0 CleanWhitespace if &filetype != "markdown" | %s/\v +$//g | else | echo "That wouldn't be a good idea." | endif
 command! -nargs=0 FormatFile call FormatFile()
 
 " Abbreviations
@@ -247,13 +173,6 @@ endif
 " Emmet
 let g:user_emmet_leader_key='<C-c>'
 
-" Lightline
-let g:lightline = {}
-let g:lightline.active = {}
-" let g:lightline.colorscheme = "base16"
-let g:lightline.active.left = [["mode", "paste"], ["readonly", "filename"]]
-let g:lightline.active.right = [["lineinfo"], ["percent"], ["fileformat", "fileencoding", "filetype"]]
-
 " Markdown
 let g:vim_markdown_frontmatter = 1
 let g:vim_markdown_folding_disabled = 1
@@ -262,13 +181,6 @@ let g:vim_markdown_override_foldtext = 0
 let g:vim_markdown_no_extensions_in_markdown = 1
 let g:vim_markdown_new_list_item_indent = 0
 let g:vim_markdown_auto_insert_bullets = 0
-
-" Netrw
-" let g:netrw_banner = 0
-" let g:netrw_winsize = 25
-" let g:netrw_browse_split = 4
-" let g:netrw_liststyle = 3
-" let g:netrw_altv = 1
 
 " Gruvbox
 let g:gruvbox_bold = 1
@@ -319,15 +231,7 @@ if g:is_first
   let &autochdir = !g:is_win
 
   syntax on
-  let &background = g:is_win ? "light" : "dark" " I like to use light backgrounds on windows. FIXME: this is useless right now
-  colorscheme base16 " TODO: make a small lazy color parser from .yaml files - do it in vimscript to use in windows machines
-
-  " if g:is_home
-  "   " FIXME: maybe use this? maybe not...
-  "   " Disable background if I'm using vim at home, since my terminals
-  "   " are transparent
-  "   hi Normal guibg=NONE ctermbg=NONE
-  " endif
+  colorscheme base16
 
   filetype plugin indent on
   set foldtext=MyFoldText()
@@ -459,9 +363,6 @@ function! Ft_sh() " {{{
 endfunction " }}}
 function! Ft_zsh() " {{{
   setlocal tabstop=2 shiftwidth=2 fdm=syntax
-endfunction " }}}
-function! Ft_visualg() " {{{
-  setlocal tabstop=4 shiftwidth=4 syntax=c
 endfunction " }}}
 function! Ft_vim() " {{{
   setlocal fdm=marker tw=72
@@ -630,36 +531,12 @@ vnoremap / /\v
 nnoremap ? ?\v
 vnoremap ? ?\v
 
-" Quick character inserts
-inoremap <silent> <C-l>d <C-r>=strftime("20%y-%m-%d")<CR>
-inoremap <silent> <C-l>o ∘
-inoremap <silent> <C-l>l λ
-inoremap <silent> <C-l>c ```<CR>```<Up><End><CR>
-
-" Terminal Spawner
-nnoremap <leader>K :call SpawnCustomShell("")<CR>
-
-" View messages history
-nnoremap <leader>m :call ListMessages()<CR>
-
-" Adjust indentation on the entire file
-nnoremap <silent> <leader>= mzgg=G`zzz
-
-" Replace everything in screen with... something
+" Open a prompt to replace everything in the screen
 nnoremap <Leader>s :%s/\v/g<Left><Left>
 vnoremap <Leader>s :s/\v/g<Left><Left>
 
 " Buffer navigation mappings
 nnoremap <silent> <C-j> :bn<CR>
 nnoremap <silent> <C-k> :bp<CR>
-
-" }}}
-" Finishing {{{
-
-if g:is_first
-  if exists("g:messages") && len("g:messages") != 0
-    echo "You have unread startup messages."
-  endif
-endif
 
 " }}}
