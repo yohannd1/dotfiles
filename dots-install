@@ -51,3 +51,5 @@ for dependency in git python3; do
     fi
   fi
 done
+
+git clone "$DOTFILES_URL" "$2"
