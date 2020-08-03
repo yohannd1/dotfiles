@@ -16,7 +16,6 @@
               (setq ice-style-current-theme 'base16
                     ice-style-font-family (get-xres "font" ice-style-font-family)
                     ice-style-font-height 100)))
-(add-hook 'ice-style-after-update-hook #'centaur-tabs-headline-match)
 
 ;; Backup / autosave files
 ;; TODO: disable backup & autosave altogether if on "foreign" machines.
@@ -182,7 +181,7 @@
 (setq x-stretch-cursor t)
 
 ;; Line highlighting
-(global-hl-line-mode)
+;; (global-hl-line-mode)
 
 ;; Disable automatic copy-to-clipboard behavior
 (setq x-select-enable-clipboard nil)
@@ -297,51 +296,52 @@
   :ensure t
   :init (doom-modeline-mode 1))
 
-(use-package centaur-tabs ;; TODO: move & remake
-  :ensure t
-  :config
-  (setq centaur-tabs-style "bar"
-        centaur-tabs-set-close-button nil
-        centaur-tabs-set-modified-marker t
-        centaur-tabs-modified-marker "+"
-        centaur-tabs-adjust-buffer-order t
-        centaur-tabs-set-icons nil)
-  ;; TODO: tab category titles
-  (defun centaur-tabs-buffer-groups ()
-    (list
-     (cond
-      ((derived-mode-p 'dired-mode) "Dired")
-      (t "Main"))))
-  (defun centaur-tabs-hide-tab (x)
-    (let ((name (format "%s" x)))
-      (or
-       ;; Current window is not dedicated window.
-       (window-dedicated-p (selected-window))
+;; (use-package centaur-tabs ;; TODO: move & remake
+;;   :ensure t
+;;   :config
+;;   (add-hook 'ice-style-after-update-hook #'centaur-tabs-headline-match)
+;;   (setq centaur-tabs-style "bar"
+;;         centaur-tabs-set-close-button nil
+;;         centaur-tabs-set-modified-marker t
+;;         centaur-tabs-modified-marker "+"
+;;         centaur-tabs-adjust-buffer-order t
+;;         centaur-tabs-set-icons nil)
+;;   ;; TODO: tab category titles
+;;   (defun centaur-tabs-buffer-groups ()
+;;     (list
+;;      (cond
+;;       ((derived-mode-p 'dired-mode) "Dired")
+;;       (t "Main"))))
+;;   (defun centaur-tabs-hide-tab (x)
+;;     (let ((name (format "%s" x)))
+;;       (or
+;;        ;; Current window is not dedicated window.
+;;        (window-dedicated-p (selected-window))
 
-       ;; Buffer name not match below blacklist.
-       (string-prefix-p "*epc" name)
-       (string-prefix-p "*helm" name)
-       (string-prefix-p "*Helm" name)
-       (string-prefix-p "*Compile-Log*" name)
-       (string-prefix-p "*lsp" name)
-       (string-prefix-p "*company" name)
-       (string-prefix-p "*Flycheck" name)
-       (string-prefix-p "*tramp" name)
-       (string-prefix-p " *Mini" name)
-       (string-prefix-p "*help" name)
-       (string-prefix-p "*straight" name)
-       (string-prefix-p " *temp" name)
-       (string-prefix-p "*Help" name)
-       (string-prefix-p "*Completions" name)
-       (string-prefix-p "*Backtrace*" name)
-       (string-prefix-p "*Command Line*" name)
-       (string-prefix-p "*eldoc for" name)
+;;        ;; Buffer name not match below blacklist.
+;;        (string-prefix-p "*epc" name)
+;;        (string-prefix-p "*helm" name)
+;;        (string-prefix-p "*Helm" name)
+;;        (string-prefix-p "*Compile-Log*" name)
+;;        (string-prefix-p "*lsp" name)
+;;        (string-prefix-p "*company" name)
+;;        (string-prefix-p "*Flycheck" name)
+;;        (string-prefix-p "*tramp" name)
+;;        (string-prefix-p " *Mini" name)
+;;        (string-prefix-p "*help" name)
+;;        (string-prefix-p "*straight" name)
+;;        (string-prefix-p " *temp" name)
+;;        (string-prefix-p "*Help" name)
+;;        (string-prefix-p "*Completions" name)
+;;        (string-prefix-p "*Backtrace*" name)
+;;        (string-prefix-p "*Command Line*" name)
+;;        (string-prefix-p "*eldoc for" name)
 
-       ;; Is not magit buffer.
-       (and (string-prefix-p "magit" name)
-            (not (file-name-extension name))))))
-  (centaur-tabs-mode t)
-  (centaur-tabs-enable-buffer-reordering))
+;;        ;; Is not magit buffer.
+;;        (and (string-prefix-p "magit" name)
+;;             (not (file-name-extension name))))))
+;;   (centaur-tabs-mode t)
+;;   (centaur-tabs-enable-buffer-reordering))
 
 (use-package edwina
   :ensure t
@@ -431,6 +431,9 @@
 (define-key global-map (kbd "C-k") #'centaur-tabs-backward)
 (define-key evil-motion-state-map (kbd "C-j") #'centaur-tabs-forward)
 (define-key evil-motion-state-map (kbd "C-k") #'centaur-tabs-backward)
+
+(define-key ivy-minibuffer-map (kbd "C-j") 'ivy-immediate-done)
+(define-key ivy-minibuffer-map (kbd "C-m") 'ivy-alt-done)
 
 ;; Handle theme loading on clients.
 (when (daemonp)

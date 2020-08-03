@@ -129,7 +129,7 @@
    (line-number-current-line                     :background ,base02)
 
    ;; modeline
-   (mode-line                                    :foreground ,base05 :background ,base02) ; :box base16-settings-mode-line-box)
+   (mode-line                                    :foreground ,base05 :background ,base00) ; :box base16-settings-mode-line-box)
    (mode-line-buffer-id                          :foreground ,base0B :background nil)
    (mode-line-emphasis                           :foreground ,base06 :slant italic)
    (mode-line-highlight                          :foreground ,base0E :box nil :weight bold)

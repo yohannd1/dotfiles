@@ -1,5 +1,3 @@
--- vim: fdm=marker foldmarker={{{,}}}
-
 HOME = os.getenv("HOME")
 CONFIG_DIR = (os.getenv("XDG_CONFIG_HOME") or HOME .. "/.config") .. "/awesome"
 
