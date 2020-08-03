@@ -8,7 +8,6 @@ depCheck run-swallow
 if [ -t 1 ] && [ -t 2 ]; then
   if [ "$DISPLAY" ]; then
     exec run-swallow emacsclient -a "" "$@" -c
-    # exec run-swallow emacsclient -a "" "$@" -c --eval '(set-frame-name "[Terminal waiting] - Emacs")' >/dev/null
   else
     TERM=xterm-16color exec emacs -nw "$@"
   fi

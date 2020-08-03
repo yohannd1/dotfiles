@@ -1,35 +1,35 @@
-;; Ice Emacs
-;; My personal emacs "distro"!
+;; My personal emacs configuration.
 ;;
-;; Big inspirations for this config are:
-;; - Doom Emacs (https://github.com/hlissner/doom-emacs) - I literally stole code from here.
+;; Some big inspirations for this config:
+;;   Doom Emacs (https://github.com/hlissner/doom-emacs) - I literally stole code from here.
 
-;; Set startup variable to false if it has been defined previously
-(when (boundp 'at-startup)
-  (setq at-startup nil))
-
-(defvar at-startup t
-  "Whether the config file is being ran for the first time in the session.")
-
-(let (file-name-handler-alist) ;; ensure emacs is running out of this file's directory
+;; Ensure emacs is running out of this file's directory.
+;; Useful if loading this configuration with the --load option.
+(let (file-name-handler-alist)
   (setq user-emacs-directory (file-name-directory load-file-name)))
 
-(defconst user-config-directory (concat user-emacs-directory "config/")
-  "The directory where most of the configuration is stored.")
+;; Define the directory where all modules are stored.
+;; A module is basically a file with elisp code. I'm placing most of
+;; them here because it is more practical having all of them inside a
+;; single folder.
+;; This directory is used by functions like `require' or `load-theme'.
+(defconst user-modules-directory (concat user-emacs-directory "modules/")
+  "The directory for all the modules.")
 
-(when at-startup ;; add places to the load path
-  (add-to-list 'load-path user-config-directory)
-  (add-to-list 'custom-theme-load-path (concat user-config-directory "themes/")))
+(defconst user-cache-directory (concat user-emacs-directory "cache/")
+  "The place where general cache should be stored.")
 
-(defun load-here (file)
-  "Loads a file based on the current dir."
-  (load (concat (file-name-directory load-file-name) file)))
+;; Add the modules directory to the load path
+(add-to-list 'load-path user-modules-directory)              ;; require
+(add-to-list 'custom-theme-load-path user-modules-directory) ;; load-theme
 
 ;; Set the location of the customizations file.
-(setq custom-file (concat user-config-directory "custom.el"))
+;; I prefer to not to have this configuration synced between machines,
+;; so I'm not tracking it in my dotfiles.
+(setq custom-file (concat user-emacs-directory "custom.el"))
+(when (file-exists-p custom-file)
+  (load custom-file))
 
-;; Load relevant files and functions
-(load-here "config/ice/ice.el")  ;; load library
-(load-here custom-file)          ;; custom file
-(load-here "config/main.el")     ;; main config
-(ice-finish)                     ;; end touches
+;; Load main.el in the modules directory.
+;; It contains most of my configuration and the call for other libraries.
+(require 'main)

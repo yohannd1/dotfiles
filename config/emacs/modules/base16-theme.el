@@ -4,6 +4,8 @@
 ;; GUI version only works on X (it uses Xresources)
 ;; Terminal version only has been seen working with TERM=xterm-16color
 
+(require 'ice-misc)
+
 (deftheme base16
   "A custom base16 theme that works on my machines.")
 
@@ -25,22 +27,22 @@
       base16-fallback-base0F "#d65d0e")
 
 (if (display-graphic-p)
-    (setq base00 (ice-get-xres "base00" base16-fallback-base00)
-          base01 (ice-get-xres "base01" base16-fallback-base01)
-          base02 (ice-get-xres "base02" base16-fallback-base02)
-          base03 (ice-get-xres "base03" base16-fallback-base03)
-          base04 (ice-get-xres "base04" base16-fallback-base04)
-          base05 (ice-get-xres "base05" base16-fallback-base05)
-          base06 (ice-get-xres "base06" base16-fallback-base06)
-          base07 (ice-get-xres "base07" base16-fallback-base07)
-          base08 (ice-get-xres "base08" base16-fallback-base08)
-          base09 (ice-get-xres "base09" base16-fallback-base09)
-          base0A (ice-get-xres "base0A" base16-fallback-base0A)
-          base0B (ice-get-xres "base0B" base16-fallback-base0B)
-          base0C (ice-get-xres "base0C" base16-fallback-base0C)
-          base0D (ice-get-xres "base0D" base16-fallback-base0D)
-          base0E (ice-get-xres "base0E" base16-fallback-base0E)
-          base0F (ice-get-xres "base0F" base16-fallback-base0F))
+    (setq base00 (get-xres "base00" base16-fallback-base00)
+          base01 (get-xres "base01" base16-fallback-base01)
+          base02 (get-xres "base02" base16-fallback-base02)
+          base03 (get-xres "base03" base16-fallback-base03)
+          base04 (get-xres "base04" base16-fallback-base04)
+          base05 (get-xres "base05" base16-fallback-base05)
+          base06 (get-xres "base06" base16-fallback-base06)
+          base07 (get-xres "base07" base16-fallback-base07)
+          base08 (get-xres "base08" base16-fallback-base08)
+          base09 (get-xres "base09" base16-fallback-base09)
+          base0A (get-xres "base0A" base16-fallback-base0A)
+          base0B (get-xres "base0B" base16-fallback-base0B)
+          base0C (get-xres "base0C" base16-fallback-base0C)
+          base0D (get-xres "base0D" base16-fallback-base0D)
+          base0E (get-xres "base0E" base16-fallback-base0E)
+          base0F (get-xres "base0F" base16-fallback-base0F))
   (setq base00 "black"
         base01 "red"
         base02 "green"
