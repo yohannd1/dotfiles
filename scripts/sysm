@@ -23,10 +23,11 @@ def main():
     # TODO: parse sys.argv (without loading libraries, it ain't needed)
     for config in {DOTS_CONFIG, LOCAL_CONFIG}:
         if config.is_file():
+            eprint(f"[Sourcing] {config}")
             with config.open() as f:
                 exec(f.read())
         else:
-            eprint(f"{config} is not a file and won't be sourced.")
+            eprint(f"[Not found] {config} (skipping)")
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
