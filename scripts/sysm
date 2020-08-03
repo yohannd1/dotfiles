@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+
+import sys, os
+from pathlib import Path
+
+# Get dotfiles path (fallback: ~/.dotfiles)
+DOTFILES = Path(os.environ.get(
+    "DOTFILES",
+    os.environ["HOME"] + "/.dotfiles",
+))
+
+# Get the path for the configuration files
+DOTS_CONFIG = DOTFILES / "config/dots/sysmrc.py"
+LOCAL_CONFIG = (
+    Path(os.environ.get("STORAGE", os.environ["HOME"] + "/storage"))
+    / "config/sysmrc.py"
+)
+
+# PLATFORM = ()
+
+def main():
+    # TODO: plan actions & options
+    # TODO: parse sys.argv (without loading libraries, it ain't needed)
+    for config in {DOTS_CONFIG, LOCAL_CONFIG}:
+        if config.is_file():
+            with config.open() as f:
+                exec(f.read())
+        else:
+            eprint(f"{config} is not a file and won't be sourced.")
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
+if __name__ == "__main__":
+    main()
