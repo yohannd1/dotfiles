@@ -1,0 +1,53 @@
+#!/usr/bin/env sh
+#
+# A script for bootstrapping my dotfiles installation.
+# Still very incomplete.
+
+PROG=$(basename $0)
+
+exists() {
+  command -v "$1" >/dev/null 2>/dev/null;
+}
+
+usage() {
+  printf >&2 "%s: %s\n" "$PROG" "installs dotfiles" # terrible description
+  printf >&2 "Usage: %s\n" "$PROG <SOURCE> <DEST>"
+  printf >&2 "Where\n"
+  printf >&2 "    SOURCE := { https | ssh }\n"
+  printf >&2 "    DEST   :  the path where the dotfiles will be installed."
+  exit 1
+}
+
+[ $# != 2 ] && usage
+
+case "$1" in
+  https) DOTFILES_URL="https://github.com/YohananDiamond/dotfiles" ;;
+  ssh) DOTFILES_URL="git@github.com:yohanandiamond/dotfiles" ;;
+  *)
+    printf >&2 "Invalid SOURCE: %s\n" "$1"
+    printf >&2 "\n"
+    usage
+    ;;
+esac
+
+if [ -e "$2" ]; then
+  printf >&2 "DEST %s already exists. Please delete it or choose another path.\n" "$2"
+  exit 1
+fi
+
+# TODO: get the similar thing from LARBS or something and put it here instead
+for dependency in git python3; do
+  if ! exists "$dependency"; then
+    printf >&2 "Could not find %s in PATH - attempting to install it...\n" "$dependency"
+    if exists pacman; then
+      sudo pacman -Syy "$dependency"
+    elif exists apt; then
+      sudo apt install "$dependency"
+    elif exists apt-get; then
+      sudo apt-get install "$dependency"
+    else
+      printf >&2 "Could not find your package manager. Please install said dependency manually.\n"
+      exit 1
+    fi
+  fi
+done
