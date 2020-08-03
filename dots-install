@@ -52,4 +52,8 @@ for dependency in git python3; do
   fi
 done
 
-git clone "$DOTFILES_URL" "$2"
+git clone "$DOTFILES_URL" "$2" \
+  && pushd "$2" \
+  && git checkout experimental \
+  && popd \
+  && DOTFILES="$2" "$2/scripts/sysm"
