@@ -8,6 +8,7 @@
 (require 'ice-essentials)
 (require 'ice-style)
 (require 'ice-misc)
+(require 'ice-rifle)
 
 ;; Set options for ice-style.
 (add-hook 'ice-style-before-update-hook
