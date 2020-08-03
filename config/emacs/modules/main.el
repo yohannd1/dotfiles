@@ -343,6 +343,13 @@
   (centaur-tabs-mode t)
   (centaur-tabs-enable-buffer-reordering))
 
+(use-package edwina
+  :ensure t
+  :config
+  (setq display-buffer-base-action '(display-buffer-below-selected))
+  (edwina-setup-dwm-keys)
+  (edwina-mode 1))
+
 ;; (use-package origami
 ;;   :ensure t
 ;;   :config
@@ -371,10 +378,6 @@
 
 ;; General commands
 (define-key evil-motion-state-map (kbd "ç") #'evil-ex)
-(define-key evil-motion-state-map (kbd "M-j") #'evil-window-down)
-(define-key evil-motion-state-map (kbd "M-k") #'evil-window-up)
-(define-key evil-motion-state-map (kbd "M-l") #'evil-window-right)
-(define-key evil-motion-state-map (kbd "M-h") #'evil-window-left)
 (define-key evil-leader-map (kbd ".") #'find-file)
 (define-key evil-leader-map (kbd "e") #'eval-expression)
 (define-key evil-motion-state-map (kbd "M-n") #'ido-switch-buffer-other-frame)

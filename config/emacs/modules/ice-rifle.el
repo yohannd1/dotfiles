@@ -22,3 +22,5 @@ Returns a string of `mode' without the \"-mode\" postfix as a fallback."
   "A simple alias. Runs (ice-rifle \"run\")."
   (interactive)
   (ice-rifle "run"))
+
+(provide 'ice-rifle)
