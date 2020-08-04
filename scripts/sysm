@@ -108,7 +108,10 @@ def usage():
     exit(1)
 
 def main():
-    if len(sys.argv) != 0:
+    argc = len(sys.argv) - 1
+
+    if argc != 0:
+        eprint("too many arguments")
         usage()
 
     m = Manager()
