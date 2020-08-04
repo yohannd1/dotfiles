@@ -2,10 +2,10 @@ if m.is_android:
     m.link_conf("termux", "~/.termux")
 else:
     apps = (
-        "bspwm",
-        "polybar",
+        # "bspwm",
+        # "polybar",
         "sxhkd",
-        "alacritty",
+        # "alacritty",
         "picom",
         "xorg",
         "awesome",
@@ -21,7 +21,7 @@ else:
         "ripgreprc",
         "dots",
         "lf",
-        "broot",
+        # "broot",
     )
 
     for app in apps:

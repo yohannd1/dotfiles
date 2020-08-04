@@ -7,7 +7,7 @@ from pathlib import Path
 DOTFILES = Path(os.environ.get(
     "DOTFILES",
     os.environ["HOME"] + "/.dotfiles",
-)).resolve()
+)).absolute()
 
 # Get the path for the configuration files
 DOTS_CONFIG = DOTFILES / "config/dots/sysmrc.py"
@@ -97,7 +97,8 @@ class Manager:
         self.link_file(DOTFILES / "config" / origin, new)
 
     def backup(self, path):
-        to_backup = self.backup_path / path
+        print(self.backup_path)
+        to_backup = self.backup_path / str(path.absolute())[1:]
         self.make_dir(to_backup.parent)
         eprint(f"[Backup] File: {path}")
         eprint(f"         Moved to: {to_backup}")
