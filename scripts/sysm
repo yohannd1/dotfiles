@@ -7,7 +7,7 @@ from pathlib import Path
 DOTFILES = Path(os.environ.get(
     "DOTFILES",
     os.environ["HOME"] + "/.dotfiles",
-))
+)).resolve()
 
 # Get the path for the configuration files
 DOTS_CONFIG = DOTFILES / "config/dots/sysmrc.py"
@@ -80,7 +80,7 @@ class Manager:
         """Creates a symlink file called `new`, pointing to the already-existing file `origin`."""
         origin_path = Path(origin).expanduser()
         new_path = Path(new).expanduser()
-        print(f"link-glob {origin_path} {new_path}")
+        print(f"link {origin_path} {new_path}")
 
         assert origin_path.exists()
 
