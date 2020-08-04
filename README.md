@@ -1,6 +1,6 @@
 # YohananDiamond's Dotfiles
 
-![A screenshot of my desktop](.img/.png)
+![A screenshot of my desktop](.img/screenshot.png)
 
 _Note: I rarely update this screenshot, so it might be completely
 different right now._
