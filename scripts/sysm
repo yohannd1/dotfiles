@@ -34,7 +34,6 @@ class Manager:
             backup_path = self._generate_backup_path()
 
         self.backup_path = backup_path
-        self.platform = platform
 
     @staticmethod
     def _generate_backup_path():
