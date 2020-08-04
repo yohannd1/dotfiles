@@ -41,6 +41,7 @@ else:
 
     m.link_glob(DOTFILES / "config/nvim", "~/.config/nvim")
     m.link_glob(DOTFILES / "config/emacs", "~/.emacs.d")
+    m.link_glob(DOTFILES / "desktop", "~/.local/share/applications")
     # m.link_glob(DOTFILES / "config/kak", "~/.config/kak")
     # m.link_glob(DOTFILES / "config/vscode", "~/.config/Code/User")
 

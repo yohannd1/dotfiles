@@ -3,7 +3,7 @@
 # Shell Profile
 # This is ran at login on a TTY.
 
-# load libraries, env vars and PATH
+# load environment variables, set up $PATH and load libraries
 . ~/.config/dots/env.sh
 . ~/.config/dots/path.sh
 . "$(uselib std)"

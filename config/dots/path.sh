@@ -10,13 +10,16 @@ pathadd() {
 }
 
 globpathadd() {
-  [ -d "$1" ] || return 1
-  cd "$1" || return 1
-  fd -td -d1 | while read pack; do pathadd "$1/$pack/bin"; done
-  cd - >/dev/null 2>/dev/null
+  (
+    cd "$1" || return 1
+    fd -td -d1 | while read pack; do
+      pathadd "$1/$pack/bin"
+    done
+  )
 }
 
-pathadd "$HOME/.local/bin"
+pathadd "$DOTFILES/scripts"
+pathadd "$STORAGE/scripts"
 pathadd "$GOPATH"
 pathadd "$CARGO_HOME/bin"
 pathadd "${GEM_HOME:-$HOME/.gem}/ruby/2.7.0/bin"
