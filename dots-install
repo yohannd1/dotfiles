@@ -72,7 +72,6 @@ case "$1" in
     ;;
   *) 
     git clone "$DOTFILES_URL" "$2" \
-      && (cd "$2" && git checkout experimental) \
       && DOTFILES="$2" "$2/scripts/sysm"
     ;;
 esac
