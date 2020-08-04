@@ -43,3 +43,5 @@ else:
     m.link_glob(DOTFILES / "config/emacs", "~/.emacs.d")
     # m.link_glob(DOTFILES / "config/kak", "~/.config/kak")
     # m.link_glob(DOTFILES / "config/vscode", "~/.config/Code/User")
+
+os.system(DOTFILES / "scripts/gen-config")
