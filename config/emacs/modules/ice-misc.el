@@ -1,3 +1,8 @@
+;; There's a binary I found called `xgetres'. It helps with getting X
+;; resources from the command line. If I can find it here it'd help a
+;; lot, since emacs refuses to reload the xrdb at runtime.
+(defconst ice--xgetres-path (executable-find "xgetres"))
+
 (defun file-upwards-parent (file &optional starting-directory)
   "Recursively checks for the existence of `file' in `starting-directory' and its parents, returning either the parent where the file was found or nil if no file was found.
 `starting-directory' defaults to \".\""
@@ -9,7 +14,13 @@
   "Attempts to get an X resource, falling back to `FALLBACK' if any error occurs.
 On non-linux platforms `FALLBACK' is always returned."
   (if (and IS-LINUX (display-graphic-p))
-      (or (x-get-resource resource "") fallback)
+      (let ((result (if ice--xgetres-path
+                         (string-trim (shell-command-to-string (concat "xgetres Emacs." resource)))
+                       (x-get-resource resource ""))))
+        (pcase result
+          ("" fallback)
+          ('nil fallback)
+          (other other)))
     fallback))
 
 ;; (from Doom Emacs)

@@ -158,7 +158,7 @@ xdb() {
     1)
       case "$1" in
         -r) gen-xres | xrdb ;;
-        -e) vi =gen-xres && xdb -r ;;
+        -e) "$EDITOR" =gen-xres && xdb -r ;;
       esac ;;
     *) return 1 ;;
   esac

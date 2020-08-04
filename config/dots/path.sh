@@ -18,6 +18,7 @@ globpathadd() {
   )
 }
 
+pathadd "$HOME/.local/bin"
 pathadd "$DOTFILES/scripts"
 pathadd "$STORAGE/scripts"
 pathadd "$GOPATH"

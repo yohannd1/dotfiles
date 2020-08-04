@@ -2,8 +2,10 @@
 
 . "$(uselib std)"
 
+PROGNAME=$(basename $0)
+
 showHelp() {
-  printf >&2 "Usage: %s %s\n" "$(basename $0)" "<url> [output_file]"
+  printf >&2 "Usage: %s\n" "$PROGNAME <url> [output_file]"
   exit 1
 }
 
@@ -15,7 +17,7 @@ case $# in
     ;;
   2) url="$1" output="$2" ;;
   *)
-    printf >&2 "%s: %s\n" "$(basename $0)" "invalid amount of arguments"
+    printf >&2 "%s: %s\n" "$PROGNAME" "invalid amount of arguments"
     showHelp
     ;;
 esac

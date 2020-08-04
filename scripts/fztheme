@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+
+if [ $# != 0 ]; then
+  printf >&2 "Usage: %s\n" "$(basename $0)"
+fi
+
+THEME_FILES_PATH=~/.config/dots/themes
+THEME_CFG_PATH=~/.local/share/dots/theme
+
+msg() {
+  local msg=$(printf "$@")
+  printf >&2 "%s\n" "$msg"
+  notify-send -- "$msg"
+}
+
+if [ -d "$THEME_FILES_PATH" ]; then
+  choice=$(ls "$THEME_FILES_PATH" | sed 's/\.yaml$//g' | fzagnostic) \
+    && mkdir -p "$(dirname THEME_CFG_PATH)" \
+    && printf "%s" "$choice" > "$THEME_CFG_PATH" \
+    && gen-xres | xrdb \
+    && msg "Successfully set theme to %s." "$choice" \
+      || msg "Failed to set theme to %s. It might be set but not refreshed."
+else
+  printf >&2 "Could not find the directory %s. Please create it and put there your theme files.\n" "$THEME_FILES_PATH"
+  exit 1
+fi

@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 
+PROGNAME="$(basename $0)"
 B16PAT='[a-fA-F0-9]'
 EXPORT_TAG=''
 PREFIX='#'
@@ -10,8 +11,8 @@ main() {
   done
 }
 
-showHelp() {
-  printf >&2 "Usage: %s\n" "$(basename $0) [-h | --help] [-e | --export] [ -e | --noprefix ]"
+usage() {
+  printf >&2 "Usage: %s\n" "$PROGNAME [-h | --help] [-e | --export] [ -e | --noprefix ]"
   printf >&2 "The theme data is loaded from %s\n" '$XDG_CONFIG_HOME/dots/themes/$THEME.yaml'
   exit 1
 }
@@ -20,10 +21,10 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --export|-e) EXPORT_TAG='export ' ;;
     --noprefix|-n) PREFIX='' ;;
-    --help|-h) showHelp ;;
+    --help|-h) usage ;;
     *)
       printf >&2 "Invalid argument: %s\n" "$1"
-      showHelp
+      usage
       ;;
   esac
 
@@ -32,10 +33,14 @@ done
 
 case $# in
   0)
+    if [ -z "$THEME" ] && [ -f ~/.local/share/dots/theme ]; then
+      THEME=$(cat ~/.local/share/dots/theme)
+    fi
     if [ -z "$THEME" ]; then
-      printf >&2 "Failed to get theme; please environment variable %s\n" '$THEME'
+      printf >&2 "Failed to get theme; please set environment variable %s or set the value in ~/.local/share/dots/theme\n" '$THEME'
       exit 1
     fi
+
     main < "${XDG_CONFIG_HOME:-$HOME/.config}/dots/themes/${THEME}.yaml"
     ;;
   *)
