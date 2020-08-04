@@ -100,7 +100,7 @@ class Manager:
     def backup(self, path):
         self.make_dir(self.backup_path)
         to_backup = self.backup_path / path
-        eprint(f"[Backup] File: {new_path}")
+        eprint(f"[Backup] File: {path}")
         eprint(f"         Moved to: {to_backup}")
         path.rename(to_backup)
 
