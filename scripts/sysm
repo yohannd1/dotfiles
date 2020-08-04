@@ -68,9 +68,6 @@ class Manager:
         if new_path.is_file():
             self.backup(new_path)
 
-        # run make_dir on new_path to make sure it exists as an directory
-        self.make_dir(new_path)
-
         # symlink everything from origin_path to new_path
         for origin_file in origin_path.glob("*"):
             origin_head = origin_file.relative_to(origin_path)
@@ -92,6 +89,7 @@ class Manager:
                 print(f"{new_path} already exists; backing up...")
                 self.backup(new_path)
         else:
+            self.make_dir(new_path.parent)
             eprint(f"[Symlink] At: {new_path}")
             eprint(f"          Points to: {origin_path}")
             new_path.symlink_to(origin_path)
