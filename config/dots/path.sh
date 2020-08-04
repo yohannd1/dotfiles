@@ -11,7 +11,7 @@ pathadd() {
 
 globpathadd() {
   (
-    [ -d "$1"] && cd "$1" || return 1
+    [ -d "$1" ] && cd "$1" || return 1
     fd -td -d1 | while read pack; do
       pathadd "$1/$pack/bin"
     done

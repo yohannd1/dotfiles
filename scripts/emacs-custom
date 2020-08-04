@@ -9,9 +9,8 @@ if [ -t 1 ] && [ -t 2 ]; then
   if [ "$DISPLAY" ]; then
     exec run-swallow emacsclient -a "" "$@" -c
   else
-    TERM=xterm-16color exec emacs -nw "$@"
+    TERM=xterm-16color exec emacsclient -a "" -c -nw "$@"
   fi
 else
-  # Try to use emacsclient on other occasions.
   exec emacsclient -a "" "$@" -c
 fi
