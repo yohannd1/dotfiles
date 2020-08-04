@@ -76,6 +76,8 @@ case "$1" in
   *) 
     [ "$1" = https-shallow ] && shallow=(--depth 1) || shallow=()
     git clone "${shallow[@]}" "$DOTFILES_URL" "$2" \
-      && DOTFILES="$2" "$2/scripts/sysm"
+      && DOTFILES="$2" "$2/scripts/sysm" \
+      && mkdir -p ~/.local/share/dots \
+      && echo "$2" > ~/.local/share/dots/dotpath
     ;;
 esac

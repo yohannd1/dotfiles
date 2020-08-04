@@ -1,3 +1,11 @@
+# dotfiles dir
+if [ -f ~/.local/share/dots/dotpath ]; then
+  export DOTFILES=$(cat ~/.local/share/dots/dotpath)
+else
+  printf >&2 "WARNING: ~/.local/share/dots/dotpath (dotfiles folder declaration) doesn't exist; falling back to ~/.dotfiles."
+  export DOTFILES=~/.dotfiles
+fi
+
 # XDG dirs
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DOWNLOAD_DIR="$HOME/inbox"
@@ -6,10 +14,9 @@ export XDG_DATA_DIR="$HOME/.local/share"
 export XDG_CURRENT_DESKTOP="none"
 
 # personal dirs
-export STORAGE="$HOME/storage"
-export WIKI="$HOME/wiki"
-export PROJECTS="$HOME/projects"
-export DOTFILES="$PROJECTS/dotfiles"
+export STORAGE=~/storage
+export WIKI=~/wiki
+export PROJECTS=~/projects
 
 # global options
 export WM=awesome
