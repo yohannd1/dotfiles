@@ -1,7 +1,9 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 #
 # A script for bootstrapping my dotfiles installation.
 # On early stages.
+#
+# Bashisms: arrays.
 
 PROG=$(basename $0)
 
@@ -14,9 +16,10 @@ usage() {
   printf >&2 "Usage: %s\n" "$PROG <ACTION> <DEST>"
   printf >&2 "Where\n"
   printf >&2 "    ACTION : the action to be done.\n"
-  printf >&2 "           | https: download to DEST via HTTPS\n"
-  printf >&2 "           | ssh: download to DEST via SSH\n"
-  printf >&2 "           | https-to-ssh: download to (already existing, but https-based) DEST via SSH (thus converting it to SSH)\n"
+  printf >&2 "           | https: clone to DEST via HTTPS\n"
+  printf >&2 "           | https-shallow: clone to DEST via HTTPS with --depth 1\n"
+  printf >&2 "           | ssh: clone to DEST via SSH\n"
+  printf >&2 "           | https-to-ssh: clone to (already existing, but https-based) DEST via SSH (thus converting it to SSH)\n"
   printf >&2 "    DEST   :  the path where the dotfiles will be installed."
   exit 1
 }
@@ -24,7 +27,7 @@ usage() {
 [ $# != 2 ] && usage
 
 case "$1" in
-  https) DOTFILES_URL="https://github.com/YohananDiamond/dotfiles" ;;
+  https|https-shallow) DOTFILES_URL="https://github.com/YohananDiamond/dotfiles" ;;
   ssh|https-to-ssh) DOTFILES_URL="git@github.com:yohanandiamond/dotfiles" ;;
   *)
     printf >&2 "Invalid ACTION: %s\n" "$1"
@@ -71,7 +74,8 @@ case "$1" in
     fi
     ;;
   *) 
-    git clone "$DOTFILES_URL" "$2" \
+    [ "$1" = https-shallow ] && shallow=(--depth 1) || shallow=()
+    git clone "${shallow[@]}" "$DOTFILES_URL" "$2" \
       && DOTFILES="$2" "$2/scripts/sysm"
     ;;
 esac
