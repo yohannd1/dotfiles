@@ -33,7 +33,7 @@ case "$1" in
     ;;
 esac
 
-if [ -e "$2" ]; then
+if [ "$1" != https-to-ssh ] && [ -e "$2" ]; then
   printf >&2 "DEST %s already exists. Please delete it or choose another path.\n" "$2"
   exit 1
 fi
