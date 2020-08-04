@@ -53,7 +53,5 @@ for dependency in git python3; do
 done
 
 git clone "$DOTFILES_URL" "$2" \
-  && pushd "$2" >/dev/null \
-  && git checkout experimental \
-  && popd >/dev/null \
+  && (cd "$2" && git checkout experimental) \
   && DOTFILES="$2" "$2/scripts/sysm"
