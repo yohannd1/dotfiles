@@ -29,8 +29,10 @@ else:
     for app in apps:
         m.link_conf(app, f"~/.config/{app}")
 
-    for i in {2, 3}:
-        m.link_glob(DOTFILES / f"config/gtk-{i}.0", f"~/.config/gtk-{i}.0")
+    for i in {2, 3, 4}:
+        origin = DOTFILES / f"config/gtk-{i}.0"
+        if origin.is_dir():
+            m.link_glob(origin, f"~/.config/gtk-{i}.0")
 
     m.link_conf("profile", "~/.profile")
     m.link_conf("profile", "~/.zprofile")
