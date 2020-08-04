@@ -54,7 +54,8 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 -- Wibar {{{
 
 -- Create a textclock widget
-mytextclock = wibox.widget.textclock()
+local text_clock = wibox.widget.textclock()
+text_clock.format = " %a, %Y-%m-%d "
 
 -- Create a wibox for each screen and add it
 local taglist_buttons = gears.table.join(
@@ -182,7 +183,7 @@ awful.screen.connect_for_each_screen(function(s)
             layout = wibox.layout.fixed.horizontal,
             -- awful.widget.keyboardlayout(),
             wibox.widget.systray(),
-            mytextclock,
+            text_clock,
             s.mylayoutbox,
         },
     }
