@@ -48,7 +48,7 @@ class Manager:
                 )
             )
             / "sysm-backups"
-            / date.strftime("%Y-%d-%m-{}".format(generate_random_string(5)))
+            / date().strftime("%Y-%d-%m-{}".format(generate_random_string(5)))
         ) 
 
     def make_dir(self, dir_path):
