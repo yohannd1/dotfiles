@@ -24,8 +24,6 @@ else:
         "broot",
     )
 
-    print("_")
-
     for app in apps:
         m.link_conf(app, f"~/.config/{app}")
 

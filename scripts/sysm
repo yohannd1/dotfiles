@@ -60,7 +60,6 @@ class Manager:
         """Creates a folder called `new`, where it is created one symlink for each of the files inside the folder `origin`"""
         origin_path = Path(origin).expanduser()
         new_path = Path(new).expanduser()
-        print(f"link-glob {origin_path} {new_path}")
 
         assert origin_path.is_dir()
 
@@ -77,7 +76,6 @@ class Manager:
         """Creates a symlink file called `new`, pointing to the already-existing file `origin`."""
         origin_path = Path(origin).expanduser()
         new_path = Path(new).expanduser()
-        print(f"link {origin_path} {new_path}")
 
         assert origin_path.exists()
 
@@ -86,7 +84,7 @@ class Manager:
                 # do nothing since new_path is already pointing to origin_path
                 pass
             else:
-                print(f"{new_path} already exists; backing up...")
+                eprint(f"{new_path} already exists; backing up...")
                 self.backup(new_path)
         else:
             self.make_dir(new_path.parent)
