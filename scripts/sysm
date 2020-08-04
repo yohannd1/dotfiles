@@ -59,7 +59,7 @@ class Manager:
     def link_glob(self, origin, new):
         """Creates a folder called `new`, where it is created one symlink for each of the files inside the folder `origin`"""
         origin_path = Path(origin).expanduser()
-        new_path = Path(origin).expanduser()
+        new_path = Path(new).expanduser()
         print(f"link-glob {origin_path} {new_path}")
 
         assert origin_path.is_dir()
@@ -79,7 +79,7 @@ class Manager:
     def link_file(self, origin, new):
         """Creates a symlink file called `new`, pointing to the already-existing file `origin`."""
         origin_path = Path(origin).expanduser()
-        new_path = Path(origin).expanduser()
+        new_path = Path(new).expanduser()
         print(f"link-glob {origin_path} {new_path}")
 
         assert origin_path.exists()
