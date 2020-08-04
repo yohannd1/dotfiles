@@ -92,6 +92,10 @@ class Manager:
             eprint(f"          Points to: {origin_path}")
             new_path.symlink_to(origin_path)
 
+    def link_conf(self, origin, new):
+        """An alias to `self.link_file`, which adds a DOTFILES/config prefix to `origin`."""
+        self.link_file(DOTFILES / "config" / origin, new)
+
     def backup(self, path):
         self.make_dir(self.backup_path)
         to_backup = self.backup_path / path
@@ -106,6 +110,8 @@ def usage():
 def main():
     if len(sys.argv) != 0:
         usage()
+
+    m = Manager()
 
     for config in {DOTS_CONFIG, LOCAL_CONFIG}:
         if config.is_file():
