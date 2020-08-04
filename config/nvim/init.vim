@@ -26,6 +26,92 @@ if g:is_first
 endif
 
 " }}}
+" Plugins {{{
+
+if g:is_first
+  silent! call plug#begin(g:config_root . '/plugged')
+
+  " Editing enhancement
+  Plug 'tpope/vim-surround'
+  Plug 'tpope/vim-repeat'
+  Plug 'tpope/vim-commentary'
+  Plug 'mattn/emmet-vim'
+  Plug 'godlygeek/tabular'
+  Plug 'skywind3000/vim-auto-popmenu'
+  Plug 'ap/vim-buftabline'
+  Plug 'tpope/vim-rsi'
+
+  " Editing enhancement: electric pairs
+  Plug 'tmsvg/pear-tree'
+  " Plug 'vim-scripts/AutoClose'
+  " Plug 'jiangmiao/auto-pairs'
+
+  " Filetypes
+  Plug 'JuliaEditorSupport/julia-vim'
+  Plug 'cespare/vim-toml'
+  Plug 'neoclide/jsonc.vim'
+  Plug 'HerringtonDarkholme/yats.vim'
+  Plug 'plasticboy/vim-markdown'
+  Plug 'wlangstroth/vim-racket'
+  Plug 'vim-scripts/scribble.vim'
+  Plug 'neovimhaskell/haskell-vim'
+  Plug 'leafo/moonscript-vim'
+  Plug 'rust-lang/rust.vim'
+  Plug 'raymond-w-ko/vim-lua-indent'
+  Plug 'justinmk/vim-syntax-extra'
+  Plug 'Vimjas/vim-python-pep8-indent'
+  Plug 'vim-python/python-syntax'
+  " Plug 'tbastos/vim-lua'
+  " Plug 'hylang/vim-hy'
+  " Plug 'fsharp/vim-fsharp'
+  " Plug 'xolox/vim-lua-ftplugin'
+
+  " Filetypes - nim
+  if executable("nim")
+    Plug 'baabelfish/nvim-nim'
+  endif
+
+  " Themes
+  " Plug 'morhetz/gruvbox'
+  " Plug 'dracula/vim'
+  " Plug 'chriskempson/base16-vim'
+
+  " Personal
+  Plug 'https://gitlab.redox-os.org/YohananDiamond/ion-vim'
+
+  " Misc.
+  Plug 'tpope/vim-vinegar'
+  " Plug 'itchyny/lightline.vim'
+
+  call plug#end()
+endif
+
+" }}}
+" Plugin Config {{{
+
+" Emmet
+let g:user_emmet_leader_key='<C-c>'
+
+" Markdown
+let g:vim_markdown_frontmatter = 1
+let g:vim_markdown_folding_disabled = 1
+let g:vim_markdown_folding_style_pythonic = 0
+let g:vim_markdown_override_foldtext = 0
+let g:vim_markdown_no_extensions_in_markdown = 1
+let g:vim_markdown_new_list_item_indent = 0
+let g:vim_markdown_auto_insert_bullets = 0
+
+" Gruvbox
+let g:gruvbox_bold = 1
+let g:gruvbox_italics = 1
+
+" Buftabline
+let g:buftabline_indicators = 1
+
+" Rifle
+let g:rifle_mode = "popup"
+
+" }}}
 " Functions {{{
 
 function! MyFoldText() " {{{
@@ -143,7 +229,7 @@ endfunction | endif
 " }}}
 
 " }}}
-" General Initialization {{{
+" General {{{
 
 if g:is_first
   call AddBookmark("v", '$VIM_INIT') " I can put the environment variable quoted because it'll then be evaluated at key press.
@@ -158,39 +244,6 @@ command! -nargs=0 FormatFile call FormatFile()
 
 " Abbreviations
 cnoreabbrev rl Reload
-
-" }}}
-" Plugin Config {{{
-
-if g:is_first
-  " Pathogen Config
-  let g:pathogen_disabled = []
-  call add(g:pathogen_disabled, executable("nim") ? "" : "nvim-nim")
-  call add(g:pathogen_disabled, "lightline.vim")
-  call pathogen#infect()
-endif
-
-" Emmet
-let g:user_emmet_leader_key='<C-c>'
-
-" Markdown
-let g:vim_markdown_frontmatter = 1
-let g:vim_markdown_folding_disabled = 1
-let g:vim_markdown_folding_style_pythonic = 0
-let g:vim_markdown_override_foldtext = 0
-let g:vim_markdown_no_extensions_in_markdown = 1
-let g:vim_markdown_new_list_item_indent = 0
-let g:vim_markdown_auto_insert_bullets = 0
-
-" Gruvbox
-let g:gruvbox_bold = 1
-let g:gruvbox_italics = 1
-
-" Buftabline
-let g:buftabline_indicators = 1
-
-" Rifle
-let g:rifle_mode = "popup"
 
 " }}}
 " Settings {{{
