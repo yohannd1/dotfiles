@@ -79,18 +79,34 @@ class Manager:
 
         assert origin_path.exists()
 
-        if new_path.exists() or new_path.is_symlink(): # covers existing files and symlinks (broken or not)
-            if new_path.resolve() == origin_path:
-                # do nothing since new_path is already pointing to origin_path
-                pass
-            else:
-                eprint(f"{new_path} already exists; backing up...")
-                self.backup(new_path)
+        # cover existing files and symlinks (broken or not)
+        if new_path.is_symlink() and new_path.resolve() == origin_path:
+            # new_path already points to origin_path - do nothing
+            do_backup = False
+            do_symlink = False
+        elif new_path.is_symlink() and new_path.resolve() != origin_path:
+            # new_path is a symlink and points elsewhere - backup it and then make the symlink
+            do_backup = True
+            do_symlink = True
+        elif new_path.exists():
+            # new_path already exists - backup it and then make the symlink
+            do_backup = True
+            do_symlink = True
+        else:
+            # new_path doesn't exist - make the symlink
+            do_backup = False
+            do_symlink = True
 
-        self.make_dir(new_path.parent)
-        eprint(f"[Symlink] At: {new_path}")
-        eprint(f"          Points to: {origin_path}")
-        new_path.symlink_to(origin_path)
+        if do_backup:
+            eprint(f"{new_path} already exists; backing up...")
+            self.backup(new_path)
+
+        if do_symlink:
+            self.make_dir(new_path.parent)
+            eprint(f"[Symlink] At: {new_path}")
+            eprint(f"          Points to: {origin_path}")
+            new_path.symlink_to(origin_path)
+
 
     def link_conf(self, origin, new):
         """An alias to `self.link_file`, which adds a DOTFILES/config prefix to `origin`."""
