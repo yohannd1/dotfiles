@@ -44,6 +44,7 @@ m.link_conf("zsh/zlogout", "~/.config/zsh/.zlogout")
 m.link_conf("git/gitconfig", "~/.gitconfig")
 m.link_conf("git/gitignore", "~/.gitignore")
 
+m.link_glob(DOTFILES / "config/qutebrowser", "~/.config/qutebrowser")
 m.link_glob(DOTFILES / "config/nvim", "~/.config/nvim")
 m.link_glob(DOTFILES / "config/emacs", "~/.emacs.d")
 m.link_glob(DOTFILES / "desktop", "~/.local/share/applications")

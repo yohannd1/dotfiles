@@ -86,11 +86,11 @@ class Manager:
             else:
                 eprint(f"{new_path} already exists; backing up...")
                 self.backup(new_path)
-        else:
-            self.make_dir(new_path.parent)
-            eprint(f"[Symlink] At: {new_path}")
-            eprint(f"          Points to: {origin_path}")
-            new_path.symlink_to(origin_path)
+
+        self.make_dir(new_path.parent)
+        eprint(f"[Symlink] At: {new_path}")
+        eprint(f"          Points to: {origin_path}")
+        new_path.symlink_to(origin_path)
 
     def link_conf(self, origin, new):
         """An alias to `self.link_file`, which adds a DOTFILES/config prefix to `origin`."""
