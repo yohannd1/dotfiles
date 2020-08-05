@@ -72,7 +72,9 @@ if g:is_first
   endif
 
   " Themes
-  " Plug 'morhetz/gruvbox'
+  if g:is_win
+    Plug 'morhetz/gruvbox'
+  endif
   " Plug 'dracula/vim'
   " Plug 'chriskempson/base16-vim'
 
@@ -284,7 +286,13 @@ if g:is_first
   let &autochdir = !g:is_win
 
   syntax on
-  colorscheme base16
+
+  if g:is_win
+    set background=light
+    colorscheme gruvbox
+  else
+    colorscheme base16
+  endif
 
   filetype plugin indent on
   set foldtext=MyFoldText()
