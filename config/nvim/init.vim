@@ -72,9 +72,7 @@ if g:is_first
   endif
 
   " Themes
-  if g:is_win
-    Plug 'morhetz/gruvbox'
-  endif
+  Plug 'morhetz/gruvbox' " for windows
   " Plug 'dracula/vim'
   " Plug 'chriskempson/base16-vim'
 
