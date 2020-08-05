@@ -16,7 +16,6 @@ export XDG_CURRENT_DESKTOP="none"
 # personal dirs
 export STORAGE=~/storage
 export WIKI=~/wiki
-export PROJECTS=~/projects
 
 # global options
 export WM=awesome

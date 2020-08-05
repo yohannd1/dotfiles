@@ -118,6 +118,4 @@ map E extract-this
 map <enter> open
 
 # bookmark mappings
-map gd cd ~/projects/dotfiles
-map gs cd ~/storage
 map gh cd ~

@@ -63,8 +63,8 @@ class Manager:
 
         assert origin_path.is_dir()
 
-        # backup new_path if it's a file
-        if new_path.is_file():
+        # backup new_path if it's already a file or broken symlink
+        if new_path.is_file() or (new_path.is_symlink() and not new_path.resolve().exists()):
             self.backup(new_path)
 
         # symlink everything from origin_path to new_path
@@ -79,7 +79,7 @@ class Manager:
 
         assert origin_path.exists()
 
-        if new_path.exists():
+        if new_path.exists() or new_path.is_symlink(): # covers existing files and symlinks (broken or not)
             if new_path.resolve() == origin_path:
                 # do nothing since new_path is already pointing to origin_path
                 pass
