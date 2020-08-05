@@ -238,8 +238,7 @@
 
 (use-package git-commit-message
   :ensure nil
-  :defer t
-  :mode (("COMMIT_EDITMSG" . conf-unix-mode)))
+  :defer t)
 
 (use-package clojure-mode
   :ensure t
@@ -355,23 +354,10 @@
   (edwina-setup-dwm-keys)
   (edwina-mode 1))
 
-;; (use-package origami
-;;   :ensure t
-;;   :config
-;;   (global-origami-mode 1)
-;;   (defun nin-origami-toggle-node ()
-;;     (interactive)
-;;     (save-excursion ; leave point where it is
-;;       (goto-char (point-at-eol)) ; then go to the end of line
-;;       (origami-toggle-node (current-buffer) (point)))) ; and try to fold
-;;   (define-key evil-normal-state-map (kbd "TAB") 'nin-origami-toggle-node)
-;;   (define-key evil-normal-state-map (kbd "<backtab>") 'origami-close-all-nodes))
-
 ;; Remap ESC to cancelling commands
-(define-key key-translation-map (kbd "ESC") (kbd "C-g")) ;; translation (currently testing to see if it works well)
-(define-key key-translation-map (kbd "C-g") nil) ;; I don't want the pinky problem
+(define-key key-translation-map (kbd "ESC") (kbd "C-g"))
 (global-set-key [remap keyboard-quit] #'ice-escape)
-(if (display-graphic-p) ;; on isearch
+(if (display-graphic-p)
     (define-key isearch-mode-map [escape] 'isearch-abort)
   (define-key isearch-mode-map "\e" 'isearch-abort))
 
@@ -432,10 +418,10 @@
 ;; Etc.
 (define-key evil-leader-map (kbd "s") #'vr/replace)
 (define-key evil-leader-map (kbd "f") #'format-all-buffer)
-(define-key global-map (kbd "C-j") #'centaur-tabs-forward)
-(define-key global-map (kbd "C-k") #'centaur-tabs-backward)
-(define-key evil-motion-state-map (kbd "C-j") #'centaur-tabs-forward)
-(define-key evil-motion-state-map (kbd "C-k") #'centaur-tabs-backward)
+;; (define-key global-map (kbd "C-j") #'centaur-tabs-forward)
+;; (define-key global-map (kbd "C-k") #'centaur-tabs-backward)
+;; (define-key evil-motion-state-map (kbd "C-j") #'centaur-tabs-forward)
+;; (define-key evil-motion-state-map (kbd "C-k") #'centaur-tabs-backward)
 
 (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-immediate-done)
 (define-key ivy-minibuffer-map (kbd "C-m") 'ivy-alt-done)
