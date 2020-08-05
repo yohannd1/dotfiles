@@ -1,11 +1,8 @@
 #!/usr/bin/env sh
-# vim: fdm=marker foldmarker={,}
 
 . "$(uselib std)" || exit 127
 . "$(uselib filematch)" || exit 127
 depCheck termup runpage
-
-# Library {
 
 warn() {
   local out=$(printf "$@")
@@ -15,6 +12,7 @@ warn() {
     printf >&2 "%s\n" "$out"
   fi
 }
+
 try() {
   local action="$1"
   shift
@@ -40,20 +38,24 @@ try() {
       ;;
   esac
 }
+
 block() {
   if match "$@"; then
     warn "Attempted to open blocked file/url %s (%s)\n" "$FILE" "$_filematch_mimetype"
     exit 1
   fi
 }
+
 openGui() {
   "$@" >/dev/null 2>&1
   exit
 }
+
 openTty() {
   "$@"
   exit
 }
+
 openPop() {
   if [ "$OPEN_GUI" ]; then
     openGui termup "$@"
@@ -62,18 +64,18 @@ openPop() {
   fi
   exit
 }
+
 openFallback() {
   warn "Falling back to %s (%s)\n" "$ALT_OPENER" "$FILE"
   VIA_OPEN=1 "$ALT_OPENER" "$FILE"
 }
+
 checkExists() {
   case "$1" in
     runpage) exists "$2" ;;
     *) exists "$1" ;;
   esac
 }
-
-# }
 
 set -f -o noclobber -o noglob
 ALT_OPENER=${ALT_OPENER:-"xdg-open"}
@@ -89,7 +91,7 @@ EOF
   exit 1
 fi
 
-FILE="$1"
+FILE=$(printf "%s" "$1" | sed 's|^file://||g')
 filematch_initialize "$FILE"
 
 block mime 'application/x-sharedlib'
