@@ -4,6 +4,8 @@
 # This should be sourced by ~/.xinitrc or your display manager, and not simply
 # loaded alone.
 
+gen-xres | xrdb # update xresources database
+
 # wm-specific config
 case "$WM" in
   dwm)
@@ -32,7 +34,6 @@ systemd-inhibit --what=handle-power-key sleep infinity & # disable power button
 # extra config (not async)
 setxkbmap -layout br # set keyboard layout
 xset r rate 350 40 # speed up xrate
-gen-xres | xrdb # update xresources database
 
 # TODO: find an even better way to make this portable
 xinput set-prop "Synaptics TM3096-006" "libinput Tapping Enabled" 1 # Touchpad: tap to click (not working)
