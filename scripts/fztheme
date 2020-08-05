@@ -17,11 +17,7 @@ if [ -d "$THEME_FILES_PATH" ]; then
   choice=$(ls "$THEME_FILES_PATH" | sed 's/\.yaml$//g' | fzagnostic) \
     && mkdir -p "$(dirname THEME_CFG_PATH)" \
     && printf "%s" "$choice" > "$THEME_CFG_PATH" \
-    && {
-      if exists gen-xres; then
-        gen-xres | xrdb
-      fi
-    } \
+    && { gen-xres | xrdb; true; } \
     && msg "Successfully set theme to %s." "$choice" \
       || msg "Failed to set theme to %s. It might be set but not refreshed."
 else

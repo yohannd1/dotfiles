@@ -5,10 +5,12 @@ if [ $# != 0 ]; then
   exit 1
 fi
 
-if [ -z "$SETBG_WALLPAPER_DIR" ]; then
-  printf >&2 "Please set %s to the wallpapers folder path\n" '$SETBG_WALLPAPER_DIR'
-  exit 1
-fi
+# if [ -z "$SETBG_WALLPAPER_DIR" ]; then
+#   printf >&2 "Please set %s to the wallpapers folder path\n" '$SETBG_WALLPAPER_DIR'
+#   exit 1
+# fi
 
-image="$(shuf -n1 -e "$SETBG_WALLPAPER_DIR"/"$SETBG_THEME"/*.jpg)" # there's no problem if SETBG_THEME is unset, since it would evaluate to simply the wallpapers path.
-feh --no-fehbg --bg-fill "$image"
+# image="$(shuf -n1 -e "$SETBG_WALLPAPER_DIR"/"$SETBG_THEME"/*.jpg)" # there's no problem if SETBG_THEME is unset, since it would evaluate to simply the wallpapers path.
+# feh --no-fehbg --bg-fill "$image"
+
+hsetroot -solid "$(xgetres root.background)" -brightness -0.05

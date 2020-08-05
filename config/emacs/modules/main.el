@@ -281,7 +281,6 @@
   :ensure t
   :config
   (ivy-mode 1))
-;; (define-key ivy-mode-map (kbd "ESC") #'ice-escape))
 
 (use-package try
   :ensure t
