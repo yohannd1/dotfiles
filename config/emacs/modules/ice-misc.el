@@ -13,7 +13,7 @@
 (defun get-xres (resource fallback)
   "Attempts to get an X resource, falling back to `FALLBACK' if any error occurs.
 On non-linux platforms `FALLBACK' is always returned."
-  (if (and IS-LINUX (display-graphic-p))
+  (if (and IS-LINUX (getenv "DISPLAY"))
       (let ((result (if ice--xgetres-path
                          (string-trim (shell-command-to-string (concat "xgetres Emacs." resource)))
                        (x-get-resource resource ""))))

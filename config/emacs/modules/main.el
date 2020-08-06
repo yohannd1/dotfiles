@@ -240,6 +240,9 @@
   :ensure nil
   :defer t)
 
+(use-package bind-map
+  :ensure t)
+
 (use-package clojure-mode
   :ensure t
   :defer t)
@@ -274,6 +277,9 @@
   (define-key ac-completing-map "\t" 'ac-complete)
   (define-key ac-completing-map "\r" nil))
 
+(use-package magit
+  :ensure t)
+
 (use-package counsel
   :ensure t)
 
@@ -286,7 +292,7 @@
   :ensure t
   :defer t)
 
-(use-package which-key ;; TODO: setup
+(use-package which-key
   :ensure t
   :config
   (which-key-mode))
@@ -355,10 +361,8 @@
 
 ;; Remap ESC to cancelling commands
 (define-key key-translation-map (kbd "ESC") (kbd "C-g"))
-(global-set-key [remap keyboard-quit] #'ice-escape)
-(if (display-graphic-p)
-    (define-key isearch-mode-map [escape] 'isearch-abort)
-  (define-key isearch-mode-map "\e" 'isearch-abort))
+(define-key isearch-mode-map [escape] 'isearch-abort)
+(define-key isearch-mode-map "\e" 'isearch-abort)
 
 (defvar evil-leader-map (make-sparse-keymap)
   "A keymap with common functions.")
@@ -368,6 +372,8 @@
 
 ;; General commands
 (define-key evil-motion-state-map (kbd "ç") #'evil-ex)
+(define-key evil-motion-state-map (kbd "§") #'evil-ex) ;; don't ask.
+(define-key evil-motion-state-map (kbd "Ã") #'evil-ex) ;; DON'T ASK.
 (define-key evil-leader-map (kbd ".") #'find-file)
 (define-key evil-leader-map (kbd "e") #'eval-expression)
 (define-key evil-motion-state-map (kbd "M-n") #'ido-switch-buffer-other-frame)
@@ -409,7 +415,6 @@
 (define-key evil-leader-map (kbd "rr") #'ice-rifle-run)
 
 ;; Config commands
-(define-key evil-leader-map (kbd "cr") #'ice-config-reload)
 (define-key evil-leader-map (kbd "ce") #'(lambda ()
                                            (interactive)
                                            (find-file (f-join user-modules-directory "main.el"))))
@@ -426,13 +431,14 @@
 (define-key ivy-minibuffer-map (kbd "C-m") 'ivy-alt-done)
 
 ;; Handle theme loading on clients.
-(when (daemonp)
-  (add-hook 'after-make-frame-functions
-            (lambda (frame)
-              (with-selected-frame frame
-                (ice-style-update)))))
+;; (when (daemonp)
+;;   (add-hook 'after-make-frame-functions
+;;             (lambda (frame)
+;;                 (with-selected-frame frame
+;;                   (ice-style-update)))))
 
 ;; Handle ice-tty cursor changing on terminals
+(add-hook 'after-make-frame-functions (lambda (_) (unless (display-graphic-p) (ice-tty-change-cursor))))
 (add-hook 'evil-normal-state-entry-hook #'ice-tty-change-cursor)
 (add-hook 'evil-motion-state-entry-hook #'ice-tty-change-cursor)
 (add-hook 'evil-replace-state-entry-hook #'ice-tty-change-cursor)
@@ -446,7 +452,9 @@
             (setq-default indent-tabs-mode nil
                           tab-width 2)))
 
-(unless (daemonp)
-  (ice-style-update))
+;; (unless (daemonp)
+;;   (ice-style-update))
+
+(ice-style-update)
 
 (provide 'main)
