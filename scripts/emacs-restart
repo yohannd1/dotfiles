@@ -5,6 +5,6 @@ if [ $# != 0 ]; then
   exit 1
 fi
 
-emacsclient --eval "(save-buffers-kill-emacs)" \
+emacsclient --eval "(kill-emacs)" \
   && emacs --daemon
 
