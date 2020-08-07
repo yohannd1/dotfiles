@@ -15,12 +15,16 @@
 (defun ice--get-name-for-mode (mode)
   "Gets the rifle name for the major mode `mode'.
 Returns a string of `mode' without the \"-mode\" postfix as a fallback."
-  (pcase mode
-    (fallback (replace-regexp-in-string "-mode$" "" (symbol-name fallback)))))
+  (cond
+   ((file-upwards-parent "Makefile") "@make")
+   ((file-upwards-parent "makefile") "@make")
+   ((file-upwards-parent "Cargo.toml") "@cargo")
+   (t (pcase mode
+        (fallback (replace-regexp-in-string "-mode$" "" (symbol-name fallback)))))))
 
-(defun ice-rifle-run ()
-  "A simple alias. Runs (ice-rifle \"run\")."
-  (interactive)
-  (ice-rifle "run"))
+(defun ice-rifle-run () (interactive) (ice-rifle "run"))
+(defun ice-rifle-build () (interactive) (ice-rifle "build"))
+(defun ice-rifle-test () (interactive) (ice-rifle "test"))
+(defun ice-rifle-check () (interactive) (ice-rifle "check"))
 
 (provide 'ice-rifle)
