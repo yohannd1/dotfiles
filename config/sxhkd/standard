@@ -92,4 +92,4 @@ super + o; b
 super + o; a
     runnsend action-launcher
 super + o; j
-    termup ,journalentry # ",journalentry" is a private script
+    ,journalentry
