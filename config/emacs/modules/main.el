@@ -191,6 +191,9 @@
 ;; Disable automatic copy-to-clipboard behavior
 (setq x-select-enable-clipboard nil)
 
+(use-package bind-map
+  :ensure t)
+
 (use-package evil
   :ensure t
   :init
@@ -209,6 +212,9 @@
   :ensure t
   :config
   (global-evil-surround-mode 1))
+
+(use-package evil-magit
+  :ensure t)
 
 (use-package visual-regexp
   :ensure t)
@@ -239,9 +245,6 @@
 (use-package git-commit-message
   :ensure nil
   :defer t)
-
-(use-package bind-map
-  :ensure t)
 
 (use-package clojure-mode
   :ensure t
@@ -352,6 +355,7 @@
 ;;   (centaur-tabs-mode t)
 ;;   (centaur-tabs-enable-buffer-reordering))
 
+
 (use-package edwina
   :ensure t
   :config
@@ -359,83 +363,57 @@
   (edwina-setup-dwm-keys)
   (edwina-mode 1))
 
+;; (use-package spaceline
+;;   :ensure t
+;;   :config
+;;   (spaceline-helm-mode 1)
+;;   (spaceline-emacs-theme)
+;;   (spaceline-toggle-org-clock-on)
+;;   (spaceline-toggle-minor-modes-off)
+;;   (spaceline-toggle-version-control-off))
+
 ;; Remap ESC to cancelling commands
 (define-key key-translation-map (kbd "ESC") (kbd "C-g"))
 (define-key isearch-mode-map [escape] 'isearch-abort)
 (define-key isearch-mode-map "\e" 'isearch-abort)
 
-(defvar evil-leader-map (make-sparse-keymap)
-  "A keymap with common functions.")
+(dolist (x '("ç" "§" "Ã"))
+  (define-key evil-motion-state-map x #'evil-ex))
 
-;; Switch to the leader map
-(define-key evil-motion-state-map (kbd "SPC") evil-leader-map)
+(bind-map my-leader-map
+  :evil-keys ("SPC")
+  :bindings ("SPC" #'find-file
+             "e" #'eval-expression
+             "rr" #'ice-rifle-run
+             "rb" #'ice-rifle-build
+             "rt" #'ice-rifle-test
+             "rc" #'ice-rifle-check
+             "fc" #'(lambda ()
+                      (interactive)
+                      (find-file (f-join user-modules-directory "main.el")))
+             "fd" #'dired
+             "m" #'counsel-M-x
+             "s" #'vr/replace
+             "fb" #'format-all-buffer))
 
-;; General commands
-(define-key evil-motion-state-map (kbd "ç") #'evil-ex)
-(define-key evil-motion-state-map (kbd "§") #'evil-ex) ;; don't ask.
-(define-key evil-motion-state-map (kbd "Ã") #'evil-ex) ;; DON'T ASK.
-(define-key evil-leader-map (kbd ".") #'find-file)
-(define-key evil-leader-map (kbd "e") #'eval-expression)
+(dolist (x '(("p" #'evil-paste-after)
+             ("P" #'evil-paste-before)
+             ("y" #'evil-yank)
+             ("Y" #'evil-yank-line)
+             ("d" #'evil-delete)
+             ("D" #'evil-delete-line)))
+  (define-key my-leader-map (car x) `(lambda ()
+                                       (interactive)
+                                       (evil-use-register ?+)
+                                       (call-interactively ,(car (cdr x))))))
+
 (define-key evil-motion-state-map (kbd "M-n") #'ido-switch-buffer-other-frame)
 (define-key evil-motion-state-map (kbd "M-b") #'ido-switch-buffer)
 
-;; Clipboard commands
-(define-key evil-leader-map (kbd "p") #'(lambda ()
-                                          (interactive)
-                                          (evil-use-register ?+)
-                                          (call-interactively #'evil-paste-after)))
-(define-key evil-leader-map (kbd "P") #'(lambda ()
-                                          (interactive)
-                                          (evil-use-register ?+)
-                                          (call-interactively #'evil-paste-before)))
-(define-key evil-leader-map (kbd "y") #'(lambda ()
-                                          (interactive)
-                                          (evil-use-register ?+)
-                                          (call-interactively #'evil-yank)))
-(define-key evil-leader-map (kbd "Y") #'(lambda ()
-                                          (interactive)
-                                          (evil-use-register ?+)
-                                          (call-interactively #'evil-yank-line)))
-(define-key evil-leader-map (kbd "d") #'(lambda ()
-                                          (interactive)
-                                          (evil-use-register ?+)
-                                          (call-interactively #'evil-delete)))
-(define-key evil-leader-map (kbd "D") #'(lambda ()
-                                          (interactive)
-                                          (evil-use-register ?+)
-                                          (call-interactively #'evil-delete-line)))
-
-;; Open url (with xdg-open)
-(define-key evil-leader-map (kbd "o") #'browse-url-xdg-open)
-
-;; Insert mode
 (define-key evil-insert-state-map (kbd "C-y") #'evil-paste-after)
-
-;; Rifle commands
-(define-key evil-leader-map (kbd "rr") #'ice-rifle-run)
-
-;; Config commands
-(define-key evil-leader-map (kbd "ce") #'(lambda ()
-                                           (interactive)
-                                           (find-file (f-join user-modules-directory "main.el"))))
-
-;; Etc.
-(define-key evil-leader-map (kbd "s") #'vr/replace)
-(define-key evil-leader-map (kbd "f") #'format-all-buffer)
-;; (define-key global-map (kbd "C-j") #'centaur-tabs-forward)
-;; (define-key global-map (kbd "C-k") #'centaur-tabs-backward)
-;; (define-key evil-motion-state-map (kbd "C-j") #'centaur-tabs-forward)
-;; (define-key evil-motion-state-map (kbd "C-k") #'centaur-tabs-backward)
 
 (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-immediate-done)
 (define-key ivy-minibuffer-map (kbd "C-m") 'ivy-alt-done)
-
-;; Handle theme loading on clients.
-;; (when (daemonp)
-;;   (add-hook 'after-make-frame-functions
-;;             (lambda (frame)
-;;                 (with-selected-frame frame
-;;                   (ice-style-update)))))
 
 ;; Handle ice-tty cursor changing on terminals
 (add-hook 'after-make-frame-functions (lambda (_) (unless (display-graphic-p) (ice-tty-change-cursor))))
@@ -452,8 +430,13 @@
             (setq-default indent-tabs-mode nil
                           tab-width 2)))
 
-;; (unless (daemonp)
-;;   (ice-style-update))
+(setq org-startup-indented t
+      org-src-tab-acts-natively t
+      org-hide-emphasis-markers t
+      org-fontify-done-headline t
+      org-hide-leading-stars t
+      org-pretty-entities t
+      org-odd-levels-only t)
 
 (ice-style-update)
 
