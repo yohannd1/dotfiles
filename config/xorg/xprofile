@@ -13,7 +13,7 @@ case "$WM" in
     setbg &
     dwmblocks &
     ;;
-  i3|qtile|awesome|penrose-personal)
+  i3|qtile|awesome|penrose)
     start-sxhkd standard &
     setbg &
     ;;

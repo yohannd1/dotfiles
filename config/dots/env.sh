@@ -1,3 +1,6 @@
+# useful functions
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
 # dotfiles dir
 if [ -f ~/.local/share/dots/dotpath ]; then
   export DOTFILES=$(cat ~/.local/share/dots/dotpath)
@@ -18,7 +21,7 @@ export STORAGE=~/storage
 export WIKI=~/wiki
 
 # global options
-export WM=awesome
+export WM=penrose
 export TERM=xterm-256color
 export EDITOR=emacs-custom
 export TERMINAL=st
@@ -53,7 +56,7 @@ export FZF_DEFAULT_OPTS='
   --color spinner:3,gutter:1,info:3
 '
 export GCC_COLORS='error=01;38;5;8:warning=01;38;5;9:note=01;38;5;12:caret=01;32:locus=01;38;5;11:quote=03'
-export RUSTC_WRAPPER=sccache
+exists sccache && export RUSTC_WRAPPER=sccache
 
 # dotfiles program options
 export DIR_BOOKMARKS="$STORAGE/share/dir-bookmarks"
