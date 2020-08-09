@@ -20,6 +20,7 @@ Returns a string of `mode' without the \"-mode\" postfix as a fallback."
    ((file-upwards-parent "makefile") "@make")
    ((file-upwards-parent "Cargo.toml") "@cargo")
    (t (pcase mode
+        ('c++-mode "cpp")
         (fallback (replace-regexp-in-string "-mode$" "" (symbol-name fallback)))))))
 
 (defun ice-rifle-run () (interactive) (ice-rifle "run"))

@@ -356,12 +356,12 @@
 ;;   (centaur-tabs-enable-buffer-reordering))
 
 
-(use-package edwina
-  :ensure t
-  :config
-  (setq display-buffer-base-action '(display-buffer-below-selected))
-  (edwina-setup-dwm-keys)
-  (edwina-mode 1))
+;; (use-package edwina
+;;   :ensure t
+;;   :config
+;;   (setq display-buffer-base-action '(display-buffer-below-selected))
+;;   (edwina-setup-dwm-keys)
+;;   (edwina-mode 1))
 
 ;; (use-package spaceline
 ;;   :ensure t
@@ -382,8 +382,13 @@
 
 (bind-map my-leader-map
   :evil-keys ("SPC")
-  :bindings ("SPC" #'find-file
+  :bindings ("SPC" #'(lambda ()
+                       (interactive)
+                       (let ((default-directory "~"))
+                         (call-interactively #'find-file)))
+             "." #'find-file
              "e" #'eval-expression
+             "E" #'eval-last-sexp
              "rr" #'ice-rifle-run
              "rb" #'ice-rifle-build
              "rt" #'ice-rifle-test
@@ -394,7 +399,9 @@
              "fd" #'dired
              "m" #'counsel-M-x
              "s" #'vr/replace
-             "fb" #'format-all-buffer))
+             "fb" #'format-all-buffer
+             "b" #'ido-switch-buffer
+             "B" #'ido-switch-buffer-other-window))
 
 (dolist (x '(("p" #'evil-paste-after)
              ("P" #'evil-paste-before)
@@ -406,9 +413,6 @@
                                        (interactive)
                                        (evil-use-register ?+)
                                        (call-interactively ,(car (cdr x))))))
-
-(define-key evil-motion-state-map (kbd "M-n") #'ido-switch-buffer-other-frame)
-(define-key evil-motion-state-map (kbd "M-b") #'ido-switch-buffer)
 
 (define-key evil-insert-state-map (kbd "C-y") #'evil-paste-after)
 
