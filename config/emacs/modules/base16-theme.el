@@ -124,11 +124,11 @@
 
  ;; Font Lock
  (font-lock-builtin-face                       :foreground base0C)
- (font-lock-comment-delimiter-face             :foreground base02)
- (font-lock-comment-face                       :foreground base03)
+ (font-lock-comment-delimiter-face             :foreground base03 :slant italic)
+ (font-lock-comment-face                       :foreground base03 :slant italic)
  (font-lock-constant-face                      :foreground base09)
- (font-lock-doc-face                           :foreground base04)
- (font-lock-doc-string-face                    :foreground base03)
+ (font-lock-doc-face                           :foreground base04 :slant italic)
+ (font-lock-doc-string-face                    :foreground base04 :slant italic)
  (font-lock-function-name-face                 :foreground base0D)
  (font-lock-keyword-face                       :foreground base0E)
  (font-lock-negation-char-face                 :foreground base0B)
@@ -144,7 +144,7 @@
  (match                                        :foreground base0D :background base01 :inverse-video t)
  (isearch                                      :foreground base0A :background base01 :inverse-video t)
  (lazy-highlight                               :foreground base0C :background base01 :inverse-video t)
- (isearch-lazy-highlight-face                  :inherit lazy-highlight) ;; was replaced with 'lazy-highlight in emacs 22
+ (isearch-lazy-highlight-face                  :inherit lazy-highlight)
  (isearch-fail                                 :background base01 :inverse-video t :inherit font-lock-warning-face)
 
  ;; Line Numbers
@@ -152,7 +152,7 @@
  (line-number-current-line                     :background base02)
 
  ;; modeline
- (mode-line                                    :foreground base05 :background base00) ; :box base16-settings-mode-line-box)
+ (mode-line                                    :foreground base05 :background base00)
  (mode-line-buffer-id                          :foreground base0B :background nil)
  (mode-line-emphasis                           :foreground base06 :slant italic)
  (mode-line-highlight                          :foreground base0E :box nil :weight bold)
@@ -186,7 +186,7 @@
  (TeX-error-description-tex-said               :inherit font-lock-function-name-face)
  (TeX-error-description-warning                :inherit warning)
 
-                                        ; centaur-tabs
+ ;; centaur-tabs
  (centaur-tabs-default                         :background base00 :foreground base05)
  (centaur-tabs-selected                        :background base01 :foreground base06)
  (centaur-tabs-unselected                      :background base00 :foreground base05)
@@ -195,9 +195,6 @@
  (centaur-tabs-active-bar-face                 :background base00)
  (centaur-tabs-modified-marker-selected        :inherit 'centaur-tabs-selected :foreground base0D)
  (centaur-tabs-modified-marker-unselected      :inherit 'centaur-tabs-unselected :foreground base0D)
- ;; centaur-tabs-close-unselected
- ;; centaur-tabs-close-selected
- ;; centaur-tabs-close-mouse-face
 
  ;; circe-mode
  (circe-fool-face                              :foreground base02)

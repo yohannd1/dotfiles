@@ -72,8 +72,9 @@ xset 'qutebrowser.warning' "$base09"
 xset 'qutebrowser.info' "$base0D"
 xset 'qutebrowser.success' "$base0B"
 
-# emacs
+# others
 xset 'Emacs.font' "$FONT"
+xset 'penrose.highlight' "$base0E"
 
 # general
 xset '*background' "$base00"
