@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-
+#
 # A collection of commands to run on the start of an X session.
 # This should be sourced by ~/.xinitrc or your display manager, and not simply
 # loaded alone.
@@ -13,11 +13,15 @@ case "$WM" in
     setbg &
     dwmblocks &
     ;;
-  i3|qtile|awesome|penrose)
+  penrose)
+    start-sxhkd standard &
+    setbg &
+    start-polybar &
+    ;;
+  i3|qtile|awesome|*)
     start-sxhkd standard &
     setbg &
     ;;
-  *) ;;
 esac
 
 # background applications

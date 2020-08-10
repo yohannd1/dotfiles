@@ -1,5 +1,7 @@
-# -*- origami-fold-style: triple-braces -*-
+# -*- origami-fold-style: triple-braces; mode: sh -*-
 # vim: fdm=marker
+
+setopt interactivecomments
 
 # Init {{{
 
