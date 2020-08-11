@@ -42,4 +42,8 @@ On non-linux platforms `FALLBACK' is always returned."
                                      (number-to-string (or code 2))
                                      " q"))))
 
+(defmacro inline-hook! (hook-name hook-arg-list &rest body)
+  `(add-hook ,hook-name (lambda ,hook-arg-list ,@body)))
+
+
 (provide 'ice-misc)
