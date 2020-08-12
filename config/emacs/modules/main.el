@@ -140,10 +140,51 @@
   :ensure t
   :defer t)
 
-(use-package doom-modeline
+;; (use-package doom-modeline
+;;   :ensure t
+;;   :init
+;;   (doom-modeline-mode 1))
+
+(use-package spaceline
   :ensure t
-  :init
-  (doom-modeline-mode 1))
+  :config
+  (spaceline-compile
+    ;; Left Side
+    '((anzu :priority 100)
+      (evil-state
+       :face highlight-face
+       :priority 100)
+      (major-mode
+       :face other-face
+       :priority 90)
+      ((buffer-modified buffer-size)
+       :face default-face
+       :priority 80)
+      ;; (minor-modes :when active
+      ;;              :priority 10)
+      )
+
+    ;; Right Side
+    '((selection-info
+       :face default-face
+       :priority 95)
+      (buffer-encoding-abbrev
+       :face default-face
+       :priority 96)
+      ((point-position line-column)
+       :face other-face
+       :priority 96)
+      (buffer-position
+       :face highlight-face
+       :priority 99))))
+
+(use-package origami
+  :ensure t
+  :config
+  (with-eval-after-load 'evil
+    (define-key evil-motion-state-map "zo" #'origami-open-node)
+    (define-key evil-motion-state-map "zc" #'origami-close-node)
+    (define-key evil-motion-state-map "za" #'origami-toggle-node)))
 
 ;; (use-package centaur-tabs ;; TODO: move & remake
 ;;   :ensure t
@@ -198,15 +239,6 @@
 ;;   (setq display-buffer-base-action '(display-buffer-below-selected))
 ;;   (edwina-setup-dwm-keys)
 ;;   (edwina-mode 1))
-
-;; (use-package spaceline
-;;   :ensure t
-;;   :config
-;;   (spaceline-helm-mode 1)
-;;   (spaceline-emacs-theme)
-;;   (spaceline-toggle-org-clock-on)
-;;   (spaceline-toggle-minor-modes-off)
-;;   (spaceline-toggle-version-control-off))
 
 ;; Set options for ice-style.
 (inline-hook! 'ice-style-before-update-hook ()
