@@ -106,13 +106,26 @@
 (use-package magit
   :ensure t)
 
-(use-package counsel
-  :ensure t)
-
 (use-package ivy
   :ensure t
   :config
-  (ivy-mode 1))
+  (setq ivy-count-format "(%d/%d) ")
+  (setq ivy-extra-directories nil) ;; default value: '("../" "./")
+  (ivy-mode 1)
+  (define-key ivy-minibuffer-map (kbd "C-u") #'ivy-immediate-done)
+  (define-key ivy-minibuffer-map (kbd "C-m") #'ivy-alt-done))
+
+(use-package counsel
+  :ensure t
+  :after ivy
+  :config
+  (global-set-key (kbd "M-x") #'counsel-M-x))
+
+(use-package ivy-rich
+  :ensure t
+  :after ivy
+  :config
+  (ivy-rich-mode))
 
 (use-package try
   :ensure t
@@ -129,7 +142,8 @@
 
 (use-package doom-modeline
   :ensure t
-  :init (doom-modeline-mode 1))
+  :init
+  (doom-modeline-mode 1))
 
 ;; (use-package centaur-tabs ;; TODO: move & remake
 ;;   :ensure t
@@ -195,11 +209,10 @@
 ;;   (spaceline-toggle-version-control-off))
 
 ;; Set options for ice-style.
-(add-hook 'ice-style-before-update-hook
-          #'(lambda ()
+(inline-hook! 'ice-style-before-update-hook ()
               (setq ice-style-current-theme 'base16
                     ice-style-font-family (get-xres "font" ice-style-font-family)
-                    ice-style-font-height 100)))
+                    ice-style-font-height 100))
 
 ;; Backup / autosave files
 ;; TODO: disable backup & autosave altogether if on "foreign" machines.
@@ -384,16 +397,21 @@
 (define-key isearch-mode-map [escape] 'isearch-abort)
 (define-key isearch-mode-map "\e" 'isearch-abort)
 
+;; Recentf config
+(setq recentf-max-menu-items 25)
+(setq recentf-max-saved-items 25)
+
 (dolist (x '("ç" "§" "Ã"))
   (define-key evil-motion-state-map x #'evil-ex))
 
 (bind-map my-leader-map
   :evil-keys ("SPC")
-  :bindings ("SPC" #'(lambda ()
+  :bindings ("h" #'(lambda ()
                        (interactive)
                        (let ((default-directory "~"))
                          (call-interactively #'find-file)))
              "." #'find-file
+             "SPC" #'counsel-recentf
              "e" #'eval-expression
              "E" #'eval-last-sexp
              "rr" #'ice-rifle-run
@@ -407,8 +425,8 @@
              "m" #'counsel-M-x
              "s" #'vr/replace
              "fb" #'format-all-buffer
-             "b" #'ido-switch-buffer
-             "B" #'ido-switch-buffer-other-window))
+             "b" #'counsel-switch-buffer
+             "B" #'counsel-switch-buffer-other-window))
 
 (dolist (x '(("p" #'evil-paste-after)
              ("P" #'evil-paste-before)
@@ -422,8 +440,6 @@
                                        (call-interactively ,(car (cdr x))))))
 
 (define-key evil-insert-state-map (kbd "C-y") #'evil-paste-after)
-(define-key ivy-minibuffer-map (kbd "C-j") #'ivy-immediate-done)
-(define-key ivy-minibuffer-map (kbd "C-m") #'ivy-alt-done)
 
 ;; Handle ice-tty cursor changing on terminals
 (inline-hook! 'after-make-frame-functions (_)
