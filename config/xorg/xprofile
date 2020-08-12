@@ -9,20 +9,18 @@ gen-xres | xrdb # update xresources database
 # wm-specific config
 case "$WM" in
   dwm)
-    start-sxhkd standard &
-    setbg &
     dwmblocks &
     ;;
   penrose)
-    start-sxhkd standard &
-    setbg &
     start-polybar &
     ;;
-  i3|qtile|awesome|*)
-    start-sxhkd standard &
-    setbg &
-    ;;
 esac
+
+if [ "$WM" = bspwm ]; then
+  start-sxhkd standard bspwm
+else
+  start-sxhkd standard
+fi &
 
 # background applications
 picom -b & # compositor
@@ -31,6 +29,7 @@ flameshot & # screenshot app
 nm-applet & # network manager on tray
 monitor-battery &
 blueman-applet &
+setbg &
 
 # extra config (async)
 systemd-inhibit --what=handle-power-key sleep infinity & # disable power button
