@@ -8,6 +8,7 @@ bindings = [
     ("d", "scroll-page 0 0.5"),
     ("u", "scroll-page 0 -0.5"),
     ("ç", "set-cmd-text :"),
+    ("b", "set-cmd-text :buffer"),
 ]
 
 def main():

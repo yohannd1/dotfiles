@@ -20,31 +20,8 @@
   (setq evil-want-C-u-scroll t)
   :config
   (evil-mode 1)
-  (evil-set-initial-state 'term-mode 'emacs)
-  (with-eval-after-load 'evil
-    (defalias #'forward-evil-word #'forward-evil-symbol)
-    ;; make evil-search-word look for symbol rather than word boundaries
-    (setq-default evil-symbol-word-search t)))
-
-(use-package evil-commentary
-  :ensure t
-  :config
-  (evil-commentary-mode 1))
-
-(use-package evil-surround
-  :ensure t
-  :config
-  (global-evil-surround-mode 1))
-
-(use-package evil-magit
-  :ensure t)
-
-(use-package visual-regexp
-  :ensure t)
-
-(use-package esup
-  :ensure t
-  :defer t)
+  (setq-default evil-symbol-word-search t) ;; make evil-search-word look for symbol rather than word boundaries
+  (evil-set-initial-state 'term-mode 'emacs))
 
 (use-package lua-mode
   :ensure t
@@ -148,6 +125,7 @@
 (use-package spaceline
   :ensure t
   :config
+  (spaceline-emacs-theme)
   (spaceline-compile
     ;; Left Side
     '((anzu :priority 100)
@@ -185,6 +163,23 @@
     (define-key evil-motion-state-map "zo" #'origami-open-node)
     (define-key evil-motion-state-map "zc" #'origami-close-node)
     (define-key evil-motion-state-map "za" #'origami-toggle-node)))
+
+;; https://github.com/kaushalmodi/.emacs.d/blob/master/setup-files/setup-dired.el
+(use-package dired
+  :ensure nil
+  :config
+  (setq dired-listing-switches "-alGhvF")
+  (inline-hook! 'dired-mode-hook ()
+                (let ((name (buffer-name)))
+                  (rename-buffer (concat "*Dired: " (replace-regexp-in-string "/$" "" name) "*")))
+                (toggle-truncate-lines 1)))
+
+(use-package xclip
+  ;; Clipboard support in the terminal.
+  ;; Works only if the `xclip' binary is installed.
+  :ensure t
+  :config
+  (xclip-mode 1))
 
 ;; (use-package centaur-tabs ;; TODO: move & remake
 ;;   :ensure t
