@@ -20,8 +20,10 @@
   (setq evil-want-C-u-scroll t)
   :config
   (evil-mode 1)
-  (setq-default evil-symbol-word-search t) ;; make evil-search-word look for symbol rather than word boundaries
-  (evil-set-initial-state 'term-mode 'emacs))
+  (with-eval-after-load 'evil
+    ;; make evil-search-word look for symbol rather than word boundaries
+    (setq-default evil-symbol-word-search t)
+    (evil-set-initial-state 'term-mode 'emacs)))
 
 (use-package evil-commentary
   :ensure t
@@ -150,11 +152,20 @@
   :ensure t
   :config
   (spaceline-emacs-theme)
+  (spaceline-define-segment tty-or-gui
+    (if (display-graphic-p)
+        "gui"
+      "tty"))
   (spaceline-compile
     ;; Left Side
-    '((anzu :priority 100)
+    '((anzu
+       :priority 100)
       (evil-state
        :face highlight-face
+       :priority 100)
+      (tty-or-gui
+       :face other-face
+       :when active
        :priority 100)
       (buffer-id
        :face default-face)
@@ -280,7 +291,7 @@
 
 ;; Options for c-mode
 (setq c-default-style "linux"
-      c-basic-offset 4)
+      c-basic-offset 8)
 
 ;; Options for sh-mode
 (setq sh-basic-offset 2)
@@ -425,7 +436,7 @@
 ;; Prefer spaces over tabs.
 ;; (from Doom Emacs)
 (setq-default indent-tabs-mode nil
-              tab-width 4)
+              tab-width 8)
 
 ;; Stretch the cursor for tab characters.
 (setq x-stretch-cursor t)
