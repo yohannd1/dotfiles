@@ -23,6 +23,26 @@
   (setq-default evil-symbol-word-search t) ;; make evil-search-word look for symbol rather than word boundaries
   (evil-set-initial-state 'term-mode 'emacs))
 
+(use-package evil-commentary
+  :ensure t
+  :config
+  (evil-commentary-mode 1))
+
+(use-package evil-surround
+  :ensure t
+  :config
+  (global-evil-surround-mode 1))
+
+(use-package evil-magit
+  :ensure t)
+
+(use-package visual-regexp
+  :ensure t)
+
+(use-package esup
+  :ensure t
+  :defer t)
+
 (use-package lua-mode
   :ensure t
   :defer t)
@@ -59,6 +79,10 @@
   :defer t)
 
 (use-package typescript-mode
+  :ensure t
+  :defer t)
+
+(use-package racket-mode
   :ensure t
   :defer t)
 
@@ -132,6 +156,8 @@
       (evil-state
        :face highlight-face
        :priority 100)
+      (buffer-id
+       :face default-face)
       (major-mode
        :face other-face
        :priority 90)
@@ -425,8 +451,8 @@
 (define-key isearch-mode-map "\e" 'isearch-abort)
 
 ;; Recentf config
-(setq recentf-max-menu-items 25)
-(setq recentf-max-saved-items 25)
+(setq recentf-max-menu-items 50)
+(setq recentf-max-saved-items 50)
 
 (dolist (x '("ç" "§" "Ã"))
   (define-key evil-motion-state-map x #'evil-ex))

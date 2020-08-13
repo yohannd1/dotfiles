@@ -55,6 +55,7 @@ case "$1" in
       zsh) if [ -x "$file" ]; then "$file"; else zsh "$file"; fi ;;
       julia) julia "$file" ;;
       vim) nvim -u "$file" ;;
+      scheme) guile "$file" ;;
       tex)
         name=$(basename "${file%.*}")
         mkdir "$tmp"
