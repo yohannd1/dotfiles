@@ -1,0 +1,88 @@
+#!/usr/bin/env sh
+#
+# A relatively simple wine wrapper.
+
+# Initial env vars
+WINEW_ARCH=${WINEW_ARCH:-32}
+XDG_DATA_DIR=${XDG_DATA_DIR:-$HOME/.local/share}
+WINEW_32_PREFIX=${WINEW_32_PREFIX:-$XDG_DATA_DIR/wine32}
+WINEW_64_PREFIX=${WINEW_64_PREFIX:-$XDG_DATA_DIR/wine64}
+WINEW_RECENTF="${XDG_CACHE_HOME:-$HOME/.cache}/winew_recentf"
+PROGNAME=$(basename $0)
+
+usage() {
+  printf >&2 "Usage: %s\n" "$PROGNAME { open <BIN> | here | recent }"
+  printf >&2 "Environment variables:\n"
+  printf >&2 "  WINEW_ARCH := { 32 | 64 }\n"
+  printf >&2 "                (Default: 32)\n"
+  exit 1
+}
+
+has_line() {
+  if [ $# != 1 ]; then
+    printf >&2 "%s: invalid amount of arguments\n" "$(basename $0)"
+    return 1
+  fi
+
+  while read line; do
+    if [ "$line" = "$(realpath -m $1)" ]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+register_recent() {
+  if [ -f "$WINEW_RECENTF" ]; then
+    if ! has_line "$1" < "$WINEW_RECENTF"; then
+      printf "%s\n" "$(realpath -m "$1")" >> "$WINEW_RECENTF"
+    fi
+  else
+    mkdir -p "$(dirname "$WINEW_RECENTF")"
+    printf "%s\n" "$(realpath -m "$1")" > "$WINEW_RECENTF"
+  fi
+}
+
+launch_application() {
+  if [ ! -f "$1" ]; then
+    printf >&2 "File not found: %s\n" "$1"
+    return 1
+  fi
+
+  case "$WINEW_ARCH" in
+    32)
+      [ "$REGISTER" ] && register_recent "$1"
+      (cd "$(dirname "$1")" && WINEARCH=win32 WINEPREFIX="$WINEW_32_PREFIX" wine "$1")
+      ;;
+    64)
+      [ "$REGISTER" ] && register_recent "$1"
+      (cd "$(dirname "$1")" && WINEARCH=win64 WINEPREFIX="$WINEW_64_PREFIX" wine "$1")
+      ;;
+    *)
+      printf >&2 "Unknown arch: %s\n" "$WINEW_ARCH"
+      usage
+      ;;
+  esac
+}
+
+case $# in
+  1) case "$1" in
+       here)
+         choice=$(fd -tf '\.exe$' | fzagnostic) || exit 1
+         REGISTER=1 launch_application "$choice"
+         ;;
+       recent)
+         if [ -f "$WINEW_RECENTF" ]; then
+           choice=$(cat "$WINEW_RECENTF" | fzagnostic) || exit 1
+           launch_application "$choice"
+         else
+           printf >&2 "recent file %s doesn't exist\n" "$WINEW_RECENTF"
+         fi ;;
+       *) usage ;;
+     esac ;;
+  2) case "$1" in
+       open) REGISTER=1 launch_application "$2" ;;
+     esac ;;
+  *) usage ;;
+esac

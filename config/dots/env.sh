@@ -33,13 +33,15 @@ export READER=zathura
 export FILEMAN=lf
 
 # configuration files/folders
+export WINEPREFIX="$XDG_DATA_DIR/wine32"
+export WINEW_32_PREFIX="$XDG_DATA_DIR/wine32"
+export WINEW_64_PREFIX="$XDG_DATA_DIR/wine64"
 export GOPATH="$XDG_CACHE_HOME/go"
 export CARGO_HOME="$XDG_CACHE_HOME/cargo"
 export RUSTUP_HOME="$XDG_CACHE_HOME/rustup"
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export TASKRC="$XDG_CONFIG_HOME/taskwarrior/taskrc"
 export INPUTRC="$XDG_CONFIG_HOME/inputrc"
-export WINEPREFIX="$XDG_DATA_DIR/wine"
 export XAUTHORITY="$XDG_DATA_DIR/Xauthority" # might break some display managers, but I don't use them.
 export LESSHISTFILE="-"
 

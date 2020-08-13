@@ -1,0 +1,1 @@
+WINEW_ARCH=32 winew "$@"
