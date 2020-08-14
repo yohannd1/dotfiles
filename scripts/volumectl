@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-# TODO: support for pulseaudio (?)
+# TODO: support for pulseaudio (do I need it?)
 
 showHelp() {
   printf >&2 "Usage: %s\n" "$(basename $0) { inc | dec | togglemute }"
@@ -19,4 +19,4 @@ case "$1" in
     ;;
 esac
 
-[ "$WM" = dwm ] && pkill -RTMIN+10 dwmblocks
+pkill -RTMIN+10 dwmblocks >/dev/null 2>/dev/null
