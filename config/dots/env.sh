@@ -61,7 +61,7 @@ export GCC_COLORS='error=01;38;5;8:warning=01;38;5;9:note=01;38;5;12:caret=01;32
 exists sccache && export RUSTC_WRAPPER=sccache
 
 # dotfiles program options
-export DIR_BOOKMARKS="$STORAGE/share/dir-bookmarks"
+export DIR_BOOKMARKS="$STORAGE/share/bookmarks.sh"
 export FLAMEW_SCR_FOLDER="$STORAGE/pictures/screenshots"
 export SETBG_WALLPAPER_DIR="$STORAGE/pictures/wallpapers"
 export SETBG_THEME="storm"
