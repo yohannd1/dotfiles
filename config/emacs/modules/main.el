@@ -76,6 +76,10 @@
   :ensure t
   :defer t)
 
+(use-package yaml-mode
+  :ensure t
+  :defer t)
+
 (use-package csharp-mode
   :ensure t
   :defer t)
@@ -101,7 +105,7 @@
   (setq ac-auto-start 2)
   (setq ac-auto-show-menu t)
   (setq ac-use-menu-map t)
-  (global-auto-complete-mode)
+  (global-auto-complete-mode 1)
   (define-key ac-menu-map (kbd "<backtab>") 'ac-previous)
   (define-key ac-completing-map "\t" 'ac-complete)
   (define-key ac-completing-map "\r" nil))
@@ -517,10 +521,10 @@
 (add-hook 'evil-visual-state-entry-hook #'ice-tty-change-cursor)
 (add-hook 'evil-emacs-state-entry-hook #'ice-tty-change-cursor)
 
+;; sh-mode config
 (inline-hook! 'sh-mode-hook ()
        (setq-default indent-tabs-mode nil
                      tab-width 2))
 
 (ice-style-update)
-
 (provide 'main)

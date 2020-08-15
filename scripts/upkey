@@ -1,0 +1,2 @@
+setxkbmap -layout br # set keyboard layout
+xset r rate 350 40 # speed up xrate
