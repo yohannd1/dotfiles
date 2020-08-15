@@ -19,11 +19,12 @@
   (setq evil-want-C-i-jump nil)
   (setq evil-want-C-u-scroll t)
   :config
-  (evil-mode 1)
-  (with-eval-after-load 'evil
-    ;; make evil-search-word look for symbol rather than word boundaries
-    (setq-default evil-symbol-word-search t)
-    (evil-set-initial-state 'term-mode 'emacs)))
+  (setq-default evil-symbol-word-search t) ;; make evil-search-word look for symbol rather than word boundaries
+  (evil-set-initial-state 'term-mode 'emacs)
+  (evil-mode 1))
+
+(use-package auto-package-update
+   :ensure t)
 
 (use-package evil-commentary
   :ensure t
@@ -100,15 +101,20 @@
 (use-package auto-complete
   :ensure t
   :config
+  (setq ac-auto-start 2
+        ac-auto-show-menu t
+        ac-use-menu-map t)
   (ac-config-default)
   (ac-set-trigger-key "TAB")
-  (setq ac-auto-start 2)
-  (setq ac-auto-show-menu t)
-  (setq ac-use-menu-map t)
-  (global-auto-complete-mode 1)
   (define-key ac-menu-map (kbd "<backtab>") 'ac-previous)
   (define-key ac-completing-map "\t" 'ac-complete)
-  (define-key ac-completing-map "\r" nil))
+  (define-key ac-completing-map "\r" nil)
+  (inline-hook! 'rust-mode-hook () (auto-complete-mode 1)))
+
+;; (use-package company
+;;   :ensure t
+;;   :config
+;;   (add-hook 'after-init-hook #'global-company-mode))
 
 (use-package magit
   :ensure t)
