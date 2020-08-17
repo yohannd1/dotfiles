@@ -1,3 +1,4 @@
+# -*- mode: conf -*-
 # vim: ft=cfg
 
 [global]
@@ -260,19 +261,19 @@
     # Xev might be helpful to find names for keys.
 
     # Close notification.
-    close = mod4+mod1+period
+    # close = mod4+mod1+period
 
     # Close all notifications.
-    close_all = mod4+mod1+comma
+    # close_all = mod4+mod1+comma
 
     # Redisplay last message(s).
     # On the US keyboard layout "grave" is normally above TAB and left
     # of "1". Make sure this key actually exists on your keyboard layout,
     # e.g. check output of 'xmodmap -pke'
-    history = mod4+mod1+h
+    # history = mod4+mod1+h
 
     # Context menu.
-    context = mod4+mod1+o
+    # context = mod4+mod1+o
 
 [urgency_low]
 !! echo background = \"$base00\"

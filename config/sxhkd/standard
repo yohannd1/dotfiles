@@ -1,3 +1,4 @@
+# -*- mode: conf -*-
 # vim: ft=conf fdm=marker
 
 # a set of keybindings for general use, working idnependently of wm
@@ -41,33 +42,37 @@ super + alt + p
     xcalib -clear
 
 # volume management
-XF86AudioLowerVolume
-    volumectl dec
-XF86AudioRaiseVolume
-    volumectl inc
+XF86Audio{Lower,Raise}Volume
+    volumectl {dec,inc}
 XF86AudioMute
+    volumectl togglemute
+super + {comma,period}
+    volumectl {dec,inc}
+super + semicolon
     volumectl togglemute
 
 # music player
 XF86AudioPlay
     playerctl play-pause
-XF86AudioNext
-    playerctl next
-XF86AudioPrev
-    playerctl previous
+XF86Audio{Next,Prev}
+    playerctl {next,previous}
+super + alt + {comma,period}
+    playerctl {previous,next}
+super + alt + semicolon
+    playerctl play-pause
 
-# brightness (not working)
-XF86MonBrightnessDown
-    xbacklight -dec 5
-XF86MonBrightnessUp
-    xbacklight -inc 5
-
+# brightness
+XF86MonBrightness{Down,Up}
+    xbacklight -{dec,inc} 20
+super + {minus,equal}
+    xbacklight -{dec,inc} 20
+    
 # toggle red screen
 super + F12
     redscr toggle 70
 
 # show a report (time, current window, CPU usage, battery etc.)
-super + equal
+super + r
     display-report
 
 # quick apps
@@ -89,7 +94,5 @@ super + o; shift + c
     $TERMINAL -c float -g 75x25 -e calc
 super + o; b
     runnsend bkmk menu
-super + o; a
-    runnsend action-launcher
 super + o; j
     ,journalentry
