@@ -76,7 +76,7 @@ xset 'qutebrowser.success' "$base0B"
 
 # others
 xset 'Emacs.font' "$FONT"
-xset 'penrose.highlight' "$base0E"
+xset 'penrose.highlight' "$base0D"
 
 # general
 xset '*background' "$base00"

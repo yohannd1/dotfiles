@@ -1,5 +1,6 @@
 # useful functions
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
+isAndroid() { [ -d ~/.termux ]; } # bad way of detecting lol
 
 # dotfiles dir
 if [ -f ~/.local/share/dots/dotpath ]; then
@@ -23,7 +24,7 @@ export WIKI=~/wiki
 # global options
 export WM=penrose
 export TERM=xterm-256color
-export EDITOR=emacs-custom
+isAndroid && EDITOR=nvim || EDITOR=emacs-custom
 export TERMINAL=st
 export BROWSER=qutebrowser
 export TERMBROWSER=w3m
