@@ -184,10 +184,7 @@
        :priority 90)
       ((buffer-modified buffer-size)
        :face default-face
-       :priority 80)
-      ;; (minor-modes :when active
-      ;;              :priority 10)
-      )
+       :priority 80))
 
     ;; Right Side
     '((selection-info
@@ -526,11 +523,6 @@
 (add-hook 'evil-replace-state-entry-hook #'ice-tty-change-cursor)
 (add-hook 'evil-visual-state-entry-hook #'ice-tty-change-cursor)
 (add-hook 'evil-emacs-state-entry-hook #'ice-tty-change-cursor)
-
-;; sh-mode config
-(inline-hook! 'sh-mode-hook ()
-       (setq-default indent-tabs-mode nil
-                     tab-width 2))
 
 (ice-style-update)
 (provide 'main)
