@@ -1,7 +1,7 @@
 apps = ()
 
 if m.is_android:
-    m.link_conf("termux", "~/.termux")
+    m.link_glob(DOTFILES/"config/termux", "~/.termux")
 else:
     apps += (
         # "bspwm",
