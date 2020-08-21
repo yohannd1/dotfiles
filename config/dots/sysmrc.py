@@ -38,6 +38,7 @@ for app in apps:
     m.link_conf(app, f"~/.config/{app}")
 
 m.link_conf("profile", "~/.profile")
+m.link_conf("bash/bashrc", "~/.bashrc")
 m.link_conf("profile", "~/.zprofile")
 m.link_conf("zsh/zshrc", "~/.config/zsh/.zshrc")
 m.link_conf("zsh/zlogout", "~/.config/zsh/.zlogout")

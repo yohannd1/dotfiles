@@ -109,7 +109,11 @@ let g:gruvbox_italics = 1
 let g:buftabline_indicators = 1
 
 " Rifle
-let g:rifle_mode = "popup"
+if is_android
+  let g:rifle_mode = "buffer"
+else
+  let g:rifle_mode = "popup"
+endif
 
 " }}}
 " Functions {{{
@@ -567,11 +571,9 @@ inoremap <expr> <C-k> pumvisible() ? "\<C-p>" : "<C-k>"
 inoremap <expr> <C-m> pumvisible() ? "\<C-y>" : "<C-m>"
 
 " Rifle Commands
-nnoremap <silent> <Leader>r :Rifle "run"<CR>
-nnoremap <silent> <Leader>t :Rifle "test"<CR>
-nnoremap <silent> <Leader>R :Rifle "build"<CR>
-nnoremap <silent> <Leader>c :Rifle "check"<CR>
-nnoremap <Leader><C-r> :Rifle ""<Left>
+nnoremap <silent> <Leader>rr :Rifle "run"<CR>
+nnoremap <silent> <Leader>rc :Rifle "check"<CR>
+nnoremap <silent> <Leader>rb :Rifle "build"<CR>
 
 " Formatting Commands
 nnoremap <Leader>f :FormatFile<CR>

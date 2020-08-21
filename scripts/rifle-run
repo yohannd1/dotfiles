@@ -16,7 +16,11 @@ tmp=$(mktemp) || {
   exit 1
 }
 
-file=$(realpath -m "$3") || exit 1
+if [ "$file" = "" ]; then
+  printf >&2 "Empty filename.\n"
+else
+  file=$(realpath -m "$3") || exit 1
+fi
 
 printf >&2 "NOTE: temp file lies at %s\n" "$tmp"
 rm -f "$tmp" # remove temp file for preventing any errors related to "file already exists"
