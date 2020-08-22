@@ -3,7 +3,8 @@
 . "$(uselib std)"
 
 case "$EDITOR" in
-  emacs-custom) emacs-custom "$@" ;;
-  emacs) emacs -- "$@" ;;
-  vi|vim|nvim) termup "$EDITOR" -- "$@" ;;
+  emacs-custom) exec emacs-custom "$@" ;;
+  emacs) exec emacs -- "$@" ;;
+  vi|vim|nvim) exec "$TERMINAL" -e "$EDITOR" -- "$@" ;;
+  *) exec "$EDITOR" "$@" ;;
 esac
