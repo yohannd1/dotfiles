@@ -9,7 +9,7 @@
     new = 11
 
 [core]
-    editor = $EDITOR
+    editor = edit
     excludesfile = ~/.gitignore
     # attributesfile = ~/.gitattributes
     ignorecase = false
