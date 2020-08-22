@@ -47,6 +47,7 @@ export XAUTHORITY="$XDG_DATA_DIR/Xauthority" # might break some display managers
 export LESSHISTFILE="-"
 
 # program options
+export GIT_EDITOR="${EDITOR:-vim}"
 export LESS="-RC"
 export KEYTIMEOUT=1
 export NNN_OPENER="$OPENER"

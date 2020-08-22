@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+if [ $# -lt 2 ]; then
+  printf >&2 "Usage: %s\n" "$(basename $0) <SED-PATTERN> <FILES...>"
+fi
+
+SED_PATTERN="$1"; shift
+
+while [ $# -gt 0 ]; do
+  old_basename=$(basename "$1") || exit 1
+  old_dirname=$(dirname "$1") || exit 1
+  new_basename=$(printf "%s" "$old_basename" | sed "$SED_PATTERN") || exit 1
+  new_filename=$(realpath -m "$old_dirname/$new_basename")
+
+  if [ "$old_basename" != "$new_basename" ]; then
+    printf >&2 '"%s" -> "%s"\n' "$1" "$new_basename"
+    mv -i "$1" "$new_filename"
+  else
+    # printf >&2 'No changes on "%s"\n' "$new_basename"
+    :
+  fi
+
+  shift
+done
