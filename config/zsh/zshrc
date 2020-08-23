@@ -185,6 +185,7 @@ alias \
   d='duplicate'
 
 alias rl='shell::reload'
+alias make='fparent-run Makefile run-command file-dir make'
 
 # }}}
 # Aliases {{{
