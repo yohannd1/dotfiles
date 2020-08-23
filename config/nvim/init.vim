@@ -61,6 +61,7 @@ if g:is_first
   Plug 'justinmk/vim-syntax-extra'
   Plug 'Vimjas/vim-python-pep8-indent'
   Plug 'vim-python/python-syntax'
+  Plug 'https://gitlab.com/HiPhish/guile.vim'
   " Plug 'tbastos/vim-lua'
   " Plug 'hylang/vim-hy'
   " Plug 'fsharp/vim-fsharp'

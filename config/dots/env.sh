@@ -24,7 +24,7 @@ export WIKI=~/wiki
 # global options
 export WM=penrose
 export TERM=xterm-256color
-isAndroid && EDITOR=nvim || EDITOR=emacs-custom
+isAndroid && export EDITOR=nvim || export EDITOR=emacs-custom
 export TERMINAL=st
 export BROWSER=qutebrowser
 export TERMBROWSER=w3m
