@@ -34,6 +34,10 @@ while [ ! "$exit" ]; do
     a) (cd "$(realpath -m $(git rev-parse --git-dir)/..)" && git add .) ;;
     b) git branch ;;
     c) git commit ;;
+    C)
+      (cd "$(realpath -m $(git rev-parse --git-dir)/..)" && git add .)
+      git commit
+      ;;
     d) git diff HEAD ;;
     f) git fetch ;;
     i) git status -sb ;;
@@ -49,6 +53,7 @@ while [ ! "$exit" ]; do
   i     info (git status -sb)
   a     stage all changes
   c     commit
+  c     stage all changes and commit
   d     show diff
   p     pull
   s     push
