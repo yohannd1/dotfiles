@@ -16,8 +16,9 @@ tmp=$(mktemp) || {
   exit 1
 }
 
-if [ "$file" = "" ]; then
+if [ -z "$3" ]; then
   printf >&2 "Empty filename.\n"
+  exit 1
 else
   file=$(realpath -m "$3") || exit 1
 fi
