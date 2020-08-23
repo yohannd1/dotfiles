@@ -40,11 +40,11 @@ while [ ! "$exit" ]; do
     l) git log --all --oneline ;;
     L) git log --all ;;
     p) git pull ;;
-    q) exit=1 ;;
+    q) exit=0 ;;
     r) git remote -v ;;
     s) git push ;;
     "") clear ;;
-    "") exit=1 ;;
+    "") exit=0 ;;
     h) cat >&2 <<EOF ;;
   i     info (git status -sb)
   a     stage all changes
