@@ -1,40 +1,68 @@
 #!/usr/bin/env bash
 
-case $# in
-  0) ;;
-  1) cd "$1" || exit 1 ;;
-  *)
-    printf >&2 "%s\n" "Usage: $(basename $0) [repo]"
-    printf >&2 "%s\n" "If [repo] is not specified, the current directory is used as it."
-    exit 1
-    ;;
-esac
-
-if git status -sb; then
-  printf >&2 '\e[2 q'
-  while [ -z "$EXIT" ]; do
-    printf >&2 "Options: %s\n" "(d diff) (a add-and-commit) (p pull) (s push) (f fetch) (l log) (q quit)"
-    printf >&2 "       > "
-    read -n1 option
-    printf >&2 "\n"
-    case "$option" in
-      d)
-        git add .
-        git diff HEAD
-        ;;
-      a) git add . && git commit ;;
-      l) git log --all --oneline ;;
-      p) git pull ;;
-      s) git push ;;
-      f) git fetch ;;
-      q) EXIT=0 ;;
-      "") ;;
-      ) EXIT=0 ;;
-      "") clear ;;
-      *) printf 'Invalid option: "%s"\n' "$option" ;;
-    esac
-  done
-  exit "$EXIT"
-else
+if [ $# != 0 ]; then
+  printf >&2 "%s\n" "Usage: $(basename $0)"
   exit 1
 fi
+
+is_git_dir() {
+  [ -d .git ] || git rev-parse --git-dir 2>/dev/null >/dev/null
+}
+
+if ! is_git_dir; then
+  printf >&2 "This directory is not part of a git repository.\n"
+  exit 1
+fi
+
+# show status
+git status -sb
+
+# show help message
+printf >&2 "Type 'h' for help.\n"
+
+while [ ! "$exit" ]; do
+  # change cursor to block
+  printf >&2 '\e[ 2q'
+
+  # prompt
+  printf >&2 "Command => "
+  read -n1 option
+  printf >&2 "\n"
+
+  # parse option
+  case "$option" in
+    a) (cd "$(realpath -m $(git rev-parse --git-dir)/..)" && git add .) ;;
+    b) git branch ;;
+    c) git commit ;;
+    d) git diff HEAD ;;
+    f) git fetch ;;
+    i) git status -sb ;;
+    l) git log --all --oneline ;;
+    L) git log --all ;;
+    p) git pull ;;
+    q) exit=1 ;;
+    r) git remote -v ;;
+    s) git push ;;
+    "") clear ;;
+    "") exit=1 ;;
+    h) cat >&2 <<EOF ;;
+  i     info (git status -sb)
+  a     stage all changes
+  c     commit
+  d     show diff
+  p     pull
+  s     push
+  l     log (compact)
+  L     log (full)
+  f     fetch
+  b     list branches
+  r     list remotes
+  q     exit
+  ESC   exit
+  h     show this message
+EOF
+    *) printf 'Invalid option: %q\n' "$option" ;;
+  esac
+done
+
+exit "$exit"
