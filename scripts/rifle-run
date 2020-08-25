@@ -88,6 +88,7 @@ case "$1" in
       racket) racket "$file" ;;
       html) openfork "$file" ;;
       moon) moon "$file" ;;
+      zig) zig run "$file" ;;
       *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
     esac ;;
   build)
@@ -95,7 +96,6 @@ case "$1" in
       @make) fparent-run "Makefile" run-command file-dir make ;;
       @cargo) fparent-run "Cargo.toml" run-command file-dir cargo build ;;
       @gradlew) fparent-run "gradlew" run-file script-dir build ;;
-      rust) rustc "$file" -o "$tmp" ;;
       markdown) md-compile "$file" > "$HOME/$(basename "$file").$(date +%Y-%m-%d).html" ;;
       *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
     esac ;;

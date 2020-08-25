@@ -58,12 +58,19 @@
   :ensure t
   :defer t)
 
+(use-package zig-mode
+  :ensure t
+  :defer t)
+
 (use-package markdown-mode
   :ensure t
   :defer t
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode)))
+         ("\\.markdown\\'" . markdown-mode))
+  :config
+  (inline-hook! 'markdown-mode-hook ()
+                (auto-fill-mode)))
 
 (use-package git-commit-message
   :ensure nil
@@ -297,11 +304,23 @@
       auto-save-file-name-transforms `((".*" ,(f-join user-cache-directory "saves") t)))
 
 ;; Options for c-mode
-(setq c-default-style "linux"
-      c-basic-offset 8)
-
+(inline-hook! 'c-mode-hook ()
+              (c-set-style "linux")
+              (setq indent-tabs-mode t))
+              
 ;; Options for sh-mode
 (setq sh-basic-offset 2)
+
+;; Options for cpp-mode
+(c-add-style "c++"
+             '("stroustrup"
+               (indent-tabs-mode . nil)              ;; use spaces rather than tabs
+               (c-basic-offset . 4)                  ;; indent by four spaces
+               (c-offsets-alist . ((inline-open . 0) ;; custom indentation rules
+                                   (brace-list-open . 0)
+                                   (statement-case-open . +)))))
+(inline-hook! 'c++-mode-hook ()
+              (c-set-style "c++"))
 
 ;; Automatically create a file/buffer when called if it doesn't exist
 (setq confirm-nonexistent-file-or-buffer nil)
