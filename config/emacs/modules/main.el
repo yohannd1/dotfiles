@@ -24,7 +24,7 @@
   (evil-mode 1))
 
 (use-package auto-package-update
-   :ensure t)
+  :ensure t)
 
 (use-package evil-commentary
   :ensure t
@@ -303,24 +303,28 @@
       backup-directory-alist `(("" . ,(f-join user-cache-directory "backups")))
       auto-save-file-name-transforms `((".*" ,(f-join user-cache-directory "saves") t)))
 
-;; Options for c-mode
+;; c-mode
 (inline-hook! 'c-mode-hook ()
               (c-set-style "linux")
               (setq indent-tabs-mode t))
-              
-;; Options for sh-mode
+
+;; sh-mode
 (setq sh-basic-offset 2)
 
-;; Options for cpp-mode
+;; c++-mode
 (c-add-style "c++"
              '("stroustrup"
-               (indent-tabs-mode . nil)              ;; use spaces rather than tabs
-               (c-basic-offset . 4)                  ;; indent by four spaces
-               (c-offsets-alist . ((inline-open . 0) ;; custom indentation rules
+               (indent-tabs-mode . nil)                          ;; use spaces rather than tabs
+               (c-basic-offset . 4)                              ;; indent by four spaces
+               (c-offsets-alist . ((inline-open . 0)             ;; custom indentation rules
                                    (brace-list-open . 0)
                                    (statement-case-open . +)))))
 (inline-hook! 'c++-mode-hook ()
               (c-set-style "c++"))
+
+;; asm-mode
+(inline-hook! 'asm-mode ()
+              (setq indent-tabs-mode t))
 
 ;; Automatically create a file/buffer when called if it doesn't exist
 (setq confirm-nonexistent-file-or-buffer nil)
@@ -497,9 +501,9 @@
 (bind-map my-leader-map
   :evil-keys ("SPC")
   :bindings ("h" #'(lambda ()
-                       (interactive)
-                       (let ((default-directory "~"))
-                         (call-interactively #'find-file)))
+                     (interactive)
+                     (let ((default-directory "~"))
+                       (call-interactively #'find-file)))
              "." #'find-file
              "SPC" #'counsel-recentf
              "e" #'eval-expression

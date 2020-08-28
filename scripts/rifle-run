@@ -23,7 +23,7 @@ else
   file=$(realpath -m "$3") || exit 1
 fi
 
-printf >&2 "NOTE: temp file lies at %s\n" "$tmp"
+printf >&2 "@[TEMP: %s]\n\n" "$tmp"
 rm -f "$tmp" # remove temp file for preventing any errors related to "file already exists"
 
 cleanup() {
@@ -61,12 +61,11 @@ case "$1" in
       julia) julia "$file" ;;
       vim) nvim -u "$file" ;;
       scheme) guile "$file" ;;
-      tex)
-        name=$(basename "${file%.*}")
-        mkdir "$tmp"
-        cd "$tmp" \
-          && pdflatex "$file" \
-          && OPEN_GUI=1 open "$name.pdf"
+      latex|tex)
+        name=$(basename "${file%.*}") \
+          && mkdir -p "$tmp" \
+          && pdflatex -output-directory "$tmp" "$file" \
+          && OPEN_GUI=1 open "$tmp/$name.pdf"
         ;;
       python)
         if exists python3; then
