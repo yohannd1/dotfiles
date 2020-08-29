@@ -495,6 +495,10 @@
 (setq recentf-max-menu-items 50)
 (setq recentf-max-saved-items 50)
 
+;; Transparency
+(set-frame-parameter (selected-frame) 'alpha '(95 95))
+(add-to-list 'default-frame-alist '(alpha 95 95))
+
 (dolist (x '("ç" "§" "Ã"))
   (define-key evil-motion-state-map x #'evil-ex))
 
