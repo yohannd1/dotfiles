@@ -21,6 +21,7 @@ Session.vim
 # Temp / Backup Files
 *~
 *.sw*
+\#.*
 
 # Package-related
 # **/Cargo.lock # Should it really be ignored? It's a version lock
