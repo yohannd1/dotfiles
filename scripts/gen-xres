@@ -34,7 +34,7 @@ font() {
 }
 
 # st
-xset 'st.alpha' "1.0"
+xset 'st.alpha' "0.5"
 xset 'st.cursor' "$base0D"
 xset 'st.font' "$(font 14)"
 

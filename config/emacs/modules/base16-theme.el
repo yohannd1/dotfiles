@@ -87,10 +87,16 @@
                                             (symbol-name element)))))
    (t element)))
 
+(custom-theme-set-faces
+ 'base16
+ `(default ((((type tty) (min-colors 16))
+             (:foreground ,base05-tty))
+            (t
+             (:foreground ,base05-gui :background ,base00-gui)))))
+
 (base16--apply-specs
  (border                                       :background base03)
  (cursor                                       :background base0D)
- (default                                      :foreground base05 :background base00)
  (fringe                                       :background base01)
  (gui-element                                  :background base01)
  (header-line                                  :foreground base0E :background nil :inherit mode-line)
@@ -638,6 +644,7 @@
  (rng-error-face                               :underline base08)
 
  ;; org-mode
+ (org-headline-done                            :foreground base03)
  (org-agenda-structure                         :foreground base0E)
  (org-agenda-date                              :foreground base0D :underline nil)
  (org-agenda-done                              :foreground base0B)
@@ -650,7 +657,7 @@
  (org-document-info                            :foreground base0C)
  (org-document-info-keyword                    :foreground base0B)
  (org-document-title                           :foreground base09 :weight bold :height 1.44)
- (org-done                                     :foreground base0B :background base01)
+ (org-done                                     :foreground base0D :background base01)
  (org-ellipsis                                 :foreground base04)
  (org-footnote                                 :foreground base0C)
  (org-formula                                  :foreground base08)
