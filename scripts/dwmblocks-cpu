@@ -1,3 +1,3 @@
 #!/usr/bin/env sh
 
-top -bn1 | grep 'Cpu(s)' | awk '{printf "cpu %.0f%%", $2}'
+top -bn1 | grep 'Cpu(s)' | awk '{printf "cpu %02.0f%%", $2}'
