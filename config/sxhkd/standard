@@ -3,9 +3,9 @@
 
 # a set of keybindings for general use, working idnependently of wm
 
-# restart compton
+# restart picom
 super + control + shift + c
-    pkill compton; compton -b
+    pkill picom; picom -b
 
 # terminal
 super + Return

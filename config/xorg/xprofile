@@ -23,7 +23,7 @@ else
 fi &
 
 # background applications
-compton -b & # compositor
+picom -b & # compositor
 [ "$WM" != awesome ] && dunst -config "$XDG_CACHE_HOME/gen/dunstrc" & # notification daemon
 flameshot & # screenshot app
 nm-applet & # network manager on tray

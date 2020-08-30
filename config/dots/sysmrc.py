@@ -8,7 +8,7 @@ else:
         # "polybar",
         "sxhkd",
         # "alacritty",
-        "compton.conf",
+        "picom",
         "xorg",
         "awesome",
         "zathura",
