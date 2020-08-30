@@ -1,11 +1,11 @@
 # -*- mode: conf -*-
 # vim: ft=conf fdm=marker
-
+#
 # a set of keybindings for general use, working idnependently of wm
 
 # restart picom
 super + control + shift + c
-    pkill picom; picom -b
+    pkill picom; picom -b --experimental-backend
 
 # terminal
 super + Return
