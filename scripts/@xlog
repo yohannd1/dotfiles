@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+"$TERMINAL" -e less "$XSESSIONDIR/${1:-xlog}"

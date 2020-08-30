@@ -22,7 +22,7 @@ export STORAGE=~/storage
 export WIKI=~/wiki
 
 # global options
-export WM=penrose
+export WM=dwm
 export TERM=xterm-256color
 isAndroid && export EDITOR=nvim || export EDITOR=emacs-custom
 export TERMINAL=st
