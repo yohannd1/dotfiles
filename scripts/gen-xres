@@ -83,7 +83,8 @@ xset '*background' "$base00"
 xset '*foreground' "$base05"
 xset '*bg' "$base00"
 xset '*fg' "$base05"
-xset '*cursor-color' "$cursor"
+xset '*cursor' "$base0D"
+xset '*cursorColor' "$base0D"
 
 for n in {0..9}; do
   xset "*color$n" "$(eval 'echo $base0'$n)"
