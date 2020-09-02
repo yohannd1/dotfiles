@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t; -*-
+
 ;; There's a binary I found called `xgetres'. It helps with getting X
 ;; resources from the command line. If I can find it here it'd help a
 ;; lot, since emacs refuses to reload the xrdb at runtime.
@@ -45,5 +47,14 @@ On non-linux platforms `FALLBACK' is always returned."
 (defmacro inline-hook! (hook-name hook-arg-list &rest body)
   `(add-hook ,hook-name (lambda ,hook-arg-list ,@body)))
 
+(defun annotate-todo ()
+  "put fringe marker on TODO: lines in the curent buffer"
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "TODO:" nil t)
+      (let ((overlay (make-overlay (- (point) 5) (point))))
+        (overlay-put overlay 'before-string (propertize "A"
+                                                        'display '(left-fringe right-triangle)))))))
 
 (provide 'ice-misc)

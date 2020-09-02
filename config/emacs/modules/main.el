@@ -1,6 +1,5 @@
-;; Main configuration file
-;;
-;; This file is pretty much the "central point" of my config.
+;; -*- lexical-binding: t; -*-
+;; "Actual" configuration file
 
 ;; So, you ask yourself why there are some modules with the "ice" prefix.
 ;; Well, it's just a made up library name. It's short and helps me
@@ -545,6 +544,18 @@
 (add-hook 'evil-replace-state-entry-hook #'ice-tty-change-cursor)
 (add-hook 'evil-visual-state-entry-hook #'ice-tty-change-cursor)
 (add-hook 'evil-emacs-state-entry-hook #'ice-tty-change-cursor)
+
+;; From Doom Emacs
+;; HACK `tty-run-terminal-initialization' is *tremendously* slow for some
+;;      reason; inexplicably doubling startup time for terminal Emacs. Keeping
+;;      it disabled will have nasty side-effects, so we simply delay it until
+;;      later in the startup process and, for some reason, it runs much faster
+;;      when it does.
+(unless (daemonp)
+  (advice-add #'tty-run-terminal-initialization :override #'ignore)
+  (inline-hook! 'window-setup-hook
+      (advice-remove #'tty-run-terminal-initialization #'ignore)
+      (tty-run-terminal-initialization (selected-frame) nil t)))
 
 (ice-style-update)
 (provide 'main)

@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; A small package that defines some useful constants and loads essential libraries.
 ;; It probably doesn't ever need to be required other than in main.el.
 
@@ -17,6 +18,11 @@
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
+
+(use-package gcmh
+  :ensure t
+  :config
+  (gcmh-mode 1))
 
 ;; File/directory management functions
 (use-package f

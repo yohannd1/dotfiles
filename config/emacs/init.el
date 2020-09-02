@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; My personal emacs configuration.
 ;;
 ;; Some big inspirations for this config:

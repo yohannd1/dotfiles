@@ -7,5 +7,5 @@ if printf "%s" "$choice" | grep -q '!$'; then
   exec "$TERMINAL" -e sh -c "eval '${choice%?}'"
 else
   # choice doesn't end with !, open silently
-  exec "$choice"
+  exec sh -c "$choice"
 fi

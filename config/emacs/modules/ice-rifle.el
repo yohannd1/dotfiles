@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; Ice Rifle
 ;; A collection of functions for testing, compiling and running files.
 ;;

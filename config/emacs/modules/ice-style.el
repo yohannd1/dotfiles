@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t; -*-
+
 (defvar ice-style-current-theme 'wombat
   "The theme to load on startup.")
 
