@@ -69,12 +69,12 @@ launch_application() {
 case $# in
   1) case "$1" in
        here)
-         choice=$(fd -tf '\.exe$' | fzagnostic) || exit 1
+         choice=$(fd -tf '\.exe$' | fzagnostic -h 20) || exit 1
          REGISTER=1 launch_application "$choice"
          ;;
        recent)
          if [ -f "$WINEW_RECENTF" ]; then
-           choice=$(cat "$WINEW_RECENTF" | fzagnostic) || exit 1
+           choice=$(cat "$WINEW_RECENTF" | fzagnostic -h 20) || exit 1
            launch_application "$choice"
          else
            printf >&2 "recent file %s doesn't exist\n" "$WINEW_RECENTF"
