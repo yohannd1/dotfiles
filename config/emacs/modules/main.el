@@ -382,7 +382,7 @@
 
 ;; Title formatting
 ;; (from Doom Emacs)
-(setq frame-title-format '("%b :: emacs")
+(setq frame-title-format '("%b - emacs")
       icon-title-format frame-title-format)
 
 ;; Get rid of GUI widgets again (this time working on Emacs 26)
@@ -544,6 +544,7 @@
 (add-hook 'evil-replace-state-entry-hook #'ice-tty-change-cursor)
 (add-hook 'evil-visual-state-entry-hook #'ice-tty-change-cursor)
 (add-hook 'evil-emacs-state-entry-hook #'ice-tty-change-cursor)
+(add-hook 'evil-emacs-state-entry-hook #'ice-tty-change-cursor)
 
 ;; From Doom Emacs
 ;; HACK `tty-run-terminal-initialization' is *tremendously* slow for some
@@ -553,9 +554,10 @@
 ;;      when it does.
 (unless (daemonp)
   (advice-add #'tty-run-terminal-initialization :override #'ignore)
-  (inline-hook! 'window-setup-hook
+  (inline-hook! 'window-setup-hook ()
       (advice-remove #'tty-run-terminal-initialization #'ignore)
-      (tty-run-terminal-initialization (selected-frame) nil t)))
+      (tty-run-terminal-initialization (selected-frame) nil t)
+      (ice-tty-change-cursor)))
 
 (ice-style-update)
 (provide 'main)
