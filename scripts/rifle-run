@@ -37,6 +37,20 @@ die() {
   exit 1
 }
 
+getPython() {
+  if exists python3; then
+    echo "python3"
+  elif exists python2; then
+    echo "python2"
+  elif exists python; then
+    echo "python"
+  elif exists py; then
+    echo "py"
+  else
+    die "Could not find a suitable python version\n"
+  fi
+}
+
 case "$1" in
   run)
     case "$2" in
@@ -68,17 +82,9 @@ case "$1" in
           && OPEN_GUI=1 open "$tmp/$name.pdf"
         ;;
       python)
-        if exists python3; then
-          python3 "$file"
-        elif exists python2; then
-          printf >&2 "WARNING: using python2 to debug\n"
-          python2 "$file"
-        elif exists python; then
-          printf >&2 "WARNING: using python (unknown version) to debug\n"
-          python "$file"
-        else
-          die "Could not find a suitable python version\n"
-        fi ;;
+        python=$(getPython)
+        "$python" "$file"
+        ;;
       hy) hy "$file" ;;
       fsharp) fsharpi "$file" ;;
       lua) lua "$file" ;;
@@ -106,8 +112,12 @@ case "$1" in
     esac ;;
   check)
     case "$2" in
-      @make) make check ;;
-      @cargo) cargo check ;;
+      @make) fparent-run "Makefile" run-command file-dir make check ;;
+      @cargo) fparent-run "Cargo.toml" run-command file-dir cargo check ;;
+      python)
+        python=$(getPython)
+        "$python" -m pylint "$file"
+        ;;
     esac ;;
   *) die "Invalid action: %s\n" "$1" ;;
 esac
