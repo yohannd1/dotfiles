@@ -91,7 +91,10 @@ EOF
   exit 1
 fi
 
-FILE=$(printf "%s" "$1" | sed 's|^file://||g') # TODO: translate %[0-9a-fA-F]{2} sequences when filename starts with file://
+FILE="$1"
+if printf "%s" "$FILE" | grep -q '^file://'; then
+  FILE=$(printf "%s" "$1" | sed 's|^file://||g; s|%20| |g')
+fi
 filematch_initialize "$FILE"
 
 block mime 'application/x-sharedlib'

@@ -53,6 +53,10 @@
   :ensure t
   :defer t)
 
+(use-package nim-mode
+  :ensure t
+  :defer t)
+
 (use-package haskell-mode
   :ensure t
   :defer t)
