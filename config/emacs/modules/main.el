@@ -18,7 +18,11 @@
   (setq evil-want-C-i-jump nil)
   (setq evil-want-C-u-scroll t)
   :config
-  (setq-default evil-symbol-word-search t) ;; make evil-search-word look for symbol rather than word boundaries
+  (with-eval-after-load 'evil
+    (defalias #'forward-evil-word #'forward-evil-symbol)
+    ;; make evil-search-word look for symbol rather than word boundaries
+    (setq-default evil-symbol-word-search t))
+  (setq evil-ex-search-case 'sensitive)
   (evil-set-initial-state 'term-mode 'emacs)
   (evil-mode 1))
 
@@ -106,7 +110,13 @@
 (use-package rainbow-delimiters
   :ensure t
   :config
-  (add-hook 'after-change-major-mode-hook #'rainbow-delimiters-mode-enable))
+  (inline-hook! 'after-change-major-mode-hook ()
+                (pcase major-mode
+                  ('fundamental-mode (rainbow-delimiters-mode-disable))
+                  ('org-mode (rainbow-delimiters-mode-disable))
+                  ('latex-mode (rainbow-delimiters-mode-disable))
+                  ('markdown-mode (rainbow-delimiters-mode-disable))
+                  (_ (rainbow-delimiters-mode-enable)))))
 
 (use-package auto-complete
   :ensure t
@@ -470,7 +480,7 @@
 (setq x-stretch-cursor t)
 
 ;; Line highlighting
-(global-hl-line-mode 1)
+;; (global-hl-line-mode 1)
 
 ;; Disable automatic copy-to-clipboard behavior
 (setq x-select-enable-clipboard nil)
@@ -488,6 +498,9 @@
 (define-key key-translation-map (kbd "ESC") (kbd "C-g"))
 (define-key isearch-mode-map [escape] 'isearch-abort)
 (define-key isearch-mode-map "\e" 'isearch-abort)
+
+;; Treat _ as a word character
+(modify-syntax-entry ?_ "w")
 
 ;; Recentf config
 (setq recentf-max-menu-items 50)
