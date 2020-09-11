@@ -19,6 +19,13 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
+;; http://doc.rix.si/cce/cce.html
+(defconst core/emacs-start-time (current-time))
+(defun core/time-since-start ()
+  (float-time (time-subtract (current-time)
+                             core/emacs-start-time)))
+
+;; A macro to load packages quickly
 (defmacro core/load! (&rest modules)
   `(dolist (mod '(,@modules))
      (require mod)))
