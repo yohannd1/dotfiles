@@ -1,35 +1,35 @@
-;; -*- lexical-binding: t; -*-
+;;; -*- lexical-binding: t; -*-
 
-(defvar ice-style-current-theme 'wombat
+(defvar core-style-current-theme 'wombat
   "The theme to load on startup.")
 
-(defvar ice-style-font-family "monospace"
+(defvar core-style-font-family "monospace"
   "The family of the main font, that should be used (almost) everywhere on emacs.")
 
-(defvar ice-style-font-height 100
+(defvar core-style-font-height 100
   "The height of the main font.")
 
-(defvar ice-style-before-update-hook '()
-  "A hook that is ran before the main part of `ice-style-update' is ran.")
+(defvar core-style-before-update-hook nil
+  "A hook that is ran before the main part of `core-style-update' is ran.")
 
-(defvar ice-style-before-after-hook '()
-  "A hook that is after before the main part of `ice-style-update' is ran.")
+(defvar core-style-before-after-hook nil
+  "A hook that is after before the main part of `core-style-update' is ran.")
 
-(defun ice-style-update ()
+(defun core-style-update ()
   (interactive)
 
   ;; "before" hook
-  (run-hooks 'ice-style-before-update-hook)
+  (run-hooks 'core-style-before-update-hook)
 
   ;; Load the theme
-  (when ice-style-current-theme
-    (load-theme ice-style-current-theme t))
+  (when core-style-current-theme
+    (load-theme core-style-current-theme t))
 
   ;; Update face - main font
   (dolist (face (list 'default))
     (set-face-attribute face nil
-                        :family ice-style-font-family
-                        :height ice-style-font-height))
+                        :family core-style-font-family
+                        :height core-style-font-height))
 
   ;; Update face - centaur-tabs
   (when (featurep 'centaur-tabs)
@@ -42,10 +42,10 @@
                         'centaur-tabs-modified-marker-selected
                         'centaur-tabs-modified-marker-unselected))
         (set-face-attribute face nil
-                            :family ice-style-font-family
+                            :family core-style-font-family
                             :height 90)))
 
   ;; "after" hook
-  (run-hooks 'ice-style-after-update-hook))
+  (run-hooks 'core-style-after-update-hook))
 
-(provide 'ice-style)
+(provide 'core-style)

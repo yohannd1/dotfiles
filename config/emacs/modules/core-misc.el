@@ -1,9 +1,9 @@
-;; -*- lexical-binding: t; -*-
+;;; -*- lexical-binding: t; -*-
 
 ;; There's a binary I found called `xgetres'. It helps with getting X
 ;; resources from the command line. If I can find it here it'd help a
 ;; lot, since emacs refuses to reload the xrdb at runtime.
-(defconst ice--xgetres-path (executable-find "xgetres"))
+(defconst core--xgetres-path (executable-find "xgetres"))
 
 (defun file-upwards-parent (file &optional starting-directory)
   "Recursively checks for the existence of `file' in `starting-directory' and its parents, returning either the parent where the file was found or nil if no file was found.
@@ -16,7 +16,7 @@
   "Attempts to get an X resource, falling back to `FALLBACK' if any error occurs.
 On non-linux platforms `FALLBACK' is always returned."
   (if (and IS-LINUX (getenv "DISPLAY"))
-      (let ((result (if ice--xgetres-path
+      (let ((result (if core--xgetres-path
                          (string-trim (shell-command-to-string (concat "xgetres Emacs." resource)))
                        (x-get-resource resource ""))))
         (pcase result
@@ -26,7 +26,7 @@ On non-linux platforms `FALLBACK' is always returned."
     fallback))
 
 ;; (from Doom Emacs)
-(defun ice-escape ()
+(defun core-escape ()
   "Attempts to abort the command being currently executed."
   (interactive)
   (cond ((minibuffer-window-active-p (minibuffer-window))
@@ -37,7 +37,7 @@ On non-linux platforms `FALLBACK' is always returned."
         ;; Back to the default
         ((keyboard-quit))))
 
-(defun ice-tty-change-cursor (&optional code)
+(defun core-tty-change-cursor (&optional code)
   "Sends ANSI escape codes to the TTY, indicating it to change the cursor."
   (unless (display-graphic-p)
     (send-string-to-terminal (concat "\033["
@@ -47,14 +47,4 @@ On non-linux platforms `FALLBACK' is always returned."
 (defmacro inline-hook! (hook-name hook-arg-list &rest body)
   `(add-hook ,hook-name (lambda ,hook-arg-list ,@body)))
 
-(defun annotate-todo ()
-  "put fringe marker on TODO: lines in the curent buffer"
-  (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    (while (re-search-forward "TODO:" nil t)
-      (let ((overlay (make-overlay (- (point) 5) (point))))
-        (overlay-put overlay 'before-string (propertize "A"
-                                                        'display '(left-fringe right-triangle)))))))
-
-(provide 'ice-misc)
+(provide 'core-misc)

@@ -1,6 +1,6 @@
-;; -*- lexical-binding: t; -*-
-;; A small package that defines some useful constants and loads essential libraries.
-;; It probably doesn't ever need to be required other than in main.el.
+;;; -*- lexical-binding: t; -*-
+;;; A small package that defines some useful constants and loads essential libraries.
+;;; It probably doesn't ever need to be required other than in main.el.
 
 ;; Some constants that might help when writing portable code.
 (defconst EMACS27+ (> emacs-major-version 26))
@@ -19,13 +19,8 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-(use-package gcmh
-  :ensure t
-  :config
-  (gcmh-mode 1))
+(defmacro core/load! (&rest modules)
+  `(dolist (mod '(,@modules))
+     (require mod)))
 
-;; File/directory management functions
-(use-package f
-  :ensure t)
-
-(provide 'ice-essentials)
+(provide 'core-init)

@@ -1,12 +1,13 @@
-;; base16 theme (custom version)
-;; Based off: https://github.com/belak/base16-emacs/blob/master/base16-theme.el
-;;
-;; GUI version only works on X (it uses Xresources)
-;; Terminal version only has been seen working with TERM=xterm-16color
-;;
-;; TODO: document this, it's shit
+;;; -*- lexical-binding: t; -*-
+;;; base16 theme (custom version)
+;;; Based off: https://github.com/belak/base16-emacs/blob/master/base16-theme.el
+;;;
+;;; GUI version only works on X (it uses Xresources)
+;;; Terminal version only has been seen working with TERM=xterm-16color
+;;;
+;;; TODO: document this, it's shit
 
-(require 'ice-misc)
+(require 'core-misc)
 
 (deftheme base16
   "A custom base16 theme that works on my machines.")
