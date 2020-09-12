@@ -1,7 +1,10 @@
 ;;; -*- lexical-binding: t; -*-
 
 (use-package bind-map
-  :ensure t)
+  :ensure t
+  :config
+  (bind-map conf-kb/leader-map
+    :evil-keys ("SPC")))
 
 (use-package auto-package-update
   :ensure t)

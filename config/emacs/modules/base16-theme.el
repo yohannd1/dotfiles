@@ -4,14 +4,13 @@
 ;;;
 ;;; GUI version only works on X (it uses Xresources)
 ;;; Terminal version only has been seen working with TERM=xterm-16color
-;;;
-;;; TODO: document this, it's shit
 
 (require 'core-misc)
 
 (deftheme base16
   "A custom base16 theme that works on my machines.")
 
+;; A set of (gruvbox) fallback colors for the GUI.
 (setq base00-gui-fallback "#f2e5bc"
       base01-gui-fallback "#ebdbb2"
       base02-gui-fallback "#d5c4a1"
@@ -29,6 +28,7 @@
       base0E-gui-fallback "#8f3f71"
       base0F-gui-fallback "#d65d0e")
 
+;; Attempt to load base16 colors from terminal colors and xresources.
 (setq base00-gui (get-xres "base00" base00-gui-fallback)
       base01-gui (get-xres "base01" base01-gui-fallback)
       base02-gui (get-xres "base02" base02-gui-fallback)
@@ -64,10 +64,12 @@
       base0F-tty "brightwhite")
 
 (defmacro base16--apply-specs (&rest specs)
+  "Applies the specs SPECS to the base16 theme."
   (dolist (spec specs)
     (base16--set-face (car spec) (cdr spec))))
 
 (defun base16--set-face (specname face-attributes)
+  "Sets a face for the base16 theme."
   (let ((tty-attributes (base16--list-get-bases face-attributes "tty"))
         (gui-attributes (base16--list-get-bases face-attributes "gui")))
     (custom-theme-set-faces 'base16 `(,specname ((((type tty) (min-colors 16))
@@ -76,9 +78,11 @@
                                                   ,gui-attributes))))))
 
 (defun base16--list-get-bases (list base-type)
+  "Replace ocurrences of base0[0-9A-D] with the actual color."
   (mapcar #'(lambda (x) (base16--get-base x base-type)) list))
 
 (defun base16--get-base (element base-type)
+  "Checks if ELEMENT is a base16 color name and return said color, otherwise return ELEMENT."
   (cond
    ((listp element) (base16--list-get-bases element base-type))
    ((and (symbolp element)
@@ -573,15 +577,15 @@
 
  ;; magit
  (magit-blame-culprit                          :background base01)
- (magit-blame-heading                          :background base01 :foreground base05)
+ (magit-blame-heading                          :foreground base05 :background base01)
  (magit-branch                                 :foreground base04 :weight bold)
  (magit-branch-current                         :foreground base0C :weight bold :box t)
  (magit-branch-local                           :foreground base0C :weight bold)
  (magit-branch-remote                          :foreground base0B :weight bold)
  (magit-cherry-equivalent                      :foreground base0E)
  (magit-cherry-unmatched                       :foreground base0C)
- (magit-diff-context-highlight                 :background base01 :foreground base05)
- (magit-diff-file-header                       :background base01 :foreground base05)
+ (magit-diff-context-highlight                 :foreground base05 :background base01)
+ (magit-diff-file-header                       :foreground base05 :background base01)
  (magit-hash                                   :foreground base0D)
  (magit-header-line                            :background base02 :foreground base05 :weight bold)
  (magit-hunk-heading                           :background base03)
@@ -834,6 +838,10 @@
  (whitespace-space-after-tab                   :foreground base08 :background base0A)
  (whitespace-space-before-tab                  :foreground base08 :background base09)
  (whitespace-tab                               :foreground base03 :background base01)
- (whitespace-trailing                          :foreground base0A :background base08))
+ (whitespace-trailing                          :foreground base0A :background base08)
+
+ ;; ace-window
+ (aw-leading-char-face                         :foreground base0D)
+ )
 
 (provide-theme 'base16)

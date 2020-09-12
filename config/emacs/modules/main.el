@@ -13,7 +13,7 @@
  conf-packages
  conf-evil
  conf-fmodes
- ;; TODO: keybindings config file
+ conf-kb
  conf-general)
 
 (core-style-update)

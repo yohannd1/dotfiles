@@ -1,4 +1,8 @@
-;; -*- lexical-binding: t; -*-
+;;; -*- lexical-binding: t; -*-
+;;;
+;;; Early Init File
+;;; This file runs on newer versions of emacs, before the frame is rendered.
+;;; Let's use this in our favor.
 
 ;; Prevent the glimpse of un-styled Emacs by disabling these UI elements early.
 (push '(menu-bar-lines . 0) default-frame-alist)

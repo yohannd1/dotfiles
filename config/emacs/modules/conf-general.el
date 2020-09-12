@@ -193,43 +193,26 @@
 (set-frame-parameter (selected-frame) 'alpha '(95 95))
 (add-to-list 'default-frame-alist '(alpha 95 95))
 
-(dolist (x '("ç" "§" "Ã"))
-  (define-key evil-motion-state-map x #'evil-ex))
-
-(bind-map my-leader-map
-  :evil-keys ("SPC")
-  :bindings ("h" #'(lambda ()
-                     (interactive)
-                     (let ((default-directory "~"))
-                       (call-interactively #'find-file)))
-             "." #'find-file
-             "SPC" #'counsel-recentf
-             "e" #'eval-expression
-             "E" #'eval-last-sexp
-             "rr" #'core-rifle-run
-             "rb" #'core-rifle-build
-             "rt" #'core-rifle-test
-             "rc" #'core-rifle-check
-             "fc" #'(lambda ()
-                      (interactive)
-                      (find-file (f-join user-modules-directory "main.el")))
-             "fd" #'dired
-             "m" #'counsel-M-x
-             "s" #'vr/replace
-             "fb" #'format-all-buffer
-             "b" #'counsel-switch-buffer
-             "B" #'counsel-switch-buffer-other-window))
-
-(dolist (x '(("p" #'evil-paste-after)
-             ("P" #'evil-paste-before)
-             ("y" #'evil-yank)
-             ("Y" #'evil-yank-line)
-             ("d" #'evil-delete)
-             ("D" #'evil-delete-line)))
-  (define-key my-leader-map (car x) `(lambda ()
-                                       (interactive)
-                                       (evil-use-register ?+)
-                                       (call-interactively ,(car (cdr x))))))
+(use-package ace-window
+  :ensure t
+  :config
+  (setq aw-keys '(?a ?s ?d ?f ?q ?w ?e ?r))
+  (setq aw-dispatch-always t)
+  (setq aw-minibuffer-flag t)
+  (setq aw-background nil)
+  (setq aw-dispatch-alist
+        '((?x aw-delete-window "Delete Window")
+          (?m aw-swap-window "Swap Windows")
+          (?M aw-move-window "Move Window")
+          (?c aw-copy-window "Copy Window")
+          (?j aw-switch-buffer-in-window "Select Buffer")
+          (?n aw-flip-window)
+          (?u aw-switch-buffer-other-window "Switch Buffer Other Window")
+          (?c aw-split-window-fair "Split Fair Window")
+          (?v aw-split-window-vert "Split Vert Window")
+          (?b aw-split-window-horz "Split Horz Window")
+          (?o delete-other-windows "Delete Other Windows")
+          (?? aw-show-dispatch-help))))
 
 ;; From Doom Emacs
 ;; HACK `tty-run-terminal-initialization' is *tremendously* slow for some

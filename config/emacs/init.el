@@ -1,8 +1,8 @@
-;; -*- lexical-binding: t; -*-
-;; My personal emacs configuration.
-;;
-;; Some big inspirations for this config:
-;;   Doom Emacs (https://github.com/hlissner/doom-emacs) - I literally stole code from here.
+;;; -*- lexical-binding: t; -*-
+;;;
+;;; My personal emacs configuration.
+;;; Some big inspirations for this config:
+;;;   Doom Emacs (https://github.com/hlissner/doom-emacs) - I literally stole code from here.
 
 ;; Ensure emacs is running out of this file's directory.
 ;; Useful if loading this configuration with the --load option.
