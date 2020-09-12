@@ -21,9 +21,6 @@ git status -sb
 printf >&2 "Type 'h' for help.\n"
 
 while [ ! "$exit" ]; do
-  # change cursor to block
-  printf >&2 "\e[ 2q"
-
   # prompt
   printf >&2 "Command => "
   read -n1 option
