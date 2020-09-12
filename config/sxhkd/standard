@@ -95,4 +95,4 @@ super + o; shift + c
 super + o; b
     runnsend bkmk menu
 super + o; j
-    ,journalentry
+    @journalentry
