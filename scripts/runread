@@ -11,7 +11,7 @@ while true; do
   "$@"
   exitCode="$?"
   printf '\033[2 q'
-  printf '\n(EC %d):' "$exitCode"
+  printf '\n@[EC: %d]' "$exitCode"
   while read -sn1 ch; do
     case "$ch" in
       q) exit "$exitCode" ;;

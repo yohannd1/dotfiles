@@ -11,9 +11,9 @@
                     (interactive)
                     (let ((default-directory user-modules-directory))
                       (call-interactively #'find-file))))
-        (" " . ,#'find-file)
         ("f." . ,#'find-file)
         ("fr" . ,#'counsel-recentf)
+        (" " . ,#'counsel-recentf)
 
         ("e" . ,#'eval-expression)
         ("E" . ,#'eval-last-sexp)

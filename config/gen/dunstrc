@@ -276,7 +276,7 @@
 
 [urgency_low]
 !! echo background = \"$base00\"
-!! echo foreground = \"$base03\"
+!! echo foreground = \"$base05\"
 !! echo frame_color = \"$base00\"
     timeout = 15
     fullscreen = show
@@ -284,14 +284,14 @@
 [urgency_normal]
 !! echo background = \"$base00\"
 !! echo foreground = \"$base05\"
-!! echo frame_color = \"$base00\"
+!! echo frame_color = \"$base05\"
     timeout = 30
     fullscreen = show
 
 [urgency_critical]
 !! echo background = \"$base00\"
 !! echo foreground = \"$base08\"
-!! echo frame_color = \"$base00\"
+!! echo frame_color = \"$base08\"
     timeout = 0
     fullscreen = show
 

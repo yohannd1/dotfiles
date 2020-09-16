@@ -29,6 +29,7 @@ rm -f "$tmp" # remove temp file for preventing any errors related to "file alrea
 cleanup() {
   [ -f "$tmp" ] && rm -f "$tmp"
   [ -d "$tmp" ] && rm -rf "$tmp"
+  return 0
 }
 
 die() {

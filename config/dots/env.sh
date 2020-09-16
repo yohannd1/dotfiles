@@ -52,6 +52,7 @@ export LESS="-RC"
 export KEYTIMEOUT=1
 export NNN_OPENER="$OPENER"
 export NNN_TRASH=1
+export RUSTFLAGS='-C link-arg=-fuse-ld=lld'
 export FZF_DEFAULT_OPTS='
   --height=80% --layout=reverse --border
   --color fg:4,fg+:5
@@ -66,7 +67,7 @@ exists sccache && export RUSTC_WRAPPER=sccache
 export DIR_BOOKMARKS="$STORAGE/share/bookmarks.sh"
 export FLAMEW_SCR_FOLDER="$STORAGE/pictures/screenshots"
 export SETBG_WALLPAPER_DIR="$STORAGE/pictures/wallpapers"
-export SETBG_THEME="storm"
+export SETBG_THEME="space-animals"
 export BKMK_FILE="$WIKI/data/bookmarks.json"
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"
 export GUILE_LOAD_PATH="$DOTFILES/lib/guile"
