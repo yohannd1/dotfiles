@@ -56,7 +56,7 @@ export RUSTFLAGS='-C link-arg=-fuse-ld=lld'
 export FZF_DEFAULT_OPTS='
   --height=80% --layout=reverse --border
   --color fg:4,fg+:5
-  --color hl:3,hl+:2
+  --color hl:3,hl+:10
   --color prompt:8,marker:5,pointer:8
   --color spinner:3,gutter:1,info:3
 '

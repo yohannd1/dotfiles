@@ -1,9 +1,19 @@
 # vim: ft=cfg
 [color]
-    ui = auto
+    ui = true
+
+[color "branch"]
+    current = 10
+    local = 10
+    remote = 10
+
+[color "status"]
+    added = 11
+    changed = 10
+    untracked = 4
 
 [color "diff"]
-    meta = 3
+    meta = 4
     frag = 9 bold
     old = 8
     new = 11
@@ -41,5 +51,15 @@
 
 [include]
     path = ~/.gitconfig.local
+
 [pull]
 	rebase = false
+
+[url "https://github.com/"]
+    insteadOf = gh.https:
+
+[url "https://gist.github.com/"]
+    insteadOf = gist.https:
+
+[url "git@github.com:"]
+    insteadOf = gh.ssh:
