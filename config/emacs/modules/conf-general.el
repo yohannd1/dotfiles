@@ -221,10 +221,10 @@
 ;;      it disabled will have nasty side-effects, so we simply delay it until
 ;;      later in the startup process and, for some reason, it runs much faster
 ;;      when it does.
-;; (unless (daemonp)
-;;   (advice-add #'tty-run-terminal-initialization :override #'ignore)
-;;   (inline-hook! 'window-setup-hook ()
-;;       (advice-remove #'tty-run-terminal-initialization #'ignore)
-;;       (tty-run-terminal-initialization (selected-frame) nil t)))
+(unless (daemonp)
+  (advice-add #'tty-run-terminal-initialization :override #'ignore)
+  (inline-hook! 'window-setup-hook ()
+      (advice-remove #'tty-run-terminal-initialization #'ignore)
+      (tty-run-terminal-initialization (selected-frame) nil t)))
 
 (provide 'conf-general)
