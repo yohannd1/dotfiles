@@ -260,7 +260,7 @@
     # Xev might be helpful to find names for keys.
 
     # Close notification.
-    # close = mod4+mod1+period
+    close = mod4+u
 
     # Close all notifications.
     # close_all = mod4+mod1+comma
