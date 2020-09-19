@@ -45,7 +45,9 @@
   (inline-hook! 'rust-mode-hook () (auto-complete-mode 1)))
 
 (use-package magit
-  :ensure t)
+  :ensure t
+  :config
+  (define-key magit-mode-map (kbd "SPC") nil))
 
 (use-package ivy
   :ensure t

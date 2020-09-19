@@ -18,7 +18,9 @@
 
 (use-package zig-mode
   :ensure t
-  :defer t)
+  :defer t
+  :config
+  (setq-default zig-format-on-save nil))
 
 (use-package markdown-mode
   :ensure t

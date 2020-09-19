@@ -5,6 +5,7 @@
 # loaded alone.
 
 gen-xres | xrdb # update xresources database
+setbg &
 
 # wm-specific config
 case "$WM" in
@@ -29,7 +30,6 @@ flameshot & # screenshot app
 nm-applet & # network manager on tray
 monitor-battery &
 blueman-applet &
-setbg &
 
 # extra config (async)
 systemd-inhibit --what=handle-power-key sleep infinity & # disable power button
