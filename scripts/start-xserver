@@ -37,7 +37,7 @@ gen-config || exit 1
 # get tty numbers
 stty=$(stty -g)
 tty=$(tty)
-tty=${tty#/dev/tty}
+tty=${tty#/dev/tty} # TODO: handle /dev/pty
 
 export XSESSIONDIR=/tmp/xsessions/$tty
 [ -d "$XSESSIONDIR" ] && rm -r "$XSESSIONDIR"
@@ -47,5 +47,8 @@ printf >&2 "Starting at %s\n" "$(date +"%Y/%m/%d %H:%M:%S")"
 printf >&2 "Using display ID %s\n" ":$tty"
 
 startx "$initrc" -- :"$tty" >"$XSESSIONDIR/xlog" 2>&1
+exitCode="$?"
 
 printf >&2 "Finished at %s\n" "$(date +"%Y/%m/%d %H:%M:%S")"
+printf >&2 "Exit code: %s\n" "$exitCode"
+exit "$exitCode"

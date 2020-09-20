@@ -1,0 +1,6 @@
+# -*- mode: ruby; -*-
+
+XDG_CACHE_HOME = ENV["XDG_CACHE_HOME"] or File.join(ENV["HOME"], ".cache")
+
+IRB.conf[:SAVE_HISTORY] = 1000
+IRB.conf[:HISTORY_FILE] = File.join(XDG_CACHE_HOME, "irb_history")

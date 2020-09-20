@@ -8,7 +8,6 @@ bindings = [
     ("d", "scroll-page 0 0.5"),
     ("u", "scroll-page 0 -0.5"),
     ("ç", "set-cmd-text :"),
-    ("b", "set-cmd-text :buffer /"),
 ]
 
 def main():
@@ -37,6 +36,8 @@ def main():
             "horizontal": 2,
         },
     })
+
+    config.load_autoconfig()
 
 def xgetres(resource):
     command = sp.run(["xgetres", resource], stdout=sp.PIPE, encoding="UTF-8").stdout.strip()

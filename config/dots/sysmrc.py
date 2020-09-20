@@ -1,13 +1,13 @@
-apps = ()
+import os
+from pathlib import Path
+
+apps = []
 
 if m.is_android:
     m.link_glob(DOTFILES/"config/termux", "~/.termux")
 else:
-    apps += (
-        # "bspwm",
-        # "polybar",
+    apps += [
         "sxhkd",
-        # "alacritty",
         "picom",
         "xorg",
         "awesome",
@@ -16,15 +16,18 @@ else:
         "sxiv",
         # "i3",
         # "rofi",
-
-    )
+        # "bspwm",
+        # "polybar",
+        # "alacritty",
+    ]
 
     for i in {2, 3, 4}:
         origin = DOTFILES / f"config/gtk-{i}.0"
         if origin.is_dir():
             m.link_glob(origin, f"~/.config/gtk-{i}.0")
 
-apps += (
+apps += [
+    "irb",
     "inputrc",
     "dircolors",
     "mimeapps.list",
@@ -32,12 +35,13 @@ apps += (
     "dots",
     "lf",
     # "broot",
-)
+]
 
 for app in apps:
     m.link_conf(app, f"~/.config/{app}")
 
 m.link_conf("profile", "~/.profile")
+m.link_conf("guile/guilerc", "~/.guile")
 m.link_conf("bash/bashrc", "~/.bashrc")
 m.link_conf("profile", "~/.zprofile")
 m.link_conf("zsh/zshrc", "~/.config/zsh/.zshrc")

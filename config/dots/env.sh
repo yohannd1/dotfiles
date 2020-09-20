@@ -3,11 +3,14 @@ exists() { command -v "$1" >/dev/null 2>/dev/null; }
 isAndroid() { [ -d ~/.termux ]; } # bad way of detecting lol
 
 # dotfiles dir
-if [ -f ~/.local/share/dots/dotpath ]; then
-  export DOTFILES=$(cat ~/.local/share/dots/dotpath)
+_dotpath=~/.local/share/dots/dotpath
+_fallback_dotpath=~/.dotfiles
+if [ -f "$_dotpath" ]; then
+  export DOTFILES=$(cat "$_dotpath")
 else
-  printf >&2 "WARNING: ~/.local/share/dots/dotpath (dotfiles folder declaration) doesn't exist; falling back to ~/.dotfiles."
-  export DOTFILES=~/.dotfiles
+  printf >&2 "warning: %s doesn't exist - %s will fallback to %s" \
+             "$_dotpath" '$DOTFILES' "$_fallback_dotpath"
+  export DOTFILES="$_fallback_dotpath"
 fi
 
 # XDG dirs
@@ -15,6 +18,7 @@ export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DOWNLOAD_DIR="$HOME/inbox"
 export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_DATA_DIR="$HOME/.local/share"
+export XDG_DATA_HOME="$XDG_DATA_DIR"
 export XDG_CURRENT_DESKTOP="none"
 
 # personal dirs
@@ -40,11 +44,21 @@ export WINEW_64_PREFIX="$XDG_DATA_DIR/wine64"
 export GOPATH="$XDG_CACHE_HOME/go"
 export CARGO_HOME="$XDG_CACHE_HOME/cargo"
 export RUSTUP_HOME="$XDG_CACHE_HOME/rustup"
+export GEM_HOME="$XDG_DATA_DIR/gem"
+export GEM_SPEC_CACHE="$XDG_CACHE_HOME/gem"
+export GRADLE_USER_HOME="$XDG_DATA_HOME/gradle"
+export _JAVA_OPTIONS="-Djava.util.prefs.userRoot=$XDG_CONFIG_HOME/java"
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export TASKRC="$XDG_CONFIG_HOME/taskwarrior/taskrc"
 export INPUTRC="$XDG_CONFIG_HOME/inputrc"
 export XAUTHORITY="$XDG_DATA_DIR/Xauthority" # might break some display managers, but I don't use them.
-export LESSHISTFILE="-"
+export LESSKEY="$XDG_CONFIG_HOME/less/lesskey"
+export LESSHISTFILE="$XDG_CACHE_HOME/less/history"
+export WGETRC="$XDG_CONFIG_HOME/wgetrc"
+export IRBRC="$XDG_CONFIG_HOME/irb/irbrc"
+
+# (maybe unsafe/slow) create files
+[ "$WGETRC" ] && printf "hsts-file = %s" "$XDG_CACHE_HOME/wget-hsts" >"$WGETRC"
 
 # program options
 export GIT_EDITOR="${EDITOR:-vim}"

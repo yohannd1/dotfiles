@@ -208,6 +208,8 @@ alias sy='dotsync'
 alias sx='start-xserver'
 alias of='openfork'
 
+alias l='ls -la'
+
 exists nvim \
   && alias vi='nvim' vim='nvim' \
   || alias vi='vim'

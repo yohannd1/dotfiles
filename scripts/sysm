@@ -137,7 +137,10 @@ def main():
         if config.is_file():
             eprint(f"[Sourcing] {config}")
             with config.open() as f:
-                exec(f.read())
+                exec(f.read(), {}, {
+                    "m": m,
+                    "DOTFILES": DOTFILES,
+                })
         else:
             eprint(f"[Not found] {config} (skipping)")
 
