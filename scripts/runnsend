@@ -1,22 +1,65 @@
 #!/usr/bin/env sh
 
-# Runs a command silently, but sends a notification with the stderr if
-# the exit code is not 0.
+# Runs a command, and sends a notification based if a condition matches.
 
 . "$(uselib std)"
 depCheck notify-send
 
-commandStderr="$("$@" 2>&1 >/dev/null)"
+if [ -z "$DISPLAY" ]; then
+  printf >&2 "X Display not detected (%s is empty)\n" '$DISPLAY'
+  exit 1
+fi
+
+if [ $# -lt 2 ]; then
+  printf >&2 "%s\n" "Usage: $(basename $0) <NOTIFY-IF> <PROGRAM> [ARGS...]"
+  printf >&2 "%s\n" "where NOTIFY-IF := { error-and-output | error-or-output | error | output }"
+  exit 1
+fi
+
+notifyIf="$1"
+shift
+
+case "$notifyIf" in
+  error-and-output) ;;
+  error-or-output) ;;
+  error|output) ;;
+  *)
+    printf >&2 "Invalid option; use $(basename $0) --help\n"
+    exit 1
+    ;;
+esac
+
+output=$("$@" 2>&1 >/dev/null)
 exitCode="$?"
 
-if [ "$exitCode" != 0 ]; then
-  # Exit silently if there is no error message and RUNNSEND_STRICT is
-  # not set.
-  if [ -z "$commandStderr" ] && [ -z "$RUNNSEND_STRICT" ]; then
-    exit "$exitCode"
-  fi
+showErrorOrOutput() {
+  [ "$exitCode" != 0 ] && type="Error" codeMsg="<$exitCode> " || type="Output" codeMsg=""
 
-  headingMessage="$(printf 'Error while running # [%s] %s' "$exitCode" "$*")"
-  notify-send "$headingMessage" "$commandStderr"
-  exit "$exitCode"
-fi
+  headingMessage=$(printf '%s while running %s@(%s)' "$type" "$codeMsg" "$*")
+  if [ -z "$output" ]; then
+    notify-send "$headingMessage" "no output provided by the application."
+  else
+    notify-send "$headingMessage" "$output"
+  fi
+}
+
+case "$notifyIf" in
+  error-and-output)
+    if [ "$exitCode" != 0 ] && [ "$output" ]; then
+      headingMessage=$(printf 'Error while running <%s> @(%s)' "$exitCode" "$*")
+      notify-send "$headingMessage" "$output"
+    fi
+    ;;
+  error-or-output)
+    [ "$exitCode" != 0 ] || [ "$output" ] && showErrorOrOutput "$@"
+    ;;
+  error)
+    [ "$exitCode" != 0 ] && showErrorOrOutput "$@"
+    ;;
+  output)
+    if [ "$output" ]; then
+      headingMessage=$(printf 'Output of @(%s)' "$*")
+      notify-send "$headingMessage" "$output"
+    fi
+    ;;
+esac

@@ -17,15 +17,15 @@ super + space
 
 # power menu
 super + shift + o
-    runnsend fzpow
+    runnsend error-and-output fzpow
 
 # screenshot related
 Print
-    runnsend flamew fullc
+    runnsend error flamew fullc
 super + Print
-    runnsend flamew gui
+    runnsend error flamew gui
 ctrl + Print
-    runnsend flamew full
+    runnsend error flamew full
 
 # mounting
 super + F10
@@ -77,7 +77,7 @@ super + r
 
 # quick apps
 super + b
-    runnsend qutebrowser
+    runnsend error qutebrowser
 
 # toggle tray
 super + y
@@ -93,6 +93,6 @@ super + o; c
 super + o; shift + c
     $TERMINAL -c float -g 75x25 -e calc
 super + o; b
-    runnsend bkmk menu
+    runnsend error bkmk menu
 super + o; j
-    @journalentry
+    runnsend error-and-output @journalentry

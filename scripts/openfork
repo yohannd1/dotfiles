@@ -7,9 +7,9 @@
 # make a mess.
 
 if [ $# = 0 ]; then
-  printf >&2 "%s\n" "Usage: $(basename $0) <PROGRAM...>"
+  printf >&2 "%s\n" "Usage: $(basename $0) <PROGRAM> [ARGS...]"
   exit 1
 fi
 
-OPEN_GUI=1 runnsend open "$@" &
+OPEN_GUI=1 runnsend error open "$@" &
 disown
