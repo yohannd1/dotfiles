@@ -1,14 +1,10 @@
 #!/usr/bin/env sh
 
 # starts an X server
-# Copyright 2020 Yohanan
+# TODO: add support for Xephyr
 
 . "$(uselib std)"
 depCheck startx
-
-# helps when, for example
-# if compiling dwm, open the xserver with WM=./dwm instead of adding the new binary to PATH
-WM=$(basename "$WM")
 
 case $# in
   0) initrc="${XDG_CONFIG_HOME:-$HOME/.config}/xorg/initrc" ;;

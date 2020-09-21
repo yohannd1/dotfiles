@@ -8,6 +8,11 @@
 printf >&2 "Display: %s\n" "$DISPLAY"
 printf >&2 "Session folder: $XSESSION"
 
+# helps when, for example
+# if debugging dwm, opening the xserver with WM=./dwm
+wm_raw="$WM"
+export WM=$(basename "$WM")
+
 # source xprofile
 if [ -f "$XDG_CONFIG_HOME/xorg/xprofile" ]; then
   . "$XDG_CONFIG_HOME/xorg/xprofile"
@@ -21,4 +26,4 @@ case "$WM" in
 esac
 
 wmLog="$XSESSIONDIR/wm"
-exec "$WM" >"$wmLog" 2>/"$wmLog"
+exec "$wm_raw" >"$wmLog" 2>/"$wmLog"
