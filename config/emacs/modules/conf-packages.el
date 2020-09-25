@@ -38,11 +38,23 @@
         ac-auto-show-menu t
         ac-use-menu-map t)
   (ac-config-default)
+
+  (define-key global-map (kbd "C-j") nil)
+  (define-key global-map (kbd "C-l") nil)
+  (define-key global-map (kbd "C-k") nil)
+
   (ac-set-trigger-key "TAB")
-  (define-key ac-menu-map (kbd "<backtab>") 'ac-previous)
-  (define-key ac-completing-map "\t" 'ac-complete)
-  (define-key ac-completing-map "\r" nil)
-  (inline-hook! 'rust-mode-hook () (auto-complete-mode 1)))
+  (define-key global-map (kbd "C-j") nil)
+  (define-key global-map (kbd "C-o") nil)
+
+  (define-key ac-menu-map (kbd "C-j") #'ac-next)
+  (define-key ac-menu-map (kbd "C-k") #'ac-previous)
+  (define-key ac-menu-map (kbd "<backtab>") #'ac-previous)
+  (define-key ac-menu-map (kbd "C-l") #'ac-complete)
+  (define-key ac-menu-map (kbd "RET") nil)
+
+  (inline-hook! 'rust-mode-hook ()
+                (auto-complete-mode 1)))
 
 (use-package magit
   :ensure t

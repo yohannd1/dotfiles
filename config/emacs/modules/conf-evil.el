@@ -13,6 +13,8 @@
   (setq evil-ex-search-case 'sensitive)
   (evil-set-initial-state 'term-mode 'emacs)
   (define-key evil-insert-state-map (kbd "C-y") #'evil-paste-after)
+  (define-key evil-insert-state-map (kbd "C-o") nil)
+  (define-key evil-motion-state-map (kbd "C-o") nil)
   (evil-mode 1))
 
 (use-package evil-commentary
