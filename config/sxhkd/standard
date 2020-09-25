@@ -77,11 +77,11 @@ super + r
 
 # quick apps
 super + b
-    runnsend error qutebrowser
+    runnsend error $BROWSER
 
 # toggle tray
-super + y
-    pkill stalonetray || stalonetray -c "$XDG_CACHE_HOME/gen/stalonetrayrc"
+# super + y
+#     pkill stalonetray || stalonetray -c "$XDG_CACHE_HOME/gen/stalonetrayrc"
 
 # editor
 super + e
@@ -93,6 +93,8 @@ super + o; c
 super + o; shift + c
     $TERMINAL -c float -g 75x25 -e calc
 super + o; b
-    runnsend error bkmk menu
+    runnsend error-and-output bkmk menu
 super + o; j
     runnsend error-and-output @journalentry
+super + o; d
+    runnsend error $BROWSER https://discordapp.com/channels/@me

@@ -22,8 +22,8 @@ fi
 
 case "$WM" in
   i3|bspwm|dwm|qtile|awesome) ;;
-  *) printf >&2 'WARNING: window manager "%s" is not yet supported - it might fail terribly.\n' "$WM" ;;
+  *) printf >&2 'WARNING: window manager "%s" is not yet supported - this might cause problems.\n' "$WM" ;;
 esac
 
 wmLog="$XSESSIONDIR/wm"
-exec "$wm_raw" >"$wmLog" 2>/"$wmLog"
+exec "$wm_raw" 2>&1 >"$wmLog"

@@ -15,6 +15,7 @@
         ("fr" . ,#'counsel-recentf)
         (" " . ,#'counsel-recentf)
 
+        ("K" . ,#'save-buffers-kill-emacs)
         ("e" . ,#'eval-expression)
         ("E" . ,#'eval-last-sexp)
 
@@ -24,6 +25,9 @@
         ("rc" . ,#'core-rifle-check)
 
         ("m" . ,#'counsel-M-x)
+        (":" . ,#'counsel-M-x)
+        ("ç" . ,#'counsel-M-x)
+
         ("s" . ,#'vr/replace) ;; TODO: find something better than this
 
         ("bf" . ,#'format-all-buffer)

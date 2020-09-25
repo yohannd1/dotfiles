@@ -43,7 +43,8 @@ precmd() {
 [ "$(uname -o)" = "Android" ] && SHORT_PROMPT=1
 
 # some other things
-PS1='%F{13}%~%(?.. %F{10}%?) %F{13}❯ %F{5}%b'
+isTTY && _PS1_SYMBOL="" || _PS1_SYMBOL="%F{13}❯ "
+PS1='%F{13}%~%(?.. %F{10}%?) $_PS1_SYMBOL%b%F{5}'
 PS2="%B%F{3}---%{$reset_color%} "
 RPROMPT='%F{11}$(git-branch)'
 [ "${NNNLVL:-0}" -ge 1 ] && PS1="%B%F{3}(%F{5}n%F{3})%b $PS1"

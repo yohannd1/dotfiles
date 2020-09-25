@@ -1,6 +1,5 @@
-# useful functions
-exists() { command -v "$1" >/dev/null 2>/dev/null; }
-isAndroid() { [ -d ~/.termux ]; } # bad way of detecting lol
+_exists() { command -v "$1" >/dev/null 2>/dev/null; }
+_isAndroid() { [ -d ~/.termux ]; } # bad way of detecting lol
 
 # dotfiles dir
 _dotpath=~/.local/share/dots/dotpath
@@ -26,9 +25,9 @@ export STORAGE=~/storage
 export WIKI=~/wiki
 
 # global options
-export WM=dwm
+[ -z "$DISPLAY" ] && export WM=dwm # only export if it hasn't been set before
 export TERM=xterm-256color
-isAndroid && export EDITOR=nvim || export EDITOR=emacs-custom
+_isAndroid && export EDITOR=nvim || export EDITOR=emacs-custom
 export TERMINAL=st
 export BROWSER=qutebrowser
 export TERMBROWSER=w3m
@@ -75,7 +74,7 @@ export FZF_DEFAULT_OPTS='
   --color spinner:3,gutter:1,info:3
 '
 export GCC_COLORS='error=01;38;5;8:warning=01;38;5;9:note=01;38;5;12:caret=01;32:locus=01;38;5;11:quote=03'
-exists sccache && export RUSTC_WRAPPER=sccache
+_exists sccache && export RUSTC_WRAPPER=sccache
 
 # dotfiles program options
 export DIR_BOOKMARKS="$STORAGE/share/bookmarks.sh"

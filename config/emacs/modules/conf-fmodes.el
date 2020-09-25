@@ -10,7 +10,11 @@
 
 (use-package nim-mode
   :ensure t
-  :defer t)
+  :defer t
+  :config
+  (inline-hook! 'nim-mode-hook ()
+                (setq tab-width 2)
+                (auto-fill-mode 0)))
 
 (use-package haskell-mode
   :ensure t
@@ -81,5 +85,8 @@
 ;; asm-mode
 (inline-hook! 'asm-mode ()
               (setq indent-tabs-mode t))
+
+(inline-hook! 'after-change-major-mode-hook ()
+             (setq evil-shift-width tab-width))
 
 (provide 'conf-fmodes)
