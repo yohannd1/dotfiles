@@ -1,109 +1,114 @@
-# -*- origami-fold-style: triple-braces; mode: sh -*-
-# vim: fdm=marker
-
-setopt interactivecomments
-
-# Init {{{
-
-# Load the library file
-source "$(uselib std)" &>/dev/null \
-  || printf "Couldn't load library file.\n"
+if source "$(uselib std)" &>/dev/null; then
+  _LIBRARY_LOADED=1
+else
+  _LIBRARY_LOADED=0
+  printf >&2 "Couldn't load library file - this might cause many problems\n"
+fi
 
 # Load some other libraries
 sourceIf "$XDG_CONFIG_HOME/dots/env.sh"
 sourceIf "$STORAGE/share/zshrc.personal"
-sourceIf "$HOME/.config/broot/launcher/bash/br"
 
-# }}}
-# Plugins and Extensions {{{
+# general options
+setopt interactivecomments # can use '#' for comments in interactive
+setopt PROMPT_SUBST # $(cmd) literals are run on $PS1/$PS2/$RPROMPT
 
-autoload -U colors && colors
+# plugins
+autoload -U colors && colors # color support
+autoload -U compinit # completion support
 
-# Completion
-autoload -U compinit
+# history config
+HISTFILE="${XDG_CACHE_HOME:-$HOME/.cache}/zhistory"
+HISTSIZE=SAVEHIST=100000
+setopt sharehistory
+setopt extendedhistory
+setopt HIST_IGNORE_DUPS
+
+# completion config
 zstyle ':completion:*' menu select
 zmodload zsh/complist
 compinit
-_comp_options+=(globdots) # Include hidden files in autocomplete
-
-# }}}
-# Prompt {{{
+_comp_options+=(globdots) # include hidden files in autocomplete
 
 precmd() {
-  # get cwd
+  # get current working directory
   local cwd="$(pwd)"
   if grep -q '^'"$HOME" <<<"$cwd"; then
     cwd="$(sed 's/^'"$(sed 's|/|\\/|g' <<<"$HOME")"'/~/g' <<<"$cwd")"
   fi
 
-  setTitle "$(whoami)@$(hostname):$cwd" # set title
+  # set terminal title
+  setTitle "$(whoami)@$(hostname):$cwd"
 }
 
-# set SHORT_PROMPT to true if on Android
-[ "$(uname -o)" = "Android" ] && SHORT_PROMPT=1
-
-# some other things
+# construct prompt string
 isTTY && _PS1_SYMBOL="" || _PS1_SYMBOL="%F{13}❯ "
 PS1='%F{13}%~%(?.. %F{10}%?) $_PS1_SYMBOL%b%F{5}'
 PS2="%B%F{3}---%{$reset_color%} "
 RPROMPT='%F{11}$(git-branch)'
-[ "${NNNLVL:-0}" -ge 1 ] && PS1="%B%F{3}(%F{5}n%F{3})%b $PS1"
+# [ "${NNNLVL:-0}" -ge 1 ] && PS1="%B%F{3}(%F{5}n%F{3})%b $PS1"
 
-setopt PROMPT_SUBST
-
-# }}}
-# Keybindings Config {{{
-
-# Use vim keys in tab complete menu
+# use vim keys in tab completion menu
 bindkey -M menuselect 'h' vi-backward-char
 bindkey -M menuselect 'k' vi-up-line-or-history
 bindkey -M menuselect 'l' vi-forward-char
 bindkey -M menuselect 'j' vi-down-line-or-history
 bindkey -v '^?' backward-delete-char
 
-# Change cursor shape for different vi modes
-function zle-keymap-select { # {{{
-  if [[ ${KEYMAP} == vicmd ]] || [[ $1 = 'block' ]]; then
+# change cursor shape for different vi modes
+function zle-keymap-select {
+  if [ "$KEYMAP" = vicmd ] || [ "$1" = "block" ]; then
     printf '\033[1 q'
-  elif [[ ${KEYMAP} == main ]] || [[ ${KEYMAP} == viins ]] \
-    || [[ ${KEYMAP} = '' ]] || [[ $1 = 'beam' ]]; then
+  elif [ "$KEYMAP" = main ] || [ "$KEYMAP" = viins ] \
+         || [ "$KEYMAP" = '' ] || [ "$1" = 'beam' ]; then
     printf '\033[5 q'
   fi
-} # }}}
-function zle-line-init { # {{{
+}
+
+function zle-line-init {
   zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
-  printf '\e[5 q'
-} # }}}
+  printf '\033[5 q'
+}
 
 zle -N zle-keymap-select
 zle -N zle-line-init
 
-# Use fzf to search history
-fh() { # {{{
+# use fzf to search history
+fzf-history() {
   print -z $( ([ -n "${ZSH_NAME}" ] && fc -l 1 || history) | fzf --no-sort --tac | sed -r 's/ *[0-9]*\*? *//' | sed -r 's/\\/\\\\/g')
-} # }}}
+}
 
 # Actual binding
-bindkey -s '^R' '\eSfh\n'
-bindkey -s '^o' '\eSlfcd\n'
+bindkey -s '^R' '\eSfzf-history\n'
+bindkey -s '^o' '\eSlf-and-cd\n'
 
-# }}}
-# Commands {{{
-
-assist::find-file.gen() { # {{{
+assist::find-file.gen() {
   printf "%s\n" ".."
   if [ "$1" = 1 ]; then
     fd -H
   else
     fd
   fi
-} # }}}
+}
 
-where-to-go() { # {{{
+where-to-go() {
   gen=$(fzbookdirs) || return 1
   cd "$gen"
-} # }}}
-nnn-explore() { # {{{
+}
+
+lf-and-cd() {
+  local tmp="$(mktemp)"
+  (cd "${1:-.}" && lf -last-dir-path="$tmp" "$@")
+  if [ -f "$tmp" ]; then
+    dir="$(cat "$tmp")"
+    rm -f "$tmp" >/dev/null
+    [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
+  fi
+
+  :
+}
+
+nnn-and-cd() {
   # block nesting of nnn in subshells
   if [ -n "$NNNLVL" ] && [ "${NNNLVL:-0}" -ge 1 ]; then
     printf "%s\n" "nnn is already running"
@@ -116,8 +121,11 @@ nnn-explore() { # {{{
     . "$NNN_TMPFILE"
     rm -f "$NNN_TMPFILE" >/dev/null
   fi
-} # }}}
-find-file() { # {{{
+
+  :
+}
+
+find-file() {
   local prog choice choices hidden
   hidden=0
 
@@ -136,15 +144,17 @@ find-file() { # {{{
   else
     exit 1
   fi
-} # }}}
-duplicate() { # {{{
+}
+
+duplicate-shell() {
   case $# in
     0) nohup "$TERMINAL" &>/dev/null ;;
     1) (cd "$1" && nohup "$TERMINAL" &>/dev/null) ;;
     *) exit 1 ;;
   esac & disown
-} # }}}
-cd-to-file() { # {{{
+}
+
+cd-to-file() {
   [ $# = 1 ] || exit 1
   if [ -f "$1" ]; then
     cd "$(dirname "$1")"
@@ -153,44 +163,30 @@ cd-to-file() { # {{{
   else
     printf >&2 "cd-to-file: invalid file\n"
   fi
-} # }}}
+}
 
-shell::reload() { source "${ZDOTDIR:-$HOME}/.zshrc"; }
+reload-shell() { source "${ZDOTDIR:-$HOME}/.zshrc"; }
 
 xdb() {
   case $# in
     1)
       case "$1" in
-        -r) gen-xres | xrdb ;;
-        -e) "$EDITOR" =gen-xres && xdb -r ;;
-      esac ;;
+        r|rl|reload) gen-xres | xrdb ;;
+        e|ed|edit) "$EDITOR" =gen-xres && xdb -r ;;
+        *) return 1 ;;
+      esac
+      ;;
     *) return 1 ;;
   esac
 }
 
-lfcd() {
-  local tmp="$(mktemp)"
-  (cd "${1:-.}" && lf -last-dir-path="$tmp" "$@")
-  if [ -f "$tmp" ]; then
-    dir="$(cat "$tmp")"
-    rm -f "$tmp" >/dev/null
-    [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
-  fi
-}
-
-alias \
-  w='where-to-go' \
-  n='nnn-explore' \
-  f='find-file' \
-  fof='find-file openfork' \
-  fcd='find-file cd-to-file' \
-  d='duplicate'
-
-alias rl='shell::reload'
+alias w='where-to-go'
+alias f='find-file'
+alias fof='find-file openfork'
+alias fcd='find-file cd-to-file'
+alias d='duplicate-shell'
+alias rl='reload-shell'
 alias make='fparent-run Makefile run-command file-dir make'
-
-# }}}
-# Aliases {{{
 
 alias ls='ls --color=auto'
 alias la='ls -A'
@@ -219,21 +215,4 @@ alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
-# }}}
-# Settings {{{
-
-HISTFILE=~/.cache/zhistory
-HISTSIZE=SAVEHIST=100000
-setopt sharehistory
-setopt extendedhistory
-setopt HIST_IGNORE_DUPS
-
-# }}}
-# Plugins {{{
-
-# sourceAlt \
-#   /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
-#   /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
-# }}}
 : # Assert first prompt doesn't show any non-zero return value
