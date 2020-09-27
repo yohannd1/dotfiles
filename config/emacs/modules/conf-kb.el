@@ -28,6 +28,7 @@
         (":" . ,#'counsel-M-x)
         ("ç" . ,#'counsel-M-x)
 
+        ("w" . ,#'whitespace-mode)
         ("s" . ,#'vr/replace) ;; TODO: find something better than this
 
         ("bf" . ,#'format-all-buffer)
