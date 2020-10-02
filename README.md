@@ -25,17 +25,18 @@ possibly, run this in a VM) before doing anything.
 
 ## Folder structure
 
-* `config`: config files, mostly symlinked to `~` and `~/.config`;
+* `config`: config files, mostly symlinked to `~` and `~/.config`.
 
-* `scripts`: executable files, added to PATH via `env.sh`;
+* `scripts`: executable files, added to PATH via `env.sh`.
 
-* `lib`: some personal libraries for bash, python and other languages;
+* `lib`: some personal libraries for bash, python and other languages.
 
 * `patches`: some patches I usually would like to apply on a system. I
   currently have no way to automate this.
 
-* `trash`: old files that I don't want to delete right now, but aren't
-  being used in the repo;
+* `.trash`: old files that I don't want to delete right now, but aren't
+  being used in the repo. Might be unavailable if empty (due to how
+  git works).
 
 ## Inspirations and "Steals"
 
@@ -48,14 +49,13 @@ operating system, even though I didn't code the Linux kernel or
 something.
 
 * https://github.com/denysdovhan/dotfiles
+
 * https://github.com/LukeSmithxyz/voidrice
+
 * https://github.com/jdhao/nvim-config
-* https://bitbucket.org/sjl/dotfiles/src/tip/vim/vimrc
 
-## To Do
+* https://gist.github.com/sooop/8dc424e13c6fe2e2a663
 
-* [ ] Find a license to put here
+  (It's Steve Losh (sjl)'s vimrc. The original link seems to be down.)
 
-* [ ] Add base16 support for NeoVim on Graphical Environments
-
-* [ ] Add base16 support for NeoVim on Windows (without XResources)
+  (Original: https://bitbucket.org/sjl/dotfiles/src/tip/vim/vimrc)
