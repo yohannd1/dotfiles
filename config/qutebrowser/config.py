@@ -38,7 +38,7 @@ def main():
         },
     })
 
-    c.downloads.open_dispatcher = os.environ("OPENER") or "xdg-open"
+    c.downloads.open_dispatcher = os.environ.get("OPENER") or "xdg-open"
     config.load_autoconfig()
 
 def xgetres(resource):
