@@ -20,6 +20,10 @@ git status -sb
 # show help message
 printf >&2 "Type 'h' for help.\n"
 
+gitAddAll() {
+  (cd "$(realpath -m $(git rev-parse --git-dir)/..)" && git add -A)
+}
+
 while [ ! "$exit" ]; do
   # prompt
   printf >&2 "Command => "
@@ -28,13 +32,9 @@ while [ ! "$exit" ]; do
 
   # parse option
   case "$option" in
-    a) (cd "$(realpath -m $(git rev-parse --git-dir)/..)" && git add .) ;;
     b) git branch ;;
     c) git commit ;;
-    C)
-      (cd "$(realpath -m $(git rev-parse --git-dir)/..)" && git add .)
-      git commit
-      ;;
+    C) gitAddAll && git commit ;;
     d) git diff HEAD ;;
     f) git fetch ;;
     i) git status -sb ;;
@@ -45,6 +45,7 @@ while [ ! "$exit" ]; do
     r) git remote -v ;;
     s) git push ;;
     "") clear ;;
+    "") exit=0 ;;
     "") exit=0 ;;
     h) cat >&2 <<EOF ;;
   i     info (git status -sb)

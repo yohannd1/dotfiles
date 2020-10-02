@@ -1,3 +1,4 @@
+import os
 import subprocess as sp
 import theme
 from theme import ThemeOpt, Palette
@@ -37,6 +38,7 @@ def main():
         },
     })
 
+    c.downloads.open_dispatcher = os.environ("OPENER") or "xdg-open"
     config.load_autoconfig()
 
 def xgetres(resource):
