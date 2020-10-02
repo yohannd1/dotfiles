@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 if source "$(uselib std)" &>/dev/null; then
   _LIBRARY_LOADED=1
 else
@@ -214,5 +216,8 @@ exists nvim \
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
+
+sourceIf /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+sourceIf /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 : # Assert first prompt doesn't show any non-zero return value

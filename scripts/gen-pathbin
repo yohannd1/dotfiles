@@ -4,9 +4,18 @@ cacheDir="${XDG_CACHE_HOME:-$HOME/.cache}"
 cacheFile="$cacheDir/pathbin"
 mkdir -p "$cacheDir"
 
+msg() {
+  if [ -t 2 ]; then
+    printf >&2 "$@"
+  else
+    notify-send "$(printf "$@")"
+  fi
+}
+
 IFS=:
 if stest -dqr -n "$cacheFile" $PATH; then
-  stest -flx $PATH | sort -u | tee "$cacheFile"
+  stest -flx $PATH | sort -u | tee "$cacheFile" \
+    || msg "Failed to generate files\n"
 else
   cat "$cacheFile"
 fi

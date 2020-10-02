@@ -95,47 +95,52 @@
   :ensure t
   :defer t)
 
-(use-package spaceline
+(use-package smart-mode-line
   :ensure t
   :config
-  (spaceline-emacs-theme)
-  (spaceline-define-segment tty-or-gui
-    (if (display-graphic-p)
-        "gui"
-      "tty"))
-  (spaceline-compile
-    ;; Left Side
-    '((anzu
-       :priority 100)
-      (evil-state
-       :face highlight-face
-       :priority 100)
-      (tty-or-gui
-       :face other-face
-       :when active
-       :priority 100)
-      (buffer-id
-       :face default-face)
-      (major-mode
-       :face other-face
-       :priority 90)
-      ((buffer-modified buffer-size)
-       :face default-face
-       :priority 80))
+  (sml/setup))
 
-    ;; Right Side
-    '((selection-info
-       :face default-face
-       :priority 95)
-      (buffer-encoding-abbrev
-       :face default-face
-       :priority 96)
-      ((point-position line-column)
-       :face other-face
-       :priority 96)
-      (buffer-position
-       :face highlight-face
-       :priority 99))))
+;; (use-package spaceline
+;;   :ensure t
+;;   :config
+;;   (spaceline-emacs-theme)
+;;   (spaceline-define-segment tty-or-gui
+;;     (if (display-graphic-p)
+;;         "gui"
+;;       "tty"))
+;;   (spaceline-compile
+;;     ;; Left Side
+;;     '((anzu
+;;        :priority 100)
+;;       (evil-state
+;;        :face highlight-face
+;;        :priority 100)
+;;       (tty-or-gui
+;;        :face other-face
+;;        :when active
+;;        :priority 100)
+;;       (buffer-id
+;;        :face default-face)
+;;       (major-mode
+;;        :face other-face
+;;        :priority 90)
+;;       ((buffer-modified buffer-size)
+;;        :face default-face
+;;        :priority 80))
+
+;;     ;; Right Side
+;;     '((selection-info
+;;        :face default-face
+;;        :priority 95)
+;;       (buffer-encoding-abbrev
+;;        :face default-face
+;;        :priority 96)
+;;       ((point-position line-column)
+;;        :face other-face
+;;        :priority 96)
+;;       (buffer-position
+;;        :face highlight-face
+;;        :priority 99))))
 
 (use-package origami
   :ensure t
