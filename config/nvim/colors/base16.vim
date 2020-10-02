@@ -1,285 +1,378 @@
+" base16 theme
 " Based off base16-vim (https://github.com/chriskempson/base16-vim)
 
-" Color definitions
-let s:base00 = "00"
-let s:base01 = "01"
-let s:base02 = "02"
-let s:base03 = "03"
-let s:base04 = "04"
-let s:base05 = "05"
-let s:base06 = "06"
-let s:base07 = "07"
-let s:base08 = "08"
-let s:base09 = "09"
-let s:base0A = "10"
-let s:base0B = "11"
-let s:base0C = "12"
-let s:base0D = "13"
-let s:base0E = "14"
-let s:base0F = "15"
-
-" Theme setup
 hi clear
 syntax reset
 let g:colors_name = "base16"
 
-" Highlighting function
-" Optional variables are attributes and guisp
-function! g:Base16Highlight(group, guifg, guibg, ctermfg, ctermbg, ...)
-  let l:attr = get(a:, 1, "")
-  let l:guisp = get(a:, 2, "")
+let s:is_win = has("win32") || has("win64")
+let s:is_linux = has("unix") && !has("macunix")
+let s:is_mac = has("macunix")
+let s:is_android = isdirectory("/sdcard")
+let s:is_tty = $DISPLAY == "" && !g:is_android
+let s:is_gui = has("gui_running") || exists("g:GuiFont") || (has("nvim") && nvim_list_uis()[0]["rgb"] == v:true)
 
-  if a:guifg != ""
-    exec "hi " . a:group . " guifg=#" . a:guifg
-  endif
-  if a:guibg != ""
-    exec "hi " . a:group . " guibg=#" . a:guibg
-  endif
-  if a:ctermfg != ""
-    exec "hi " . a:group . " ctermfg=" . a:ctermfg
-  endif
-  if a:ctermbg != ""
-    exec "hi " . a:group . " ctermbg=" . a:ctermbg
-  endif
-  if l:attr != ""
-    exec "hi " . a:group . " gui=" . l:attr . " cterm=" . l:attr
-  endif
-  if l:guisp != ""
-    exec "hi " . a:group . " guisp=#" . l:guisp
-  endif
+let s:TTY = 0
+let s:GUI = 1
+let s:bases = {}
+
+function s:xgetres(string)
+    return split(system("xgetres " .. a:string), "\n")[0]
 endfunction
 
-fun <sid>hi(group, ctermfg, ctermbg, attr, guisp)
-  call g:Base16Highlight(a:group, "", "", a:ctermfg, a:ctermbg, a:attr, a:guisp)
-endfun
+let s:bases["00"] = ["", ""]
+let s:bases["01"] = ["", ""]
+let s:bases["02"] = ["", ""]
+let s:bases["03"] = ["", ""]
+let s:bases["04"] = ["", ""]
+let s:bases["05"] = ["", ""]
+let s:bases["06"] = ["", ""]
+let s:bases["07"] = ["", ""]
+let s:bases["08"] = ["", ""]
+let s:bases["09"] = ["", ""]
+let s:bases["0A"] = ["", ""]
+let s:bases["0B"] = ["", ""]
+let s:bases["0C"] = ["", ""]
+let s:bases["0D"] = ["", ""]
+let s:bases["0E"] = ["", ""]
+let s:bases["0F"] = ["", ""]
+
+if s:is_gui
+    " if on GUI
+    if s:is_linux && executable("xgetres")
+        let s:bases["00"][s:GUI] = s:xgetres("nvim.base00")
+        let s:bases["01"][s:GUI] = s:xgetres("nvim.base01")
+        let s:bases["02"][s:GUI] = s:xgetres("nvim.base02")
+        let s:bases["03"][s:GUI] = s:xgetres("nvim.base03")
+        let s:bases["04"][s:GUI] = s:xgetres("nvim.base04")
+        let s:bases["05"][s:GUI] = s:xgetres("nvim.base05")
+        let s:bases["06"][s:GUI] = s:xgetres("nvim.base06")
+        let s:bases["07"][s:GUI] = s:xgetres("nvim.base07")
+        let s:bases["08"][s:GUI] = s:xgetres("nvim.base08")
+        let s:bases["09"][s:GUI] = s:xgetres("nvim.base09")
+        let s:bases["0A"][s:GUI] = s:xgetres("nvim.base0A")
+        let s:bases["0B"][s:GUI] = s:xgetres("nvim.base0B")
+        let s:bases["0C"][s:GUI] = s:xgetres("nvim.base0C")
+        let s:bases["0D"][s:GUI] = s:xgetres("nvim.base0D")
+        let s:bases["0E"][s:GUI] = s:xgetres("nvim.base0E")
+        let s:bases["0F"][s:GUI] = s:xgetres("nvim.base0F")
+    else
+        let s:bases["00"][s:GUI] = "#f2e5bc"
+        let s:bases["01"][s:GUI] = "#ebdbb2"
+        let s:bases["02"][s:GUI] = "#d5c4a1"
+        let s:bases["03"][s:GUI] = "#bdae93"
+        let s:bases["04"][s:GUI] = "#665c54"
+        let s:bases["05"][s:GUI] = "#504945"
+        let s:bases["06"][s:GUI] = "#3c3836"
+        let s:bases["07"][s:GUI] = "#282828"
+        let s:bases["08"][s:GUI] = "#9d0006"
+        let s:bases["09"][s:GUI] = "#af3a03"
+        let s:bases["0A"][s:GUI] = "#b57614"
+        let s:bases["0B"][s:GUI] = "#79740e"
+        let s:bases["0C"][s:GUI] = "#427b58"
+        let s:bases["0D"][s:GUI] = "#076678"
+        let s:bases["0E"][s:GUI] = "#8f3f71"
+        let s:bases["0F"][s:GUI] = "#d65d0e"
+    endif
+
+    let s:bases["00"][s:TTY] = "NONE"
+    let s:bases["01"][s:TTY] = "NONE"
+    let s:bases["02"][s:TTY] = "NONE"
+    let s:bases["03"][s:TTY] = "NONE"
+    let s:bases["04"][s:TTY] = "NONE"
+    let s:bases["05"][s:TTY] = "NONE"
+    let s:bases["06"][s:TTY] = "NONE"
+    let s:bases["07"][s:TTY] = "NONE"
+    let s:bases["08"][s:TTY] = "NONE"
+    let s:bases["09"][s:TTY] = "NONE"
+    let s:bases["0A"][s:TTY] = "NONE"
+    let s:bases["0B"][s:TTY] = "NONE"
+    let s:bases["0C"][s:TTY] = "NONE"
+    let s:bases["0D"][s:TTY] = "NONE"
+    let s:bases["0E"][s:TTY] = "NONE"
+    let s:bases["0F"][s:TTY] = "NONE"
+else
+    " if not on GUI
+    let s:bases["00"][s:TTY] = "00"
+    let s:bases["01"][s:TTY] = "01"
+    let s:bases["02"][s:TTY] = "02"
+    let s:bases["03"][s:TTY] = "03"
+    let s:bases["04"][s:TTY] = "04"
+    let s:bases["05"][s:TTY] = "05"
+    let s:bases["06"][s:TTY] = "06"
+    let s:bases["07"][s:TTY] = "07"
+    let s:bases["08"][s:TTY] = "08"
+    let s:bases["09"][s:TTY] = "09"
+    let s:bases["0A"][s:TTY] = "10"
+    let s:bases["0B"][s:TTY] = "11"
+    let s:bases["0C"][s:TTY] = "12"
+    let s:bases["0D"][s:TTY] = "13"
+    let s:bases["0E"][s:TTY] = "14"
+    let s:bases["0F"][s:TTY] = "15"
+
+    let s:bases["00"][s:GUI] = "NONE"
+    let s:bases["01"][s:GUI] = "NONE"
+    let s:bases["02"][s:GUI] = "NONE"
+    let s:bases["03"][s:GUI] = "NONE"
+    let s:bases["04"][s:GUI] = "NONE"
+    let s:bases["05"][s:GUI] = "NONE"
+    let s:bases["06"][s:GUI] = "NONE"
+    let s:bases["07"][s:GUI] = "NONE"
+    let s:bases["08"][s:GUI] = "NONE"
+    let s:bases["09"][s:GUI] = "NONE"
+    let s:bases["0A"][s:GUI] = "NONE"
+    let s:bases["0B"][s:GUI] = "NONE"
+    let s:bases["0C"][s:GUI] = "NONE"
+    let s:bases["0D"][s:GUI] = "NONE"
+    let s:bases["0E"][s:GUI] = "NONE"
+    let s:bases["0F"][s:GUI] = "NONE"
+endif
+
+function! s:hl(group, fg_code, bg_code, attr, guisp)
+	if a:fg_code != "NONE"
+		exec "hi " . a:group . " guifg=" . s:bases[a:fg_code][s:GUI]
+		exec "hi " . a:group . " ctermfg=" . s:bases[a:fg_code][s:TTY]
+	endif
+	if a:bg_code != "NONE"
+		exec "hi " . a:group . " guibg=" . s:bases[a:bg_code][s:GUI]
+		exec "hi " . a:group . " ctermbg=" . s:bases[a:bg_code][s:TTY]
+	endif
+	if a:attr != ""
+		exec "hi " . a:group . " gui=" . a:attr . " cterm=" . a:attr
+	endif
+	if a:guisp != ""
+		exec "hi " . a:group . " guisp=#" . a:guisp
+	endif
+endfunction
 
 " Vim editor colors
-call <sid>hi("Normal",        s:base05, "", "", "")
-call <sid>hi("Bold",          "", "", "bold", "")
-call <sid>hi("Debug",         s:base08, "", "", "")
-call <sid>hi("Directory",     s:base0D, "", "", "")
-call <sid>hi("Error",         s:base08, s:base00, "", "")
-call <sid>hi("ErrorMsg",      s:base08, "", "", "")
-call <sid>hi("Exception",     s:base08, "", "", "")
-call <sid>hi("FoldColumn",    s:base0C, s:base02, "", "")
-call <sid>hi("Folded",        s:base05, s:base02, "", "")
-call <sid>hi("IncSearch",     s:base01, s:base09, "none", "")
-call <sid>hi("Italic",        "", "", "italic", "")
-call <sid>hi("Macro",         s:base08, "", "", "")
-call <sid>hi("MatchParen",    "", s:base0D,  "", "")
-call <sid>hi("ModeMsg",       s:base0B, "", "", "")
-call <sid>hi("MoreMsg",       s:base0B, "", "", "")
-call <sid>hi("Question",      s:base0D, "", "", "")
-call <sid>hi("Search",        s:base01, s:base0A,  "", "")
-call <sid>hi("Substitute",    s:base01, s:base0A, "none", "")
-call <sid>hi("SpecialKey",    s:base03, "", "", "")
-call <sid>hi("TooLong",       s:base08, "", "", "")
-call <sid>hi("Underlined",    s:base08, "", "", "")
-call <sid>hi("Visual",        "", s:base02, "", "")
-call <sid>hi("VisualNOS",     s:base08, "", "", "")
-call <sid>hi("WarningMsg",    s:base08, "", "", "")
-call <sid>hi("WildMenu",      s:base08, "", "", "")
-call <sid>hi("Title",         s:base0D, "", "none", "")
-call <sid>hi("Conceal",       s:base0D, s:base00, "", "")
-call <sid>hi("Cursor",        s:base00, s:base05, "", "")
-call <sid>hi("NonText",       s:base03, "", "", "")
-call <sid>hi("LineNr",        s:base03, "", "", "")
-call <sid>hi("SignColumn",    s:base03, s:base01, "", "")
-call <sid>hi("StatusLine",    s:base03, s:base02, "none", "")
-call <sid>hi("StatusLineNC",  s:base03, s:base01, "none", "")
-call <sid>hi("VertSplit",     s:base02, s:base02, "none", "")
-call <sid>hi("ColorColumn",   s:base01, "none", "", "")
-call <sid>hi("CursorColumn",  s:base01, "", "", "")
-call <sid>hi("CursorLine",    "", s:base01, "NONE", "")
-call <sid>hi("CursorLineNr",  "", "", "italic", "")
-call <sid>hi("QuickFixLine",  s:base01, "none", "", "")
-call <sid>hi("PMenu",         s:base05, s:base01, "none", "")
-call <sid>hi("PMenuSel",      s:base01, s:base05, "", "")
-call <sid>hi("TabLine",       s:base05, s:base01, "none", "")
-call <sid>hi("TabLineFill",   s:base03, "", "none", "")
-call <sid>hi("TabLineSel",    s:base06, s:base02, "none", "")
+if s:is_gui
+    call s:hl("Normal",    "05",   "00",   "",     "")
+else
+    call s:hl("Normal",    "05",   "NONE", "",     "")
+endif
+call s:hl("Bold",          "NONE", "NONE", "bold", "")
+call s:hl("Debug",         "08",   "NONE", "", "")
+call s:hl("Directory",     "0D",   "NONE", "", "")
+call s:hl("Error",         "08",   "00",   "", "")
+call s:hl("ErrorMsg",      "08",   "NONE", "", "")
+call s:hl("Exception",     "08",   "NONE", "", "")
+call s:hl("FoldColumn",    "0C",   "02",   "", "")
+call s:hl("Folded",        "05",   "02",   "", "")
+call s:hl("IncSearch",     "01",   "09",   "none", "")
+call s:hl("Italic",        "NONE", "NONE", "italic", "")
+call s:hl("Macro",         "08",   "NONE", "", "")
+call s:hl("MatchParen",    "NONE", "0D",   "", "")
+call s:hl("ModeMsg",       "0B",   "NONE", "", "")
+call s:hl("MoreMsg",       "0B",   "NONE", "", "")
+call s:hl("Question",      "0D",   "NONE", "", "")
+call s:hl("Search",        "01",   "0A",   "", "")
+call s:hl("Substitute",    "01",   "0A",   "none", "")
+call s:hl("SpecialKey",    "03",   "NONE", "", "")
+call s:hl("TooLong",       "08",   "NONE", "", "")
+call s:hl("Underlined",    "08",   "NONE", "", "")
+call s:hl("Visual",        "NONE", "02",   "", "")
+call s:hl("VisualNOS",     "08",   "NONE", "", "")
+call s:hl("WarningMsg",    "08",   "NONE", "", "")
+call s:hl("WildMenu",      "08",   "NONE", "", "")
+call s:hl("Title",         "0D",   "NONE", "none", "")
+call s:hl("Conceal",       "0D",   "00",   "", "")
+call s:hl("Cursor",        "00",   "05",   "", "")
+call s:hl("NonText",       "03",   "NONE", "", "")
+call s:hl("LineNr",        "03",   "NONE", "", "")
+call s:hl("SignColumn",    "03",   "01",   "", "")
+call s:hl("StatusLine",    "03",   "02",   "none", "")
+call s:hl("StatusLineNC",  "03",   "01",   "none", "")
+call s:hl("VertSplit",     "02",   "02",   "none", "")
+call s:hl("ColorColumn",   "01",   "NONE", "", "")
+call s:hl("CursorColumn",  "01",   "NONE", "", "")
+call s:hl("CursorLine",    "NONE", "01",   "NONE", "")
+call s:hl("CursorLineNr",  "NONE", "NONE", "italic", "")
+call s:hl("QuickFixLine",  "01",   "NONE", "", "")
+call s:hl("PMenu",         "05",   "01",   "none", "")
+call s:hl("PMenuSel",      "01",   "05",   "", "")
+call s:hl("TabLine",       "05",   "01",   "none", "")
+call s:hl("TabLineFill",   "03",   "NONE", "none", "")
+call s:hl("TabLineSel",    "06",   "02",   "none", "")
 
 " Standard syntax highlighting
-call <sid>hi("Boolean",      s:base09, "", "", "")
-call <sid>hi("Character",    s:base08, "", "", "")
-call <sid>hi("Comment",      s:base03, "", "italic", "")
-call <sid>hi("Conditional",  s:base0E, "", "", "")
-call <sid>hi("Constant",     s:base09, "", "", "")
-call <sid>hi("Define",       s:base0E, "", "none", "")
-call <sid>hi("Delimiter",    s:base0F, "", "", "")
-call <sid>hi("Float",        s:base09, "", "", "")
-call <sid>hi("Function",     s:base0D, "", "", "")
-call <sid>hi("Identifier",   s:base08, "", "none", "")
-call <sid>hi("Include",      s:base0D, "", "", "")
-call <sid>hi("Keyword",      s:base0E, "", "", "")
-call <sid>hi("Label",        s:base0A, "", "", "")
-call <sid>hi("Number",       s:base09, "", "", "")
-call <sid>hi("Operator",     s:base05, "", "none", "")
-call <sid>hi("PreProc",      s:base0A, "", "", "")
-call <sid>hi("Repeat",       s:base0A, "", "", "")
-call <sid>hi("Special",      s:base04, "", "", "")
-call <sid>hi("SpecialChar",  s:base0F, "", "", "")
-call <sid>hi("Statement",    s:base08, "", "", "")
-call <sid>hi("StorageClass", s:base0A, "", "", "")
-call <sid>hi("String",       s:base0B, "", "", "")
-call <sid>hi("Structure",    s:base0E, "", "", "")
-call <sid>hi("Tag",          s:base0A, "", "", "")
-call <sid>hi("Todo",         s:base0A, s:base01, "", "")
-call <sid>hi("Type",         s:base0A, "", "none", "")
-call <sid>hi("Typedef",      s:base0A, "", "", "")
+call s:hl("Boolean",      "09", "NONE", "", "")
+call s:hl("Character",    "08", "NONE", "", "")
+call s:hl("Comment",      "03", "NONE", "italic", "")
+call s:hl("Conditional",  "0E", "NONE", "", "")
+call s:hl("Constant",     "09", "NONE", "", "")
+call s:hl("Define",       "0E", "NONE", "none", "")
+call s:hl("Delimiter",    "0F", "NONE", "", "")
+call s:hl("Float",        "09", "NONE", "", "")
+call s:hl("Function",     "0D", "NONE", "", "")
+call s:hl("Identifier",   "08", "NONE", "none", "")
+call s:hl("Include",      "0D", "NONE", "", "")
+call s:hl("Keyword",      "0E", "NONE", "", "")
+call s:hl("Label",        "0A", "NONE", "", "")
+call s:hl("Number",       "09", "NONE", "", "")
+call s:hl("Operator",     "05", "NONE", "none", "")
+call s:hl("PreProc",      "0A", "NONE", "", "")
+call s:hl("Repeat",       "0A", "NONE", "", "")
+call s:hl("Special",      "04", "NONE", "", "")
+call s:hl("SpecialChar",  "0F", "NONE", "", "")
+call s:hl("Statement",    "08", "NONE", "", "")
+call s:hl("StorageClass", "0A", "NONE", "", "")
+call s:hl("String",       "0B", "NONE", "", "")
+call s:hl("Structure",    "0E", "NONE", "", "")
+call s:hl("Tag",          "0A", "NONE", "", "")
+call s:hl("Todo",         "0A", "01",   "", "")
+call s:hl("Type",         "0A", "NONE", "none", "")
+call s:hl("Typedef",      "0A", "NONE", "", "")
 
 " C highlighting
-call <sid>hi("cOperator",    s:base0C, "", "", "")
-call <sid>hi("cPreCondit",   s:base0E, "", "", "")
+call s:hl("cOperator",    "0C", "NONE", "", "")
+call s:hl("cPreCondit",   "0E", "NONE", "", "")
 
 " C# highlighting
-call <sid>hi("csClass",                 s:base0A, "", "", "")
-call <sid>hi("csAttribute",             s:base0A, "", "", "")
-call <sid>hi("csModifier",              s:base0E, "", "", "")
-call <sid>hi("csType",                  s:base08, "", "", "")
-call <sid>hi("csUnspecifiedStatement",  s:base0D, "", "", "")
-call <sid>hi("csContextualStatement",   s:base0E, "", "", "")
-call <sid>hi("csNewDecleration",        s:base08, "", "", "")
+call s:hl("csClass",                 "0A", "NONE", "", "")
+call s:hl("csAttribute",             "0A", "NONE", "", "")
+call s:hl("csModifier",              "0E", "NONE", "", "")
+call s:hl("csType",                  "08", "NONE", "", "")
+call s:hl("csUnspecifiedStatement",  "0D", "NONE", "", "")
+call s:hl("csContextualStatement",   "0E", "NONE", "", "")
+call s:hl("csNewDecleration",        "08", "NONE", "", "")
 
 " CSS highlighting
-call <sid>hi("cssBraces",      s:base05, "", "", "")
-call <sid>hi("cssClassName",   s:base0E, "", "", "")
-call <sid>hi("cssColor",       s:base0C, "", "", "")
+call s:hl("cssBraces",      "05", "NONE", "", "")
+call s:hl("cssClassName",   "0E", "NONE", "", "")
+call s:hl("cssColor",       "0C", "NONE", "", "")
 
 " Diff highlighting
-call <sid>hi("DiffAdd",      s:base0B, s:base01, "", "")
-call <sid>hi("DiffChange",   s:base03, s:base01, "", "")
-call <sid>hi("DiffDelete",   s:base08, s:base01, "", "")
-call <sid>hi("DiffText",     s:base0D, s:base01, "", "")
-call <sid>hi("DiffAdded",    s:base0B, s:base00, "", "")
-call <sid>hi("DiffFile",     s:base08, s:base00, "", "")
-call <sid>hi("DiffNewFile",  s:base0B, s:base00, "", "")
-call <sid>hi("DiffLine",     s:base0D, s:base00, "", "")
-call <sid>hi("DiffRemoved",  s:base08, s:base00, "", "")
+call s:hl("DiffAdd",      "0B", "01", "", "")
+call s:hl("DiffChange",   "03", "01", "", "")
+call s:hl("DiffDelete",   "08", "01", "", "")
+call s:hl("DiffText",     "0D", "01", "", "")
+call s:hl("DiffAdded",    "0B", "00", "", "")
+call s:hl("DiffFile",     "08", "00", "", "")
+call s:hl("DiffNewFile",  "0B", "00", "", "")
+call s:hl("DiffLine",     "0D", "00", "", "")
+call s:hl("DiffRemoved",  "08", "00", "", "")
 
 " Git highlighting
-call <sid>hi("gitcommitOverflow",       s:base08, "", "", "")
-call <sid>hi("gitcommitSummary",        s:base0B, "", "", "")
-call <sid>hi("gitcommitComment",        s:base03, "", "", "")
-call <sid>hi("gitcommitUntracked",      s:base03, "", "", "")
-call <sid>hi("gitcommitDiscarded",      s:base03, "", "", "")
-call <sid>hi("gitcommitSelected",       s:base03, "", "", "")
-call <sid>hi("gitcommitHeader",         s:base0E, "", "", "")
-call <sid>hi("gitcommitSelectedType",   s:base0D, "", "", "")
-call <sid>hi("gitcommitUnmergedType",   s:base0D, "", "", "")
-call <sid>hi("gitcommitDiscardedType",  s:base0D, "", "", "")
-call <sid>hi("gitcommitBranch",         s:base09, "", "bold", "")
-call <sid>hi("gitcommitUntrackedFile",  s:base0A, "", "", "")
-call <sid>hi("gitcommitUnmergedFile",   s:base08, "", "bold", "")
-call <sid>hi("gitcommitDiscardedFile",  s:base08, "", "bold", "")
-call <sid>hi("gitcommitSelectedFile",   s:base0B, "", "bold", "")
+call s:hl("gitcommitOverflow",       "08", "NONE", "", "")
+call s:hl("gitcommitSummary",        "0B", "NONE", "", "")
+call s:hl("gitcommitComment",        "03", "NONE", "", "")
+call s:hl("gitcommitUntracked",      "03", "NONE", "", "")
+call s:hl("gitcommitDiscarded",      "03", "NONE", "", "")
+call s:hl("gitcommitSelected",       "03", "NONE", "", "")
+call s:hl("gitcommitHeader",         "0E", "NONE", "", "")
+call s:hl("gitcommitSelectedType",   "0D", "NONE", "", "")
+call s:hl("gitcommitUnmergedType",   "0D", "NONE", "", "")
+call s:hl("gitcommitDiscardedType",  "0D", "NONE", "", "")
+call s:hl("gitcommitBranch",         "09", "NONE", "bold", "")
+call s:hl("gitcommitUntrackedFile",  "0A", "NONE", "", "")
+call s:hl("gitcommitUnmergedFile",   "08", "NONE", "bold", "")
+call s:hl("gitcommitDiscardedFile",  "08", "NONE", "bold", "")
+call s:hl("gitcommitSelectedFile",   "0B", "NONE", "bold", "")
 
 " GitGutter highlighting
-call <sid>hi("GitGutterAdd",           s:base0B, s:base01, "", "")
-call <sid>hi("GitGutterChange",        s:base0D, s:base01, "", "")
-call <sid>hi("GitGutterDelete",        s:base08, s:base01, "", "")
-call <sid>hi("GitGutterChangeDelete",  s:base0E, s:base01, "", "")
+call s:hl("GitGutterAdd",           "0B", "01", "", "")
+call s:hl("GitGutterChange",        "0D", "01", "", "")
+call s:hl("GitGutterDelete",        "08", "01", "", "")
+call s:hl("GitGutterChangeDelete",  "0E", "01", "", "")
 
 " HTML highlighting
-call <sid>hi("htmlBold",    s:base0A, "", "bold", "")
-call <sid>hi("htmlItalic",  s:base0E, "", "italic", "")
-call <sid>hi("htmlEndTag",  s:base05, "", "", "")
-call <sid>hi("htmlTag",     s:base05, "", "", "")
+call s:hl("htmlBold",    "0A", "NONE", "bold", "")
+call s:hl("htmlItalic",  "0E", "NONE", "italic", "")
+call s:hl("htmlEndTag",  "05", "NONE", "", "")
+call s:hl("htmlTag",     "05", "NONE", "", "")
 
 " JavaScript highlighting
-call <sid>hi("javaScript",        s:base05, "", "", "")
-call <sid>hi("javaScriptBraces",  s:base05, "", "", "")
-call <sid>hi("javaScriptNumber",  s:base09, "", "", "")
+call s:hl("javaScript",        "05", "NONE", "", "")
+call s:hl("javaScriptBraces",  "05", "NONE", "", "")
+call s:hl("javaScriptNumber",  "09", "NONE", "", "")
 
 " pangloss/vim-javascript highlighting
-call <sid>hi("jsOperator",          s:base0D, "", "", "")
-call <sid>hi("jsStatement",         s:base0E, "", "", "")
-call <sid>hi("jsReturn",            s:base0E, "", "", "")
-call <sid>hi("jsThis",              s:base08, "", "", "")
-call <sid>hi("jsClassDefinition",   s:base0A, "", "", "")
-call <sid>hi("jsFunction",          s:base0E, "", "", "")
-call <sid>hi("jsFuncName",          s:base0D, "", "", "")
-call <sid>hi("jsFuncCall",          s:base0D, "", "", "")
-call <sid>hi("jsClassFuncName",     s:base0D, "", "", "")
-call <sid>hi("jsClassMethodType",   s:base0E, "", "", "")
-call <sid>hi("jsRegexpString",      s:base0C, "", "", "")
-call <sid>hi("jsGlobalObjects",     s:base0A, "", "", "")
-call <sid>hi("jsGlobalNodeObjects", s:base0A, "", "", "")
-call <sid>hi("jsExceptions",        s:base0A, "", "", "")
-call <sid>hi("jsBuiltins",          s:base0A, "", "", "")
+call s:hl("jsOperator",          "0D", "NONE", "", "")
+call s:hl("jsStatement",         "0E", "NONE", "", "")
+call s:hl("jsReturn",            "0E", "NONE", "", "")
+call s:hl("jsThis",              "08", "NONE", "", "")
+call s:hl("jsClassDefinition",   "0A", "NONE", "", "")
+call s:hl("jsFunction",          "0E", "NONE", "", "")
+call s:hl("jsFuncName",          "0D", "NONE", "", "")
+call s:hl("jsFuncCall",          "0D", "NONE", "", "")
+call s:hl("jsClassFuncName",     "0D", "NONE", "", "")
+call s:hl("jsClassMethodType",   "0E", "NONE", "", "")
+call s:hl("jsRegexpString",      "0C", "NONE", "", "")
+call s:hl("jsGlobalObjects",     "0A", "NONE", "", "")
+call s:hl("jsGlobalNodeObjects", "0A", "NONE", "", "")
+call s:hl("jsExceptions",        "0A", "NONE", "", "")
+call s:hl("jsBuiltins",          "0A", "NONE", "", "")
 
 " Mail highlighting
-call <sid>hi("mailQuoted1",  s:base0A, "", "", "")
-call <sid>hi("mailQuoted2",  s:base0B, "", "", "")
-call <sid>hi("mailQuoted3",  s:base0E, "", "", "")
-call <sid>hi("mailQuoted4",  s:base0C, "", "", "")
-call <sid>hi("mailQuoted5",  s:base0D, "", "", "")
-call <sid>hi("mailQuoted6",  s:base0A, "", "", "")
-call <sid>hi("mailURL",      s:base0D, "", "", "")
-call <sid>hi("mailEmail",    s:base0D, "", "", "")
+call s:hl("mailQuoted1",  "0A", "NONE", "", "")
+call s:hl("mailQuoted2",  "0B", "NONE", "", "")
+call s:hl("mailQuoted3",  "0E", "NONE", "", "")
+call s:hl("mailQuoted4",  "0C", "NONE", "", "")
+call s:hl("mailQuoted5",  "0D", "NONE", "", "")
+call s:hl("mailQuoted6",  "0A", "NONE", "", "")
+call s:hl("mailURL",      "0D", "NONE", "", "")
+call s:hl("mailEmail",    "0D", "NONE", "", "")
 
 " Markdown highlighting
-call <sid>hi("markdownCode",              s:base0B, "", "", "")
-call <sid>hi("markdownError",             s:base05, s:base00, "", "")
-call <sid>hi("markdownCodeBlock",         s:base0B, "", "", "")
-call <sid>hi("markdownHeadingDelimiter",  s:base0D, "", "", "")
+call s:hl("markdownCode",              "0B", "NONE", "", "")
+call s:hl("markdownError",             "05", "00", "", "")
+call s:hl("markdownCodeBlock",         "0B", "NONE", "", "")
+call s:hl("markdownHeadingDelimiter",  "0D", "NONE", "", "")
 
 " NERDTree highlighting
-call <sid>hi("NERDTreeDirSlash",  s:base0D, "", "", "")
-call <sid>hi("NERDTreeExecFile",  s:base05, "", "", "")
+call s:hl("NERDTreeDirSlash",  "0D", "NONE", "", "")
+call s:hl("NERDTreeExecFile",  "05", "NONE", "", "")
 
 " PHP highlighting
-call <sid>hi("phpMemberSelector",  s:base05, "", "", "")
-call <sid>hi("phpComparison",      s:base05, "", "", "")
-call <sid>hi("phpParent",          s:base05, "", "", "")
-call <sid>hi("phpMethodsVar",      s:base0C, "", "", "")
+call s:hl("phpMemberSelector",  "05", "NONE", "", "")
+call s:hl("phpComparison",      "05", "NONE", "", "")
+call s:hl("phpParent",          "05", "NONE", "", "")
+call s:hl("phpMethodsVar",      "0C", "NONE", "", "")
 
 " Python highlighting
-call <sid>hi("pythonOperator",  s:base0E, "", "", "")
-call <sid>hi("pythonRepeat",    s:base0E, "", "", "")
-call <sid>hi("pythonInclude",   s:base0E, "", "", "")
-call <sid>hi("pythonStatement", s:base0E, "", "", "")
+call s:hl("pythonOperator",  "0E", "NONE", "", "")
+call s:hl("pythonRepeat",    "0E", "NONE", "", "")
+call s:hl("pythonInclude",   "0E", "NONE", "", "")
+call s:hl("pythonStatement", "0E", "NONE", "", "")
 
 " Ruby highlighting
-call <sid>hi("rubyAttribute",               s:base0D, "", "", "")
-call <sid>hi("rubyConstant",                s:base0A, "", "", "")
-call <sid>hi("rubyInterpolationDelimiter",  s:base0F, "", "", "")
-call <sid>hi("rubyRegexp",                  s:base0C, "", "", "")
-call <sid>hi("rubySymbol",                  s:base0B, "", "", "")
-call <sid>hi("rubyStringDelimiter",         s:base0B, "", "", "")
+call s:hl("rubyAttribute",               "0D", "NONE", "", "")
+call s:hl("rubyConstant",                "0A", "NONE", "", "")
+call s:hl("rubyInterpolationDelimiter",  "0F", "NONE", "", "")
+call s:hl("rubyRegexp",                  "0C", "NONE", "", "")
+call s:hl("rubySymbol",                  "0B", "NONE", "", "")
+call s:hl("rubyStringDelimiter",         "0B", "NONE", "", "")
 
 " SASS highlighting
-call <sid>hi("sassidChar",     s:base08, "", "", "")
-call <sid>hi("sassClassChar",  s:base09, "", "", "")
-call <sid>hi("sassInclude",    s:base0E, "", "", "")
-call <sid>hi("sassMixing",     s:base0E, "", "", "")
-call <sid>hi("sassMixinName",  s:base0D, "", "", "")
+call s:hl("sassidChar",     "08", "NONE", "", "")
+call s:hl("sassClassChar",  "09", "NONE", "", "")
+call s:hl("sassInclude",    "0E", "NONE", "", "")
+call s:hl("sassMixing",     "0E", "NONE", "", "")
+call s:hl("sassMixinName",  "0D", "NONE", "", "")
 
 " Signify highlighting
-call <sid>hi("SignifySignAdd",     s:base0B, s:base01, "", "")
-call <sid>hi("SignifySignChange",  s:base0D, s:base01, "", "")
-call <sid>hi("SignifySignDelete",  s:base08, s:base01, "", "")
+call s:hl("SignifySignAdd",     "0B", "01", "", "")
+call s:hl("SignifySignChange",  "0D", "01", "", "")
+call s:hl("SignifySignDelete",  "08", "01", "", "")
 
 " Spelling highlighting
-call <sid>hi("SpellBad",     "", "", "undercurl", "")
-call <sid>hi("SpellLocal",   "", "", "undercurl", "")
-call <sid>hi("SpellCap",     "", "", "undercurl", "")
-call <sid>hi("SpellRare",    "", "", "undercurl", "")
+call s:hl("SpellBad",     "NONE", "NONE", "undercurl", "")
+call s:hl("SpellLocal",   "NONE", "NONE", "undercurl", "")
+call s:hl("SpellCap",     "NONE", "NONE", "undercurl", "")
+call s:hl("SpellRare",    "NONE", "NONE", "undercurl", "")
 
 " Startify highlighting
-call <sid>hi("StartifyBracket",  s:base03, "", "", "")
-call <sid>hi("StartifyFile",     s:base07, "", "", "")
-call <sid>hi("StartifyFooter",   s:base03, "", "", "")
-call <sid>hi("StartifyHeader",   s:base0B, "", "", "")
-call <sid>hi("StartifyNumber",   s:base09, "", "", "")
-call <sid>hi("StartifyPath",     s:base03, "", "", "")
-call <sid>hi("StartifySection",  s:base0E, "", "", "")
-call <sid>hi("StartifySelect",   s:base0C, "", "", "")
-call <sid>hi("StartifySlash",    s:base03, "", "", "")
-call <sid>hi("StartifySpecial",  s:base03, "", "", "")
+call s:hl("StartifyBracket",  "03", "NONE", "", "")
+call s:hl("StartifyFile",     "07", "NONE", "", "")
+call s:hl("StartifyFooter",   "03", "NONE", "", "")
+call s:hl("StartifyHeader",   "0B", "NONE", "", "")
+call s:hl("StartifyNumber",   "09", "NONE", "", "")
+call s:hl("StartifyPath",     "03", "NONE", "", "")
+call s:hl("StartifySection",  "0E", "NONE", "", "")
+call s:hl("StartifySelect",   "0C", "NONE", "", "")
+call s:hl("StartifySlash",    "03", "NONE", "", "")
+call s:hl("StartifySpecial",  "03", "NONE", "", "")
 
 " Java highlighting
-call <sid>hi("javaOperator",     s:base0D, "", "", "")
-
-" Remove functions
-delf <sid>hi
+call s:hl("javaOperator",     "0D", "NONE", "", "")
