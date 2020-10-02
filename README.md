@@ -1,11 +1,7 @@
-# YohananDiamond's Dotfiles
+**Welcome to my dotfiles repo!**
 
-![A screenshot of my desktop](.img/screenshot.png)
-
-_Note: I rarely update this screenshot, so it might be completely
-different right now._
-
-This repository contains most of my config files and scripts.
+This repository contains most of my config files and scripts (not all,
+though).
 
 ## Installation
 
