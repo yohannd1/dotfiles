@@ -11,7 +11,7 @@ WINEW_RECENTF="${XDG_CACHE_HOME:-$HOME/.cache}/winew_recentf"
 PROGNAME=$(basename $0)
 
 usage() {
-  printf >&2 "Usage: %s\n" "$PROGNAME { open <BIN> | cmd | here | recent }"
+  printf >&2 "Usage: %s\n" "$PROGNAME { open <BIN> | cmd | add-recent <BIN> }"
   printf >&2 "Environment variables:\n"
   printf >&2 "  WINEW_ARCH := { 32 | 64 }\n"
   printf >&2 "                (Default: 32)\n"
@@ -33,17 +33,6 @@ has_line() {
   return 1
 }
 
-register_recent() {
-  if [ -f "$WINEW_RECENTF" ]; then
-    if ! has_line "$1" < "$WINEW_RECENTF"; then
-      printf "%s\n" "$(realpath -m "$1")" >> "$WINEW_RECENTF"
-    fi
-  else
-    mkdir -p "$(dirname "$WINEW_RECENTF")"
-    printf "%s\n" "$(realpath -m "$1")" > "$WINEW_RECENTF"
-  fi
-}
-
 launch_application() {
   if [ -z "$NO_EXIST_CHECK" ] && [ ! -f "$1" ]; then
     printf >&2 "File not found: %s\n" "$1"
@@ -52,12 +41,10 @@ launch_application() {
 
   case "$WINEW_ARCH" in
     32)
-      [ "$REGISTER" ] && [ -z "$WINEW_NO_REGISTER" ] && register_recent "$1"
       cd "$(dirname "$1")" \
         && WINEARCH=win32 WINEPREFIX="$WINEW_32_PREFIX" wine "$1"
       ;;
     64)
-      [ "$REGISTER" ] && [ -z "$WINEW_NO_REGISTER" ] && register_recent "$1"
       cd "$(dirname "$1")" \
         && WINEARCH=win64 WINEPREFIX="$WINEW_64_PREFIX" wine "$1"
       ;;
@@ -69,26 +56,27 @@ launch_application() {
 }
 
 case $# in
-  1) case "$1" in
-       here)
-         choice=$(fd -tf '\.exe$' | fzagnostic -h 20) || exit 1
-         REGISTER=1 launch_application "$choice"
-         ;;
-       recent)
-         if [ -f "$WINEW_RECENTF" ]; then
-           choice=$(cat "$WINEW_RECENTF" | fzagnostic -h 20) || exit 1
-           launch_application "$choice"
-         else
-           printf >&2 "recent file %s doesn't exist\n" "$WINEW_RECENTF"
-         fi ;;
-       cmd)
-         NO_EXIST_CHECK=1 launch_application "cmd";
-         ;;
-       *) usage ;;
-     esac ;;
-  2) case "$1" in
-       open) REGISTER=1 launch_application "$2" ;;
-       *) usage ;;
-     esac ;;
+  1)
+    case "$1" in
+      cmd)
+        NO_EXIST_CHECK=1 launch_application "cmd";
+        ;;
+      *) usage ;;
+    esac
+    ;;
+  2)
+    case "$1" in
+      open) launch_application "$2" ;;
+      add-recent)
+        if [ -f "$2" ]; then
+          register_recent "$2"
+        else
+          printf >&2 "File not found: %s\n" "$2"
+          exit 1
+        fi
+        ;;
+      *) usage ;;
+    esac
+    ;;
   *) usage ;;
 esac

@@ -38,6 +38,16 @@ die() {
   exit 1
 }
 
+getModelineCommand() {
+  # USAGE: feed this with the file contents.
+  modeline=$(head -n1)
+  if printf "%s" "$modeline" | grep -q '^#!.*'; then
+    printf "%s" "$modeline" | sed 's/^#!//g'
+  fi
+}
+
+readModeline() { head -n1; }
+
 getPython() {
   if exists python3; then
     echo "python3"
@@ -61,7 +71,7 @@ case "$1" in
       rust) rustc "$file" -o "$tmp" && "$tmp" ;;
       haskell)
         nameFull=${file%.*}
-        name=$(basename "${file%.*}")
+        name=$(basename "$nameFull")
         ghc -o "$tmp" -dynamic "$file" \
           && rm "$nameFull.o" "$nameFull.hi" \
           && "$tmp"
@@ -71,7 +81,24 @@ case "$1" in
       cs) csc "$file" -out:"$tmp" && mono "$tmp" ;;
       clojure) clojure "$file" ;;
       markdown) md-preview "$file" ;;
-      sh) if [ -x "$file" ]; then "$file"; else sh "$file"; fi ;;
+      sh)
+        if [ -x "$file" ]; then
+          # execute file if it is executable
+          "$file"
+        else
+          # deduce modeline, if any
+          command=$(getModelineCommand < "$file")
+          if printf "%s" "$command" | grep -q 'bash$'; then
+            bash "$file"
+          elif printf "%s" "$command" | grep -q 'zsh$'; then
+            zsh "$file"
+          elif printf "%s" "$command" | grep -q 'fish$'; then
+            fish "$file"
+          else
+            sh "$file"
+          fi
+        fi
+        ;;
       zsh) if [ -x "$file" ]; then "$file"; else zsh "$file"; fi ;;
       julia) julia "$file" ;;
       vim) nvim -u "$file" ;;

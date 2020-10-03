@@ -136,11 +136,12 @@ find-file() {
     shift
   fi
 
+  [ $# = 0 ] && set -- "${EDITOR:-vi}"
   prog="${1:-$EDITOR}"
   choice="$(assist::find-file.gen "$hidden" | fzagnostic)" || return 1
 
   if [ -f "$choice" ]; then
-    "$prog" "$choice"
+    "$@" "$choice"
   elif [ -d "$choice" ]; then
     cd "$choice"
   else

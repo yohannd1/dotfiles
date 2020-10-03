@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+choice="$(gen-pathbin | fzagnostic)" || exit 1
+
+if printf "%s" "$choice" | grep -q '!$'; then
+  # choice ends with !, so it should be opened in a new instance
+  exec "$TERMINAL" -e sh -c "eval '${choice%?}'"
+else
+  # choice doesn't end with !, open silently
+  exec sh -c "$choice"
+fi

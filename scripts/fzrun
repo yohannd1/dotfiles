@@ -1,11 +1,140 @@
-#!/usr/bin/env sh
+#!/usr/bin/env python3
 
-choice="$(gen-pathbin | fzagnostic)" || exit 1
+import os, sys
+import subprocess as sp
+from typing import Tuple
 
-if printf "%s" "$choice" | grep -q '!$'; then
-  # choice ends with !, so it should be opened in a new instance
-  exec "$TERMINAL" -e sh -c "eval '${choice%?}'"
-else
-  # choice doesn't end with !, open silently
-  exec sh -c "$choice"
-fi
+XDG_CACHE_HOME = os.getenv("XDG_CACHE_HOME") or os.getenv("HOME") + "/.cache"
+WINEW_RECENTF = os.getenv("WINEW_RECENTF") or (XDG_CACHE_HOME + "/winew_recentf")
+
+class Action:
+    def run(self):
+        raise NotImplementedError
+
+    def repr(self) -> Tuple[str, str]:
+        raise NotImplementedError
+
+class WineAction(Action):
+    def __init__(self, name, binary_path, arch=None):
+        self.name = name
+        self.binary_path = binary_path
+        self.type_ = "win"
+        self.arch = arch
+
+    def run(self):
+        if self.arch and int(self.arch) == 32:
+            os.environ["WINEW_ARCH"] = "32"
+        elif self.arch and int(self.arch) == 64:
+            os.environ["WINEW_ARCH"] = "64"
+
+        os.execvp("winew", ["winew", "open", self.binary_path])
+
+    def repr(self):
+        return (self.type_, self.name)
+
+class ShellAction(Action):
+    def __init__(self, name, command, shell=None):
+        self.name = name
+        self.command = command
+        self.shell = shell or os.getenv("SHELL") or "/bin/sh"
+        self.type_ = "cmd"
+        
+    def run(self):
+        os.execv(self.shell, [self.shell, "-c", self.command])
+
+    def repr(self):
+        return (self.type_, self.name)
+
+class BinAction(Action):
+    def __init__(self, binary):
+        self.binary = binary
+        self.type_ = "bin"
+
+    def run(self):
+        print(self.binary)
+        os.execvp(self.binary, [self.binary])
+
+    def repr(self):
+        return (self.type_, self.binary)
+
+def main():
+    actions = []
+
+    pathbin_proc = sp.Popen("gen-pathbin", stdout=sp.PIPE, encoding="UTF-8")
+    for line in iter(pathbin_proc.stdout.readline, ""):
+        actions.append(BinAction(line.rstrip()))
+
+    if os.path.isfile(WINEW_RECENTF):
+        with open(WINEW_RECENTF, "r") as f:
+            for line in f.readlines():
+                binary = line.rstrip()
+                name = binary
+                if os.getenv("STORAGE"):
+                    name = name.replace(os.environ["STORAGE"] + "/software", "[SOFT]")
+                    name = name.replace(os.environ["STORAGE"], "[STORE]")
+                name = name.replace(os.environ["HOME"], "~")
+
+                actions.append(WineAction("(32) " + name, binary))
+
+    fzagnostic_proc = sp.Popen(
+        ["fzagnostic"],
+        stdout=sp.PIPE,
+        stdin=sp.PIPE,
+        encoding="UTF-8",
+    )
+
+    id_charsize = len(str(len(actions) - 1))
+    num_format = "{}".format("{:0" + str(id_charsize) + "d}")
+    for (i, action) in enumerate(actions):
+        type_, name = action.repr()
+
+        print(
+            "#{} {} || {}".format(
+                num_format.format(i),
+                type_.upper(),
+                name,
+            ),
+            file=fzagnostic_proc.stdin,
+        )
+
+    fzagnostic_proc.stdin.close()
+    if fzagnostic_proc.wait() == 0:
+        output = fzagnostic_proc.stdout.readline().rstrip()
+
+        if output[0] == "!":
+            # if the format is the following:
+            # !<SHCMD>
+            # then SHCMD is ran on the default shell.
+            ShellAction(None, output[1:]).run()
+        else:
+            actions[int(output[1:5])].run()
+
+def getsize(obj):
+    """Determines the size of an object.
+
+    Taken from: https://stackoverflow.com/questions/449560/how-do-i-determine-the-size-of-an-object-in-python
+    """
+    import types
+
+    from gc import get_referents
+    BLACKLIST = type, types.ModuleType, types.FunctionType
+
+    if isinstance(obj, BLACKLIST):
+        raise TypeError('getsize() does not take argument of type: '+ str(type(obj)))
+
+    seen_ids = set()
+    size = 0
+    objects = [obj]
+    while objects:
+        need_referents = []
+        for obj in objects:
+            if not isinstance(obj, BLACKLIST) and id(obj) not in seen_ids:
+                seen_ids.add(id(obj))
+                size += sys.getsizeof(obj)
+                need_referents.append(obj)
+        objects = get_referents(*need_referents)
+
+    return size
+
+if __name__ == "__main__":
+    main()
