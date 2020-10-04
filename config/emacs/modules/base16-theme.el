@@ -711,8 +711,10 @@
  (rainbow-delimiters-depth-5-face              :foreground base0A)
  (rainbow-delimiters-depth-6-face              :foreground base09)
  (rainbow-delimiters-depth-7-face              :foreground base08)
- (rainbow-delimiters-depth-8-face              :foreground base03)
+ (rainbow-delimiters-depth-8-face              :foreground base07)
  (rainbow-delimiters-depth-9-face              :foreground base05)
+ (rainbow-delimiters-unmatched-face            :foreground base08 :weight bold)
+ (rainbow-delimiters-mismatched-face           :foreground base08 :weight bold)
 
  ;; regex-tool
  (regex-tool-matched-face                      :foreground nil :background nil :inherit match)
