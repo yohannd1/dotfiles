@@ -84,8 +84,11 @@ def main():
     actions = []
 
     pathbin_proc = sp.Popen("gen-pathbin", stdout=sp.PIPE, encoding="UTF-8")
+    PATHBIN_EXCLUDE = {"ctags.emacs"}
     for line in iter(pathbin_proc.stdout.readline, ""):
-        actions.append(BinAction(line.rstrip()))
+        binary = line.rstrip()
+        if binary not in PATHBIN_EXCLUDE:
+            actions.append(BinAction(binary))
 
     if os.path.isfile(WINEW_RECENTF):
         with open(WINEW_RECENTF, "r") as f:
@@ -126,6 +129,8 @@ def main():
     if fzagnostic_proc.wait() == 0:
         output = fzagnostic_proc.stdout.readline().rstrip()
 
+        if output.startswith("#"):
+            actions[int(output[1:5])].run()
         if output.startswith("!#"):
             # if the format is the following:
             # !#<ID>
@@ -137,7 +142,8 @@ def main():
             # then SHCMD is ran on a terminal.
             ShellAction(None, output[1:]).run(terminal=True)
         else:
-            actions[int(output[1:5])].run()
+            print(f"Invalid command: {repr(output)}", file=sys.stderr)
+            sys.exit(1)
 
 def getsize(obj):
     """Determines the size of an object.

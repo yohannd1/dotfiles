@@ -95,52 +95,66 @@
   :ensure t
   :defer t)
 
-(use-package smart-mode-line
-  :ensure t
-  :config
-  (sml/setup))
+;; (which-func-mode ("" which-func-format "--"))
+;; (global-mode-string ("--" global-mode-string))
 
-;; (use-package spaceline
-;;   :ensure t
-;;   :config
-;;   (spaceline-emacs-theme)
-;;   (spaceline-define-segment tty-or-gui
-;;     (if (display-graphic-p)
-;;         "gui"
-;;       "tty"))
-;;   (spaceline-compile
-;;     ;; Left Side
-;;     '((anzu
-;;        :priority 100)
-;;       (evil-state
-;;        :face highlight-face
-;;        :priority 100)
-;;       (tty-or-gui
-;;        :face other-face
-;;        :when active
-;;        :priority 100)
-;;       (buffer-id
-;;        :face default-face)
-;;       (major-mode
-;;        :face other-face
-;;        :priority 90)
-;;       ((buffer-modified buffer-size)
-;;        :face default-face
-;;        :priority 80))
+(defun propertized-list (fields &rest properties)
+  (mapcar (lambda (item)
+            `(:propertize ,item
+                          ,@properties))
+          fields))
 
-;;     ;; Right Side
-;;     '((selection-info
-;;        :face default-face
-;;        :priority 95)
-;;       (buffer-encoding-abbrev
-;;        :face default-face
-;;        :priority 96)
-;;       ((point-position line-column)
-;;        :face other-face
-;;        :priority 96)
-;;       (buffer-position
-;;        :face highlight-face
-;;        :priority 99))))
+(defun core--expanded-list (&rest args)
+  (let ((value nil))
+    (dolist (item args)
+      (if (listp item)
+          (setq value (append value item))
+        (setq value (append value (list item)))))
+    value))
+
+(defface mode-line-highlight-1 nil "")
+(defface mode-line-highlight-2 nil "")
+(defface mode-line-highlight-3 nil "")
+
+(setq-default mode-line-format
+              (core--expanded-list
+               ;; low memory warning
+               "%e"
+
+               ;; GUI or TTY?
+               (propertized-list
+                '(" " (:eval (if (display-graphic-p) "GUI" "TTY")) " ")
+                'face 'mode-line-highlight-1)
+
+               ;; weird infos (might change later)
+               (propertized-list
+                '(" "
+                  mode-line-mule-info
+                  (:eval (if (frame-parameter nil 'client)
+                             "C" "-"))
+                  " ")
+                'face 'mode-line-highlight-2)
+
+               ;; line and column
+               (propertized-list
+                '(" %04l:%03c ")
+                'face 'mode-line-highlight-3)
+
+               ;; buffer info
+               (propertized-list
+                '(" "
+                  "(" (:eval mode-name) ") "
+                  ;; read-only indicator
+                  (:eval (if buffer-read-only
+                             "[RO] " ""))
+                  ;; buffer name
+                  "%b"
+                  ;; modification indicator
+                  (:eval (if (buffer-modified-p)
+                             " [+]" ""))
+                  " ")
+                'face 'default)
+               ))
 
 (use-package origami
   :ensure t
@@ -220,6 +234,54 @@
 ;;   (setq display-buffer-base-action '(display-buffer-below-selected))
 ;;   (edwina-setup-dwm-keys)
 ;;   (edwina-mode 1))
+
+;; (use-package smart-mode-line
+;;   :ensure t
+;;   :config
+;;   (sml/setup))
+
+;; (use-package spaceline
+;;   :ensure t
+;;   :config
+;;   (spaceline-emacs-theme)
+;;   (spaceline-define-segment tty-or-gui
+;;     (if (display-graphic-p)
+;;         "gui"
+;;       "tty"))
+;;   (spaceline-compile
+;;     ;; Left Side
+;;     '((anzu
+;;        :priority 100)
+;;       (evil-state
+;;        :face highlight-face
+;;        :priority 100)
+;;       (tty-or-gui
+;;        :face other-face
+;;        :when active
+;;        :priority 100)
+;;       (buffer-id
+;;        :face default-face)
+;;       (major-mode
+;;        :face other-face
+;;        :priority 90)
+;;       ((buffer-modified buffer-size)
+;;        :face default-face
+;;        :priority 80))
+
+;;     ;; Right Side
+;;     '((selection-info
+;;        :face default-face
+;;        :priority 95)
+;;       (buffer-encoding-abbrev
+;;        :face default-face
+;;        :priority 96)
+;;       ((point-position line-column)
+;;        :face other-face
+;;        :priority 96)
+;;       (buffer-position
+;;        :face highlight-face
+;;        :priority 99))))
+
 
 (provide 'conf-packages)
 

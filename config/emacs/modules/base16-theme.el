@@ -162,14 +162,13 @@
  (line-number                                  :foreground base03 :background base01)
  (line-number-current-line                     :background base02)
 
- ;; modeline
+ ;; mode-line
  (mode-line                                    :foreground base05 :background base00)
- (mode-line-buffer-id                          :foreground base0B :background nil)
- (mode-line-emphasis                           :foreground base06 :slant italic)
- (mode-line-highlight                          :foreground base0E :box nil :weight bold)
- (mode-line-inactive                           :foreground base03 :background base01 :box nil)
-
- ;; Third party:
+ (mode-line-inactive                           :foreground base03 :background base00)
+ (mode-line-highlight                          :foreground base00 :background base09)
+ (mode-line-highlight-1                        :foreground base00 :background base09)
+ (mode-line-highlight-2                        :foreground base05 :background base02)
+ (mode-line-highlight-3                        :foreground base05 :background base01)
 
  ;; linum-relative
  (linum-relative-current-face                  :foreground base05 :background base02)

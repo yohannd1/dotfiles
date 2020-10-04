@@ -19,6 +19,11 @@
         ("e" . ,#'eval-expression)
         ("E" . ,#'eval-last-sexp)
 
+        ("hv" . ,#'describe-variable)
+        ("hk" . ,#'describe-key)
+        ("hf" . ,#'describe-function)
+        ("hF" . ,#'describe-face)
+
         ("rr" . ,#'core-rifle-run)
         ("rb" . ,#'core-rifle-build)
         ("rt" . ,#'core-rifle-test)
@@ -60,5 +65,10 @@
 ;; aliases for : on evil-mode
 (dolist (x '("ç" "§" "Ã"))
   (define-key evil-motion-state-map x #'evil-ex))
+
+(define-key evil-insert-state-map (kbd "C-h") #'delete-backward-char)
+
+;; reinforce leader key on dired
+(define-key dired-mode-map (kbd "SPC") conf-kb/leader-map)
 
 (provide 'conf-kb)
