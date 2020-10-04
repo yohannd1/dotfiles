@@ -6,9 +6,14 @@ from typing import Tuple
 
 XDG_CACHE_HOME = os.getenv("XDG_CACHE_HOME") or os.getenv("HOME") + "/.cache"
 WINEW_RECENTF = os.getenv("WINEW_RECENTF") or (XDG_CACHE_HOME + "/winew_recentf")
+TERMINAL = os.getenv("TERMINAL") or "xterm"
+SHELL = os.getenv("SHELL") or "/bin/sh"
+
+def through_term(ls):
+    return [TERMINAL, "-e"] + ls
 
 class Action:
-    def run(self):
+    def run(self, terminal=False):
         raise NotImplementedError
 
     def repr(self) -> Tuple[str, str]:
@@ -21,13 +26,15 @@ class WineAction(Action):
         self.type_ = "win"
         self.arch = arch
 
-    def run(self):
-        if self.arch and int(self.arch) == 32:
+    def run(self, terminal=False):
+        if self.arch == "win32":
             os.environ["WINEW_ARCH"] = "32"
-        elif self.arch and int(self.arch) == 64:
+        elif self.arch == "win64":
             os.environ["WINEW_ARCH"] = "64"
 
-        os.execvp("winew", ["winew", "open", self.binary_path])
+        args = ["winew", "open", self.binary_path]
+        args = through_term(args) if terminal else args
+        os.execvp(args[0], args)
 
     def repr(self):
         return (self.type_, self.name)
@@ -36,11 +43,13 @@ class ShellAction(Action):
     def __init__(self, name, command, shell=None):
         self.name = name
         self.command = command
-        self.shell = shell or os.getenv("SHELL") or "/bin/sh"
+        self.shell = shell or SHELL
         self.type_ = "cmd"
         
-    def run(self):
-        os.execv(self.shell, [self.shell, "-c", self.command])
+    def run(self, terminal=False):
+        args = [self.shell, "-c", self.command]
+        args = through_term(args) if terminal else args
+        os.execvp(args[0], args)
 
     def repr(self):
         return (self.type_, self.name)
@@ -50,12 +59,26 @@ class BinAction(Action):
         self.binary = binary
         self.type_ = "bin"
 
-    def run(self):
-        print(self.binary)
-        os.execvp(self.binary, [self.binary])
+    def run(self, terminal=False):
+        args = [self.binary]
+        args = through_term(args) if terminal else args
+        os.execvp(args[0], args)
 
     def repr(self):
         return (self.type_, self.binary)
+
+class MultiargAction(Action):
+    def __init__(self, name, args):
+        self.name = name
+        self.args = args
+        self.type_ = "mta"
+        
+    def run(self, terminal=False):
+        args = through_term(self.args) if terminal else self.args
+        os.execvp(args[0], args)
+
+    def repr(self):
+        return (self.type_, self.name)
 
 def main():
     actions = []
@@ -67,14 +90,16 @@ def main():
     if os.path.isfile(WINEW_RECENTF):
         with open(WINEW_RECENTF, "r") as f:
             for line in f.readlines():
-                binary = line.rstrip()
+                line = line.rstrip()
+                arch, binary = line.split(" ", maxsplit=1)
+
                 name = binary
                 if os.getenv("STORAGE"):
                     name = name.replace(os.environ["STORAGE"] + "/software", "[SOFT]")
                     name = name.replace(os.environ["STORAGE"], "[STORE]")
                 name = name.replace(os.environ["HOME"], "~")
 
-                actions.append(WineAction("(32) " + name, binary))
+                actions.append(WineAction("(" + arch + ") " + name, binary, arch=arch))
 
     fzagnostic_proc = sp.Popen(
         ["fzagnostic"],
@@ -101,11 +126,16 @@ def main():
     if fzagnostic_proc.wait() == 0:
         output = fzagnostic_proc.stdout.readline().rstrip()
 
-        if output[0] == "!":
+        if output.startswith("!#"):
+            # if the format is the following:
+            # !#<ID>
+            # then action of index ID is ran on a terminal.
+            actions[int(output[2:])].run(terminal=True)
+        elif output.startswith("!"):
             # if the format is the following:
             # !<SHCMD>
-            # then SHCMD is ran on the default shell.
-            ShellAction(None, output[1:]).run()
+            # then SHCMD is ran on a terminal.
+            ShellAction(None, output[1:]).run(terminal=True)
         else:
             actions[int(output[1:5])].run()
 

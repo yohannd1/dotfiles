@@ -13,7 +13,7 @@ super + Return
 
 # program launcher
 super + space
-    fzrun
+    runnsend error-and-output fzrun
 
 # power menu
 super + shift + o

@@ -25,12 +25,21 @@ has_line() {
   fi
 
   while read line; do
-    if [ "$line" = "$(realpath -m $1)" ]; then
-      return 0
-    fi
+    [ "$line" = "$1" ] && return 0
   done
 
   return 1
+}
+
+register_recent() {
+  if [ -f "$WINEW_RECENTF" ]; then
+    if ! has_line "win$WINEW_ARCH $(realpath -m "$1")" < "$WINEW_RECENTF"; then
+      printf "win$WINEW_ARCH %s\n" "$(realpath -m "$1")" >> "$WINEW_RECENTF"
+    fi
+  else
+    mkdir -p "$(dirname "$WINEW_RECENTF")"
+    printf "win$WINEW_ARCH %s\n" "$(realpath -m "$1")" > "$WINEW_RECENTF"
+  fi
 }
 
 launch_application() {
