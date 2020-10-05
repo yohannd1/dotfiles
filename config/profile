@@ -11,16 +11,6 @@ if [ "$DOTFILES" ]; then
   exists() { command -v "$1" >/dev/null 2>/dev/null; }
   eval "$(load-base16-theme --noprefix)"
 
-  # set up SSH keychaing
-  if [ -x /usr/bin/keychain ]; then
-    eval "$(keychain --eval --ignore-missing ~/.ssh/id_rsa 2>/dev/null)"
-  fi
-
-  # load colors (needs setcolors-git from AUR)
-  # if exists setcolors; then
-  #   gen-setcolors && setcolors "$XDG_CACHE_HOME/gen/setcolorsrc"
-  # fi
-
   # load colors
   printf '\e]P%s%s' 0 "$base00"
   printf '\e]P%s%s' 1 "$base01"
@@ -41,4 +31,9 @@ if [ "$DOTFILES" ]; then
 
   printf '\e[?16;2;112c' # change cursor to block
   clear
+
+  # set up SSH keychaing
+  if [ -x /usr/bin/keychain ]; then
+    eval "$(keychain --eval --ignore-missing ~/.ssh/id_rsa 2>/dev/null)"
+  fi
 fi
