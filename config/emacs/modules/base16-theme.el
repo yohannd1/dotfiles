@@ -166,9 +166,8 @@
  (mode-line                                    :foreground base05 :background base00)
  (mode-line-inactive                           :foreground base03 :background base00)
  (mode-line-highlight                          :foreground base00 :background base09)
- (mode-line-highlight-1                        :foreground base00 :background base09)
- (mode-line-highlight-2                        :foreground base05 :background base02)
- (mode-line-highlight-3                        :foreground base05 :background base01)
+ (mode-line-highlight-1                        :foreground base05 :background base02)
+ (mode-line-highlight-2                        :foreground base05 :background base01)
 
  ;; linum-relative
  (linum-relative-current-face                  :foreground base05 :background base02)

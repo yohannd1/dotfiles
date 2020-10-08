@@ -95,16 +95,18 @@
   :ensure t
   :defer t)
 
-;; (which-func-mode ("" which-func-format "--"))
-;; (global-mode-string ("--" global-mode-string))
+(defface mode-line-highlight-1 nil
+  "A face for the main modeline element highlight.")
+(defface mode-line-highlight-2 nil
+  "A face for the secondary modeline element highlight.")
 
-(defun propertized-list (fields &rest properties)
-  (mapcar (lambda (item)
-            `(:propertize ,item
+(defun ml--propertize-list (elements properties)
+  (mapcar (lambda (el)
+            `(:propertize ,el
                           ,@properties))
-          fields))
+          elements))
 
-(defun core--expanded-list (&rest args)
+(defun ml--expand-list (&rest args)
   (let ((value nil))
     (dolist (item args)
       (if (listp item)
@@ -112,48 +114,46 @@
         (setq value (append value (list item)))))
     value))
 
-(defface mode-line-highlight-1 nil "")
-(defface mode-line-highlight-2 nil "")
-(defface mode-line-highlight-3 nil "")
-
-(setq-default mode-line-format
-              (core--expanded-list
+(setq-default
+ mode-line-format
+ (ml--expand-list
                ;; low memory warning
                "%e"
 
                ;; GUI or TTY?
-               (propertized-list
+               (ml--propertize-list
                 '(" " (:eval (if (display-graphic-p) "GUI" "TTY")) " ")
-                'face 'mode-line-highlight-1)
+                '(face mode-line-highlight-1))
 
                ;; weird infos (might change later)
-               (propertized-list
+               (ml--propertize-list
                 '(" "
                   mode-line-mule-info
                   (:eval (if (frame-parameter nil 'client)
                              "C" "-"))
                   " ")
-                'face 'mode-line-highlight-2)
+                '(face mode-line-highlight-2))
 
                ;; line and column
-               (propertized-list
+               (ml--propertize-list
                 '(" %04l:%03c ")
-                'face 'mode-line-highlight-3)
+                '(face mode-line-highlight-2))
 
                ;; buffer info
-               (propertized-list
+               (ml--propertize-list
                 '(" "
-                  "(" (:eval mode-name) ") "
-                  ;; read-only indicator
-                  (:eval (if buffer-read-only
-                             "[RO] " ""))
                   ;; buffer name
                   "%b"
+                  ;; mode name
+                  " [" (:eval mode-name) "]"
                   ;; modification indicator
                   (:eval (if (buffer-modified-p)
                              " [+]" ""))
+                  ;; read-only indicator
+                  (:eval (if buffer-read-only
+                             " [RO]" ""))
                   " ")
-                'face 'default)
+                '(face default))
                ))
 
 (use-package origami
