@@ -27,7 +27,7 @@ export WIKI=~/wiki
 # global options
 [ -z "$DISPLAY" ] && export WM=dwm # only export if it hasn't been set before
 export TERM=xterm-256color
-_isAndroid && export EDITOR=nvim || export EDITOR=emacs-custom
+_isAndroid && export EDITOR=nvim || export EDITOR=start-emacs
 export TERMINAL=st
 export BROWSER=qutebrowser
 export TERMBROWSER=w3m

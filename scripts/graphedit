@@ -3,7 +3,7 @@
 . "$(uselib std)"
 
 case "$EDITOR" in
-  emacs-custom) exec emacs-custom "$@" ;;
+  start-emacs) exec start-emacs "$@" ;;
   emacs) exec emacs -- "$@" ;;
   vi|vim|nvim) exec "$TERMINAL" -e "$EDITOR" -- "$@" ;;
   *) exec "$EDITOR" "$@" ;;
