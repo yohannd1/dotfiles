@@ -24,12 +24,11 @@ else
 fi &
 
 # compositor
-compositor() { picom -b --experimental-backend; }
 if [ "$WM" = dwm ]; then
-  sleep 3
-  compositor
+  sleep 3 # tray patch causes problems with compositor for some reason
+  start-compositor
 else
-  compositor
+  start-compositor
 fi &
   
 # other background applications

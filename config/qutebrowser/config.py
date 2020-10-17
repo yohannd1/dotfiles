@@ -39,6 +39,8 @@ def main():
     })
 
     c.downloads.open_dispatcher = os.environ.get("OPENER") or "xdg-open"
+    c.colors.webpage.darkmode.enabled = True
+    c.url.start_pages = ["qute://bookmarks/#bookmarks"]
     config.load_autoconfig()
 
 def xgetres(resource):

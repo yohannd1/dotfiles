@@ -3,9 +3,9 @@
 #
 # a set of keybindings for general use, working idnependently of wm
 
-# restart picom
+# start/restart compositor
 super + control + shift + c
-    pkill picom; picom -b --experimental-backend
+    start-compositor
 
 # terminal
 super + Return
