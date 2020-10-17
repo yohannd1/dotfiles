@@ -227,4 +227,17 @@
       (advice-remove #'tty-run-terminal-initialization #'ignore)
       (tty-run-terminal-initialization (selected-frame) nil t)))
 
+;; get rid of scratch buffer
+(defun my/make-new-buffer ()
+  ;; http://ergoemacs.org/emacs/emacs_new_empty_buffer.html
+  (interactive)
+  (let ((buffer (get-buffer-create "*default*")))
+    (switch-to-buffer buffer)
+    (funcall initial-major-mode)
+    (setq buffer-offer-save t)
+    buffer))
+(setq initial-buffer-choice #'my/make-new-buffer
+      initial-major-mode #'text-mode)
+(kill-buffer "*scratch*")
+
 (provide 'conf-general)

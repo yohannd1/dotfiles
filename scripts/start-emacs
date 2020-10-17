@@ -3,14 +3,29 @@
 # A script to launch emacs on different occasions.
 
 if [ -t 1 ] && [ -t 2 ]; then
-  if [ "$DISPLAY" ]; then
-    # terminal client
+  onGui=0
+else
+  onGui=1
+fi
+
+launchClient() {
+  if [ "$onGui" = 0 ]; then
     TERM=xterm-16color exec emacsclient -a "" -t "$@"
   else
-    # emacsclient doesn't seem to work on TTYs for me.
-    TERM=xterm-16color exec emacs -nw "$@"
+    exec emacsclient -a "" -c "$@"
   fi
+}
+
+launchStandalone() {
+  if [ "$onGui" = 0 ]; then
+    TERM=xterm-16color exec emacs -nw "$@"
+  else
+    TERM=xterm-16color exec emacs "$@"
+  fi
+}
+
+if [ "$DISPLAY" ]; then
+  launchClient "$@"
 else
-  # graphical client call
-  exec emacsclient -a "" "$@" -c
+  launchStandalone "$@"
 fi
