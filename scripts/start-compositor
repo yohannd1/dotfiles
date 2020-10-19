@@ -1,7 +1,9 @@
 #!/usr/bin/env sh
 
+
 COMPOSITOR=picom
 
+# TODO: don't kill compositors from other X servers
 pgrep "$COMPOSITOR" >/dev/null 2>/dev/null \
   && pkill "$COMPOSITOR"
 
@@ -9,4 +11,4 @@ while pgrep "$COMPOSITOR" >/dev/null 2>/dev/null; do
   sleep 1
 done
 
-"$COMPOSITOR" --experimental-backend
+exec "$COMPOSITOR" --experimental-backend

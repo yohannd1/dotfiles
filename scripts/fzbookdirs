@@ -16,6 +16,7 @@ genbk() {
   fd -d1 -td '.' ~/pj/etc &
   fd -d1 -td '.' ~/pj/clone &
   fd -d1 -td '.' ~/pj/write &
+  fd -d1 -td '.' "/run/media/$USER"
 
   wait $!
 }

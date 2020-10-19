@@ -24,7 +24,7 @@ elif [ -t 2 ] && exists fzf; then
   [ "$hasPrompt" ] && prompt=(--prompt "$prompt ") || prompt=()
   [ "$hasHeight" ] && height=(--height "$height") || height=()
   printf >&2 '\033[2 q' # change cursor to block
-  fzf "${prompt[@]}" "${height[@]}"
+  fzf "${prompt[@]}" "${height[@]}" --no-border
 else
   printf >&2 "%s\n" "Could not open dmenu or fzf."
   exit 1
