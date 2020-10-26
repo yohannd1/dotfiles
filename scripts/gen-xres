@@ -26,7 +26,7 @@
 . ~/.config/dots/env.sh
 eval "$(load-base16-theme)"
 
-FONT="Fira Code"
+FONT="Cascadia Code"
 
 xset() { printf "%s: %s\n" "$1" "$2"; }
 font() {
@@ -34,7 +34,7 @@ font() {
 }
 
 # st
-xset 'st.alpha' "0.9"
+xset 'st.alpha' "0.85"
 xset 'st.cursor' "$base0D"
 xset 'st.font' "$(font 13)"
 

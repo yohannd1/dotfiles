@@ -4,6 +4,7 @@
 
 . "$(uselib std)"
 . ~/.config/dots/env.sh
+. ~/.config/dots/path.sh
 depCheck gen-sxhkd sxhkd mktemp
 
 # get data folder based on current display

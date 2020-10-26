@@ -37,6 +37,7 @@ export READER=zathura
 export FILEMAN=lf
 
 # configuration files/folders
+export _ZL_DATA="$XDG_DATA_DIR/zlua"
 export WINEPREFIX="$XDG_DATA_DIR/wine32"
 export WINEW_32_PREFIX="$XDG_DATA_DIR/wine32"
 export WINEW_64_PREFIX="$XDG_DATA_DIR/wine64"
@@ -81,7 +82,7 @@ _exists sccache && export RUSTC_WRAPPER=sccache
 export DIR_BOOKMARKS="$STORAGE/share/bookmarks.sh"
 export FLAMEW_SCR_FOLDER="$STORAGE/pictures/screenshots"
 export SETBG_WALLPAPER_DIR="$STORAGE/pictures/wallpapers"
-export SETBG_THEME="space-animals"
+export SETBG_THEME="art"
 export BKMK_FILE="$WIKI/data/bookmarks.json"
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"
 export GUILE_LOAD_PATH="$DOTFILES/lib/guile"

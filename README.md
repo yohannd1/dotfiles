@@ -16,8 +16,9 @@ from a repository.
 But if you want to do it anyway, you can do:
 
 ```bash
-curl https://raw.githubusercontent.com/yohanandiamond/dotfiles/master/dots-install > dots-install.sh
-sh dots-install.sh https path-to-dotfiles
+curl https://raw.githubusercontent.com/yohanandiamond/dotfiles/master/install > install
+chmod +x install
+./install https path-to-dotfiles
 ```
 
 It's still pretty buggy so remember to make your backups (and

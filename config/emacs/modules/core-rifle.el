@@ -22,6 +22,7 @@ Returns a string of `mode' without the \"-mode\" postfix as a fallback."
    ((file-upwards-parent "Cargo.toml") "@cargo")
    (t (pcase mode
         ('c++-mode "cpp")
+        ('mhtml-mode "html")
         (fallback (replace-regexp-in-string "-mode$" "" (symbol-name fallback)))))))
 
 (defun core-rifle-run ()

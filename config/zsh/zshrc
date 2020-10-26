@@ -7,6 +7,12 @@ else
   printf >&2 "Couldn't load library file - this might cause many problems\n"
 fi
 
+if exists lua; then
+  eval "$(lua "$DOTFILES/lib/z.lua" --init zsh enhanced once echo fzf)"
+else
+  printf >&2 "lua binary not found; z.lua won't be loaded.\n"
+fi
+
 # Load some other libraries
 sourceIf "$XDG_CONFIG_HOME/dots/env.sh"
 sourceIf "$STORAGE/share/zshrc.personal"
@@ -175,7 +181,7 @@ xdb() {
     1)
       case "$1" in
         r|rl|reload) gen-xres | xrdb ;;
-        e|ed|edit) "$EDITOR" =gen-xres && xdb -r ;;
+        e|ed|edit) "$EDITOR" =gen-xres && xdb reload ;;
         *) return 1 ;;
       esac
       ;;
@@ -183,7 +189,7 @@ xdb() {
   esac
 }
 
-alias w='where-to-go'
+alias W='where-to-go' w='z -I -t .'
 alias f='find-file'
 alias fof='find-file openfork'
 alias fcd='find-file cd-to-file'
