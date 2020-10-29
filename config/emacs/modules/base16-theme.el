@@ -163,7 +163,7 @@
  (line-number-current-line                     :background base02)
 
  ;; mode-line
- (mode-line                                    :foreground base05 :background base00)
+ (mode-line                                    :foreground base05)
  (mode-line-inactive                           :foreground base03 :background base00)
  (mode-line-highlight                          :foreground base00 :background base09)
  (mode-line-highlight-1                        :foreground base05 :background base02)

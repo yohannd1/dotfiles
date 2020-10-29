@@ -10,6 +10,8 @@ super + control + shift + c
 # terminal
 super + Return
     $TERMINAL
+super + shift + Return
+    $TERMINAL -c 'float'
 
 # program launcher
 super + space

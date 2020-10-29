@@ -83,7 +83,7 @@ zle -N zle-line-init
 
 # use fzf to search history
 fzf-history() {
-  print -z $( ([ -n "${ZSH_NAME}" ] && fc -l 1 || history) | fzf --no-sort --tac | sed -r 's/ *[0-9]*\*? *//' | sed -r 's/\\/\\\\/g')
+  print -z $( ([ -n "${ZSH_NAME}" ] && fc -l 1 || history) | fzf --no-border --no-sort --tac | sed -r 's/ *[0-9]*\*? *//' | sed -r 's/\\/\\\\/g')
 }
 
 # Actual binding

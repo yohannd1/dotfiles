@@ -54,6 +54,7 @@
   (define-key ac-menu-map (kbd "RET") nil)
 
   (inline-hook! 'rust-mode-hook ()
+                (setq fill-column 120)
                 (auto-complete-mode 1)))
 
 (use-package magit

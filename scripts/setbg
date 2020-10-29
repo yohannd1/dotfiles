@@ -1,16 +1,43 @@
 #!/usr/bin/env sh
 
 if [ $# != 0 ]; then
-  printf >&2 "%s\n" "Usage: $(basename $0)"
+  printf >&2 "Usage: %s\n" "$(basename $0)"
+  printf >&2 "Environment variables used:\n"
+  printf >&2 "  %s : %s\n" "SETBG_IMG_DIR" "The directory where the wallpapers are located (if image)"
+  printf >&2 "  %s : %s\n" "SETBG_WALLPAPER_TYPE" "The type of background to be set."
+  printf >&2 "   : %s\n" "color -> use hsetroot to set background to 'root.background' resource"
+  printf >&2 "   : %s\n" "{ image | img } -> use feh to set background image (see SETBG_WALLPAPER_DIR)"
   exit 1
 fi
 
-if [ -z "$SETBG_WALLPAPER_DIR" ]; then
-  printf >&2 "Please set %s to the wallpapers folder path\n" '$SETBG_WALLPAPER_DIR'
-  exit 1
-fi
+case "$SETBG_WALLPAPER_TYPE" in
+  image|img)
+    if [ -z "$SETBG_IMG_DIR" ]; then
+      printf >&2 "Please set %s to the wallpapers folder path\n" '$SETBG_WALLPAPER_DIR'
+      exit 1
+    fi
 
-image="$(shuf -n1 -e "$SETBG_WALLPAPER_DIR"/"$SETBG_THEME"/*.jpg)" # there's no problem if SETBG_THEME is unset, since it would evaluate to simply the wallpapers path.
-feh --no-fehbg --bg-fill "$image"
+    if [ -d "$SETBG_IMG_DIR" ]; then
+      printf >&2 "Image dir %s doesn't exist.\n" "$SETBG_IMG_DIR"
+      exit 1
+    fi
 
-# hsetroot -solid "$(xgetres root.background)" -brightness -0.05
+    image=$(shuf -n1 -e "$SETBG_IMG_DIR"/*) || exit 1
+    feh --no-fehbg --bg-fill "$image" || exit 1
+    ;;
+  color)
+    xresource="root.background"
+    color=$(xgetres "$xresource") || {
+      printf >&2 "Could not get X resource '%s'\n" "$xresource"
+      exit 1
+    }
+    hsetroot -solid "$color" -brightness -0.05
+    ;;
+  *)
+    printf >&2 "Invalid wallpaper type: %s\n" "$SETBG_WALLPAPER_TYPE"
+    exit 1
+    ;;
+esac
+
+
+
