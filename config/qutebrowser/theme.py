@@ -16,6 +16,7 @@ class ThemeOpt:
     PALETTE = 0
     SPACING = 1
     PADDING = 2
+    FONT = 3
 
 def load(c, options = {}):
     spacing = options[ThemeOpt.SPACING]
@@ -29,6 +30,16 @@ def load(c, options = {}):
         "bottom": spacing["vertical"],
         "left": spacing["horizontal"]
     })
+
+    # Font
+    font = options.get(ThemeOpt.FONT, {
+        "family": "monospace",
+        "size": "10pt",
+    })
+
+    # Fonts
+    c.fonts.default_family = font["family"]
+    c.fonts.default_size = font["size"]
 
     # Completion widget - category headers
     c.colors.completion.category.bg = p.bg_attention

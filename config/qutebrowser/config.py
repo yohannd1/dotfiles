@@ -36,6 +36,10 @@ def main():
             "vertical": 2,
             "horizontal": 2,
         },
+        ThemeOpt.FONT: {
+            "family": xgetres("qutebrowser.fontname", "SourceCodePro"),
+            "size": xgetres("qutebrowser.font_size", "10pt"),
+        },
     })
 
     c.downloads.open_dispatcher = os.environ.get("OPENER") or "xdg-open"
@@ -43,10 +47,13 @@ def main():
     c.url.start_pages = ["qute://bookmarks/#bookmarks"]
     config.load_autoconfig()
 
-def xgetres(resource):
+def xgetres(resource, fallback=None):
     command = sp.run(["xgetres", resource], stdout=sp.PIPE, encoding="UTF-8").stdout.strip()
     if command == "":
-        raise ValueError(f"Resource '{resource}' seems to be undefined...")
+        if fallback is not None:
+            return fallback
+        else:
+            raise ValueError(f"Resource '{resource}' seems to be undefined...")
     else:
         return command
 

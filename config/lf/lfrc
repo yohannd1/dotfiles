@@ -1,3 +1,4 @@
+# -*- mode: sh; -*-
 # vim: ft=conf fdm=marker foldmarker={{,}}
 
 set shell bash

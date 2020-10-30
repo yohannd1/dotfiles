@@ -26,7 +26,7 @@
 . ~/.config/dots/env.sh
 eval "$(load-base16-theme)"
 
-FONT="Cascadia Code"
+FONT="CascadiaCode"
 
 xset() { printf "%s: %s\n" "$1" "$2"; }
 font() {
@@ -61,6 +61,7 @@ xset 'dmenu.out.bg' "$base0F"
 xset 'dmenu.out.fg' "$base0F"
 
 # qutebrowser
+xset 'qutebrowser.fontname' "$FONT"
 xset 'qutebrowser.bg' "$base00"
 xset 'qutebrowser.fg' "$base05"
 xset 'qutebrowser.bg-alt' "$base01"
