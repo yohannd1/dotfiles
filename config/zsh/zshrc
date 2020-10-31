@@ -198,6 +198,7 @@ alias rl='reload-shell'
 alias make='fparent-run Makefile run-command file-dir make'
 
 alias ls='ls --color=auto'
+alias l='ls -l'
 alias la='ls -A'
 alias du='du -shc'
 alias cpsync='cp -ur'
@@ -214,7 +215,6 @@ alias sy='dotsync'
 alias sx='start-xserver'
 alias of='openfork'
 
-alias l='ls -la'
 
 exists nvim \
   && alias vi='nvim' vim='nvim' \

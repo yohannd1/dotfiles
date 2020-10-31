@@ -1,7 +1,7 @@
 import os
 import subprocess as sp
 import theme
-from theme import ThemeOpt, Palette
+from theme import ThemeConfig, Namespace
 
 bindings = [
     ("D", "tab-close"),
@@ -12,12 +12,13 @@ bindings = [
 ]
 
 def main():
-    c.downloads.location.directory = "~/inbox"
+    c.downloads.location.directory = os.getenv("XDG_DOWNLOAD_DIR") or "~/inbox"
     for (k, cmd) in bindings:
         config.bind(k, cmd)
 
-    theme.load(c, {
-        ThemeOpt.PALETTE: Palette(
+    ThemeConfig(
+        cfg_namespace = c,
+        palette = Namespace(
             bg=xgetres("qutebrowser.bg"),
             fg=xgetres("qutebrowser.fg"),
             bg_alt=xgetres("qutebrowser.bg-alt"),
@@ -32,15 +33,15 @@ def main():
             info=xgetres("qutebrowser.info"),
             success=xgetres("qutebrowser.success"),
         ),
-        ThemeOpt.SPACING: {
-            "vertical": 2,
-            "horizontal": 2,
-        },
-        ThemeOpt.FONT: {
-            "family": xgetres("qutebrowser.fontname", "SourceCodePro"),
-            "size": xgetres("qutebrowser.font_size", "10pt"),
-        },
-    })
+        spacing = Namespace(
+            vertical=2,
+            horizontal=2,
+        ),
+        fontcfg = Namespace(
+            family=xgetres("qutebrowser.fontname", "SourceCodePro"),
+            size=xgetres("qutebrowser.font_size", "10pt"),
+        )
+    ).apply()
 
     c.downloads.open_dispatcher = os.environ.get("OPENER") or "xdg-open"
     c.colors.webpage.darkmode.enabled = False

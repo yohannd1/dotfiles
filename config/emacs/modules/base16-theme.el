@@ -669,7 +669,7 @@
  (org-ellipsis                                 :foreground base04)
  (org-footnote                                 :foreground base0C)
  (org-formula                                  :foreground base08)
- (org-hide                                     :foreground base03)
+ (org-hide                                     :foreground base00)
  (org-link                                     :foreground base0D)
  (org-scheduled                                :foreground base0B)
  (org-scheduled-previously                     :foreground base09)
