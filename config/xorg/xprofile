@@ -40,7 +40,6 @@ blueman-applet &
 
 # extra config (async)
 systemd-inhibit --what=handle-power-key sleep infinity & # disable power button
-upkey & # keyboard config, put here because it kept deconfiguring every time I plugged a keyboard
 
 # TODO: find an even better way to make this portable
 xinput set-prop "Synaptics TM3096-006" "libinput Tapping Enabled" 1 # Touchpad: tap to click (not working)

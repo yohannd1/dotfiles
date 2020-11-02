@@ -42,7 +42,7 @@ mkdir -p "$XSESSIONDIR"
 printf >&2 "Starting at %s\n" "$(date +"%Y/%m/%d %H:%M:%S")"
 printf >&2 "Using display ID %s\n" ":$tty"
 
-startx "$initrc" -- :"$tty" >"$XSESSIONDIR/xlog" 2>&1
+startx "$initrc" -- :"$tty" -ardelay "${XORG_KBRATE_DELAY:-175}" -arinterval "${XORG_KBRATE_INTERVAL:-37}" >"$XSESSIONDIR/xlog" 2>&1
 exitCode="$?"
 
 printf >&2 "Finished at %s\n" "$(date +"%Y/%m/%d %H:%M:%S")"

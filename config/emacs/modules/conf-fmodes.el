@@ -6,7 +6,10 @@
 
 (use-package rust-mode
   :ensure t
-  :defer t)
+  :defer t
+  :config
+  (add-to-list 'interpreter-mode-alist '("rust-script" . rust-mode))
+  )
 
 (use-package nim-mode
   :ensure t

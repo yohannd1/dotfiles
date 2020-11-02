@@ -61,6 +61,8 @@ export IRBRC="$XDG_CONFIG_HOME/irb/irbrc"
 [ "$WGETRC" ] && printf "hsts-file = %s" "$XDG_CACHE_HOME/wget-hsts" >"$WGETRC"
 
 # program options
+export XORG_KBRATE_DELAY="300"
+export XORG_KBRATE_INTERVAL="30"
 export GIT_EDITOR="${EDITOR:-vim}"
 export LESS="-RC"
 export KEYTIMEOUT=1
