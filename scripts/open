@@ -83,7 +83,6 @@ ALT_OPENER=${ALT_OPENER:-"xdg-open"}
 if [ $# != 1 ]; then
   cat >&2 <<EOF
 Usage: $(basename $0) { <FILE> | <URL> }
-$*
 Environment variables:
   OPEN_GUI: forces to open only apps in GUI mode.
   ALT_OPENER: a fallback opener; default is xdg-open
