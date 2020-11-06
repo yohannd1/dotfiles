@@ -88,7 +88,11 @@ fzf-history() {
 
 # Actual binding
 bindkey -s '^R' '\eSfzf-history\n'
-bindkey -s '^o' '\eSlf-and-cd\n'
+if exists lf; then
+  bindkey -s '^o' '\eSlf-and-cd\n'
+elif exists nnn; then
+  bindkey -s '^o' '\eSnnn-and-cd\n'
+fi
 
 assist::find-file.gen() {
   printf "%s\n" ".."
