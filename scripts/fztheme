@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-exists() { command -v "$1" >/dev/null 2>/dev/null; }
+. "$(uselib std)"
 
 if [ $# != 0 ]; then
   printf >&2 "Usage: %s\n" "$(basename $0)"
@@ -21,8 +21,9 @@ if [ -d "$THEME_FILES_PATH" ]; then
     && printf "%s" "$choice" > "$THEME_CFG_PATH" || exit 1
 
   if [ "$DISPLAY" ] && exists xrdb; then
-    gen-xres | xrdb \
-      || msg "Failed to reload theme to %s."
+    gen-xres | xrdb || msg "Failed to reload theme to %s."
+  elif isTTY; then
+    tty-loadcolors
   fi
 else
   printf >&2 "Could not find the directory %s. Please create it and put there your theme files.\n" "$THEME_FILES_PATH"

@@ -163,7 +163,7 @@
 (setq x-stretch-cursor t)
 
 ;; Line highlighting
-;; (global-hl-line-mode 1)
+(global-hl-line-mode 1)
 
 ;; Disable automatic copy-to-clipboard behavior
 (setq x-select-enable-clipboard nil)
@@ -228,7 +228,7 @@
       (tty-run-terminal-initialization (selected-frame) nil t)))
 
 ;; get rid of scratch buffer
-(defun my/make-new-buffer ()
+(defun my/default-buffer ()
   ;; http://ergoemacs.org/emacs/emacs_new_empty_buffer.html
   (interactive)
   (let ((buffer (get-buffer-create "*default*")))
@@ -236,8 +236,11 @@
     (funcall initial-major-mode)
     (setq buffer-offer-save t)
     buffer))
-(setq initial-buffer-choice #'my/make-new-buffer
-      initial-major-mode #'text-mode)
-(kill-buffer "*scratch*")
+
+(setq initial-major-mode #'text-mode)
+
+(when (daemonp)
+  (setq initial-buffer-choice #'my/default-buffer)
+  (kill-buffer "*scratch*"))
 
 (provide 'conf-general)

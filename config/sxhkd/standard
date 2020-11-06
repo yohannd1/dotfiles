@@ -50,7 +50,7 @@ XF86AudioMute
     volumectl togglemute
 super + {comma,period}
     volumectl {dec,inc}
-super + semicolon
+super + @semicolon
     volumectl togglemute
 
 # music player
@@ -60,7 +60,7 @@ XF86Audio{Next,Prev}
     playerctl {next,previous}
 super + alt + {comma,period}
     playerctl {previous,next}
-super + alt + semicolon
+super + alt + @semicolon
     playerctl play-pause
 
 # brightness

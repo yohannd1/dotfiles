@@ -7,30 +7,10 @@
 . ~/.config/dots/env.sh
 . ~/.config/dots/path.sh
 
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
 if [ "$DOTFILES" ]; then
-  exists() { command -v "$1" >/dev/null 2>/dev/null; }
-  eval "$(load-base16-theme --noprefix)"
-
-  # load colors
-  printf '\e]P%s%s' 0 "$base00"
-  printf '\e]P%s%s' 1 "$base01"
-  printf '\e]P%s%s' 2 "$base02"
-  printf '\e]P%s%s' 3 "$base03"
-  printf '\e]P%s%s' 4 "$base04"
-  printf '\e]P%s%s' 5 "$base05"
-  printf '\e]P%s%s' 6 "$base06"
-  printf '\e]P%s%s' 7 "$base07"
-  printf '\e]P%s%s' 8 "$base08"
-  printf '\e]P%s%s' 9 "$base09"
-  printf '\e]P%s%s' A "$base0A"
-  printf '\e]P%s%s' B "$base0B"
-  printf '\e]P%s%s' C "$base0C"
-  printf '\e]P%s%s' D "$base0D"
-  printf '\e]P%s%s' E "$base0E"
-  printf '\e]P%s%s' F "$base0F"
-
-  printf '\e[?16;2;112c' # change cursor to block
-  clear
+  tty-loadcolors
 
   # set up SSH keychaing
   if [ -x /usr/bin/keychain ]; then

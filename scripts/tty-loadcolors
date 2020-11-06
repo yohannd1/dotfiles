@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+eval "$(load-base16-theme --noprefix)"
+
+# load colors
+printf '\033]P%s%s' 0 "$base00"
+printf '\033]P%s%s' 1 "$base01"
+printf '\033]P%s%s' 2 "$base02"
+printf '\033]P%s%s' 3 "$base03"
+printf '\033]P%s%s' 4 "$base04"
+printf '\033]P%s%s' 5 "$base05"
+printf '\033]P%s%s' 6 "$base06"
+printf '\033]P%s%s' 7 "$base07"
+printf '\033]P%s%s' 8 "$base08"
+printf '\033]P%s%s' 9 "$base09"
+printf '\033]P%s%s' A "$base0A"
+printf '\033]P%s%s' B "$base0B"
+printf '\033]P%s%s' C "$base0C"
+printf '\033]P%s%s' D "$base0D"
+printf '\033]P%s%s' E "$base0E"
+printf '\033]P%s%s' F "$base0F"
+
+printf '\033[?16;2;112c' # change cursor to block
+clear

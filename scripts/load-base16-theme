@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-PROGNAME="$(basename $0)"
+PROGNAME=$(basename "$0")
 B16PAT='[a-fA-F0-9]'
 EXPORT_TAG=''
 PREFIX='#'
