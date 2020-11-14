@@ -83,7 +83,10 @@ zle -N zle-line-init
 
 # use fzf to search history
 fzf-history() {
-  print -z $( ([ -n "${ZSH_NAME}" ] && fc -l 1 || history) | fzf --no-border --no-sort --tac | sed -r 's/ *[0-9]*\*? *//' | sed -r 's/\\/\\\\/g')
+  print -z $( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) \
+                | fzf --no-border --no-sort --tac --exact \
+                | sed -r 's/ *[0-9]*\*? *//' \
+                | sed -r 's/\\/\\\\/g')
 }
 
 # Actual binding
@@ -205,15 +208,12 @@ alias ls='ls --color=auto'
 alias l='ls -l'
 alias la='ls -A'
 alias du='du -shc'
-alias cpsync='cp -ur'
-
-alias trl='trash-list'
-alias trr='trash-restore'
 
 alias p3='python3'
 alias jl='julia'
 alias g='git-check'
 alias e='$EDITOR'
+alias jpdo='LANG=ja_JP.UTF8'
 
 alias sy='dotsync'
 alias sx='start-xserver'

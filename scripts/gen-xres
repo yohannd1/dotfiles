@@ -26,17 +26,17 @@
 . ~/.config/dots/env.sh
 eval "$(load-base16-theme)"
 
-FONT="CascadiaCode"
+FONT="IosevkaMedium"
+FONT_PIXELSIZE="13.5"
+FONT_POINTSIZE="11pt"
 
 xset() { printf "%s: %s\n" "$1" "$2"; }
-font() {
-  printf "%s:pixelsize=%s:antialias=true:autohint=true;" "$FONT" "$1";
-}
+font() { printf "%s:pixelsize=%s:antialias=true:autohint=true;" "$FONT" "$1"; }
 
 # st
 xset 'st.alpha' "0.75"
 xset 'st.cursor' "$base0D"
-xset 'st.font' "$(font 13)"
+xset 'st.font' "$(font $FONT_PIXELSIZE)"
 
 # dwm
 xset 'dwm.norm.bg' "$base00"
@@ -45,10 +45,10 @@ xset 'dwm.norm.border' "$base00"
 xset 'dwm.sel.bg' "$base02"
 xset 'dwm.sel.fg' "$base05"
 xset 'dwm.sel.border' "$base09"
-xset 'dwm.font' "$(font 10)"
+xset 'dwm.font' "$(font $FONT_PIXELSIZE)"
 
 # dmenu
-xset 'dmenu.font' "$(font 13)"
+xset 'dmenu.font' "$(font $FONT_PIXELSIZE)"
 xset 'dmenu.norm.bg' "$base00"
 xset 'dmenu.norm.fg' "$base05"
 xset 'dmenu.norm.hl.bg' "$base00"
@@ -62,6 +62,7 @@ xset 'dmenu.out.fg' "$base0F"
 
 # qutebrowser
 xset 'qutebrowser.fontname' "$FONT"
+xset 'qutebrowser.font_size' "$FONT_POINTSIZE"
 xset 'qutebrowser.bg' "$base00"
 xset 'qutebrowser.fg' "$base05"
 xset 'qutebrowser.bg-alt' "$base01"
@@ -89,18 +90,19 @@ xset '*cursor' "$base0D"
 xset '*cursorColor' "$base0D"
 
 for n in {0..9}; do
-  xset "*color$n" "$(eval 'echo $base0'$n)"
-  xset "*base0$n" "$(eval 'echo $base0'$n)"
+  xset "*.color$n" "$(eval 'echo $base0'$n)"
+  xset "*.base0$n" "$(eval 'echo $base0'$n)"
 done
-xset '*color10' "$base0A"
-xset '*color11' "$base0B"
-xset '*color12' "$base0C"
-xset '*color13' "$base0D"
-xset '*color14' "$base0E"
-xset '*color15' "$base0F"
-xset '*base0A' "$base0A"
-xset '*base0B' "$base0B"
-xset '*base0C' "$base0C"
-xset '*base0D' "$base0D"
-xset '*base0E' "$base0E"
-xset '*base0F' "$base0F"
+
+xset '*.color10' "$base0A"
+xset '*.color11' "$base0B"
+xset '*.color12' "$base0C"
+xset '*.color13' "$base0D"
+xset '*.color14' "$base0E"
+xset '*.color15' "$base0F"
+xset '*.base0A' "$base0A"
+xset '*.base0B' "$base0B"
+xset '*.base0C' "$base0C"
+xset '*.base0D' "$base0D"
+xset '*.base0E' "$base0E"
+xset '*.base0F' "$base0F"

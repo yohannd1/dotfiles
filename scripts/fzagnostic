@@ -10,21 +10,28 @@ while getopts "p:h:" o; do
     p) hasPrompt=1 prompt="$OPTARG" ;;
     h) hasHeight=1 height="$OPTARG" ;;
     *)
-      printf >&2 "%s\n" "Usage: $(basename $0) [-p prompt] [-h height]"
+      printf >&2 "%s\n" "Usage: $(basename $0) [-p PROMPT] [-h HEIGHT]"
       exit 1
       ;;
   esac
 done
 
 if [ ! -t 2 ] && exists dmenu; then
-  [ "$hasPrompt" ] && prompt=(-p "$prompt") || prompt=()
-  [ "$hasHeight" ] && height=(-l "$height") || height=()
-  dmenu "${prompt[@]}" "${height[@]}"
+  args=()
+  [ "$hasPrompt" ] && args+=(-p "$prompt")
+  [ "$hasHeight" ] && args+=(-l "$height")
+  [ "$printIndex" ] && args+=("-I")
+  dmenu "${args[@]}"
 elif [ -t 2 ] && exists fzf; then
-  [ "$hasPrompt" ] && prompt=(--prompt "$prompt ") || prompt=()
-  [ "$hasHeight" ] && height=(--height "$height") || height=()
+  args=()
+  [ "$hasPrompt" ] && args+=(--prompt "$prompt")
+  [ "$hasHeight" ] && args+=(--height "$height")
+  if [ "$printIndex" ]; then
+    printf >&2 "%s: fzf does not support the -I flag\n" "$(basename $0)"
+    exit 1
+  fi
   printf >&2 '\033[2 q' # change cursor to block
-  fzf "${prompt[@]}" "${height[@]}" --no-border --inline-info
+  fzf "${args[@]}" --no-border --inline-info --exact
 else
   printf >&2 "%s\n" "Could not open dmenu or fzf."
   exit 1

@@ -102,7 +102,7 @@ def main():
                     name = name.replace(os.environ["STORAGE"], "[STORE]")
                 name = name.replace(os.environ["HOME"], "~")
 
-                actions.append(WineAction("(" + arch + ") " + name, binary, arch=arch))
+                actions.append(WineAction(f"({arch}) {name}", binary, arch=arch))
 
     fzagnostic_proc = sp.Popen(
         ["fzagnostic"],

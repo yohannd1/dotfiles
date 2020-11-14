@@ -78,7 +78,7 @@ case "$1" in
         ;;
       c) gcc "$file" -o "$tmp" && "$tmp" ;;
       cpp) g++ "$file" -o "$tmp" && "$tmp" ;;
-      cs) csc "$file" -out:"$tmp" && mono "$tmp" ;;
+      cs|csharp) mcs "$file" -out:"$tmp" && mono "$tmp" ;;
       clojure) clojure "$file" ;;
       markdown) md-preview "$file" ;;
       sh)

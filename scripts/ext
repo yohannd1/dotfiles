@@ -38,13 +38,14 @@ fi
 
 if [ -f "$archive" ]; then
   case "$archive" in
-    *.tar.bz2|*.tar.xz|*.tbz2) tar xvjf "$archive" ;;
-    *.tar.gz|*.tgz) tar xvzf "$archive" ;;
+    *.tar.bz2|*.tbz2) tar -xvjf "$archive" ;;
+    *.tar.xz) tar -xvf "$archive" ;;
+    *.tar.gz|*.tgz) tar -xvzf "$archive" ;;
     *.lzma) unlzma "$archive" ;;
     *.bz2) bunzip2 "$archive" ;;
     *.rar) unrar x -ad "$archive" ;;
     *.gz) gunzip "$archive" ;;
-    *.tar) tar xvf "$archive" ;;
+    *.tar) tar -xvf "$archive" ;;
     *.zip) unzip "$archive" ;;
     *.Z) uncompress "$archive" ;;
     *.7z) 7z x "$archive" ;;
