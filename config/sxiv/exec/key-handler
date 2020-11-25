@@ -1,7 +1,9 @@
 #!/usr/bin/env sh
 
+OUTPUT_DIR="$XSESSIONDIR/sxiv-imgclip"
+
 while read file; do
   case "$1" in
-    y) imgclip "$file" ;;
+    y) imgclip "$file" >"$OUTPUT_DIR" 2>"$OUTPUT_DIR" ;;
   esac
 done

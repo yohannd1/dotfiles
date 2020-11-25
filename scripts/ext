@@ -11,8 +11,15 @@ PROGNAME=$(basename "$0")
 shelp() {
   printf >&2 "Usage: %s\n" "$PROGNAME [-c] ARCHIVE"
   printf >&2 "Options:\n"
-  printf >&2 "  %s : %s\n" "-c" "Extract archive into current ditrectory rather than a new one."
+  printf >&2 "  %s : %s\n" "-c" "Extract archive into current directory rather than a new one."
   exit 1
+}
+
+checkArchive() {
+  if [ ! -f "$archive" ]; then
+    printf >&2 '%s: "%s" not found\n' "$PROGNAME" "$archive"
+    exit 1
+  fi
 }
 
 [ $# = 0 ] && shelp
@@ -26,33 +33,40 @@ done
 
 if [ -z "$extracthere" ]; then
   archive=$(readlink -f "$*") \
-    && [ -f "$archive" ] \
+    && checkArchive \
     && directory=$(echo "$archive" | sed 's/\.[^\/.]*$//') \
     && mkdir -p "$directory" \
-    && cd "$directory" || exit
+    && oldDir="$PWD" \
+    && cd "$directory" || exit 2
 else
-  archive=$(readlink -f "$(echo "$*" | cut -d' ' -f2)")
+  archive=$(readlink -f "$(echo "$*" | cut -d' ' -f2)") \
+    && checkArchive || exit 2
 fi
 
 [ "$archive" = "" ] && printf "Give archive to extract as argument.\n" && exit
 
-if [ -f "$archive" ]; then
-  case "$archive" in
-    *.tar.bz2|*.tbz2) tar -xvjf "$archive" ;;
-    *.tar.xz) tar -xvf "$archive" ;;
-    *.tar.gz|*.tgz) tar -xvzf "$archive" ;;
-    *.lzma) unlzma "$archive" ;;
-    *.bz2) bunzip2 "$archive" ;;
-    *.rar) unrar x -ad "$archive" ;;
-    *.gz) gunzip "$archive" ;;
-    *.tar) tar -xvf "$archive" ;;
-    *.zip) unzip "$archive" ;;
-    *.Z) uncompress "$archive" ;;
-    *.7z) 7z x "$archive" ;;
-    *.xz) unxz "$archive" ;;
-    *.exe) cabextract "$archive" ;;
-    *) printf "extract: \"%s\" - unknown archive method\n" "$archive" ;;
-  esac
-else
-  printf "File \"%s\" not found.\n" "$archive"
+case "$archive" in
+  *.tar.bz2|*.tbz2) tar -xvjf "$archive" ;;
+  *.tar.xz) tar -xvf "$archive" ;;
+  *.tar.gz|*.tgz) tar -xvzf "$archive" ;;
+  # encrypted tar archives
+  *.tar.bz2.gpg|*.tbz2.gpg) gpg --decrypt "$archive" | tar -xvj ;;
+  *.tar.xz.gpg) gpg --decrypt "$archive" | tar -xv ;;
+  *.tar.gz.gpg|*.tgz.gpg) gpg --decrypt "$archive" | tar -xvz ;;
+  *.lzma) unlzma "$archive" ;;
+  *.bz2) bunzip2 "$archive" ;;
+  *.rar) unrar x -ad "$archive" ;;
+  *.gz) gunzip "$archive" ;;
+  *.tar) tar -xvf "$archive" ;;
+  *.zip) unzip "$archive" ;;
+  *.Z) uncompress "$archive" ;;
+  *.7z) 7z x "$archive" ;;
+  *.xz) unxz "$archive" ;;
+  *.exe) cabextract "$archive" ;;
+  *) printf "extract: \"%s\" - unknown archive method\n" "$archive" ;;
+esac
+
+if [ "$?" != 0 ]; then
+  [ "$oldDir" ] && cd "$oldDir"
+  [ -z "$(ls -A "$directory")" ] && rm -r "$directory"
 fi

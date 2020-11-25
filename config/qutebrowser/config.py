@@ -46,6 +46,14 @@ def main():
     c.downloads.open_dispatcher = os.environ.get("OPENER") or "xdg-open"
     c.colors.webpage.darkmode.enabled = False
     c.url.start_pages = ["qute://bookmarks/#bookmarks"]
+    c.url.searchengines = {
+        "DEFAULT": "https://duckduckgo.com/?q={}",
+        "dg": "https://duckduckgo.com/?q={}",
+        "gl": "https://google.com/search?q={}",
+        "aw": "https://wiki.archlinux.org/?search={}",
+        "ap": "https://archlinux.org/packages/?q={}",
+        "yt": "https://www.youtube.com/results?search_query={}",
+    }
     config.load_autoconfig()
 
 def xgetres(resource, fallback=None):
@@ -54,7 +62,7 @@ def xgetres(resource, fallback=None):
         if fallback is not None:
             return fallback
         else:
-            raise ValueError(f"Resource '{resource}' seems to be undefined...")
+            raise ValueError(f"X Resource '{resource}' seems to be undefined...")
     else:
         return command
 

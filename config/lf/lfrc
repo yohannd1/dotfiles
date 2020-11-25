@@ -107,7 +107,7 @@ cmd extract-this ${{
 }}
 
 # command mappings
-map H set hidden!
+map . set hidden!
 map n new
 map <c-n> search-next
 map x trash

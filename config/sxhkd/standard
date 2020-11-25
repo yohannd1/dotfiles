@@ -89,6 +89,10 @@ super + b
 super + e
     graphedit
 
+# window switcher
+super + s
+      dswitcher
+
 # super-o apps
 super + o; c
     $TERMINAL -c float -g 65x10 -e runread cal -3
