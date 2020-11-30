@@ -11,6 +11,7 @@ setbg &
 case "$WM" in
   dwm)
     dwmblocks &
+    pactl subscribe | grep --line-buffered "sink" | xargs -I'{}' pkill -RTMIN+10 dwmblocks >/dev/null 2>/dev/null &
     ;;
   penrose)
     start-polybar &

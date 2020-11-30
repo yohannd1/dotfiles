@@ -1,22 +1,18 @@
 #!/usr/bin/env sh
 
-# TODO: support for pulseaudio (do I need it?)
-
 showHelp() {
-  printf >&2 "Usage: %s\n" "$(basename $0) { inc | dec | togglemute }"
+  printf >&2 "Usage: %s\n" "$(basename $0) { inc | dec | mute }"
   exit 1
 }
 
 [ $# != 1 ] && showHelp
 
 case "$1" in
-  dec) amixer set Master 5%- ;;
-  inc) amixer set Master 5%+ ;;
-  togglemute) amixer -D pulse set Master 1+ toggle ;;
+  dec|decrease) amixer set Master 5%- ;;
+  inc|increase) amixer set Master 5%+ ;;
+  mute|togglemute) amixer -D pulse set Master 1+ toggle ;;
   *)
     printf >&2 "Invalid option: %s\n" "$1"
     showHelp
     ;;
 esac
-
-pkill -RTMIN+10 dwmblocks >/dev/null 2>/dev/null

@@ -47,7 +47,10 @@ export RUSTUP_HOME="$XDG_CACHE_HOME/rustup"
 export GEM_HOME="$XDG_DATA_DIR/gem"
 export GEM_SPEC_CACHE="$XDG_CACHE_HOME/gem"
 export GRADLE_USER_HOME="$XDG_DATA_HOME/gradle"
-export _JAVA_OPTIONS="-Djava.util.prefs.userRoot=$XDG_CONFIG_HOME/java"
+export _JAVA_OPTIONS="-Djava.util.prefs.userRoot='$XDG_CONFIG_HOME/java'
+                      -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel
+                      -Dawt.useSystemAAFontSettings=all"
+export JAVA_FONTS="/usr/share/fonts/TTF"
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export TASKRC="$XDG_CONFIG_HOME/taskwarrior/taskrc"
 export INPUTRC="$XDG_CONFIG_HOME/inputrc"
@@ -69,14 +72,17 @@ export KEYTIMEOUT=1
 export NNN_OPENER="$OPENER"
 export NNN_TRASH=1
 export RUSTFLAGS='-C link-arg=-fuse-ld=lld'
-export FZF_DEFAULT_OPTS='
-  --layout=reverse --border
-  --color fg:4,fg+:5
-  --color hl:3,hl+:10
-  --color prompt:8,marker:5,pointer:8
-  --color spinner:3,gutter:1,info:3
-'
-export GCC_COLORS='error=01;38;5;8:warning=01;38;5;9:note=01;38;5;12:caret=01;32:locus=01;38;5;11:quote=03'
+export FZF_DEFAULT_OPTS='--layout=reverse --border
+                         --color fg:4,fg+:5
+                         --color hl:3,hl+:10
+                         --color prompt:8,marker:5,pointer:8
+                         --color spinner:3,gutter:1,info:3'
+export GCC_COLORS='error=01;38;5;8
+                  :warning=01;38;5;9
+                  :note=01;38;5;12
+                  :caret=01;32
+                  :locus=01;38;5;11
+                  :quote=03'
 export GREP_COLORS='ms=01;34:mc=01;34:sl=:cx=:fn=35:ln=32:bn=32:se=36'
 _exists sccache && export RUSTC_WRAPPER=sccache
 
