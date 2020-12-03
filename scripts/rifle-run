@@ -142,7 +142,7 @@ case "$1" in
     case "$2" in
       @make) fparent-run "Makefile" run-command file-dir make check ;;
       @cargo) fparent-run "Cargo.toml" run-command file-dir cargo check ;;
-      rust) rustc "$file" -o /dev/null ;;
+      rust) rustc "$file" -o "$tmp" ;;
       python)
         python=$(getPython)
         "$python" -m pylint "$file"

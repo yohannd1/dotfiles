@@ -75,7 +75,6 @@ function zle-keymap-select {
 
 function zle-line-init {
   zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
-  printf '\033[5 q'
 }
 
 zle -N zle-keymap-select
@@ -96,6 +95,8 @@ if exists lf; then
 elif exists nnn; then
   bindkey -s '^o' '\eSnnn-and-cd\n'
 fi
+
+bindkey -s '^P' '\e[C'
 
 assist::find-file.gen() {
   printf "%s\n" ".."
