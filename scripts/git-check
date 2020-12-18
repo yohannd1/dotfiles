@@ -9,20 +9,21 @@ is_git_dir() {
   [ -d .git ] || git rev-parse --git-dir 2>/dev/null >/dev/null
 }
 
+gitAddAll() {
+  (cd "$(realpath -m $(git rev-parse --git-dir)/..)" && git add -A)
+}
+
 if ! is_git_dir; then
   printf >&2 "This directory is not part of a git repository.\n"
   exit 1
 fi
 
 # show status
+gitAddAll
 git status -sb
 
 # show help message
 printf >&2 "Type 'h' for help.\n"
-
-gitAddAll() {
-  (cd "$(realpath -m $(git rev-parse --git-dir)/..)" && git add -A)
-}
 
 while [ ! "$exit" ]; do
   # prompt

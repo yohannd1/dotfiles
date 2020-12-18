@@ -93,13 +93,15 @@ def main():
     if os.path.isfile(WINEW_RECENTF):
         with open(WINEW_RECENTF, "r") as f:
             for line in f.readlines():
+                storage_dir = os.getenv("HOME") + "/storage"
+
                 line = line.rstrip()
                 arch, binary = line.split(" ", maxsplit=1)
 
                 name = binary
-                if os.getenv("STORAGE"):
-                    name = name.replace(os.environ["STORAGE"] + "/software", "[SOFT]")
-                    name = name.replace(os.environ["STORAGE"], "[STORE]")
+                name = name.replace(storage_dir + "/software", "@soft")
+                name = name.replace(storage_dir, "@strg")
+
                 name = name.replace(os.environ["HOME"], "~")
 
                 actions.append(WineAction(f"({arch}) {name}", binary, arch=arch))
@@ -144,33 +146,6 @@ def main():
         else:
             print(f"Invalid command: {repr(output)}", file=sys.stderr)
             sys.exit(1)
-
-def getsize(obj):
-    """Determines the size of an object.
-
-    Taken from: https://stackoverflow.com/questions/449560/how-do-i-determine-the-size-of-an-object-in-python
-    """
-    import types
-
-    from gc import get_referents
-    BLACKLIST = type, types.ModuleType, types.FunctionType
-
-    if isinstance(obj, BLACKLIST):
-        raise TypeError('getsize() does not take argument of type: '+ str(type(obj)))
-
-    seen_ids = set()
-    size = 0
-    objects = [obj]
-    while objects:
-        need_referents = []
-        for obj in objects:
-            if not isinstance(obj, BLACKLIST) and id(obj) not in seen_ids:
-                seen_ids.add(id(obj))
-                size += sys.getsizeof(obj)
-                need_referents.append(obj)
-        objects = get_referents(*need_referents)
-
-    return size
 
 if __name__ == "__main__":
     main()

@@ -147,6 +147,7 @@ if match ext 'torrent'; then
   try pop runpage transmission-show -- "$FILE"
 fi
 
+match ext 'odt|rtf' && try gui libreoffice "$FILE"
 match ext 'odt|ods|odp|sxw' && try pop runpage odt2txt "$FILE"
 match ext 'txt|log' && try pop runpage cat "$FILE"
 match ext 'kra' && try gui krita "$FILE"

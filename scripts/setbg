@@ -17,7 +17,7 @@ case "$SETBG_WALLPAPER_TYPE" in
       exit 1
     fi
 
-    if [ -d "$SETBG_IMG_DIR" ]; then
+    if [ ! -d "$SETBG_IMG_DIR" ]; then
       printf >&2 "Image dir %s doesn't exist.\n" "$SETBG_IMG_DIR"
       exit 1
     fi

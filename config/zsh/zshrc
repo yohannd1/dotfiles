@@ -15,7 +15,7 @@ fi
 
 # Load some other libraries
 sourceIf "$XDG_CONFIG_HOME/dots/env.sh"
-sourceIf "$STORAGE/share/zshrc.personal"
+sourceIf ~/storage/share/zshrc.personal
 
 # general options
 setopt interactivecomments # can use '#' for comments in interactive
@@ -80,16 +80,20 @@ function zle-line-init {
 zle -N zle-keymap-select
 zle -N zle-line-init
 
-# use fzf to search history
-fzf-history() {
-  print -z $( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) \
-                | fzf --no-border --no-sort --tac --exact \
-                | sed -r 's/ *[0-9]*\*? *//' \
-                | sed -r 's/\\/\\\\/g')
+fzhistory.gen() {
+  { [ -n "$ZSH_NAME" ] && fc -l 1 || history 1; } \
+    | sed -r 's/ *[0-9]*\*? *//' \
+    | tac | fzagnostic \
+    | sed -r 's \\ \\\\ g'
+}
+
+fzhistory() {
+  local result=$(fzhistory.gen) || return 1
+  print -z "$result"
 }
 
 # Actual binding
-bindkey -s '^R' '\eSfzf-history\n'
+bindkey -s '^R' '\eSfzhistory\n'
 if exists lf; then
   bindkey -s '^o' '\eSlf-and-cd\n'
 elif exists nnn; then

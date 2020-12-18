@@ -17,13 +17,13 @@ globpathadd() {
   popd >/dev/null 2>/dev/null
 }
 
-pathadd "$HOME/.local/bin"
+pathadd ~/.local/bin
 pathadd "$DOTFILES/scripts"
-pathadd "$STORAGE/scripts"
+pathadd ~/storage/scripts
 pathadd "$GOPATH"
 pathadd "$CARGO_HOME/bin"
 pathadd "${GEM_HOME:-$HOME/.gem}/ruby/2.7.0/bin"
-pathadd "$HOME/.nimble/bin"
+pathadd ~/.nimble/bin
 
 globpathadd "/opt"
 globpathadd "${XDG_CACHE_HOME:-$HOME/.cache}/packs"

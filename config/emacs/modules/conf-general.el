@@ -163,7 +163,7 @@
 (setq x-stretch-cursor t)
 
 ;; Line highlighting
-(global-hl-line-mode 1)
+(global-hl-line-mode -1)
 
 ;; Disable automatic copy-to-clipboard behavior
 (setq x-select-enable-clipboard nil)

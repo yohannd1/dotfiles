@@ -21,7 +21,6 @@ export XDG_DATA_HOME="$XDG_DATA_DIR"
 export XDG_CURRENT_DESKTOP="none"
 
 # personal dirs
-export STORAGE=~/storage
 export WIKI=~/wiki
 
 # global options
@@ -87,10 +86,10 @@ export GREP_COLORS='ms=01;34:mc=01;34:sl=:cx=:fn=35:ln=32:bn=32:se=36'
 _exists sccache && export RUSTC_WRAPPER=sccache
 
 # dotfiles program options
-export DIR_BOOKMARKS="$STORAGE/share/bookmarks.sh"
-export FLAMEW_SCR_FOLDER="$STORAGE/pictures/screenshots"
-export SETBG_IMG_DIR="$STORAGE/pictures/wallpapers/art"
-export SETBG_WALLPAPER_TYPE="color"
+export DIR_BOOKMARKS=~/storage/share/bookmarks.sh
+export FLAMEW_SCR_FOLDER=~/storage/pictures/screenshots
+export SETBG_IMG_DIR=~/storage/pictures/wallpapers/art
+export SETBG_WALLPAPER_TYPE="image"
 export BKMK_FILE="$WIKI/data/bookmarks.json"
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"
 export GUILE_LOAD_PATH="$DOTFILES/lib/guile"

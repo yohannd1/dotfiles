@@ -44,7 +44,7 @@ xset 'dwm.norm.fg' "$base05"
 xset 'dwm.norm.border' "$base00"
 xset 'dwm.sel.bg' "$base02"
 xset 'dwm.sel.fg' "$base05"
-xset 'dwm.sel.border' "$base09"
+xset 'dwm.sel.border' "$base03"
 xset 'dwm.font' "$(font $FONT_PIXELSIZE)"
 
 # dmenu
@@ -79,7 +79,7 @@ xset 'qutebrowser.success' "$base0B"
 
 # others
 xset 'Emacs.font' "$FONT"
-xset 'penrose.highlight' "$base0D"
+xset 'penrose.highlight' "$base03"
 xset 'polybar.fontname' "$FONT"
 xset 'polybar.fontsize' "9.5"
 

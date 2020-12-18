@@ -11,10 +11,7 @@ DOTFILES = Path(os.environ.get(
 
 # Get the path for the configuration files
 DOTS_CONFIG = DOTFILES / "config/dots/sysmrc.py"
-LOCAL_CONFIG = (
-    Path(os.environ.get("STORAGE", os.environ["HOME"] + "/storage"))
-    / "config/sysmrc.py"
-)
+LOCAL_CONFIG = Path(os.environ["HOME"] + "/storage") / "config/sysmrc.py"
 
 class Manager:
     def __init__(self):

@@ -5,7 +5,6 @@ set shell bash
 set previewer preview
 set preview
 # set hidden
-set color256
 # set drawbox
 set icons
 set ignorecase
