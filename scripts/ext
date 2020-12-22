@@ -1,72 +1,142 @@
 #!/usr/bin/env sh
 
-# [Stolen from github.com/Lukesmithxyz/voidrice]
-# A general, all-purpose extraction script.
-
-# Default behavior: Extract archive into new directory
-# Behavior with `-c` option: Extract contents into current directory
+# A general extraction script that tries to guess how you want to extract it.
+# Based off Luke Smith's one on https://github.com/lukesmithxyz/voidrice
 
 PROGNAME=$(basename "$0")
 
 shelp() {
-  printf >&2 "Usage: %s\n" "$PROGNAME [-c] ARCHIVE"
-  printf >&2 "Options:\n"
-  printf >&2 "  %s : %s\n" "-c" "Extract archive into current directory rather than a new one."
+  printf >&2 "Usage: %s\n\n" "$PROGNAME ARCHIVE [MODE]"
+  printf >&2 "Possible values for MODE:\n"
+  printf >&2 "  auto   (a) :: automatically detect if the archive should be extracted in a new directory or not (defaut).\n"
+  printf >&2 "  here   (i) :: don't create a new directory, but rather extract into the current directory.\n"
+  printf >&2 "  new    (n) :: create a new directory to extract there.\n"
   exit 1
 }
 
-checkArchive() {
-  if [ ! -f "$archive" ]; then
-    printf >&2 '%s: "%s" not found\n' "$PROGNAME" "$archive"
-    exit 1
-  fi
+isDirectoryEmpty() { [ -z "$(ls -A "$1")" ]; }
+
+getBeforeSlash() { sed 's|^\([^/]\+/\).*$|\1|g'; }
+
+shouldExtractHere() {
+  read firstLine;
+
+  # return false if there's at least one file on the root.
+  printf "%s" "$firstLine" | grep -q '^[^/]\+/.*$' || return 1
+
+  require=$(printf "%s" "$firstLine" | getBeforeSlash)
+
+  while read line; do
+    if printf "%s" "$line" | grep -qv '^'"$require"; then
+      return 1
+    fi
+  done
 }
 
-[ $# = 0 ] && shelp
+setModeFromInput() { shouldExtractHere && echo here || echo new; }
 
-while getopts "hc" o; do
-  case "$o" in
-    c) extracthere="True" ;;
-    *) shelp ;;
+main() {
+  case "$extension" in
+    # tar stuff
+    tar.bz2|tbz2) tar -xvjf "$archive" ;;
+    tar.xz) tar -xvf "$archive" ;;
+    tar.gz|tgz) tar -xvzf "$archive" ;;
+    lzma) unlzma "$archive" ;;
+    tar) tar -xvf "$archive" ;;
+    bz2) bunzip2 "$archive" ;;
+    gz) gunzip "$archive" ;;
+    xz) unxz "$archive" ;;
+
+    # encrypted tar archives
+    tar.bz2.gpg|tbz2.gpg) gpg --decrypt "$archive" | tar -xvj ;;
+    tar.xz.gpg) gpg --decrypt "$archive" | tar -xv ;;
+    tar.gz.gpg|tgz.gpg) gpg --decrypt "$archive" | tar -xvz ;;
+
+    rar) unrar x -ad "$archive" ;;
+    zip) unzip "$archive" ;;
+    Z) uncompress "$archive" ;;
+    7z) 7z x "$archive" ;;
+    exe) cabextract "$archive" ;;
+
+    *) printf >&2 "%s: unknown extension: .%s\n" "$PROGNAME" "$extension"
+       return 1
+       ;;
   esac
-done
+}
 
-if [ -z "$extracthere" ]; then
-  archive=$(readlink -f "$*") \
-    && checkArchive \
-    && directory=$(echo "$archive" | sed 's/\.[^\/.]*$//') \
-    && mkdir -p "$directory" \
-    && oldDir="$PWD" \
-    && cd "$directory" || exit 2
-else
-  archive=$(readlink -f "$(echo "$*" | cut -d' ' -f2)") \
-    && checkArchive || exit 2
-fi
-
-[ "$archive" = "" ] && printf "Give archive to extract as argument.\n" && exit
-
-case "$archive" in
-  *.tar.bz2|*.tbz2) tar -xvjf "$archive" ;;
-  *.tar.xz) tar -xvf "$archive" ;;
-  *.tar.gz|*.tgz) tar -xvzf "$archive" ;;
-  # encrypted tar archives
-  *.tar.bz2.gpg|*.tbz2.gpg) gpg --decrypt "$archive" | tar -xvj ;;
-  *.tar.xz.gpg) gpg --decrypt "$archive" | tar -xv ;;
-  *.tar.gz.gpg|*.tgz.gpg) gpg --decrypt "$archive" | tar -xvz ;;
-  *.lzma) unlzma "$archive" ;;
-  *.bz2) bunzip2 "$archive" ;;
-  *.rar) unrar x -ad "$archive" ;;
-  *.gz) gunzip "$archive" ;;
-  *.tar) tar -xvf "$archive" ;;
-  *.zip) unzip "$archive" ;;
-  *.Z) uncompress "$archive" ;;
-  *.7z) 7z x "$archive" ;;
-  *.xz) unxz "$archive" ;;
-  *.exe) cabextract "$archive" ;;
-  *) printf "extract: \"%s\" - unknown archive method\n" "$archive" ;;
+case $# in
+  0) shelp ;;
+  1)
+    archive="$1"
+    mode=auto
+    ;;
+  2)
+    archive="$1"
+    mode="$2"
+    ;;
+  *)
+    printf >&2 "%s: invalid amount of arguments\n" "$PROGNAME"
+    shelp
+    ;;
 esac
 
-if [ "$?" != 0 ]; then
-  [ "$oldDir" ] && cd "$oldDir"
-  [ -z "$(ls -A "$directory")" ] && rm -r "$directory"
+if [ -z "$archive" ]; then
+  printf >&2 "%s: empty ARCHIVE argument\n" "$PROGNAME"
+  shelp
 fi
+
+oldArchive="$archive"
+archive=$(readlink -f "$archive") # follow archive link, if any
+
+if [ "$archive" != "$oldArchive" ]; then
+  printf >&2 "%s: following symlink: %s -> %s\n" "$PROGNAME" "$oldArchive" "$archive"
+fi
+
+if [ ! -f "$archive" ]; then
+  printf >&2 '%s: archive "%s" not found\n' "$PROGNAME" "$archive"
+  exit 1
+fi
+
+extension="${archive#*.}"
+
+if [ "$extension" = "$archive" ]; then
+  printf >&2 "%s: archive has no extension and therefore can't be extracted.\n" "$PROGNAME"
+  exit 1
+fi
+
+if [ "$mode" = auto ]; then
+  mode=$(case "$extension" in
+    *.gpg) printf >&2 "%s: contents of archive cannot be looked up before decryption; MODE will default to 'new'\n" "$PROGNAME"
+           printf "new"
+           ;;
+
+    tar|tar.bz2|tbz2|tar.gz|tgz|tar.xz) tar -tf "$archive" | setModeFromInput ;;
+    zip|7z) bsdtar --list --file "$archive" | setModeFromInput ;;
+
+    *) printf >&2 "%s: unknown listing method for extension: .%s; using default MODE 'new'\n" "$PROGNAME" "$extension"
+       printf "new"
+       ;;
+  esac)
+fi
+
+case "$mode" in
+  new)
+    directory="${archive%%.*}" ## remove extension
+    if [ -d "$directory" ]; then
+      # TODO: be able to somehow specify the extraction directory
+      printf >&2 "%s: directory '%s' already exists\n" "$PROGNAME" "$directory"
+      exit 1
+    fi
+
+    mkdir -p "$directory"
+    (cd "$directory" && main) || {
+      isDirectoryEmpty "$directory" && rm -r "$directory"
+      exit 1
+    }
+    ;;
+  here) main || exit 1 ;;
+  *)
+    printf >&2 "%s: invalid MODE: %s\n" "$PROGNAME" "$mode"
+    shelp
+    ;;
+esac

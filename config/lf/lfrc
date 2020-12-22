@@ -64,6 +64,11 @@ cmd trash ${{
       n) break ;;
       *) ;;
     esac
+
+    if [ $? != 0 ]; then
+      printf "Failed to move file(s) to trash.\n"
+      read _
+    fi
   done
 }}
 cmd delete ${{
@@ -84,6 +89,11 @@ cmd delete ${{
       n) break ;;
       *) ;;
     esac
+
+    if [ $? != 0 ]; then
+      printf "Failed to permanently delete file(s).\n"
+      read _
+    fi
   done
 }}
 cmd move-here ${{
@@ -91,6 +101,12 @@ cmd move-here ${{
   IFS=$(printf '\n\t')
   for file in $fs; do
     mv -vt . -- "$file"
+
+    if [ $? != 0 ]; then
+      printf "Failed to move file '%s'.\n" "$file"
+      read _
+      break
+    fi
   done
 }}
 cmd copy-here ${{
@@ -98,11 +114,23 @@ cmd copy-here ${{
   IFS=$(printf '\n\t')
   for file in $fs; do
     cp -vrt . -- "$file"
+
+    if [ $? != 0 ]; then
+      printf "Failed to copy file '%s'.\n" "$file"
+      read _
+      break
+    fi
   done
 }}
 cmd extract-this ${{
   clear; set -f
   [ "$f" ] && ext "$f"
+
+  if [ $? != 0 ]; then
+    printf "Failed to extract file.\n"
+    read _
+    break
+  fi
 }}
 
 # command mappings
@@ -115,7 +143,6 @@ map v :move-here; unselect
 map p :copy-here; unselect
 map R ${{ vidir }}
 map E extract-this
-map <enter> open
 
 # bookmark mappings
 map gh cd ~
