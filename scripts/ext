@@ -85,12 +85,14 @@ if [ -z "$archive" ]; then
   shelp
 fi
 
-oldArchive="$archive"
-archive=$(readlink -f "$archive") # follow archive link, if any
+archive=$(realpath "$archive") || exit 1
 
-if [ "$archive" != "$oldArchive" ]; then
-  printf >&2 "%s: following symlink: %s -> %s\n" "$PROGNAME" "$oldArchive" "$archive"
-fi
+# oldArchive="$archive"
+# archive=$(readlink -f "$archive") # follow archive link, if any
+
+# if [ "$archive" != "$oldArchive" ]; then
+#   printf >&2 "%s: following symlink: %s -> %s\n" "$PROGNAME" "$oldArchive" "$archive"
+# fi
 
 if [ ! -f "$archive" ]; then
   printf >&2 '%s: archive "%s" not found\n' "$PROGNAME" "$archive"
