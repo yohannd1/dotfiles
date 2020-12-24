@@ -1,7 +1,7 @@
 import os
 import subprocess as sp
 import theme
-from theme import ThemeConfig, Namespace
+from theme import ThemeConfig, Namespace, Font
 
 bindings = [
     ("D", "tab-close"),
@@ -16,8 +16,10 @@ def main():
     for (k, cmd) in bindings:
         config.bind(k, cmd)
 
+    monospace_font = Font(xgetres("qutebrowser.fonts.monospace",
+                                  "Source Code Pro"))
+
     ThemeConfig(
-        cfg_namespace = c,
         palette = Namespace(
             bg=xgetres("qutebrowser.bg"),
             fg=xgetres("qutebrowser.fg"),
@@ -37,11 +39,18 @@ def main():
             vertical=2,
             horizontal=2,
         ),
-        fontcfg = Namespace(
-            family=xgetres("qutebrowser.fontname", "SourceCodePro"),
-            size=xgetres("qutebrowser.font_size", "10pt"),
-        )
-    ).apply()
+        fonts = {
+            "main": monospace_font,
+            "monospace": monospace_font,
+            "standard": Font(xgetres("qutebrowser.fonts.standard",
+                                     "Noto Sans Medium")),
+            "sans_serif": Font(xgetres("qutebrowser.fonts.sans-serif",
+                                       "Noto Sans Medium")),
+            "serif": Font(xgetres("qutebrowser.fonts.serif",
+                                  "Times New Roman")),
+        },
+        font_size = xgetres("qutebrowser.font_size", "10pt"),
+    ).apply_to(c)
 
     c.downloads.open_dispatcher = os.environ.get("OPENER") or "xdg-open"
     c.colors.webpage.darkmode.enabled = False

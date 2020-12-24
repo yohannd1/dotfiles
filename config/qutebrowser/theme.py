@@ -4,41 +4,66 @@
 #   - hsl: Interpolate in the HSL color system.
 #   - none: Don't show a gradient.
 
+from dataclasses import dataclass
+
+@dataclass
+class Font:
+    family: str
+
 class Namespace:
     def __init__(self, **kwargs):
         for (k, v) in kwargs.items():
             self.__setattr__(k, v)
 
-def hex2rgba(code, alpha):
+def hex2rgba(hexcode, alpha=255):
     return "rgba({})".format(
-        ", ".join([
-            str(eval("0x" + code[1:3])),
-            str(eval("0x" + code[3:5])),
-            str(eval("0x" + code[5:7])),
-            str(alpha)
-        ])
+        str.join(", ", [str(int(hexcode[i:i+2], 16)) for i in {1, 3, 5}] + [str(alpha)])
     )
 
 class ThemeConfig:
-    def __init__(self, cfg_namespace, palette, spacing=None, padding=None, fontcfg=None):
-        self.palette = palette or Namespace()
-        self.spacing = spacing or Namespace(horizontal=2,
-                                            vertical=2)
-        self.padding = padding or Namespace(top=self.spacing.vertical,
-                                            right=self.spacing.horizontal,
-                                            bottom=self.spacing.vertical,
-                                            left=self.spacing.horizontal)
-        self.fontcfg = fontcfg or Namespace(family="monospace",
-                                            size="10pt")
-        self.cfg_namespace = cfg_namespace
+    DEFAULT_FONTS = {
+        "monospace": Font("monospace"),
+        "standard": Font("Noto Sans Medium"),
+        "sans_serif": Font("Noto Sans Medium"),
+        "serif": Font("Times New Roman"),
+    }
 
-    def apply(self):
-        c = self.cfg_namespace
+    DEFAULT_SPACING = Namespace(
+        horizontal = 2,
+        vertical = 2,
+    )
+
+    def __init__(
+        self,
+        palette,
+        spacing = DEFAULT_SPACING,
+        padding = None,
+        fonts = {},
+        font_size = "10pt",
+    ):
+        self.palette = palette
+        self.spacing = spacing
+        self.padding = padding or Namespace(
+            top = self.spacing.vertical,
+            right = self.spacing.horizontal,
+            bottom = self.spacing.vertical,
+            left = self.spacing.horizontal
+        )
+
+        self.fonts = ThemeConfig.DEFAULT_FONTS.copy()
+        self.fonts.update(fonts)
+
+        self.font_size = font_size
+
+    def apply_to(self, c):
         p = self.palette
 
         # Fonts
-        c.fonts.default_family = self.fontcfg.family
-        c.fonts.default_size = self.fontcfg.size
+        c.fonts.default_family = self.fonts["main"].family
+        c.fonts.web.family.fixed = self.fonts["monospace"].family
+        c.fonts.web.family.sans_serif = self.fonts["sans_serif"].family
+        c.fonts.web.family.serif = self.fonts["serif"].family
+        c.fonts.default_size = self.font_size
 
         # Completion widget - category headers
         c.colors.completion.category.bg = p.bg_attention

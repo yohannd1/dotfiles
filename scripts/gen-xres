@@ -61,8 +61,11 @@ xset 'dmenu.out.bg' "$base0F"
 xset 'dmenu.out.fg' "$base0F"
 
 # qutebrowser
-xset 'qutebrowser.fontname' "$FONT"
 xset 'qutebrowser.font_size' "$FONT_POINTSIZE"
+xset 'qutebrowser.fonts.monospace' "$FONT"
+xset 'qutebrowser.fonts.standard' "$FONT"
+xset 'qutebrowser.fonts.sans-serif' "$FONT"
+xset 'qutebrowser.fonts.serif' "$FONT"
 xset 'qutebrowser.bg' "$base00"
 xset 'qutebrowser.fg' "$base05"
 xset 'qutebrowser.bg-alt' "$base01"
