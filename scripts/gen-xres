@@ -26,9 +26,9 @@
 . ~/.config/dots/env.sh
 eval "$(load-base16-theme)"
 
-FONT="IosevkaMedium"
-FONT_PIXELSIZE="13.5"
-FONT_POINTSIZE="11pt"
+FONT="CascadiaCode"
+FONT_PIXELSIZE="12"
+FONT_POINTSIZE="10pt"
 
 xset() { printf "%s: %s\n" "$1" "$2"; }
 font() { printf "%s:pixelsize=%s:antialias=true:autohint=true;" "$FONT" "$1"; }
@@ -64,7 +64,7 @@ xset 'dmenu.out.fg' "$base0F"
 xset 'qutebrowser.font_size' "$FONT_POINTSIZE"
 xset 'qutebrowser.fonts.monospace' "$FONT"
 xset 'qutebrowser.fonts.standard' "$FONT"
-xset 'qutebrowser.fonts.sans-serif' "$FONT"
+# xset 'qutebrowser.fonts.sans-serif' "NotoSansMedium"
 xset 'qutebrowser.fonts.serif' "$FONT"
 xset 'qutebrowser.bg' "$base00"
 xset 'qutebrowser.fg' "$base05"

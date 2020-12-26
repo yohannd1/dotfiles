@@ -193,7 +193,8 @@ xdb() {
     1)
       case "$1" in
         r|rl|reload) gen-xres | xrdb ;;
-        e|ed|edit) "$EDITOR" =gen-xres && xdb reload ;;
+        e|ed|edit) "$EDITOR" =gen-xres \
+                     && { [ "$DISPLAY" ] && xdb reload } ;;
         *) return 1 ;;
       esac
       ;;

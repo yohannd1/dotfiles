@@ -43,11 +43,9 @@ def main():
             "main": monospace_font,
             "monospace": monospace_font,
             "standard": Font(xgetres("qutebrowser.fonts.standard",
-                                     "Noto Sans Medium")),
+                                     "NotoSansMedium")),
             "sans_serif": Font(xgetres("qutebrowser.fonts.sans-serif",
-                                       "Noto Sans Medium")),
-            "serif": Font(xgetres("qutebrowser.fonts.serif",
-                                  "Times New Roman")),
+                                       "NotoSansMedium")),
         },
         font_size = xgetres("qutebrowser.font_size", "10pt"),
     ).apply_to(c)

@@ -61,8 +61,8 @@ class ThemeConfig:
         # Fonts
         c.fonts.default_family = self.fonts["main"].family
         c.fonts.web.family.fixed = self.fonts["monospace"].family
-        c.fonts.web.family.sans_serif = self.fonts["sans_serif"].family
-        c.fonts.web.family.serif = self.fonts["serif"].family
+        # c.fonts.web.family.sans_serif = self.fonts["sans_serif"].family
+        # c.fonts.web.family.serif = self.fonts["serif"].family
         c.fonts.default_size = self.font_size
 
         # Completion widget - category headers
