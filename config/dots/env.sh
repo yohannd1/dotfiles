@@ -91,6 +91,7 @@ export FLAMEW_SCR_FOLDER=~/storage/pictures/screenshots
 export SETBG_IMG_DIR=~/storage/pictures/wallpapers/art
 export SETBG_WALLPAPER_TYPE="image"
 export BKMK_FILE="$WIKI/data/bookmarks.json"
+export ITMN_FILE="$WIKI/data/itmn.json"
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"
 export GUILE_LOAD_PATH="$DOTFILES/lib/guile"
 
