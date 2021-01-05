@@ -57,6 +57,4 @@ something.
 
 * https://gist.github.com/sooop/8dc424e13c6fe2e2a663
 
-  (It's Steve Losh (sjl)'s vimrc. The original link seems to be down.)
-
-  (Original: https://bitbucket.org/sjl/dotfiles/src/tip/vim/vimrc)
+  (It's Steve Losh (sjl)'s vimrc. The [original file](https://bitbucket.org/sjl/dotfiles/src/tip/vim/vimrc) seems to be down.)
