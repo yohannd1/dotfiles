@@ -41,7 +41,7 @@ for app in apps:
     m.link_conf(app, f"~/.config/{app}")
 
 m.link_conf("gdbinit", f"~/.gdbinit")
-
+m.link_conf("prettierrc.json", f"~/.pretierrc.json")
 m.link_conf("profile", "~/.profile")
 m.link_conf("guile/guilerc", "~/.guile")
 m.link_conf("bash/bashrc", "~/.bashrc")
