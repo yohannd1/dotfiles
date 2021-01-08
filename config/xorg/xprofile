@@ -4,14 +4,20 @@
 # This should be sourced by ~/.xinitrc or your display manager, and not simply
 # loaded alone.
 
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
 gen-xres | xrdb # update xresources database
 setbg &
 
 # wm-specific config
 case "$WM" in
   dwm)
-    dwmblocks &
-    pactl subscribe | grep --line-buffered "sink" | xargs -I'{}' pkill -RTMIN+10 dwmblocks >/dev/null 2>/dev/null &
+    if exists rootblocks; then
+      rootblocks &
+    else
+      dwmblocks &
+      pactl subscribe | grep --line-buffered "sink" | xargs -I'{}' pkill -RTMIN+10 dwmblocks >/dev/null 2>/dev/null &
+    fi
     ;;
   penrose)
     start-polybar &

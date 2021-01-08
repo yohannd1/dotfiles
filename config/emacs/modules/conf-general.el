@@ -190,9 +190,9 @@
 (setq recentf-max-saved-items 50)
 
 ;; Transparency
-(setq conf/alpha 90)
-(set-frame-parameter (selected-frame) 'alpha `(,conf/alpha ,conf/alpha))
-(add-to-list 'default-frame-alist `(alpha ,conf/alpha ,conf/alpha))
+;; (setq conf/alpha 90)
+;; (set-frame-parameter (selected-frame) 'alpha `(,conf/alpha ,conf/alpha))
+;; (add-to-list 'default-frame-alist `(alpha ,conf/alpha ,conf/alpha))
 
 (use-package ace-window
   :ensure t
