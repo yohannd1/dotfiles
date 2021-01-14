@@ -46,7 +46,7 @@ precmd() {
   fi
 
   # set terminal title
-  setTitle "$(whoami)@$(hostname):$cwd"
+  setTitle "$(whoami)@$(hostname 2>/dev/null || echo "???"):$cwd"
 }
 
 # construct prompt string
