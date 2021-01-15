@@ -76,13 +76,16 @@ export FZF_DEFAULT_OPTS='--layout=reverse --border
                          --color hl:3,hl+:10
                          --color prompt:8,marker:5,pointer:8
                          --color spinner:3,gutter:1,info:3'
-export GCC_COLORS='error=01;38;5;8
-                  :warning=01;38;5;9
-                  :note=01;38;5;12
-                  :caret=01;32
-                  :locus=01;38;5;11
-                  :quote=03'
 export GREP_COLORS='ms=01;34:mc=01;34:sl=:cx=:fn=35:ln=32:bn=32:se=36'
+
+_gcc_colors='error    = 01;38;5;8
+             :warning = 01;38;5;9
+             :note    = 01;38;5;12
+             :caret   = 01;32
+             :locus   = 01;38;5;4
+             :quote   = 03'
+export GCC_COLORS=$(printf "%s" "$_gcc_colors" | tr -d ' ' | tr -d '\n')
+
 _exists sccache && export RUSTC_WRAPPER=sccache
 
 # dotfiles program options

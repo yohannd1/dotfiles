@@ -18,7 +18,7 @@ isCharging() { [ "$(cat $CHARGE_STATE_PATH)" = "Charging" ]; }
 
 warn() {
   local msg="$(printf "%s (%02d%%)\n" "$2" "$level")"
-  notify-send -u "$1" -- "Battery Information" "$msg"
+  notify-send -u "$1" -- "Battery level alert" "$msg"
 }
 
 [ -e "$BATTERY_PATH" ] || die "Battery file doesn't exist"

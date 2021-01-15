@@ -27,8 +27,8 @@ printf >&2 "@[TEMP: %s]\n\n" "$tmp"
 rm -f "$tmp" # remove temp file for preventing any errors related to "file already exists"
 
 cleanup() {
-  [ -f "$tmp" ] && rm -f "$tmp"
-  [ -d "$tmp" ] && rm -rf "$tmp"
+  [ -f "$tmp" ] && rm "$tmp"
+  [ -d "$tmp" ] && rm -r "$tmp"
   return 0
 }
 
@@ -116,7 +116,11 @@ case "$1" in
       hy) hy "$file" ;;
       fsharp) fsharpi "$file" ;;
       lua) lua "$file" ;;
-      nim) nim compile -r "$file" ;;
+      nim)
+        mkdir -p "$tmp" \
+          && nim compile --out:"out" --outdir:"$tmp" "$file" \
+          && "$tmp/out"
+        ;;
       ruby) ruby "$file" ;;
       racket) racket "$file" ;;
       html) openfork "$file" ;;
@@ -143,6 +147,10 @@ case "$1" in
       @make) fparent-run "Makefile" run-command file-dir make check ;;
       @cargo) fparent-run "Cargo.toml" run-command file-dir cargo check ;;
       rust) rustc "$file" -o "$tmp" ;;
+      nim)
+        mkdir -p "$tmp" \
+          && nim compile --out:"out" --outdir:"$tmp" "$file"
+        ;;
       python)
         python=$(getPython)
         "$python" -m pylint "$file"

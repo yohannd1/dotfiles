@@ -36,7 +36,8 @@
   :config
   (setq ac-auto-start 2
         ac-auto-show-menu t
-        ac-use-menu-map t)
+        ac-use-menu-map t
+        ac-ignore-case nil)
   (ac-config-default)
 
   (define-key global-map (kbd "C-j") nil)
