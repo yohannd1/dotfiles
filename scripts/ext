@@ -36,29 +36,29 @@ shouldExtractHere() {
 setModeFromInput() { shouldExtractHere && echo here || echo new; }
 
 main() {
-  case "$extension" in
+  case "$archive" in
     # tar stuff
-    tar.bz2|tbz2) tar -xvjf "$archive" ;;
-    tar.xz) tar -xvf "$archive" ;;
-    tar.gz|tgz) tar -xvzf "$archive" ;;
-    lzma) unlzma "$archive" ;;
-    tar) tar -xvf "$archive" ;;
-    bz2) bunzip2 "$archive" ;;
-    gz) gunzip "$archive" ;;
-    xz) unxz "$archive" ;;
+    *.tar.bz2|*.tbz2) tar -xvjf "$archive" ;;
+    *.tar.xz) tar -xvf "$archive" ;;
+    *.tar.gz|*.tgz) tar -xvzf "$archive" ;;
+    *.lzma) unlzma "$archive" ;;
+    *.tar) tar -xvf "$archive" ;;
+    *.bz2) bunzip2 "$archive" ;;
+    *.gz) gunzip "$archive" ;;
+    *.xz) unxz "$archive" ;;
 
     # encrypted tar archives
-    tar.bz2.gpg|tbz2.gpg) gpg --decrypt "$archive" | tar -xvj ;;
-    tar.xz.gpg) gpg --decrypt "$archive" | tar -xv ;;
-    tar.gz.gpg|tgz.gpg) gpg --decrypt "$archive" | tar -xvz ;;
+    *.tar.bz2.gpg|*.tbz2.gpg) gpg --decrypt "$archive" | tar -xvj ;;
+    *.tar.xz.gpg) gpg --decrypt "$archive" | tar -xv ;;
+    *.tar.gz.gpg|*.tgz.gpg) gpg --decrypt "$archive" | tar -xvz ;;
 
-    rar) unrar x -ad "$archive" ;;
-    zip) unzip "$archive" ;;
-    Z) uncompress "$archive" ;;
-    7z) 7z x "$archive" ;;
-    exe) cabextract "$archive" ;;
+    *.rar) unrar x -ad "$archive" ;;
+    *.zip) unzip "$archive" ;;
+    *.Z) uncompress "$archive" ;;
+    *.7z) 7z x "$archive" ;;
+    *.exe) cabextract "$archive" ;;
 
-    *) printf >&2 "%s: unknown extension: .%s\n" "$PROGNAME" "$extension"
+    *) printf >&2 "%s: unknown extension\n" "$PROGNAME" "$extension"
        return 1
        ;;
   esac
@@ -99,23 +99,21 @@ if [ ! -f "$archive" ]; then
   exit 1
 fi
 
-extension="${archive#*.}"
-
-if [ "$extension" = "$archive" ]; then
+if [ "${archive#*.}" = "$archive" ]; then
   printf >&2 "%s: archive has no extension and therefore can't be extracted.\n" "$PROGNAME"
   exit 1
 fi
 
 if [ "$mode" = auto ]; then
-  mode=$(case "$extension" in
+  mode=$(case "$archive" in
     *.gpg) printf >&2 "%s: contents of archive cannot be looked up before decryption; MODE will default to 'new'\n" "$PROGNAME"
            printf "new"
            ;;
 
-    tar|tar.bz2|tbz2|tar.gz|tgz|tar.xz) tar -tf "$archive" | setModeFromInput ;;
-    zip|7z) bsdtar --list --file "$archive" | setModeFromInput ;;
+    *.tar|*.tar.bz2|*.tbz2|*.tar.gz|*.tgz|*.tar.xz) tar -tf "$archive" | setModeFromInput ;;
+    *.zip|*.7z) bsdtar --list --file "$archive" | setModeFromInput ;;
 
-    *) printf >&2 "%s: unknown listing method for extension: .%s; using default MODE 'new'\n" "$PROGNAME" "$extension"
+    *) printf >&2 "%s: unknown listing method for extension; using default MODE 'new'\n" "$PROGNAME" "$extension"
        printf "new"
        ;;
   esac)

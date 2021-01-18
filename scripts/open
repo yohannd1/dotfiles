@@ -67,7 +67,9 @@ openPop() {
 
 openFallback() {
   # warn "Falling back to %s (%s)\n" "$ALT_OPENER" "$FILE"
-  VIA_OPEN=1 "$ALT_OPENER" "$FILE"
+  # VIA_OPEN=1 "$ALT_OPENER" "$FILE"
+  warn "Unknown method for file (%s); aborting..." "$FILE"
+  exit 1
 }
 
 checkExists() {
