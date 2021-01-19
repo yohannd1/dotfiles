@@ -92,6 +92,20 @@ fzhistory() {
   print -z "$result"
 }
 
+fz-select-file() {
+  LBUFFER="${LBUFFER}$(_fz-select-file-inner)"
+  local ret="$?"
+  zle reset-prompt
+  return "$ret"
+}
+
+_fz-select-file-inner() {
+  local item
+  fd -tf | fzf -m "$@" | while read item; do
+    echo -n "${(q)item} "
+  done
+}
+
 # Actual binding
 bindkey -s '^R' '\eSfzhistory\n'
 if exists lf; then
@@ -101,6 +115,9 @@ elif exists nnn; then
 fi
 
 bindkey -s '^P' '\e[C'
+bindkey '^F' fz-select-file
+
+zle -N fz-select-file
 
 assist::find-file.gen() {
   printf "%s\n" ".."
