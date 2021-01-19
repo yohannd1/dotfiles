@@ -12,5 +12,6 @@ if [ $# = 0 ]; then
 fi
 
 stty sane \
+  && export TERM=xterm-16color \
   && setTitle "$1" \
   && "$@"

@@ -14,7 +14,7 @@ fi
 
 # "Floating" popup arg. Will make this better later.
 if [ "$1" = "-f" ] || [ "$1" = "--float" ]; then
-  $TERMINAL -c float -e runsane "${@:2}"
+  "$TERMINAL" -c float -e runsane "${@:2}"
 else
-  $TERMINAL -e runsane "$@"
+  "$TERMINAL" -e runsane "$@"
 fi

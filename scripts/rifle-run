@@ -155,6 +155,7 @@ case "$1" in
         python=$(getPython)
         "$python" -m pylint "$file"
         ;;
+      *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
     esac ;;
   *) die "Invalid action: %s\n" "$1" ;;
 esac

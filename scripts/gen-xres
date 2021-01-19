@@ -82,9 +82,9 @@ xset 'qutebrowser.success' "$base0B"
 
 # others
 xset 'Emacs.font' "$FONT"
-xset 'penrose.highlight' "$base03"
+xset 'pencilwm.highlight' "$base03"
 xset 'polybar.fontname' "$FONT"
-xset 'polybar.fontsize' "9.5"
+xset 'polybar.fontsize' "9.0"
 
 # general
 xset '*background' "$base00"

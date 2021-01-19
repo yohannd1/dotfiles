@@ -90,7 +90,7 @@ super + e
     graphedit
 
 # window switcher
-super + s
+super + o; s
       dswitcher
 
 # super-o apps
