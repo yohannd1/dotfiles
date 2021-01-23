@@ -9,6 +9,7 @@ bindings = [
     ("d", "scroll-page 0 0.5"),
     ("u", "scroll-page 0 -0.5"),
     ("ç", "set-cmd-text :"),
+    ("E", "devtools bottom"),
 ]
 
 def main():
@@ -60,6 +61,7 @@ def main():
         "aw": "https://wiki.archlinux.org/?search={}",
         "ap": "https://archlinux.org/packages/?q={}",
         "yt": "https://www.youtube.com/results?search_query={}",
+        "def": "https://duckduckgo.com/?q={}&ia=definition",
     }
     config.load_autoconfig()
 

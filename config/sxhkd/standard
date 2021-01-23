@@ -28,6 +28,10 @@ super + Print
     runnsend error flamew gui
 ctrl + Print
     runnsend error flamew full
+super + c
+    runnsend error flamew gui
+super + shift + c
+    runnsend error flamew full
 
 # mounting
 super + F10

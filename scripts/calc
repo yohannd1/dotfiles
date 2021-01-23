@@ -2,6 +2,7 @@
 # vim: ft=python
 
 from math import *
+from pathlib import Path
 
 dcos = lambda x: cos(radians(x))
 dsin = lambda x: sin(radians(x))

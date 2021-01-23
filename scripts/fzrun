@@ -1,151 +1,204 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
+
 import os, sys
 import subprocess as sp
-from typing import Tuple
+import enum
 
-XDG_CACHE_HOME = os.getenv("XDG_CACHE_HOME") or os.getenv("HOME") + "/.cache"
+from dataclasses import dataclass
+from pathlib import Path
+from typing import List
+
+HOME = os.environ["HOME"]
+XDG_CACHE_HOME = os.getenv("XDG_CACHE_HOME") or (HOME + "/.cache")
 WINEW_RECENTF = os.getenv("WINEW_RECENTF") or (XDG_CACHE_HOME + "/winew_recentf")
 TERMINAL = os.getenv("TERMINAL") or "xterm"
 SHELL = os.getenv("SHELL") or "/bin/sh"
 
-def through_term(ls):
-    return [TERMINAL, "-e"] + ls
+# TODO: enum for special actions
+# special actions: custom command, custom command (no add to recent)
 
-class Action:
-    def run(self, terminal=False):
-        raise NotImplementedError
+PATHBIN_EXCLUDE = {"ctags.emacs"}
 
-    def repr(self) -> Tuple[str, str]:
-        raise NotImplementedError
 
-class WineAction(Action):
-    def __init__(self, name, binary_path, arch=None):
-        self.name = name
-        self.binary_path = binary_path
-        self.type_ = "win"
-        self.arch = arch
-
-    def run(self, terminal=False):
-        if self.arch == "win32":
-            os.environ["WINEW_ARCH"] = "32"
-        elif self.arch == "win64":
-            os.environ["WINEW_ARCH"] = "64"
-
-        args = ["winew", "open", self.binary_path]
-        args = through_term(args) if terminal else args
-        os.execvp(args[0], args)
-
-    def repr(self):
-        return (self.type_, self.name)
-
-class ShellAction(Action):
-    def __init__(self, name, command, shell=None):
-        self.name = name
-        self.command = command
-        self.shell = shell or SHELL
-        self.type_ = "cmd"
-        
-    def run(self, terminal=False):
-        args = [self.shell, "-c", self.command]
-        args = through_term(args) if terminal else args
-        os.execvp(args[0], args)
-
-    def repr(self):
-        return (self.type_, self.name)
-
-class BinAction(Action):
-    def __init__(self, binary):
-        self.binary = binary
-        self.type_ = "bin"
-
-    def run(self, terminal=False):
-        args = [self.binary]
-        args = through_term(args) if terminal else args
-        os.execvp(args[0], args)
-
-    def repr(self):
-        return (self.type_, self.binary)
-
-class MultiargAction(Action):
-    def __init__(self, name, args):
-        self.name = name
-        self.args = args
-        self.type_ = "mta"
-        
-    def run(self, terminal=False):
-        args = through_term(self.args) if terminal else self.args
-        os.execvp(args[0], args)
-
-    def repr(self):
-        return (self.type_, self.name)
-
-def main():
+def main() -> int:
     actions = []
 
-    pathbin_proc = sp.Popen("gen-pathbin", stdout=sp.PIPE, encoding="UTF-8")
-    PATHBIN_EXCLUDE = {"ctags.emacs"}
-    for line in iter(pathbin_proc.stdout.readline, ""):
-        binary = line.rstrip()
-        if binary not in PATHBIN_EXCLUDE:
-            actions.append(BinAction(binary))
-
-    if os.path.isfile(WINEW_RECENTF):
-        with open(WINEW_RECENTF, "r") as f:
-            for line in f.readlines():
-                storage_dir = os.getenv("HOME") + "/storage"
-
-                line = line.rstrip()
-                arch, binary = line.split(" ", maxsplit=1)
-
-                name = binary
-                name = name.replace(storage_dir + "/software", "@soft")
-                name = name.replace(storage_dir, "@strg")
-
-                name = name.replace(os.environ["HOME"], "~")
-
-                actions.append(WineAction(f"({arch}) {name}", binary, arch=arch))
-
-    fzagnostic_proc = sp.Popen(
-        ["fzagnostic"],
-        stdout=sp.PIPE,
-        stdin=sp.PIPE,
-        encoding="UTF-8",
-    )
-
-    id_charsize = len(str(len(actions) - 1))
-    num_format = "{}".format("{:0" + str(id_charsize) + "d}")
-    for (i, action) in enumerate(actions):
-        type_, name = action.repr()
-
-        print(
-            "#{} {} || {}".format(
-                num_format.format(i),
-                type_.upper(),
-                name,
-            ),
-            file=fzagnostic_proc.stdin,
+    # get binaries from `gen-pathbin`
+    with sp.Popen("gen-pathbin", stdout=sp.PIPE, encoding="UTF-8") as pbin_proc:
+        actions.extend(
+            [
+                BinAction(binary)
+                for binary in [
+                    line.rstrip() for line in iter(pbin_proc.stdout.readline, "")
+                ]
+                if (binary is not None) and (binary not in PATHBIN_EXCLUDE)
+            ]
         )
 
-    fzagnostic_proc.stdin.close()
-    if fzagnostic_proc.wait() == 0:
-        output = fzagnostic_proc.stdout.readline().rstrip()
+    if (winew_path := Path(WINEW_RECENTF)).is_file():
+        with winew_path.open("r") as istream:
+            STORAGE_DIR = HOME + "/storage"
 
-        if output.startswith("#"):
-            actions[int(output[1:5])].run()
-        if output.startswith("!#"):
-            # if the format is the following:
-            # !#<ID>
-            # then action of index ID is ran on a terminal.
-            actions[int(output[2:])].run(terminal=True)
-        elif output.startswith("!"):
-            # if the format is the following:
-            # !<SHCMD>
-            # then SHCMD is ran on a terminal.
-            ShellAction(None, output[1:]).run(terminal=True)
+            for rb in istream.readlines():
+                rb = rb.rstrip()
+
+                arch, binary = rb.split(" ", maxsplit=1)
+
+                name = (
+                    binary.replace(STORAGE_DIR + "/software", "@soft")
+                    .replace(STORAGE_DIR, "@strg")
+                    .replace(HOME, "~")
+                )
+
+                actions.append(
+                    WineAction(f"({arch}) {name}", binary, arch=Arch.from_str(arch))
+                )
+    else:
+        print(
+            f"WINEW_RECENTF ({winew_path}) not found; ignoring it...", file=sys.stderr
+        )
+
+    with sp.Popen(
+        "fzagnostic", stdout=sp.PIPE, stdin=sp.PIPE, encoding="UTF-8"
+    ) as fza_proc:
+        id_charsize = len(str(len(actions) - 1))
+        num_format = "{}".format("{:0" + str(id_charsize) + "d}")
+
+        for i, action in enumerate(actions):
+            rep = action.repr()
+
+            print(
+                "#{} {} || {}".format(
+                    num_format.format(i),
+                    rep.type_name.upper(),
+                    rep.description,
+                ),
+                file=fza_proc.stdin,
+            )
+
+        fza_proc.stdin.close()
+
+        if fza_proc.wait() == 0:
+            output = fza_proc.stdout.readline().rstrip()
+
+            # TODO: change this to special commands instead of this. This is painful,, specially with fzf.
+            if output.startswith("#"):
+                actions[int(output[1:5])].run()
+            if output.startswith("!#"):
+                # if the format is the following:
+                # !#<ID>
+                # then action of index ID is ran on a terminal.
+                actions[int(output[2:])].run(terminal_popup=True)
+            elif output.startswith("!"):
+                # if the format is the following:
+                # !<SHCMD>
+                # then SHCMD is ran on a terminal.
+                ShellAction(None, output[1:]).run(terminal_popup=True)
+            else:
+                print(f"Invalid command: {repr(output)}", file=sys.stderr)
+                return 1
         else:
-            print(f"Invalid command: {repr(output)}", file=sys.stderr)
-            sys.exit(1)
+            return 1
+
+    return 0
+
+@dataclass
+class ActionRepr:
+    type_name: str
+    description: str
+
+
+@enum.unique
+class Arch(enum.Enum):
+    x32 = 0
+    x64 = 1
+
+    def to_winew_arch(self) -> str:
+        if self == Arch.x32:
+            return "32"
+        if self == Arch.x64:
+            return "64"
+        raise Exception(f"Invalid arch: {self}")
+
+    @staticmethod
+    def from_str(s: str) -> Arch:
+        if s in {"32", "win32", "x32"}:
+            return Arch.x32
+        if s in {"64", "win64", "x64"}:
+            return Arch.x64
+        raise Exception(f"Invalid arch string: {repr(s)}")
+
+
+class Action:
+    def run(self, terminal_popup=False):
+        raise NotImplementedError
+
+    def repr(self) -> ActionRepr:
+        raise NotImplementedError
+
+
+@dataclass
+class WineAction(Action):
+    name: str
+    bin_path: str
+    arch: Arch = Arch.x32
+
+    def run(self, terminal_popup=False):
+        os.environ["WINEW_ARCH"] = self.arch.to_winew_arch()
+
+        args = make_args(
+            ["winew", "open", self.bin_path],
+            terminal_popup=terminal_popup,
+        )
+
+        os.execvp(args[0], args)
+
+    def repr(self) -> ActionRepr:
+        return ActionRepr("win", self.name)
+
+
+@dataclass
+class ShellAction(Action):
+    name: str
+    command: str
+    shell: str = SHELL
+
+    def run(self, terminal_popup=False):
+        args = make_args(
+            [self.shell, "-c", self.command],
+            terminal_popup=terminal_popup,
+        )
+
+        os.execvp(args[0], args)
+
+    def repr(self) -> ActionRepr:
+        return ActionRepr("cmd", self.name)
+
+
+@dataclass
+class BinAction(Action):
+    binary: str
+
+    def run(self, terminal_popup=False):
+        args = make_args(
+            [self.binary],
+            terminal_popup=terminal_popup,
+        )
+
+        os.execvp(args[0], args)
+
+    def repr(self) -> ActionRepr:
+        return ActionRepr("bin", self.binary)
+
+
+def make_args(ls: List[str], terminal_popup: bool = False) -> List[str]:
+    if terminal_popup:
+        return [TERMINAL, "-e", *ls]
+    else:
+        return ls
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
