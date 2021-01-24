@@ -59,5 +59,8 @@ m.link_glob(DOTFILES / "desktop", "~/.local/share/applications")
 # m.link_glob(DOTFILES / "config/vscode", "~/.config/Code/User")
 
 print("Generating config...", file=sys.stderr, end='')
+
+# general config
 os.system(DOTFILES / "scripts/gen-config")
+    
 print(" done!", file=sys.stderr)

@@ -153,7 +153,13 @@ case "$1" in
         ;;
       python)
         python=$(getPython)
-        "$python" -m pylint "$file"
+        dmypy run --timeout 600 "$file" &
+        proc2="$!"
+        "$python" -m pylint "$file" &
+        proc1="$!"
+
+        wait "$proc1"
+        wait "$proc2"
         ;;
       *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
     esac ;;

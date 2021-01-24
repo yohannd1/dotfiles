@@ -58,9 +58,9 @@ export LESSKEY="$XDG_CONFIG_HOME/less/lesskey"
 export LESSHISTFILE="$XDG_CACHE_HOME/less/history"
 export WGETRC="$XDG_CONFIG_HOME/wgetrc"
 export IRBRC="$XDG_CONFIG_HOME/irb/irbrc"
+export FZRUN_GAMES_FOLDER="$HOME/storage/software/bin-windows"
 
 # (maybe unsafe/slow) create files
-[ "$WGETRC" ] && printf "hsts-file = %s" "$XDG_CACHE_HOME/wget-hsts" >"$WGETRC"
 
 # program options
 export XORG_KBRATE_DELAY="300"

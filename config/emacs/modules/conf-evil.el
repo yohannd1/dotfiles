@@ -9,8 +9,10 @@
   (with-eval-after-load 'evil
     (defalias #'forward-evil-word #'forward-evil-symbol)
     ;; make evil-search-word look for symbol rather than word boundaries
-    (setq-default evil-symbol-word-search t))
+    (setq-default evil-symbol-word-search t)
+    (setq-default evil-undo-system 'undo-tree))
   (setq evil-ex-search-case 'sensitive)
+  (global-undo-tree-mode)
   (evil-set-initial-state 'term-mode 'emacs)
   (define-key evil-insert-state-map (kbd "C-y") #'evil-paste-after)
   (define-key evil-insert-state-map (kbd "C-o") nil)

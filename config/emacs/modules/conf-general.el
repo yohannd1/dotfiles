@@ -157,7 +157,7 @@
 ;; Prefer spaces over tabs.
 ;; (from Doom Emacs)
 (setq-default indent-tabs-mode nil
-              tab-width 8)
+              tab-width 4)
 
 ;; Stretch the cursor for tab characters.
 (setq x-stretch-cursor t)

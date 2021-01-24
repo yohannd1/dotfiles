@@ -1,113 +1,82 @@
 #!/usr/bin/env python3
+#
+# type: ignore[union-attr]
 
 from __future__ import annotations
+from typing import List, Iterable, Optional, Tuple, Sized
+from typing_extensions import Protocol
+from dataclasses import dataclass
+from pathlib import Path
 
 import os, sys
 import subprocess as sp
 import enum
-
-from dataclasses import dataclass
-from pathlib import Path
-from typing import List
+import toml
+import abc
 
 HOME = os.environ["HOME"]
 XDG_CACHE_HOME = os.getenv("XDG_CACHE_HOME") or (HOME + "/.cache")
-WINEW_RECENTF = os.getenv("WINEW_RECENTF") or (XDG_CACHE_HOME + "/winew_recentf")
 TERMINAL = os.getenv("TERMINAL") or "xterm"
 SHELL = os.getenv("SHELL") or "/bin/sh"
-
-# TODO: enum for special actions
-# special actions: custom command, custom command (no add to recent)
-
+FZRUN_GAMES_FOLDER = os.getenv("FZRUN_GAMES_FOLDER")
+FZRUN_RECENT_CMDS = os.getenv("FZRUN_RECENT_CMDS") or (
+    XDG_CACHE_HOME + "/fzrun-recent-cmds"
+)
 PATHBIN_EXCLUDE = {"ctags.emacs"}
 
 
 def main() -> int:
-    actions = []
+    actions: List[Action] = [
+        CustomCommand(add_to_recent=True),
+        CustomCommand(add_to_recent=False),
+        SelectBinary(add_to_recent=True),
+        SelectBinary(add_to_recent=False),
+        *(SelectGame() for _ in range(1) if FZRUN_GAMES_FOLDER is not None),
+        EditRecent(),
+        *get_fzrun_recent(),
+    ]
 
-    # get binaries from `gen-pathbin`
-    with sp.Popen("gen-pathbin", stdout=sp.PIPE, encoding="UTF-8") as pbin_proc:
-        actions.extend(
-            [
-                BinAction(binary)
-                for binary in [
-                    line.rstrip() for line in iter(pbin_proc.stdout.readline, "")
-                ]
-                if (binary is not None) and (binary not in PATHBIN_EXCLUDE)
-            ]
-        )
+    output = fzagnostic(
+        map(
+            lambda action: "{} || {}".format(*action.repr()),
+            actions,
+        ),
+        max_choice_number=(actions.__len__() - 1),
+    )
+    if output is not None:
+        idx = output[0]
 
-    if (winew_path := Path(WINEW_RECENTF)).is_file():
-        with winew_path.open("r") as istream:
-            STORAGE_DIR = HOME + "/storage"
-
-            for rb in istream.readlines():
-                rb = rb.rstrip()
-
-                arch, binary = rb.split(" ", maxsplit=1)
-
-                name = (
-                    binary.replace(STORAGE_DIR + "/software", "@soft")
-                    .replace(STORAGE_DIR, "@strg")
-                    .replace(HOME, "~")
-                )
-
-                actions.append(
-                    WineAction(f"({arch}) {name}", binary, arch=Arch.from_str(arch))
-                )
-    else:
-        print(
-            f"WINEW_RECENTF ({winew_path}) not found; ignoring it...", file=sys.stderr
-        )
-
-    with sp.Popen(
-        "fzagnostic", stdout=sp.PIPE, stdin=sp.PIPE, encoding="UTF-8"
-    ) as fza_proc:
-        id_charsize = len(str(len(actions) - 1))
-        num_format = "{}".format("{:0" + str(id_charsize) + "d}")
-
-        for i, action in enumerate(actions):
-            rep = action.repr()
-
-            print(
-                "#{} {} || {}".format(
-                    num_format.format(i),
-                    rep.type_name.upper(),
-                    rep.description,
-                ),
-                file=fza_proc.stdin,
-            )
-
-        fza_proc.stdin.close()
-
-        if fza_proc.wait() == 0:
-            output = fza_proc.stdout.readline().rstrip()
-
-            # TODO: change this to special commands instead of this. This is painful,, specially with fzf.
-            if output.startswith("#"):
-                actions[int(output[1:5])].run()
-            if output.startswith("!#"):
-                # if the format is the following:
-                # !#<ID>
-                # then action of index ID is ran on a terminal.
-                actions[int(output[2:])].run(terminal_popup=True)
-            elif output.startswith("!"):
-                # if the format is the following:
-                # !<SHCMD>
-                # then SHCMD is ran on a terminal.
-                ShellAction(None, output[1:]).run(terminal_popup=True)
-            else:
-                print(f"Invalid command: {repr(output)}", file=sys.stderr)
-                return 1
-        else:
+        try:
+            actions[idx].run()
+        except ValueError as e:
+            print(f"Invalid command: {repr(output)}", file=sys.stderr)
+            print(f"Error code: {e}", file=sys.stderr)
             return 1
+    else:
+        return 1
 
     return 0
+
+
+def get_fzrun_recent() -> List[ShellAction]:
+    if (path := Path(FZRUN_RECENT_CMDS)).is_file():
+        with path.open("r") as file:
+            return [
+                ShellAction(name=f"(recnt) {line.strip()}", command=str(line))
+                for line in file.readlines()
+                if len(line.strip()) > 0
+            ]
+
+    return []
+
 
 @dataclass
 class ActionRepr:
     type_name: str
     description: str
+
+    def __iter__(self):
+        return [self.type_name, self.description].__iter__()
 
 
 @enum.unique
@@ -131,12 +100,89 @@ class Arch(enum.Enum):
         raise Exception(f"Invalid arch string: {repr(s)}")
 
 
-class Action:
-    def run(self, terminal_popup=False):
-        raise NotImplementedError
+class Action(Protocol):
+    @abc.abstractmethod
+    def run(self):
+        ...
+
+    @abc.abstractmethod
+    def repr(self) -> ActionRepr:
+        ...
+
+
+@dataclass
+class EditRecent(Action):
+    def run(self):
+        if (path := Path(FZRUN_RECENT_CMDS)).is_file():
+            os.execvp("graphedit", ["graphedit", str(path)])
+        else:
+            print(
+                f"Recent commands file (a.k.a FZRUN_RECENT_CMDS a.k.a {path}) does not exist.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
 
     def repr(self) -> ActionRepr:
-        raise NotImplementedError
+        return ActionRepr(
+            "ext",
+            "Edit the recent commands file",
+        )
+
+
+@dataclass
+class SelectBinary(Action):
+    shell: str = SHELL
+    add_to_recent: bool = True
+
+    def run(self):
+        with sp.Popen("gen-pathbin", stdout=sp.PIPE, encoding="UTF-8") as proc:
+            binaries = list(filter(
+                lambda line: len(line) > 0,
+                [line.rstrip() for line in proc.stdout.readlines()],
+            ))
+
+        if not (choice := fzagnostic(binaries)):
+            sys.exit(1)
+
+        _, command = choice
+
+        if self.add_to_recent:
+            add_line_to_file(Path(FZRUN_RECENT_CMDS), command)
+
+        args = [self.shell, "-c", command]
+
+        os.execvp(args[0], args)
+
+    def repr(self) -> ActionRepr:
+        return ActionRepr(
+            "ext",
+            f"Run a binary from the binary list (add-recent:{yes_or_no(self.add_to_recent)}) [...]",
+        )
+
+
+@dataclass
+class CustomCommand(Action):
+    shell: str = SHELL
+    add_to_recent: bool = True
+
+    def run(self):
+        command = readline_agnostic(prompt="Type the desired command: ")
+
+        if command == "" or command is None:
+            return
+
+        if self.add_to_recent:
+            add_line_to_file(Path(FZRUN_RECENT_CMDS), command)
+
+        args = [self.shell, "-c", command]
+
+        os.execvp(args[0], args)
+
+    def repr(self) -> ActionRepr:
+        return ActionRepr(
+            "ext",
+            f"Run a custom command (add-recent:{yes_or_no(self.add_to_recent)}) [...]",
+        )
 
 
 @dataclass
@@ -145,13 +191,10 @@ class WineAction(Action):
     bin_path: str
     arch: Arch = Arch.x32
 
-    def run(self, terminal_popup=False):
+    def run(self):
         os.environ["WINEW_ARCH"] = self.arch.to_winew_arch()
 
-        args = make_args(
-            ["winew", "open", self.bin_path],
-            terminal_popup=terminal_popup,
-        )
+        args = ["winew", "open", self.bin_path]
 
         os.execvp(args[0], args)
 
@@ -165,11 +208,8 @@ class ShellAction(Action):
     command: str
     shell: str = SHELL
 
-    def run(self, terminal_popup=False):
-        args = make_args(
-            [self.shell, "-c", self.command],
-            terminal_popup=terminal_popup,
-        )
+    def run(self):
+        args = [self.shell, "-c", self.command]
 
         os.execvp(args[0], args)
 
@@ -181,11 +221,8 @@ class ShellAction(Action):
 class BinAction(Action):
     binary: str
 
-    def run(self, terminal_popup=False):
-        args = make_args(
-            [self.binary],
-            terminal_popup=terminal_popup,
-        )
+    def run(self):
+        args = [self.binary]
 
         os.execvp(args[0], args)
 
@@ -193,11 +230,221 @@ class BinAction(Action):
         return ActionRepr("bin", self.binary)
 
 
-def make_args(ls: List[str], terminal_popup: bool = False) -> List[str]:
-    if terminal_popup:
-        return [TERMINAL, "-e", *ls]
-    else:
+def readline_agnostic(
+    prompt: Optional[str] = None,
+) -> Optional[str]:
+    with sp.Popen(
+        ["readline-agnostic", *(["-p", prompt] if prompt else [])],
+        stdout=sp.PIPE,
+        encoding="UTF-8",
+    ) as proc:
+        if proc is None:
+            raise Exception("Failed to start process")
+
+        if proc.wait() == 0:
+            return proc.stdout.readline().strip()
+        else:
+            return None
+
+
+def fzagnostic(
+    choices: Iterable[str],
+    height: Optional[int] = None,
+    prompt: Optional[str] = None,
+    max_choice_number: Optional[int] = None,
+    starting_number: int = 0,
+) -> Optional[Tuple[int, str]]:
+    # set the default max number width
+    if max_choice_number is None:
+        max_choice_number = (
+            (choices.__len__() - 1) if isinstance(choices, Sized) else 1000
+        )
+
+    # minimum length: 2 chars wide
+    max_choice_number += starting_number
+    max_choice_number = max(10, max_choice_number)
+
+    prompt_list: List[str] = ["-p", prompt] if prompt is not None else []
+    height_list: List[str] = ["-h", str(height)] if height is not None else []
+
+    with sp.Popen(
+        ["fzagnostic"] + prompt_list + height_list,
+        stdin=sp.PIPE,
+        stdout=sp.PIPE,
+        encoding="UTF-8",
+    ) as proc:
+        if proc is None:
+            raise Exception("Failed to start process")
+
+        choice_number_size = str(max_choice_number).__len__()
+        number_format = f"{{:0{choice_number_size}d}}"
+
+        # feed choices to the stdin
+        for i, line in enumerate(choices):
+            print(
+                f"#{number_format.format(i + starting_number)} {line}",
+                file=proc.stdin,
+            )
+
+        # close the stdin
+        proc.stdin.close()
+
+        # wait for the process to finish and act according to the exit code
+        if proc.wait() == 0:
+            idx, line = proc.stdout.readline().strip().split(" ", maxsplit=1)
+            return (int(idx[1:]), line)
+        else:
+            return None
+
+
+def add_line_to_file(
+    path: Path,
+    line: str,
+    add_newline_on_end: bool = True,
+    add_if_repeated: bool = False,
+):
+    if path.is_dir():
+        raise Exception("Path should be a file or not exist (found directory)")
+
+    if not path.exists():
+        if path.is_symlink():
+            raise Exception("Path should be a file or not exist (found broken symlink)")
+
+        path.touch()
+
+    if not add_if_repeated:
+        with path.open("r") as file:
+            if line in file.read().split("\n"):
+                return
+
+    with path.open("r") as file:
+        file.seek(0, os.SEEK_END)
+        file_end_pos = file.tell()
+        file.seek(max(file_end_pos - 1, 0), os.SEEK_SET)
+
+        last_char = file.read(1)
+        add_newline_on_start = last_char not in {"", "\n"}
+
+    with path.open("a") as file:
+        if add_newline_on_start:
+            file.write("\n")
+
+        file.write(line)
+
+        if add_newline_on_end:
+            file.write("\n")
+
+
+def yes_or_no(val: bool) -> str:
+    return "yes" if val else "no"
+
+
+def flatten(ls: list) -> list:
+    return [element for sublist in ls for element in sublist]
+
+
+@dataclass
+class SelectGame:
+    shell: str = SHELL
+
+    def run(self):
+        games = GameData.get_games(Path(FZRUN_GAMES_FOLDER))
+        games.sort(key=lambda game: game.name, reverse=True)
+
+        choice = fzagnostic([game.name for game in games], height=30, starting_number=50)
+        if choice is None:
+            sys.exit(1)
+
+        choice = games[choice[0] - 50]
+
+        os.chdir(choice.exec_dir)
+        args = [self.shell, "-c", choice.command]
+        os.execvp(args[0], args)
+
+    def repr(self) -> ActionRepr:
+        return ActionRepr("ext", "Select a game to run (add-history:TODO)")
+
+
+@dataclass
+class GameData:
+    name: str
+    command: str
+    toml_path: Path
+    exec_dir: Path
+
+    @staticmethod
+    def _parse_toml(tobj, exec_dir: Path, toml_path: Path) -> GameData:
+        exec_dir = tobj.get("exec-dir") or exec_dir
+
+        return GameData(
+            name=str(tobj["name"]),
+            command=str(tobj["command"]),
+            exec_dir=exec_dir,
+            toml_path=toml_path,
+        )
+
+    @staticmethod
+    def from_toml(tstr: str, exec_dir: Path, toml_path: Path) -> List[GameData]:
+        tobj = toml.loads(tstr)
+        entry_obj = tobj["entry"]
+
+        ls = []
+        if isinstance(entry_obj, list):
+            ls.extend(
+                [GameData._parse_toml(obj, exec_dir, toml_path) for obj in entry_obj]
+            )
+        else:
+            ls.append(
+                GameData._parse_toml(entry_obj, exec_dir=exec_dir, toml_path=toml_path)
+            )
+
+        if settings := tobj.get("global-settings"):
+            if include_files := settings.get("include-files"):
+                for filename in include_files:
+                    filename = Path(filename)
+                    if not filename.is_absolute():
+                        filename = exec_dir / filename
+
+                    with filename.open("r") as istream:
+                        ls.extend(
+                            GameData.from_toml(
+                                istream.read(),
+                                exec_dir=(filename / "..").resolve(),
+                                toml_path=filename,
+                            )
+                        )
+
         return ls
+
+    @staticmethod
+    def get_games(games_folder: Path) -> List[GameData]:
+        if not games_folder.is_dir():
+            raise Exception(f"Invalid games folder: {games_folder}")
+
+        return flatten(
+            [
+                GameData.get_games_in_folder(subfolder)
+                for subfolder in games_folder.glob("*")
+            ]
+        )
+
+    @staticmethod
+    def get_games_in_folder(folder: Path) -> List[GameData]:
+        if not folder.is_dir():
+            return []
+
+        toml_file = folder / "Game.toml"
+
+        if not toml_file.is_file():
+            return []
+
+        with toml_file.open("r") as istream:
+            contents = istream.read()
+            return GameData.from_toml(
+                contents,
+                exec_dir=folder,
+                toml_path=toml_file,
+            )
 
 
 if __name__ == "__main__":

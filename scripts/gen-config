@@ -7,6 +7,8 @@ mkdir -p "$XDG_CACHE_HOME/gen"
 pp "$DOTFILES/config/gen/stalonetrayrc" > "$XDG_CACHE_HOME/gen/stalonetrayrc"
 pp "$DOTFILES/config/gen/dunstrc" > "$XDG_CACHE_HOME/gen/dunstrc"
 
+[ "$WGETRC" ] && printf "hsts-file = %s" "$XDG_CACHE_HOME/wget-hsts" >"$WGETRC"
+
 if [ -d ~/.termux ]; then
     pp "$DOTFILES/config/gen/termux-colors" > ~/.termux/colors.properties
 fi

@@ -236,7 +236,7 @@ alias p3='python3'
 alias jl='julia'
 alias g='git-check'
 alias e='$EDITOR'
-alias jpdo='LANG=ja_JP.UTF8'
+alias jpdo='LANG=ja_JP.UTF8 LC_ALL=ja_JP'
 
 alias sy='dotsync'
 alias sx='start-xserver'
