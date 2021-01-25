@@ -70,7 +70,6 @@ export LESS="-RC"
 export KEYTIMEOUT=1
 export NNN_OPENER="$OPENER"
 export NNN_TRASH=1
-export RUSTFLAGS='-C link-arg=-fuse-ld=lld'
 export FZF_DEFAULT_OPTS='--layout=reverse --border
                          --color fg:4,fg+:5
                          --color hl:3,hl+:10
