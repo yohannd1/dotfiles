@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+
+import sys, argparse
+from pathlib import Path
+
+p = argparse.ArgumentParser(
+    prog=Path(sys.argv[0]),
+    description="convert a simple OTP code from stdin into an otpauth:// url",
+)
+
+_ = p.parse_args(sys.argv[1:])
+
+# get input and remove spaces
+key = input().replace(" ", "")
+
+# print out result
+print(f"otpauth://totp/dummy?secret={key}")

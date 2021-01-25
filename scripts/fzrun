@@ -362,7 +362,7 @@ class SelectGame:
         os.execvp(args[0], args)
 
     def repr(self) -> ActionRepr:
-        return ActionRepr("ext", "Select a game to run (add-history:TODO)")
+        return ActionRepr("ext", "Select a game to run")
 
 
 @dataclass

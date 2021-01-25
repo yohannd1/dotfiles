@@ -31,9 +31,13 @@ fi
 gen-config || exit 1
 
 # get tty numbers
-stty=$(stty -g)
 tty=$(tty)
-tty=${tty#/dev/tty} # TODO: handle /dev/pty
+if printf "%s" "$tty" | grep -q '^/dev/tty'; then
+  tty=${tty#/dev/tty}
+else
+  printf >&2 "%s\n" "Unknown TTY string: '$tty'"
+  exit 1
+fi
 
 export XSESSIONDIR=/tmp/xsessions/$tty
 [ -d "$XSESSIONDIR" ] && rm -r "$XSESSIONDIR"
@@ -42,7 +46,10 @@ mkdir -p "$XSESSIONDIR"
 printf >&2 "Starting at %s\n" "$(date +"%Y/%m/%d %H:%M:%S")"
 printf >&2 "Using display ID %s\n" ":$tty"
 
-startx "$initrc" -- :"$tty" -ardelay "${XORG_KBRATE_DELAY:-175}" -arinterval "${XORG_KBRATE_INTERVAL:-37}" >"$XSESSIONDIR/xlog" 2>&1
+startx "$initrc" -- :"$tty" \
+       -ardelay "${XORG_KBRATE_DELAY:-175}" \
+       -arinterval "${XORG_KBRATE_INTERVAL:-37}" \
+       2>&1 | tee "$XSESSIONDIR/xlog" 
 exitCode="$?"
 
 printf >&2 "Finished at %s\n" "$(date +"%Y/%m/%d %H:%M:%S")"

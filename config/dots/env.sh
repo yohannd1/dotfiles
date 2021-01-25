@@ -77,6 +77,8 @@ export FZF_DEFAULT_OPTS='--layout=reverse --border
                          --color prompt:8,marker:5,pointer:8
                          --color spinner:3,gutter:1,info:3'
 export GREP_COLORS='ms=01;34:mc=01;34:sl=:cx=:fn=35:ln=32:bn=32:se=36'
+export PINENTRY_USER_DATA="DISPLAY=$([ "$DISPLAY" ] && echo "1" || echo "0")"
+export GPG_TTY=$(tty)
 
 _gcc_colors='error    = 01;38;5;8
              :warning = 01;38;5;9

@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+matches() { printf "%s" "$1" | grep -q "$2"; }
+
+if matches "$PINENTRY_USER_DATA" 'DISPLAY=1'; then
+  exec pinentry-qt "$@"
+else
+  exec pinentry-curses "$@"
+fi
+

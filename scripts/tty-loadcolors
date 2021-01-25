@@ -20,5 +20,5 @@ printf '\033]P%s%s' D "$base0D"
 printf '\033]P%s%s' E "$base0E"
 printf '\033]P%s%s' F "$base0F"
 
-printf '\033[?16;2;112c' # change cursor to block
+# printf '\033[?16;2;112c' # change cursor to block
 clear

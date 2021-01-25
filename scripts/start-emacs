@@ -29,5 +29,6 @@ launchStandalone() {
 if [ "$DISPLAY" ]; then
   launchClient "$@"
 else
+  # launchClient "$@"
   launchStandalone "$@"
 fi
