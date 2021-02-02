@@ -77,7 +77,7 @@ case "$1" in
           && "$tmp"
         ;;
       c) gcc "$file" -o "$tmp" && "$tmp" ;;
-      cpp|cc) g++ "$file" -o "$tmp" -std=c++20 && "$tmp" ;;
+      cpp|c++|cc) g++ "$file" -o "$tmp" -std=c++20 && "$tmp" ;;
       cs|csharp) mcs "$file" -out:"$tmp" && mono "$tmp" ;;
       clojure) clojure "$file" ;;
       markdown) md-preview "$file" ;;
@@ -151,6 +151,7 @@ case "$1" in
         mkdir -p "$tmp" \
           && nim compile --out:"out" --outdir:"$tmp" "$file"
         ;;
+      cpp|c++|cc) g++ -c "$file" -o "$tmp" -std=c++20 ;;
       python)
         python=$(getPython)
         dmypy run --timeout 600 "$file" &
