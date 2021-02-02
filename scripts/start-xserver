@@ -22,7 +22,7 @@ if [ ! -f "$initrc" ] || [ ! -r "$initrc" ]; then
   exit 1
 fi
 
-if [ "$DISPLAY" ]; then
+if [ "$DISPLAY" ] && [ -z "$USE_XEPHYR" ]; then
   printf >&2 "%s is set, an X server is probably already running; aborting\n" '$DISPLAY'
   exit 1
 fi
@@ -34,6 +34,8 @@ gen-config || exit 1
 tty=$(tty)
 if printf "%s" "$tty" | grep -q '^/dev/tty'; then
   tty=${tty#/dev/tty}
+elif [ "$USE_XEPHYR" ]; then
+  tty=$(printf "%04d" "$(shuf -i 0-9999 -n 1)")
 else
   printf >&2 "%s\n" "Unknown TTY string: '$tty'"
   exit 1
@@ -46,12 +48,29 @@ mkdir -p "$XSESSIONDIR"
 printf >&2 "Starting at %s\n" "$(date +"%Y/%m/%d %H:%M:%S")"
 printf >&2 "Using display ID %s\n" ":$tty"
 
-startx "$initrc" -- :"$tty" \
-       -ardelay "${XORG_KBRATE_DELAY:-175}" \
-       -arinterval "${XORG_KBRATE_INTERVAL:-37}" \
-       2>&1 | tee "$XSESSIONDIR/xlog" &
+if [ -z "$USE_XEPHYR" ]; then
+  startx "$initrc" -- :"$tty" \
+         -ardelay "${XORG_KBRATE_DELAY:-175}" \
+         -arinterval "${XORG_KBRATE_INTERVAL:-37}" \
+         2>&1 | tee "$XSESSIONDIR/xlog" &
+  xpid="$!"
+else
+  # start xephyr
+  Xephyr -br -ac -noreset -screen "${XEPHYR_RES:-800x600}" :"$tty" &
+  xephyrPid="$!"
 
-xpid="$!"
+  # wait a little bit
+  sleep 1
+
+  # start everything
+  DISPLAY=:"$tty" "$initrc" &
+  initrcPid="$!"
+
+  # group all the waiting into a single pid
+  (wait "$xephyrPid" && wait "$initrcPid") &
+  xpid="$!"
+fi
+
 printf "%s" "$xpid" > "$XSESSIONDIR/xpid"
 
 # wait for the X server to finish
@@ -61,7 +80,7 @@ exitCode="$?"
 printf >&2 "Finished at %s\n" "$(date +"%Y/%m/%d %H:%M:%S")"
 printf >&2 "Exit code: %s\n" "$exitCode"
 
-if [ -z "$NO_SAFETY_LOGOUT" ] && [ "$exitCode" != 0 ]; then
+if [ -z "$NO_SAFETY_LOGOUT_MESSAGE" ] && [ -z "$USE_XEPHYR" ] && [ "$exitCode" != 0 ]; then
   printf >&2 "Xorg server failed! It is recommended to log out for security reasons (this can be detected by the exit code != 0).\n"
   printf >&2 "If ya the hacker, lucky you! You now have the access to this machine.\n"
 fi
