@@ -6,22 +6,17 @@
 # If an arg is provided, this script tries to choose said option.
 
 # Settings
-OPTIONS='lock
-exit
-suspend
-hibernate
-reboot
-shutdown'
 
 . "$(uselib std)"
 depCheck fzagnostic systemctl betterlockscreen
 
-fuzzyMatch() { printf "%s" "$OPTIONS" | fzagnostic -p "Power: "; }
-matchArgs() { # {{{
+PROGNAME=$(basename "$0")
+
+main() {
   case $# in
     0) local choice="$(fuzzyMatch)"
       if [ -n "$choice" ]; then
-        matchArgs "$choice"
+        main "$choice"
       else
         showHelp
       fi ;;
@@ -34,18 +29,44 @@ matchArgs() { # {{{
 
     *) showHelp ;;
   esac
-} # }}}
-showHelp() { # {{{
-  printf >&2 "%s %s\n" "Usage: $(basename $0)" \
-    "[{lock | exit | suspend | hibernate | reboot | shutdown}]"
-  printf >&2 "%s\n" "If no argument is specified, a fzagnostic pop-up is shown."
-} # }}}
+}
 
-# Actions
-action_lock() { # {{{
-  betterlockscreen -l && [ "$WM" = dwm ] && pkill -RTMIN+1 dwmblocks
-} # }}}
-action_exit() { # {{{
+fuzzyMatch() {
+  fzagnostic -p "Power: " <<EOF
+lock
+exit
+suspend
+hibernate
+reboot
+shutdown
+EOF
+}
+
+showHelp() {
+  printf >&2 "Usage: %s\n" \
+             "$PROGNAME [{lock | exit | suspend | hibernate | reboot | shutdown}]"
+  printf >&2 "%s\n" "If no argument is specified, a fzagnostic pop-up is shown to select it manually."
+}
+
+action_lock() {
+  if ! exists betterlockscreen; then
+    printf >&2 "betterlockscreen not found.\n"
+    return 1
+  fi
+
+  trap '' INT # prevent ctrl-c, this part is dangerous.
+
+  if betterlockscreen -l; then
+    [ "$WM" = dwm ] && pkill -RTMIN+1 dwmblocks
+    trap - INT # restore ctrl-c if it is successful
+  elif [ "$XSESSIONDIR" ] && [ -f "$XSESSIONDIR/xpid" ]; then
+    kill -9 "$XSESSIONDIR/xpid"
+  else
+    systemctl poweroff
+  fi
+}
+
+action_exit() {
   case "$WM" in
     i3) i3-msg exit ;;
     bspwm) bspc quit ;;
@@ -58,21 +79,20 @@ action_exit() { # {{{
       exit 1
       ;;
   esac
-} # }}}
-action_suspend() { # {{{
-  action_lock &
+}
+
+action_suspend() {
+  action_lock || return &
   sleep 1
   systemctl suspend
-} # }}}
-action_hibernate() { # {{{
+}
+
+action_hibernate() {
   printf >&2 "The hibernate action is currently unimplemented\n"
   exit 1
-} # }}}
-action_reboot() { # {{{
-  systemctl reboot
-} # }}}
-action_shutdown() { # {{{
-  systemctl poweroff
-} # }}}
+}
 
-matchArgs "$@"
+action_reboot() { systemctl reboot; }
+action_shutdown() { systemctl poweroff; }
+
+main "$@"

@@ -49,9 +49,21 @@ printf >&2 "Using display ID %s\n" ":$tty"
 startx "$initrc" -- :"$tty" \
        -ardelay "${XORG_KBRATE_DELAY:-175}" \
        -arinterval "${XORG_KBRATE_INTERVAL:-37}" \
-       2>&1 | tee "$XSESSIONDIR/xlog" 
+       2>&1 | tee "$XSESSIONDIR/xlog" &
+
+xpid="$!"
+printf "%s" "$xpid" > "$XSESSIONDIR/xpid"
+
+# wait for the X server to finish
+wait "$xpid"
 exitCode="$?"
 
 printf >&2 "Finished at %s\n" "$(date +"%Y/%m/%d %H:%M:%S")"
 printf >&2 "Exit code: %s\n" "$exitCode"
+
+if [ -z "$NO_SAFETY_LOGOUT" ] && [ "$exitCode" != 0 ]; then
+  printf >&2 "Xorg server failed! It is recommended to log out for security reasons (this can be detected by the exit code != 0).\n"
+  printf >&2 "If ya the hacker, lucky you! You now have the access to this machine.\n"
+fi
+
 exit "$exitCode"

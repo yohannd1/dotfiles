@@ -49,11 +49,19 @@ precmd() {
   setTitle "$(whoami)@$(hostname 2>/dev/null || echo "???"):$cwd"
 }
 
+current-tab() {
+  if [ "$TAB" ]; then
+    printf "tab:%s " "$TAB"
+  else
+    printf ""
+  fi
+}
+
 # construct prompt string
 isTTY && _PS1_SYMBOL="" || _PS1_SYMBOL="%F{13}❯ "
 PS1='%F{13}%~%(?.. %F{10}%?) $_PS1_SYMBOL%b%F{5}'
 PS2="%B%F{3}---%{$reset_color%} "
-RPROMPT='%F{11}$(git-branch)'
+RPROMPT='%F{12}$(current-tab)%F{11}$(git-branch)'
 # [ "${NNNLVL:-0}" -ge 1 ] && PS1="%B%F{3}(%F{5}n%F{3})%b $PS1"
 
 # use vim keys in tab completion menu
@@ -239,9 +247,11 @@ alias e='$EDITOR'
 alias jpdo='LANG=ja_JP.UTF8 LC_ALL=ja_JP'
 
 alias sy='dotsync'
-alias sx='start-xserver'
 alias of='openfork'
 
+sx() {
+  start-xserver || logout
+}
 
 exists nvim \
   && alias vi='nvim' vim='nvim' \

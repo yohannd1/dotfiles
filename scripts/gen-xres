@@ -26,8 +26,8 @@
 . ~/.config/dots/env.sh
 eval "$(load-base16-theme)"
 
-FONT="CascadiaCode"
-FONT_PIXELSIZE="12"
+FONT="Mononoki"
+FONT_PIXELSIZE="13"
 FONT_POINTSIZE="10pt"
 
 xset() { printf "%s: %s\n" "$1" "$2"; }
