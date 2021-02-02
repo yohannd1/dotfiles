@@ -59,9 +59,8 @@ action_lock() {
   if betterlockscreen -l; then
     [ "$WM" = dwm ] && pkill -RTMIN+1 dwmblocks
     trap - INT # restore ctrl-c if it is successful
-  elif [ "$XSESSIONDIR" ] && [ -f "$XSESSIONDIR/xpid" ]; then
-    kill -9 "$XSESSIONDIR/xpid"
   else
+    # shut down the system for security
     systemctl poweroff
   fi
 }

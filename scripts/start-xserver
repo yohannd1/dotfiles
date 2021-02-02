@@ -35,7 +35,8 @@ tty=$(tty)
 if printf "%s" "$tty" | grep -q '^/dev/tty'; then
   tty=${tty#/dev/tty}
 elif [ "$USE_XEPHYR" ]; then
-  tty=$(printf "%04d" "$(shuf -i 0-9999 -n 1)")
+  # TODO: find a way to detect if this specific display is being used
+  tty=$(printf "%04d" "$(shuf -i 10-9999 -n 1)")
 else
   printf >&2 "%s\n" "Unknown TTY string: '$tty'"
   exit 1
@@ -52,8 +53,8 @@ if [ -z "$USE_XEPHYR" ]; then
   startx "$initrc" -- :"$tty" \
          -ardelay "${XORG_KBRATE_DELAY:-175}" \
          -arinterval "${XORG_KBRATE_INTERVAL:-37}" \
-         2>&1 | tee "$XSESSIONDIR/xlog" &
-  xpid="$!"
+         2>&1 | tee "$XSESSIONDIR/xlog"
+  exitCode="$?"
 else
   # start xephyr
   Xephyr -br -ac -noreset -screen "${XEPHYR_RES:-800x600}" :"$tty" &
@@ -66,16 +67,10 @@ else
   DISPLAY=:"$tty" "$initrc" &
   initrcPid="$!"
 
-  # group all the waiting into a single pid
-  (wait "$xephyrPid" && wait "$initrcPid") &
-  xpid="$!"
+  wait "$xephyrPid"
+  exitCode="$?"
+  kill -s 0 "$initrcPid" && kill "$initrcPid"
 fi
-
-printf "%s" "$xpid" > "$XSESSIONDIR/xpid"
-
-# wait for the X server to finish
-wait "$xpid"
-exitCode="$?"
 
 printf >&2 "Finished at %s\n" "$(date +"%Y/%m/%d %H:%M:%S")"
 printf >&2 "Exit code: %s\n" "$exitCode"
