@@ -28,7 +28,7 @@ export WIKI=~/wiki
 export TERM=xterm-256color
 _isAndroid && export EDITOR=nvim || export EDITOR=start-emacs
 export TERMINAL=st
-export BROWSER=qutebrowser-async
+export BROWSER=brave-async
 export TERMBROWSER=w3m
 export PAGER=less
 export OPENER=openfork
