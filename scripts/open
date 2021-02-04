@@ -65,10 +65,14 @@ openPop() {
   exit
 }
 
+openXdg() {
+  VIA_OPEN=1 "$ALT_OPENER" "$FILE"
+  exit
+}
+
 openFallback() {
   # warn "Falling back to %s (%s)\n" "$ALT_OPENER" "$FILE"
-  # VIA_OPEN=1 "$ALT_OPENER" "$FILE"
-  warn "Unknown method for file (%s); aborting..." "$FILE"
+  warn "Unknown method for file <<[ %s ]>>" "$FILE"
   exit 1
 }
 
@@ -103,7 +107,10 @@ block mime 'application/x-shared-library-la'
 block mime 'application/x-executable'
 block mime 'application/x-shellscript'
 
+match url 'vscode' && openXdg
+
 if match url 'http|https'; then
+  printf "%s\n" "AAAAAAAAAAAAA"
   try gui "$BROWSER" "$FILE"
   try tty "$TERMBROWSER" "$FILE"
 fi

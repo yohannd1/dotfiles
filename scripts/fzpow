@@ -8,7 +8,7 @@
 # Settings
 
 . "$(uselib std)"
-depCheck fzagnostic systemctl betterlockscreen
+depCheck fzagnostic systemctl
 
 PROGNAME=$(basename "$0")
 
@@ -49,14 +49,18 @@ showHelp() {
 }
 
 action_lock() {
-  if ! exists betterlockscreen; then
-    printf >&2 "betterlockscreen not found.\n"
+  if exists bslock; then
+    _lock() { bslock; }
+  elif exists betterlockscreen; then
+    _lock() { betterlockscreen -l; }
+  else
+    printf >&2 "No lockscreen program found.\n"
     return 1
   fi
 
   trap '' INT # prevent ctrl-c, this part is dangerous.
 
-  if betterlockscreen -l; then
+  if _lock; then
     [ "$WM" = dwm ] && pkill -RTMIN+1 dwmblocks
     trap - INT # restore ctrl-c if it is successful
   else

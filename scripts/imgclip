@@ -14,5 +14,31 @@ if [ ! -f "$1" ]; then
   exit 1
 fi
 
+msg() {
+  _msg=$(echo "$@")
+
+  if [ -t 2 ]; then
+    printf >&2 "%s\n" "$_msg"
+  else
+    notify-send "$_msg"
+  fi
+}
+
 type=$(file -b --mime-type "$1") || exit 1
-xclip -sel clipboard -t "$type" < "$1"
+
+case "$type" in
+  image/png) xclip -sel clipboard -t "$type" "$1"
+             ;;
+
+  image/jpeg) depCheck mogrify mktemp
+              newImg=$(mktemp 'XXXXXXXX.png') || exit 1
+              mogrify -format 'png' -write "$newImg" "$1"
+              "$0" "$newImg" # :o recursive
+              rm -f "$newImg"
+              ;;
+
+  *) msg "Unknown type: $type"
+     exit 1
+     ;;
+esac
+

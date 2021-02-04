@@ -37,7 +37,8 @@ filematch_initialize() {
       _filematch_ext=$(printf "%s" "$_filematch_ext" | tr '[:upper:]' '[:lower:]')
     fi
     if printf "%s" "$_filematch_file" | grep -q '^\(\w*\)://'; then
-      _filematch_urlprefix=${_filematch_file%://*}
+      # _filematch_urlprefix=${_filematch_file%://*}
+      _filematch_urlprefix=$(printf "%s" "$_filematch_file" | sed 's|^\(\w\+\)://.*|\1|g')
     fi
 
     if [ -z "$_filematch_urlprefix" ] && [ ! -e "$_filematch_file" ]; then
