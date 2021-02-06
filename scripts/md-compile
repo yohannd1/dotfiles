@@ -31,7 +31,7 @@ def main(argv):
     parser.add_argument(
         "-v", "--version",
         action="version",
-        version=f"{parser.prog} ...",
+        version="void",
     )
 
     options = parser.parse_args(sys.argv[1:])
