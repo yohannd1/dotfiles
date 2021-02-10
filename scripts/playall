@@ -6,7 +6,8 @@ import subprocess as sp
 import argparse as ap
 from pathlib import Path
 
-VALID_EXTENSIONS = {"mp3", "wav", "ogg", "flac", "opus"}
+IGNORE_EXTENSIONS = {"png", "jpg", "jpeg", "txt"}
+VALID_EXTENSIONS = {"mp3", "wav", "ogg", "flac", "opus", "m4a", "mp", "mp4"}
 
 
 def main():
@@ -71,12 +72,22 @@ def main():
     for file in files:
         name = file.name
 
+        skip = False
+        for extension in IGNORE_EXTENSIONS:
+            if name.endswith(extension):
+                skip = True
+
+        if skip:
+            continue
+
         for extension in VALID_EXTENSIONS:
             if name.endswith(extension):
                 break
         else:
             print(f"File {file} has unknown extension", file=sys.stderr)
             continue
+
+        print(f"Playing {file} ...", file=sys.stderr)
 
         with sp.Popen(
             ["mpv", "--no-video", str(file)],

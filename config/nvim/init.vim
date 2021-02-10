@@ -8,7 +8,7 @@ let g:is_first = exists("g:is_first") ? 0 : 1
 if g:is_first
   " Cancel if this is not being sourced by NeoVim
   if !has("nvim")
-    echoerr "You are not using NeoVim. This configuration does not work properly with Vim."
+    echoerr "You are not using NeoVim; this configuration doesn't work properly with Vim."
     finish
   endif
 
@@ -47,6 +47,7 @@ if g:is_first
   " Plug 'jiangmiao/auto-pairs'
 
   " Filetypes
+  Plug 'ziglang/zig.vim'
   Plug 'JuliaEditorSupport/julia-vim'
   Plug 'cespare/vim-toml'
   Plug 'neoclide/jsonc.vim'
@@ -215,6 +216,7 @@ function! SetupMakefileRifle() " {{{
   endif
 endfunction " }}}
 function! FormatFile() " {{{
+  " TODO: handle error cases, zig fmt and more
   if exists("b:format_command")
     normal mz
     exec "%!" . b:format_command
@@ -472,6 +474,9 @@ function! Ft_tex() " {{{
 endfunction
 function! Ft_plaintex()
   call Ft_tex()
+endfunction " }}}
+function! Ft_zig() " {{{
+  let b:format_command = "zig fmt"
 endfunction " }}}
 
 " }}}

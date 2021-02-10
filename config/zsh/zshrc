@@ -227,6 +227,8 @@ xdb() {
   esac
 }
 
+r() { printf >&2 "[Command Blocked: %s]\n" "$0"; return 1; }
+
 alias W='where-to-go' w='z -I -t .'
 alias f='find-file'
 alias fof='find-file openfork'
