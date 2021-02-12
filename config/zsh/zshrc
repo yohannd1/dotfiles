@@ -252,9 +252,8 @@ alias jpdo='LANG=ja_JP.UTF8 LC_ALL=ja_JP'
 alias sy='dotsync'
 alias of='openfork'
 
-sx() {
-  start-xserver || logout
-}
+sx() { start-xserver || logout; }
+er() { filehist select "$EDITOR"; }
 
 exists nvim \
   && alias vi='nvim' vim='nvim' \

@@ -1,4 +1,7 @@
-" vim: fdm=marker sw=2 sts=2
+" vim: fdm=marker sw=2 sts=2 foldenable
+"
+" TODO: fix bug: arrows in completion selection do not update the
+" current text
 
 " Setup {{{
 
@@ -41,12 +44,18 @@ if g:is_first
   Plug 'ap/vim-buftabline'
   Plug 'tpope/vim-rsi'
 
+  " :Clap install-binary[!] will always try to compile the binary locally,
+  " if you do care about the disk used for the compilation, try using the force download way,
+  " which will download the prebuilt binary even you have installed cargo.
+  Plug 'liuchengxu/vim-clap', { 'do': { -> clap#installer#force_download() } }
+
   " Editing enhancement: electric pairs
   Plug 'tmsvg/pear-tree'
   " Plug 'vim-scripts/AutoClose'
   " Plug 'jiangmiao/auto-pairs'
 
   " Filetypes
+  Plug 'Clavelito/indent-sh.vim'
   Plug 'ziglang/zig.vim'
   Plug 'JuliaEditorSupport/julia-vim'
   Plug 'cespare/vim-toml'
@@ -92,7 +101,7 @@ endif
 " Plugin Config {{{
 
 " Emmet
-let g:user_emmet_leader_key='<C-c>'
+let g:user_emmet_leader_key='<C-y>'
 
 " Markdown
 let g:vim_markdown_frontmatter = 1
@@ -116,6 +125,23 @@ if is_android
 else
   let g:rifle_mode = "popup"
 endif
+
+" Clap
+let g:clap_provider_recent = {
+      \ "source": "filehist list",
+      \ "sink": "e",
+      \ "description": "Load a file from the recent list",
+      \ }
+
+" Clap (esc fix)
+augroup clap_esc_fix
+  au!
+  au User ClapOnEnter inoremap <silent> <buffer> <Esc> <Esc>:<c-u>call clap#handler#exit()<CR>
+  au User ClapOnExit silent! iunmap <buffer> <Esc>
+augroup end
+
+" Zig.vim
+let g:zig_fmt_autosave = 0
 
 " }}}
 " Functions {{{
@@ -215,15 +241,85 @@ function! SetupMakefileRifle() " {{{
     let b:rifle_ft = "@make"
   endif
 endfunction " }}}
-function! FormatFile() " {{{
-  " TODO: handle error cases, zig fmt and more
-  if exists("b:format_command")
-    normal mz
-    exec "%!" . b:format_command
-    normal `z
-    normal zz
+function! FormatBuffer() " {{{
+  if !exists("b:format_command")
+    echo "No format command found (should be at b:format_command)."
+    return
+  endif
+
+  let l:current_buffer_lines = getline(1, "$")
+  let l:current_buffer = join(l:current_buffer_lines, "\n")
+
+  let l:infile = tempname()
+  call writefile(l:current_buffer_lines, l:infile)
+
+  let l:output = systemlist(b:format_command . "<" . l:infile)
+
+  if v:shell_error != 0
+    let g:last_format_err = l:output
+
+    echo "Formatting failed - see buffer for more info"
+
+    if bufname("*Format Errors*") == ""
+      split
+      wincmd j
+      enew
+      file *Format Errors*
+      setlocal buftype=nofile
+    else
+      let l:bufwindow = bufwinid("*Format Errors*")
+
+      if l:bufwindow != -1
+        call win_gotoid(l:bufwindow)
+      else
+        split
+        wincmd j
+        buffer *Format Errors*
+      endif
+    endif
+
+    set modifiable
+    normal ggdG
+    call append("$", "Formatting failed:")
+    for line in l:output
+      call append("$", "  " . line)
+    endfor
+    call append("$", "Note - use :ShowFormatErr to show the error again.")
+    normal ggdd
+    set nomodifiable
   else
-    echo "Could not find b:format_command."
+    if l:output == l:current_buffer_lines
+      echo "Buffer already formatted"
+    else
+      normal ggdG
+      call setline(1, l:output)
+    endif
+  endif
+
+  call delete(l:infile)
+endfunction " }}}
+function! ShowFormatErr() " {{{
+  if !exists("g:last_format_err")
+    echo "No format errors."
+    return
+  endif
+
+  for line in g:last_format_err
+    echo line
+  endfor
+endfunction " }}}
+function! AddToRecFile() " {{{
+  let l:path = expand("%:p")
+
+  if l:path == ""
+    return
+  else
+    let l:pid = jobstart(["filehist", "add", l:path])
+
+    if l:pid == -1
+      " `filehist` probably doesn't exist - let's ignore this then
+      return
+    endif
   endif
 endfunction " }}}
 if g:is_first | function! SourceIf(...) " {{{
@@ -239,7 +335,7 @@ endfunction | endif
 " General {{{
 
 if g:is_first
-  call AddBookmark("v", '$VIM_INIT') " I can put the environment variable quoted because it'll then be evaluated at key press.
+  call AddBookmark("v", '$VIM_INIT') " I can put the environment variable quoted because it's evaluated at key press
 endif
 
 " }}}
@@ -247,7 +343,8 @@ endif
 
 command! -nargs=0 Reload call SourceIf($VIM_INIT, $GVIM_INIT)
 command! -nargs=* PagerMode call PagerMode(<f-args>)
-command! -nargs=0 FormatFile call FormatFile()
+command! -nargs=0 FormatBuffer call FormatBuffer()
+command! -nargs=0 ShowFormatErr call ShowFormatErr()
 
 " Abbreviations
 cnoreabbrev rl Reload
@@ -283,6 +380,9 @@ if g:is_first
   set completeopt+=menuone,noselect
   set noshowmode
   set list
+  set nofoldenable
+  set cinoptions+=g0
+  set cinoptions+=:0
 
   " That's how the italics work (or not)
   let &t_ZH = "\<Esc>[3m"
@@ -326,7 +426,12 @@ augroup buffer_load
   au!
   au FileType * if exists("*Ft_".&ft) | exec 'call Ft_'.&ft.'()' | endif
   au FileType * call SetupMakefileRifle()
-  au BufNewFile,BufRead,BufEnter * ApcEnable
+  au FileType * call AddToRecFile()
+
+  if exists(":ApcEnable")
+    au BufNewFile,BufRead,BufEnter * ApcEnable
+  endif
+
   au BufNewFile,BufRead,BufEnter *.fx set filetype=c
   au BufNewFile,BufRead,BufEnter *.clj set filetype=clojure
   au BufNewFile,BufRead,BufEnter *.alg set filetype=visualg
@@ -340,11 +445,13 @@ augroup end
 " Filetypes {{{
 
 function! Ft_c() " {{{
-  setlocal noet sw=4 ts=4
+  setlocal noet sw=8 ts=8
   setlocal fdm=syntax
+  let b:format_command = "clang-multicfg-format c"
 endfunction " }}}
 function! Ft_cpp() " {{{
   setlocal fdm=syntax
+  let b:format_command = "clang-multicfg-format cpp"
 endfunction " }}}
 function! Ft_markdown() " {{{
   " Thanks to https://gist.github.com/olmokramer/feadbf14a055efd46a8e1bf1e4be4447
@@ -476,7 +583,10 @@ function! Ft_plaintex()
   call Ft_tex()
 endfunction " }}}
 function! Ft_zig() " {{{
-  let b:format_command = "zig fmt"
+  let b:format_command = "zig fmt --stdin"
+endfunction " }}}
+function! Ft_yaml() " {{{
+  setlocal sw=2
 endfunction " }}}
 
 " }}}
@@ -489,10 +599,10 @@ let g:mode_map = {
       \ 'no'     : 'NORMAL (OP)',
       \ 'v'      : 'VISUAL',
       \ 'V'      : 'VISUAL LINE',
-      \ '\<C-V>' : 'VISUAL BLOCK',
+      \ "\<C-V>" : 'VISUAL BLOCK',
       \ 's'      : 'SELECT',
       \ 'S'      : 'SELECTION LINE',
-      \ '\<C-S>' : 'SELECTION BLOCK',
+      \ "\<C-S>" : 'SELECTION BLOCK',
       \ 'i'      : 'INSERT',
       \ 'R'      : 'REPLACE',
       \ 'Rv'     : 'VISUAL REPLACE',
@@ -564,17 +674,17 @@ nnoremap Ç q:A
 vnoremap Ç q:A
 
 " Folding Commands
-nnoremap <silent> <Tab> za
-nnoremap <silent> <S-Tab> zm
+" nnoremap <silent> <Tab> za
+" nnoremap <silent> <S-Tab> zm
 
 " Use Tab to Complete or insert spaces
 inoremap <silent> <Tab> <C-r>=TabOrComplete(1)<CR>
 inoremap <silent> <S-Tab> <C-r>=TabOrComplete(0)<CR>
 
 " Navigate the completion menu with <C-k>, <C-j> and <C-m>
-inoremap <expr> <C-j> pumvisible() ? "\<C-n>" : "<C-j>"
-inoremap <expr> <C-k> pumvisible() ? "\<C-p>" : "<C-k>"
-inoremap <expr> <C-m> pumvisible() ? "\<C-y>" : "<C-m>"
+" inoremap <expr> <C-j> pumvisible() ? "\<C-n>" : "<C-j>"
+" inoremap <expr> <C-k> pumvisible() ? "\<C-p>" : "<C-k>"
+" inoremap <expr> <C-m> pumvisible() ? "\<C-y>" : "<C-m>"
 
 " Rifle Commands
 nnoremap <silent> <Leader>rr :Rifle "run"<CR>
@@ -582,7 +692,7 @@ nnoremap <silent> <Leader>rc :Rifle "check"<CR>
 nnoremap <silent> <Leader>rb :Rifle "build"<CR>
 
 " Formatting Commands
-nnoremap <Leader>f :FormatFile<CR>
+nnoremap <Leader>bf :FormatBuffer<CR>
 
 " Escape terminal in nvim
 tnoremap <silent> <Esc> <C-\><C-n>
@@ -605,5 +715,8 @@ vnoremap <Leader>s :s/\v/g<Left><Left>
 " Buffer navigation mappings
 nnoremap <silent> <C-j> :bn<CR>
 nnoremap <silent> <C-k> :bp<CR>
+
+" Open a file
+nnoremap <Leader>o :Clap recent<CR>
 
 " }}}

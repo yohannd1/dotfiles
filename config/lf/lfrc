@@ -1,5 +1,5 @@
 # -*- mode: sh; -*-
-# vim: ft=conf fdm=marker foldmarker={{,}}
+# vim: ft=conf fdm=marker foldmarker={{,}} sw=2
 
 set shell bash
 set previewer preview
@@ -96,6 +96,64 @@ cmd delete ${{
     fi
   done
 }}
+cmd flatdir ${{
+  clear; set -f
+
+  _dummy() { echo $#; }
+
+  oldIFS="$IFS"
+  IFS=$(printf '\n\t')
+  if [ "$(_dummy $fx)" != 1 ]; then
+    printf "You should select exactly one directory.\n"
+  fi
+  IFS="$oldIFS"
+
+  dir="$fx"
+
+  printf "Selected directory: %s\n" "$dir"
+
+  case "$(ls -A "$dir" | wc -l)" in
+    0) exit ;;
+    1) ;;
+    *)
+      printf "There is more than one file on this folder:\n"
+      ls -A "$dir"
+      read _
+      exit
+      ;;
+  esac
+
+  toFlatten="$(ls -A "$dir")"
+
+  if [ ! -d "$toFlatten" ]; then
+    printf "File %s should be a folder.\n" "$dir/$toFlatten"
+    read _
+    exit
+  fi
+
+  printf "TODO: finish this\n"
+  read _
+  exit
+
+  printf "Would you like proceed?\n"
+
+  while true; do
+    printf "(y)es or (n)o => "
+    read -n1 answer
+    printf "\n"
+
+    case "$answer" in
+      y) false; break ;;
+      n) break ;;
+      *) ;;
+    esac
+
+    if [ $? != 0 ]; then
+      printf "Failed to flatten directory.\n"
+      read _
+    fi
+  done
+}}
 cmd move-here ${{
   clear; set -f
   IFS=$(printf '\n\t')
@@ -136,6 +194,7 @@ cmd extract-this ${{
 # command mappings
 map . set hidden!
 map n new
+map L flatdir
 map <c-n> search-next
 map x trash
 map X delete

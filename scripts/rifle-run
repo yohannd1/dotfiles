@@ -32,6 +32,8 @@ cleanup() {
   return 0
 }
 
+trap 'cleanup' EXIT
+
 die() {
   printf >&2 "$@"
   cleanup
@@ -166,5 +168,3 @@ case "$1" in
     esac ;;
   *) die "Invalid action: %s\n" "$1" ;;
 esac
-
-cleanup

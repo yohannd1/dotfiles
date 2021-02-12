@@ -98,6 +98,9 @@ export BKMK_FILE="$WIKI/data/bookmarks.json"
 export ITMN_FILE="$WIKI/data/itmn.json"
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"
 export GUILE_LOAD_PATH="$DOTFILES/lib/guile"
+export CLANG_FORMAT_C_CONFIG="$DOTFILES/config/clang-format-c.yaml"
+export CLANG_FORMAT_CPP_CONFIG="$DOTFILES/config/clang-format-cpp.yaml"
+export X_COMPOSITOR="picom"
 
 # dircolors
 if [ -r ~/.config/dircolors ]; then

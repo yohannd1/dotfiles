@@ -1,14 +1,13 @@
 #!/usr/bin/env sh
 
-
-COMPOSITOR=picom
+X_COMPOSITOR="${X_COMPOSITOR:-compton}"
 
 # TODO: don't kill compositors from other X servers
-pgrep "$COMPOSITOR" >/dev/null 2>/dev/null \
-  && pkill "$COMPOSITOR"
+pgrep "$X_COMPOSITOR" >/dev/null 2>/dev/null \
+  && pkill "$X_COMPOSITOR"
 
-while pgrep "$COMPOSITOR" >/dev/null 2>/dev/null; do
+while pgrep "$X_COMPOSITOR" >/dev/null 2>/dev/null; do
   sleep 1
 done
 
-exec "$COMPOSITOR" --experimental-backend
+exec "$X_COMPOSITOR" --experimental-backend

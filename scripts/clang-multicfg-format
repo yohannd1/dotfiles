@@ -1,0 +1,67 @@
+#!/usr/bin/env sh
+
+PROGNAME="$0"
+
+usage() {
+  printf >&2 "%s\n" "$PROGNAME <FILETYPE>"
+  # TODO: [FILE] arg
+  # TODO: --allow-projectwise arg (currently it's always true)
+  exit 1
+}
+
+detectProjectWiseConfig() {
+  fparent-run ".clang-format" run-command file-dir true \
+    && clang-format <&0
+}
+
+case $# in
+  1)
+    case "$1" in
+      c|C)
+        detectProjectWiseConfig <&0 && exit
+
+        if [ -z "$CLANG_FORMAT_C_CONFIG" ]; then
+          printf >&2 "Please specify CLANG_FORMAT_C_CONFIG with the path of the config.\n"
+          exit 1
+        fi
+
+        tmp=$(mktemp) || exit 1
+        rm -f "$tmp"
+        mkdir "$tmp"
+        ln -s "${CLANG_FORMAT_C_CONFIG}" "$tmp/.clang-format"
+
+        (
+          cd "$tmp"
+          clang-format <&0
+        )
+
+        rm -r "$tmp"
+        ;;
+      cpp|CPP|c++|C++|cc|CC)
+        detectProjectWiseConfig <&0 && exit
+
+        if [ -z "$CLANG_FORMAT_CPP_CONFIG" ]; then
+          printf >&2 "Please specify CLANG_FORMAT_CPP_CONFIG with the path of the config.\n"
+          exit 1
+        fi
+
+        tmp=$(mktemp) || exit 1
+        rm -f "$tmp"
+        mkdir "$tmp"
+        ln -s "${CLANG_FORMAT_CPP_CONFIG}" "$tmp/.clang-format"
+
+        (
+          cd "$tmp"
+          clang-format <&0
+        )
+
+        rm -r "$tmp"
+        ;;
+      *)
+        printf >&2 "Invalid filetype: %s\n" "$1"
+        exit 1
+        ;;
+    esac
+    ;;
+  *) usage ;;
+esac

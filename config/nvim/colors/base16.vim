@@ -129,28 +129,29 @@ else
 endif
 
 function! s:hl(group, fg_code, bg_code, attr, guisp)
-	if a:fg_code != "NONE"
-		exec "hi " . a:group . " guifg=" . s:bases[a:fg_code][s:GUI]
-		exec "hi " . a:group . " ctermfg=" . s:bases[a:fg_code][s:TTY]
-	endif
-	if a:bg_code != "NONE"
-		exec "hi " . a:group . " guibg=" . s:bases[a:bg_code][s:GUI]
-		exec "hi " . a:group . " ctermbg=" . s:bases[a:bg_code][s:TTY]
-	endif
-	if a:attr != ""
-		exec "hi " . a:group . " gui=" . a:attr . " cterm=" . a:attr
-	endif
-	if a:guisp != ""
-		exec "hi " . a:group . " guisp=#" . a:guisp
-	endif
+  if a:fg_code != "NONE"
+    exec "hi " . a:group . " guifg=" . s:bases[a:fg_code][s:GUI]
+    exec "hi " . a:group . " ctermfg=" . s:bases[a:fg_code][s:TTY]
+  endif
+  if a:bg_code != "NONE"
+    exec "hi " . a:group . " guibg=" . s:bases[a:bg_code][s:GUI]
+    exec "hi " . a:group . " ctermbg=" . s:bases[a:bg_code][s:TTY]
+  endif
+  if a:attr != ""
+    exec "hi " . a:group . " gui=" . a:attr . " cterm=" . a:attr
+  endif
+  if a:guisp != ""
+    exec "hi " . a:group . " guisp=#" . a:guisp
+  endif
 endfunction
 
 " Vim editor colors
 if s:is_gui
-    call s:hl("Normal",    "05",   "00",   "",     "")
+  call s:hl("Normal",      "05",   "00",   "",     "")
 else
-    call s:hl("Normal",    "05",   "NONE", "",     "")
+  call s:hl("Normal",      "05",   "NONE", "",     "")
 endif
+
 call s:hl("Bold",          "NONE", "NONE", "bold", "")
 call s:hl("Debug",         "08",   "NONE", "", "")
 call s:hl("Directory",     "0D",   "NONE", "", "")
@@ -376,3 +377,20 @@ call s:hl("StartifySpecial",  "03", "NONE", "", "")
 
 " Java highlighting
 call s:hl("javaOperator",     "0D", "NONE", "", "")
+
+" Clap (vim-clap @ https://github.com/liuchengxu/vim-clap) highlighting
+call s:hl("ClapInput",            "NONE", "01",   "", "")
+call s:hl("ClapDisplay",          "NONE", "00",   "NONE", "")
+call s:hl("ClapSelected",         "NONE", "01",   "NONE", "")
+call s:hl("ClapCurrentSelection", "NONE", "01",   "NONE", "")
+call s:hl("ClapMatches",          "0A",   "00",   "NONE", "")
+call s:hl("ClapMatches1",         "0A",   "00",   "NONE", "")
+call s:hl("ClapMatches2",         "0A",   "00",   "NONE", "")
+call s:hl("ClapMatches3",         "0A",   "00",   "NONE", "")
+call s:hl("ClapMatches4",         "0A",   "00",   "NONE", "")
+call s:hl("ClapMatches5",         "0A",   "00",   "NONE", "")
+call s:hl("ClapMatches6",         "0A",   "00",   "NONE", "")
+call s:hl("ClapMatches7",         "0A",   "00",   "NONE", "")
+call s:hl("ClapMatches8",         "0A",   "00",   "NONE", "")
+call s:hl("ClapNoMatchesFound",   "08",   "NONE", "NONE", "")
+" See also: ClapPreview ClapDefaultSelected ClapDefaultCurrentSelection

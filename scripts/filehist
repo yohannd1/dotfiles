@@ -1,0 +1,88 @@
+#!/usr/bin/env sh
+
+PROGNAME=$(basename "$0")
+
+usage() {
+  printf >&2 "Usage: %s\n" "$PROGNAME { add [RECENT] | list | select [EDITOR] }"
+  exit 1
+}
+
+XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+FILEHIST_FILE="${FILEHIST_FILE:-$XDG_CACHE_HOME/filehist}"
+LOCKDIR="/tmp/filehist-lock"
+
+existCheck() {
+  if [ ! -e "$FILEHIST_FILE" ]; then
+    touch "$FILEHIST_FILE" || exit 1
+  fi
+}
+
+cleanupNonExistent() {
+  tmp=$(mktemp) || exit 1
+
+  cat "$FILEHIST_FILE" | while read line; do
+    if [ -e "$line" ]; then
+      printf "%s\n" "$line" >> "$tmp"
+    fi
+  done
+
+  cat "$tmp" > "$FILEHIST_FILE"
+  rm -f "$tmp"
+}
+
+if ! mkdir "$LOCKDIR" >/dev/null 2>/dev/null; then
+  printf >&2 "The lock (at %s) still exists! Maybe there is another instance of filehist running?\n" "$LOCKDIR"
+  exit 1
+fi
+
+hasNoOcurrences() {
+  while read line; do
+    if [ "$1" = "$line" ]; then
+      return 1
+    fi
+  done < "$FILEHIST_FILE"
+}
+
+# just to release the lock
+cleanup() { rmdir "$LOCKDIR"; }
+trap 'cleanup' EXIT
+
+case $# in
+  1)
+    case "$1" in
+      list)
+        existCheck
+        [ -z "$FILEHIST_DONT_CLEANUP" ] && cleanupNonExistent
+        cat "$FILEHIST_FILE"
+        ;;
+      select)
+        existCheck
+        [ -z "$FILEHIST_DONT_CLEANUP" ] && cleanupNonExistent
+        fzagnostic < "$FILEHIST_FILE"
+        ;;
+      *) usage ;;
+    esac
+    ;;
+  2)
+    case "$1" in
+      add)
+        existCheck
+        [ -z "$FILEHIST_DONT_CLEANUP" ] && cleanupNonExistent
+        shouldAdd=true
+
+        if hasNoOcurrences "$2"; then
+          printf "%s\n" "$2" >> "$FILEHIST_FILE"
+        fi
+        ;;
+      select)
+        existCheck
+        [ -z "$FILEHIST_DONT_CLEANUP" ] && cleanupNonExistent
+        choice=$(fzagnostic < "$FILEHIST_FILE") || exit 1
+
+        cleanup && exec "$2" "$choice"
+        ;;
+      *) usage ;;
+    esac
+    ;;
+  *) usage ;;
+esac
