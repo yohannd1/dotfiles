@@ -1,8 +1,5 @@
 " vim: fdm=marker sw=2 sts=2 foldenable
 "
-" TODO: fix bug: arrows in completion selection do not update the
-" current text
-
 " Setup {{{
 
 " Check if this is the first time sourcing the file
@@ -40,7 +37,6 @@ if g:is_first
   Plug 'tpope/vim-commentary'
   Plug 'mattn/emmet-vim'
   Plug 'godlygeek/tabular'
-  Plug 'skywind3000/vim-auto-popmenu'
   Plug 'ap/vim-buftabline'
   Plug 'tpope/vim-rsi'
 
@@ -87,8 +83,9 @@ if g:is_first
   " Plug 'dracula/vim'
   " Plug 'chriskempson/base16-vim'
 
-  " Personal
-  Plug 'https://gitlab.redox-os.org/YohananDiamond/ion-vim'
+  " Forks
+  Plug 'https://gitlab.redox-os.org/YohananDiamond/ion-vim' " fork of redox-os/ion-vim
+  Plug 'YohananDiamond/vim-auto-popmenu' " fork of skywind3000/vim-auto-popmenu
 
   " Misc.
   Plug 'tpope/vim-vinegar'
@@ -125,6 +122,12 @@ if is_android
 else
   let g:rifle_mode = "popup"
 endif
+
+" vim-auto-popmenu x Clap
+let g:apc_default_state = 1
+let g:apc_custom_states = {
+      \ "clap_input": 0,
+      \ }
 
 " Clap
 let g:clap_provider_recent = {
@@ -427,7 +430,6 @@ augroup buffer_load
   au FileType * if exists("*Ft_".&ft) | exec 'call Ft_'.&ft.'()' | endif
   au FileType * call SetupMakefileRifle()
   au FileType * call AddToRecFile()
-  au BufNewFile,BufRead,BufEnter * silent! ApcEnable
   au BufNewFile,BufRead,BufEnter *.fx set filetype=c
   au BufNewFile,BufRead,BufEnter *.clj set filetype=clojure
   au BufNewFile,BufRead,BufEnter *.alg set filetype=visualg
@@ -680,6 +682,8 @@ inoremap <silent> <S-Tab> <C-r>=TabOrComplete(0)<CR>
 " Navigate the completion menu with <C-k>, <C-j> and <C-m>
 inoremap <expr> <C-j> pumvisible() ? "\<C-n>" : "<C-j>"
 inoremap <expr> <C-k> pumvisible() ? "\<C-p>" : "<C-k>"
+inoremap <expr> <Down> pumvisible() ? "\<C-n>" : "<Down>"
+inoremap <expr> <Up> pumvisible() ? "\<C-p>" : "<Up>"
 inoremap <expr> <C-m> pumvisible() ? "\<C-y>" : "<C-m>"
 
 " Rifle Commands
