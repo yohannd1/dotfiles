@@ -427,11 +427,7 @@ augroup buffer_load
   au FileType * if exists("*Ft_".&ft) | exec 'call Ft_'.&ft.'()' | endif
   au FileType * call SetupMakefileRifle()
   au FileType * call AddToRecFile()
-
-  if exists(":ApcEnable")
-    au BufNewFile,BufRead,BufEnter * ApcEnable
-  endif
-
+  au BufNewFile,BufRead,BufEnter * silent! ApcEnable
   au BufNewFile,BufRead,BufEnter *.fx set filetype=c
   au BufNewFile,BufRead,BufEnter *.clj set filetype=clojure
   au BufNewFile,BufRead,BufEnter *.alg set filetype=visualg
@@ -682,9 +678,9 @@ inoremap <silent> <Tab> <C-r>=TabOrComplete(1)<CR>
 inoremap <silent> <S-Tab> <C-r>=TabOrComplete(0)<CR>
 
 " Navigate the completion menu with <C-k>, <C-j> and <C-m>
-" inoremap <expr> <C-j> pumvisible() ? "\<C-n>" : "<C-j>"
-" inoremap <expr> <C-k> pumvisible() ? "\<C-p>" : "<C-k>"
-" inoremap <expr> <C-m> pumvisible() ? "\<C-y>" : "<C-m>"
+inoremap <expr> <C-j> pumvisible() ? "\<C-n>" : "<C-j>"
+inoremap <expr> <C-k> pumvisible() ? "\<C-p>" : "<C-k>"
+inoremap <expr> <C-m> pumvisible() ? "\<C-y>" : "<C-m>"
 
 " Rifle Commands
 nnoremap <silent> <Leader>rr :Rifle "run"<CR>
