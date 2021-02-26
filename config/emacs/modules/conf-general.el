@@ -27,6 +27,9 @@
 ;; No standard startup buffer
 (setq inhibit-startup-message t)
 
+;; Garbage collection stuff
+(setq gc-cons-threshold (* 50 1000 1000))
+
 ;; Don't follow symlinks when opening files
 (setq vc-follow-symlinks nil)
 

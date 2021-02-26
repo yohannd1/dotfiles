@@ -66,6 +66,9 @@ def main():
     if opts.shuffle:
         print("Shuffling songs list...", file=sys.stderr)
         random.shuffle(files)
+    else:
+        print("Sorting songs list...", file=sys.stderr)
+        files.sort()
 
     print("Ready to play!", file=sys.stderr)
 

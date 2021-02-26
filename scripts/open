@@ -120,6 +120,7 @@ if match ext 'swf'; then
 fi
 
 match ext 'ps' && try gui zathura "$FILE"
+match ext 'epub' && try gui zathura "$FILE"
 
 if match ext 'pdf' || match mime 'application/pdf'; then
   try gui zathura "$FILE"

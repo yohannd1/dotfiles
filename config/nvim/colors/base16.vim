@@ -172,7 +172,7 @@ call s:hl("Substitute",    "01",   "0A",   "none", "")
 call s:hl("SpecialKey",    "03",   "NONE", "", "")
 call s:hl("TooLong",       "08",   "NONE", "", "")
 call s:hl("Underlined",    "08",   "NONE", "", "")
-call s:hl("Visual",        "NONE", "02",   "", "")
+call s:hl("Visual",        "NONE", "NONE", "reverse", "")
 call s:hl("VisualNOS",     "08",   "NONE", "", "")
 call s:hl("WarningMsg",    "08",   "NONE", "", "")
 call s:hl("WildMenu",      "08",   "NONE", "", "")
@@ -195,6 +195,7 @@ call s:hl("PMenuSel",      "01",   "05",   "", "")
 call s:hl("TabLine",       "05",   "01",   "none", "")
 call s:hl("TabLineFill",   "03",   "NONE", "none", "")
 call s:hl("TabLineSel",    "06",   "02",   "none", "")
+call s:hl("MatchParen",    "00",   "03",   "none", "")
 
 " Standard syntax highlighting
 call s:hl("Boolean",      "09", "NONE", "", "")
@@ -376,7 +377,10 @@ call s:hl("StartifySlash",    "03", "NONE", "", "")
 call s:hl("StartifySpecial",  "03", "NONE", "", "")
 
 " Java highlighting
-call s:hl("javaOperator",     "0D", "NONE", "", "")
+call s:hl("javaOperator",      "0D", "NONE", "", "")
+
+" Zig highlighting
+call s:hl("zigComparatorWord", "0C", "NONE", "", "")
 
 " Clap (vim-clap @ https://github.com/liuchengxu/vim-clap) highlighting
 call s:hl("ClapInput",            "NONE", "01",   "", "")

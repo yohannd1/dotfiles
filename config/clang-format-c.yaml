@@ -23,8 +23,6 @@ AlwaysBreakTemplateDeclarations: 'Yes'
 BinPackParameters: 'false'
 BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: Custom
-BraceWrapping:
-  AfterFunction: true
 BreakBeforeTernaryOperators: 'true'
 BreakConstructorInitializers: AfterColon
 BreakInheritanceList: AfterColon

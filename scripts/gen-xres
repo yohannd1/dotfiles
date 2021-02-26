@@ -2,7 +2,7 @@
 # vim: foldmethod=marker
 
 # a bash file that outputs xresources based on some configurations.
-# I made this because managing a raw xresources file is very annoying specially because the C
+# I made this because managing a raw xresources file is very annoying - the C
 # preprocessor is annoying af.
 
 # Meanings:
@@ -27,7 +27,7 @@
 eval "$(load-base16-theme)"
 
 FONT="Mononoki"
-FONT_PIXELSIZE="13"
+FONT_PIXELSIZE="13.5"
 FONT_POINTSIZE="10pt"
 
 xset() { printf "%s: %s\n" "$1" "$2"; }

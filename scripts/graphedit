@@ -1,7 +1,5 @@
 #!/usr/bin/env sh
 
-. "$(uselib std)"
-
 case "$EDITOR" in
   start-emacs) exec start-emacs "$@" ;;
   emacs) exec emacs -- "$@" ;;

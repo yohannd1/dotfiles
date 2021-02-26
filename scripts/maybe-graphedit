@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+if [ -t 0 ] && [ -t 1 ] && [ -t 2 ]; then
+  "$EDITOR" "$@"
+else
+  graphedit "$@"
+fi

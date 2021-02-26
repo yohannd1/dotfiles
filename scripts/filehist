@@ -9,6 +9,7 @@ usage() {
 
 XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 FILEHIST_FILE="${FILEHIST_FILE:-$XDG_CACHE_HOME/filehist}"
+FILEHIST_MAX_LIMIT="${FILEHIST_MAX_LIMIT:-150}"
 LOCKDIR="/tmp/filehist-lock"
 
 existCheck() {
@@ -17,13 +18,11 @@ existCheck() {
   fi
 }
 
-cleanupNonExistent() {
+tidyHistory() {
   tmp=$(mktemp) || exit 1
 
-  cat "$FILEHIST_FILE" | while read line; do
-    if [ -e "$line" ]; then
-      printf "%s\n" "$line" >> "$tmp"
-    fi
+  cat "$FILEHIST_FILE" | tail -"${FILEHIST_MAX_LIMIT}" | while read line; do
+    [ -e "$line" ] && { printf "%s\n" "$line" >> "$tmp"; }
   done
 
   cat "$tmp" > "$FILEHIST_FILE"
@@ -37,9 +36,7 @@ fi
 
 hasNoOcurrences() {
   while read line; do
-    if [ "$1" = "$line" ]; then
-      return 1
-    fi
+    [ "$1" = "$line" ] && return 1
   done < "$FILEHIST_FILE"
 }
 
@@ -52,12 +49,12 @@ case $# in
     case "$1" in
       list)
         existCheck
-        [ -z "$FILEHIST_DONT_CLEANUP" ] && cleanupNonExistent
+        [ -z "$FILEHIST_NO_TIDY" ] && tidyHistory
         cat "$FILEHIST_FILE"
         ;;
       select)
         existCheck
-        [ -z "$FILEHIST_DONT_CLEANUP" ] && cleanupNonExistent
+        [ -z "$FILEHIST_NO_TIDY" ] && tidyHistory
         fzagnostic < "$FILEHIST_FILE"
         ;;
       *) usage ;;
@@ -67,7 +64,7 @@ case $# in
     case "$1" in
       add)
         existCheck
-        [ -z "$FILEHIST_DONT_CLEANUP" ] && cleanupNonExistent
+        [ -z "$FILEHIST_NO_TIDY" ] && tidyHistory
         shouldAdd=true
 
         if hasNoOcurrences "$2"; then
@@ -76,7 +73,7 @@ case $# in
         ;;
       select)
         existCheck
-        [ -z "$FILEHIST_DONT_CLEANUP" ] && cleanupNonExistent
+        [ -z "$FILEHIST_NO_TIDY" ] && tidyHistory
         choice=$(fzagnostic < "$FILEHIST_FILE") || exit 1
 
         cleanup && exec "$2" "$choice"

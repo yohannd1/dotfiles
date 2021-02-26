@@ -4,6 +4,9 @@
 ;;; Some big inspirations for this config:
 ;;;   Doom Emacs (https://github.com/hlissner/doom-emacs) - I literally stole code from here.
 
+;; Make garbage collection less common during startup
+(setq gc-cons-threshold (* 5 1000 1000))
+
 ;; Ensure emacs is running out of this file's directory.
 ;; Useful if loading this configuration with the --load option.
 (let (file-name-handler-alist)
@@ -34,3 +37,6 @@
 ;; Load main.el in the modules directory.
 ;; It contains most of my configuration and the call for other libraries.
 (require 'main)
+
+;; Restore garbage collection threshold
+(setq gc-cons-threshold (* 2 1000 1000))

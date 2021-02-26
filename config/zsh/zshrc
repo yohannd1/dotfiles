@@ -30,6 +30,7 @@ HISTFILE="${XDG_CACHE_HOME:-$HOME/.cache}/zhistory"
 HISTSIZE=SAVEHIST=100000
 setopt sharehistory
 setopt extendedhistory
+setopt nobanghist # i fuc king hate !!!!!!!
 setopt HIST_IGNORE_DUPS
 
 # completion config
@@ -128,12 +129,14 @@ bindkey '^F' fz-select-file
 zle -N fz-select-file
 
 assist::find-file.gen() {
+  local args=()
+
   printf "%s\n" ".."
-  if [ "$1" = 1 ]; then
-    fd -H
-  else
-    fd
-  fi
+
+  [ "$1" = 1 ] && args+=('-H')
+  [ "$_FINDFILE_DIRONLY" ] && args+=('-td')
+
+  fd "${args[@]}"
 }
 
 where-to-go() {
@@ -212,29 +215,19 @@ cd-to-file() {
 }
 
 reload-shell() { source "${ZDOTDIR:-$HOME}/.zshrc"; }
+alias rl='reload-shell'
 
-xdb() {
-  case $# in
-    1)
-      case "$1" in
-        r|rl|reload) gen-xres | xrdb ;;
-        e|ed|edit) "$EDITOR" =gen-xres \
-                     && { [ "$DISPLAY" ] && xdb reload } ;;
-        *) return 1 ;;
-      esac
-      ;;
-    *) return 1 ;;
-  esac
+_warn-block() {
+  printf >&2 "[Command Blocked: %s]\n" "$1"
+  return 1
 }
-
-r() { printf >&2 "[Command Blocked: %s]\n" "$0"; return 1; }
+r() { _warn-block "$0"; }
 
 alias W='where-to-go' w='z -I -t .'
 alias f='find-file'
 alias fof='find-file openfork'
-alias fcd='find-file cd-to-file'
+alias fcd='_FINDFILE_DIRONLY=1 find-file cd-to-file'
 alias d='duplicate-shell'
-alias rl='reload-shell'
 alias make='fparent-run Makefile run-command file-dir make'
 
 alias ls='ls --color=auto'
@@ -262,6 +255,11 @@ exists nvim \
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
+
+info() {
+  printf "\033[2 q"
+  command info --vi-keys "$@"
+}
 
 sourceIf /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 sourceIf /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh

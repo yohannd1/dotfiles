@@ -11,7 +11,7 @@ super + control + shift + c
 super + Return
     $TERMINAL
 super + shift + Return
-    $TERMINAL -c 'float'
+    $TERMINAL -g 100x35 -c 'float'
 
 # program launcher
 super + space
@@ -72,7 +72,7 @@ XF86MonBrightness{Down,Up}
     xbacklight -{dec,inc} 20
 super + {minus,equal}
     xbacklight -{dec,inc} 20
-    
+
 # toggle red screen
 super + F12
     redscr toggle 70
@@ -93,6 +93,10 @@ super + b
 super + e
     graphedit
 
+# editor
+super + shift + e
+    $TERMINAL -c float -g 100x35 -e $EDITOR
+
 # window switcher
 super + o; s
       dswitcher
@@ -101,7 +105,7 @@ super + o; s
 super + o; c
     $TERMINAL -c float -g 65x10 -e runread cal -3
 super + o; shift + c
-    $TERMINAL -c float -g 75x25 -e calc
+    $TERMINAL -c float -g 100x35 -e calc
 super + o; t
     $TERMINAL -e "tab"
 super + o; b

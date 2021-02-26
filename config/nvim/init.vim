@@ -131,7 +131,7 @@ let g:apc_custom_states = {
 
 " Clap
 let g:clap_provider_recent = {
-      \ "source": "filehist list",
+      \ "source": "filehist list | tac",
       \ "sink": "e",
       \ "description": "Load a file from the recent list",
       \ }
@@ -167,6 +167,9 @@ function! MyFoldText() " {{{
 endfunction " }}}
 function! AddBookmark(letter, path) " {{{
   execute 'nnoremap <silent> <Leader>e'.a:letter.' :e '.a:path.'<CR>'
+endfunction " }}}
+function! AddSnippet(key, data) " {{{
+  execute 'nnoremap <silent> <Leader>i'.a:key.' i'.a:data.'<Esc>'
 endfunction " }}}
 function! TabOrComplete(mode) " {{{
   """ Used when no completion plugin is available.
@@ -269,6 +272,9 @@ function! FormatBuffer() " {{{
       enew
       file *Format Errors*
       setlocal buftype=nofile
+      setlocal bufhidden=delete
+      setlocal noswapfile
+      setlocal nobuflisted
     else
       let l:bufwindow = bufwinid("*Format Errors*")
 
@@ -291,11 +297,23 @@ function! FormatBuffer() " {{{
     normal ggdd
     set nomodifiable
   else
+    let l:bufwindow = bufwinid("*Format Errors*")
+
+    if l:bufwindow != -1
+      call nvim_win_close(l:bufwindow, v:false)
+    endif
+
     if l:output == l:current_buffer_lines
       echo "Buffer already formatted"
     else
+      let window_top = line("w0")
+      let cline = line(".")
+      let ccol = col(".")
       normal ggdG
       call setline(1, l:output)
+
+      exec "normal " . window_top . "Gzt"
+      exec "normal " . cline . "G" . ccol "|"
     endif
   endif
 
@@ -323,6 +341,11 @@ function! AddToRecFile() " {{{
       " `filehist` probably doesn't exist - let's ignore this then
       return
     endif
+  endif
+endfunction " }}}
+function! ApcReenable() " {{{
+  if get(b:, "apc_enable", 0) == 1
+    ApcEnable
   endif
 endfunction " }}}
 if g:is_first | function! SourceIf(...) " {{{
@@ -430,6 +453,7 @@ augroup buffer_load
   au FileType * if exists("*Ft_".&ft) | exec 'call Ft_'.&ft.'()' | endif
   au FileType * call SetupMakefileRifle()
   au FileType * call AddToRecFile()
+  au BufEnter * call ApcReenable()
   au BufNewFile,BufRead,BufEnter *.fx set filetype=c
   au BufNewFile,BufRead,BufEnter *.clj set filetype=clojure
   au BufNewFile,BufRead,BufEnter *.alg set filetype=visualg
@@ -450,6 +474,9 @@ endfunction " }}}
 function! Ft_cpp() " {{{
   setlocal fdm=syntax
   let b:format_command = "clang-multicfg-format cpp"
+
+  call AddSnippet("s", '#include <iostream>')
+  call AddSnippet("m", 'int main() {<CR><CR>}<Up>')
 endfunction " }}}
 function! Ft_markdown() " {{{
   " Thanks to https://gist.github.com/olmokramer/feadbf14a055efd46a8e1bf1e4be4447
@@ -581,7 +608,16 @@ function! Ft_plaintex()
   call Ft_tex()
 endfunction " }}}
 function! Ft_zig() " {{{
+  if ReverseRSearch(expand("%:p:h"), "build.zig")
+    let b:rifle_ft = "@zig-build"
+  else
+    let b:rifle_ft = "zig"
+  endif
+
   let b:format_command = "zig fmt --stdin"
+
+  call AddSnippet("s", 'const std = @import("std");')
+  call AddSnippet("m", 'pub fn main() !void {<CR><CR>}<Up>')
 endfunction " }}}
 function! Ft_yaml() " {{{
   setlocal sw=2

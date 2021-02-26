@@ -291,8 +291,20 @@ def fzagnostic(
 
         # wait for the process to finish and act according to the exit code
         if proc.wait() == 0:
-            idx, line = proc.stdout.readline().strip().split(" ", maxsplit=1)
-            return (int(idx[1:]), line)
+            splits = proc.stdout.readline().strip().split(" ", maxsplit=1)
+
+            if len(splits) != 2:
+                print(f"Invalid input: {splits}", file=sys.stderr)
+                sys.exit(1)
+
+            idx, line = splits
+            try:
+                idx = int(idx[1:])
+            except ValueError:
+                print(f"Invalid index specifier: {repr(idx)}", file=sys.stderr)
+                sys.exit(1)
+
+            return (idx, line)
         else:
             return None
 

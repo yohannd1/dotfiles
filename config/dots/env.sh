@@ -28,6 +28,7 @@ export WIKI=~/wiki
 export TERM=xterm-256color
 export EDITOR=nvim # back 2 nvim!!!
 # _isAndroid && export EDITOR=nvim || export EDITOR=start-emacs
+export MAYBE_GRAPHICAL_EDITOR=maybe-graphedit
 export TERMINAL=st
 export BROWSER=brave-async
 export TERMBROWSER=w3m
