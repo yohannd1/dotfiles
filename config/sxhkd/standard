@@ -97,10 +97,6 @@ super + e
 super + shift + e
     $TERMINAL -c float -g 100x35 -e $EDITOR
 
-# window switcher
-super + o; s
-      dswitcher
-
 # super-o apps
 super + o; c
     $TERMINAL -c float -g 65x10 -e runread cal -3

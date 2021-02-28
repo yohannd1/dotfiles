@@ -39,6 +39,22 @@ def main():
     )
 
     gp.add_argument(
+        "-o", "--starting-offset",
+        help="the starting offset of the list (essentially useless if --shuffle is enabled)",
+        nargs=1,
+        type=int,
+        action="store",
+    )
+
+    gp.add_argument(
+        "-l", "--limit",
+        help="the maximum amount of songs to play",
+        nargs=1,
+        type=int,
+        action="store",
+    )
+
+    gp.add_argument(
         "-R", "--not-recursive",
         help="make the listing non-recursive",
         action="store_true",
@@ -72,7 +88,11 @@ def main():
 
     print("Ready to play!", file=sys.stderr)
 
-    for file in files:
+    starting_offset = opts.starting_offset[0] if opts.starting_offset else 0
+    limit = opts.limit[0] if opts.limit else None
+
+    limit_count = 0
+    for file in files[starting_offset:]:
         name = file.name
 
         skip = False
@@ -92,6 +112,7 @@ def main():
 
         print(f"Playing {file} ...", file=sys.stderr)
 
+        inc_limitc = True
         with sp.Popen(
             ["mpv", "--no-video", str(file)],
             encoding="UTF-8",
@@ -102,6 +123,7 @@ def main():
                 errored = True
 
             if errored:
+                inc_limitc = False # so the count doesn't go up, necessarily.
                 print(
                     f"mpv seems to have errored. Do you want to continue playing?",
                     file=sys.stderr,
@@ -117,6 +139,15 @@ def main():
 
                 if i.lower() != "y" and len(i) > 0:
                     break
+
+
+        limit_count += 1
+        if limit:
+            if limit_count >= limit:
+                print("limit exceeded; finishing...", file=sys.stderr)
+                break
+            else:
+                print(f"{limit - limit_count} songs left...", file=sys.stderr)
 
 
 def get_files(folder: Path, recursive=True):
