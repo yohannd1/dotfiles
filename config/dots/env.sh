@@ -48,9 +48,7 @@ export RUSTUP_HOME="$XDG_CACHE_HOME/rustup"
 export GEM_HOME="$XDG_DATA_DIR/gem"
 export GEM_SPEC_CACHE="$XDG_CACHE_HOME/gem"
 export GRADLE_USER_HOME="$XDG_DATA_HOME/gradle"
-export _JAVA_OPTIONS="-Djava.util.prefs.userRoot='$XDG_CONFIG_HOME/java'
-                      -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel
-                      -Dawt.useSystemAAFontSettings=all"
+export _JAVA_OPTIONS="-Djava.util.prefs.userRoot='$XDG_CONFIG_HOME/java'"
 export JAVA_FONTS="/usr/share/fonts/TTF"
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export TASKRC="$XDG_CONFIG_HOME/taskwarrior/taskrc"

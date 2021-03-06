@@ -38,6 +38,8 @@ hasNoOcurrences() {
   while read line; do
     [ "$1" = "$line" ] && return 1
   done < "$FILEHIST_FILE"
+
+  return 0
 }
 
 # just to release the lock
@@ -67,8 +69,10 @@ case $# in
         [ -z "$FILEHIST_NO_TIDY" ] && tidyHistory
         shouldAdd=true
 
-        if hasNoOcurrences "$2"; then
-          printf "%s\n" "$2" >> "$FILEHIST_FILE"
+        file=$(realpath -m "$2")
+
+        if hasNoOcurrences "$file"; then
+          printf "%s\n" "$file" >> "$FILEHIST_FILE"
         fi
         ;;
       select)

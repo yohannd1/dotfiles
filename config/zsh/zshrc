@@ -61,8 +61,8 @@ current-tab() {
 isRoot() { [ "$EUID" = 0 ] }
 
 # construct prompt string
-isTTY && _PS1_SYMBOL="" || _PS1_SYMBOL="%F{13}$(isRoot && printf '#' || printf '$') " # ❯ was the old one
-PS1='%F{14}%~%(?.. %F{10}%?) $_PS1_SYMBOL%b%F{5}'
+_PS1_SYMBOL="%F{13}$(isRoot && printf '#' || printf '$') " # ❯ was the old one
+PS1="%F{14}%~%(?.. %F{10}%?) $_PS1_SYMBOL%b%F{5}"
 PS2="%B%F{3}---%{$reset_color%} "
 RPROMPT='%F{12}$(current-tab)%F{11}$(git-branch)'
 # [ "${NNNLVL:-0}" -ge 1 ] && PS1="%B%F{3}(%F{5}n%F{3})%b $PS1"
@@ -191,7 +191,7 @@ find-file() {
   if [ -f "$choice" ]; then
     "$@" "$choice"
   elif [ -d "$choice" ]; then
-    cd "$choice"
+    cd "$choice" && find-file
   else
     exit 1
   fi

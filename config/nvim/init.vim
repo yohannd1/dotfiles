@@ -129,19 +129,47 @@ let g:apc_custom_states = {
       \ "clap_input": 0,
       \ }
 
-" Clap
+" Clap recent files command
 let g:clap_provider_recent = {
       \ "source": "filehist list | tac",
       \ "sink": "e",
       \ "description": "Load a file from the recent list",
       \ }
 
-" Clap (esc fix)
+" Make it so <Esc> cancels clap even while on insert mode
 augroup clap_esc_fix
   au!
   au User ClapOnEnter inoremap <silent> <buffer> <Esc> <Esc>:<c-u>call clap#handler#exit()<CR>
   au User ClapOnExit silent! iunmap <buffer> <Esc>
 augroup end
+
+" So, pear-tree kept undloading the keybindings, so I forced it to reload
+" everytime I switch or load buffers.
+"
+" I fear this might be CPU expensive but since I'm too lazy to figure out
+" what is the bug and pear-tree is one of the best paren match plugins
+" out there I'll just do this.
+" {{{
+function! PearTreeUpdate()
+  if get(b:, "pear_tree_enabled", 0)
+    imap <buffer> <BS> <Plug>(PearTreeBackspace)
+    imap <buffer> <CR> <Plug>(PearTreeExpand)
+  endif
+endfunction
+
+" Buffer autocommands
+augroup pear_tree_reload_on_buffer
+  au!
+  au BufRead,BufEnter,BufWinEnter * call PearTreeUpdate()
+  au User BufSwitch call PearTreeUpdate()
+augroup end
+
+" Key mappings
+nnoremap <silent> <C-w>h <C-w>h:call PearTreeUpdate()<CR>
+nnoremap <silent> <C-w>j <C-w>j:call PearTreeUpdate()<CR>
+nnoremap <silent> <C-w>k <C-w>k:call PearTreeUpdate()<CR>
+nnoremap <silent> <C-w>l <C-w>l:call PearTreeUpdate()<CR>
+" }}}
 
 " Zig.vim
 let g:zig_fmt_autosave = 0
@@ -347,6 +375,14 @@ function! ApcReenable() " {{{
   if get(b:, "apc_enable", 0) == 1
     ApcEnable
   endif
+endfunction " }}}
+function! NextBuffer() " {{{
+  bnext
+  silent doautocmd User BufSwitch
+endfunction " }}}
+function! PrevBuffer() " {{{
+  bprevious
+  silent doautocmd User BufSwitch
 endfunction " }}}
 if g:is_first | function! SourceIf(...) " {{{
   for path in a:000
@@ -615,6 +651,7 @@ function! Ft_zig() " {{{
   endif
 
   let b:format_command = "zig fmt --stdin"
+  setlocal textwidth=120
 
   call AddSnippet("s", 'const std = @import("std");')
   call AddSnippet("m", 'pub fn main() !void {<CR><CR>}<Up>')
@@ -730,7 +767,7 @@ nnoremap <silent> <Leader>rb :Rifle "build"<CR>
 " Formatting Commands
 nnoremap <Leader>bf :FormatBuffer<CR>
 
-" Escape terminal in nvim
+" Keybindings to escape the terminal
 tnoremap <silent> <Esc> <C-\><C-n>
 tnoremap <silent> <C-w><Esc> <Esc>
 tnoremap <silent> <C-w>h <C-\><C-n><C-w>h
@@ -749,8 +786,8 @@ nnoremap <Leader>s :%s/\v/g<Left><Left>
 vnoremap <Leader>s :s/\v/g<Left><Left>
 
 " Buffer navigation mappings
-nnoremap <silent> <C-j> :bn<CR>
-nnoremap <silent> <C-k> :bp<CR>
+nnoremap <silent> <C-j> :call NextBuffer()<CR>
+nnoremap <silent> <C-k> :call PrevBuffer()<CR>
 
 " Open a file
 nnoremap <Leader>o :Clap recent<CR>

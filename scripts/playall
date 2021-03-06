@@ -123,21 +123,28 @@ def main():
                 errored = True
 
             if errored:
-                inc_limitc = False # so the count doesn't go up, necessarily.
-                print(
-                    f"mpv seems to have errored. Do you want to continue playing?",
-                    file=sys.stderr,
-                )
+                try:
+                    inc_limitc = False # so the count doesn't go up, necessarily.
+                    print(
+                        f"mpv seems to have errored. Do you want to continue playing?",
+                        file=sys.stderr,
+                    )
 
-                print(
-                    f"[Y/n] ",
-                    end="",
-                    file=sys.stderr,
-                )
+                    print(
+                        f"[Y/n] ",
+                        end="",
+                        file=sys.stderr,
+                    )
 
-                i = input()
+                    i = input()
 
-                if i.lower() != "y" and len(i) > 0:
+                    if i.lower() != "y" and len(i) > 0:
+                        break
+                except KeyboardInterrupt:
+                    print("\n^C received. Aborting...")
+                    break
+                except EOFError:
+                    print("\nEOF error received. Aborting...")
                     break
 
 

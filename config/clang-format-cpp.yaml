@@ -41,7 +41,7 @@ IndentWrappedFunctionNames: 'false'
 KeepEmptyLinesAtTheStartOfBlocks: 'false'
 MaxEmptyLinesToKeep: '1'
 NamespaceIndentation: All
-PointerAlignment: Right
+PointerAlignment: Left
 ReflowComments: 'true'
 SortIncludes: 'true'
 SortUsingDeclarations: 'true'

@@ -1,9 +1,12 @@
 #!/usr/bin/env -S python3 -i
 # vim: ft=python
 
+import operator as op
 from math import *
 from pathlib import Path
 
 dcos = lambda x: cos(radians(x))
 dsin = lambda x: sin(radians(x))
 dtan = lambda x: tan(radians(x))
+
+xor = op.xor
