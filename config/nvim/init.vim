@@ -488,7 +488,7 @@ augroup buffer_load
   au!
   au FileType * if exists("*Ft_".&ft) | exec 'call Ft_'.&ft.'()' | endif
   au FileType * call SetupMakefileRifle()
-  au FileType * call AddToRecFile()
+  au BufNewFile,BufRead * call AddToRecFile()
   au BufEnter * call ApcReenable()
   au BufNewFile,BufRead,BufEnter *.fx set filetype=c
   au BufNewFile,BufRead,BufEnter *.clj set filetype=clojure
@@ -656,6 +656,15 @@ function! Ft_zig() " {{{
   call AddSnippet("s", 'const std = @import("std");')
   call AddSnippet("m", 'pub fn main() !void {<CR><CR>}<Up>')
 endfunction " }}}
+function! Ft_python() " {{{
+  " let b:format_command = "python3 -m black -"
+
+  call AddSnippet("c", 'from dataclasses import dataclass')
+  call AddSnippet("a", 'from abc import abstractmethod')
+endfunction " }}}
+function! Ft_javascript() " {{{
+  let b:format_command = "prettier-stdin"
+endfunction " }}}
 function! Ft_yaml() " {{{
   setlocal sw=2
 endfunction " }}}
@@ -763,6 +772,7 @@ inoremap <expr> <C-m> pumvisible() ? "\<C-y>" : "<C-m>"
 nnoremap <silent> <Leader>rr :Rifle "run"<CR>
 nnoremap <silent> <Leader>rc :Rifle "check"<CR>
 nnoremap <silent> <Leader>rb :Rifle "build"<CR>
+nnoremap <silent> <Leader>rt :Rifle "test"<CR>
 
 " Formatting Commands
 nnoremap <Leader>bf :FormatBuffer<CR>

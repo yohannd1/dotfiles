@@ -26,7 +26,7 @@
 . ~/.config/dots/env.sh
 eval "$(load-base16-theme)"
 
-FONT="Mononoki"
+FONT="JetBrains Mono"
 FONT_PIXELSIZE="13.5"
 FONT_POINTSIZE="10pt"
 

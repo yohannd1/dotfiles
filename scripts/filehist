@@ -34,6 +34,10 @@ if ! mkdir "$LOCKDIR" >/dev/null 2>/dev/null; then
   exit 1
 fi
 
+# just to release the lock
+cleanup() { rmdir "$LOCKDIR"; }
+trap 'cleanup' EXIT
+
 hasNoOcurrences() {
   while read line; do
     [ "$1" = "$line" ] && return 1
@@ -41,10 +45,6 @@ hasNoOcurrences() {
 
   return 0
 }
-
-# just to release the lock
-cleanup() { rmdir "$LOCKDIR"; }
-trap 'cleanup' EXIT
 
 case $# in
   1)
