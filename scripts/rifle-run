@@ -154,6 +154,7 @@ case "$1" in
       @make) fparent-run "Makefile" run-command file-dir make test ;;
       @cargo) fparent-run "Cargo.toml" run-command file-dir cargo test ;;
       @zig-build) fparent-run "build.zig" run-command file-dir zig build test ;;
+      zig) zig test "$file" ;;
       *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
     esac ;;
   check)
