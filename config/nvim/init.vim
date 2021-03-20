@@ -323,7 +323,7 @@ function! FormatBuffer() " {{{
     endfor
     call append("$", "Note - use :ShowFormatErr to show the error again.")
     normal ggdd
-    set nomodifiable
+    " set nomodifiable
   else
     let l:bufwindow = bufwinid("*Format Errors*")
 
