@@ -131,10 +131,11 @@ bindkey '^F' fz-select-file
 zle -N fz-select-file
 
 assist::find-file.gen() {
+  printf "%s (%s)\n" "@upper-directory" ".."
+  printf "%s (%s)\n" "@stay-here" "{ $(pwd) }"
+
   local args=()
-
-  printf "%s\n" ".."
-
+  # FIXME: this is a little bit clunky
   [ "$1" = 1 ] && args+=('-H')
   [ "$_FINDFILE_DIRONLY" ] && args+=('-td')
 
@@ -176,6 +177,7 @@ nnn-and-cd() {
 }
 
 find-file() {
+  # FIXME: potential stack overflow
   local prog choice choices hidden
   hidden=0
 
@@ -188,13 +190,20 @@ find-file() {
   prog="${1:-$EDITOR}"
   choice="$(assist::find-file.gen "$hidden" | fzagnostic)" || return 1
 
-  if [ -f "$choice" ]; then
-    "$@" "$choice"
-  elif [ -d "$choice" ]; then
-    cd "$choice" && find-file
-  else
-    exit 1
-  fi
+  case "$choice" in
+    "@upper-directory"*) cd .. && find-file ;;
+    "@stay-here"*) ;;
+    *)
+      if [ -f "$choice" ]; then
+        "$@" "$choice"
+      elif [ -d "$choice" ]; then
+        cd "$choice" && find-file
+      else
+        printf >&2 "Don't know what to do with choice %s; returning" "$choice"
+        exit 1
+      fi
+      ;;
+  esac
 }
 
 duplicate-shell() {

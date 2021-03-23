@@ -639,6 +639,7 @@ endfunction " }}}
 function! Ft_tex() " {{{
   let b:rifle_ft = "tex"
   let b:rifle_mode = "buffer"
+  setlocal textwidth=72
 endfunction
 function! Ft_plaintex()
   call Ft_tex()
@@ -778,7 +779,7 @@ nnoremap <silent> <Leader>rt :Rifle "test"<CR>
 nnoremap <Leader>bf :FormatBuffer<CR>
 
 " Keybindings to escape the terminal
-tnoremap <silent> <Esc> <C-\><C-n>
+" tnoremap <silent> <Esc> <C-\><C-n>
 tnoremap <silent> <C-w><Esc> <Esc>
 tnoremap <silent> <C-w>h <C-\><C-n><C-w>h
 tnoremap <silent> <C-w>j <C-\><C-n><C-w>j

@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # Shell Profile
 # This is ran at login on a TTY.
@@ -9,9 +9,29 @@
 
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
+_update_clock() {
+  printf >&2 "[ Clock ] Updating...\n"
+
+  output=$(sudo -n ntpd -gq 2>&1)
+
+  if [ $# = 0 ]; then
+    printf >&2 "[ Clock ] Updating finished\n"
+  else
+    printf >&2 "[ Clock ] Updating failed. Output:\n"
+    printf >&2 "%s\n" "$output"
+  fi
+}
+
 if [ "$DOTFILES" ]; then
   tty-loadcolors
+fi
 
+# update the date because clock problems
+if exists ntpd; then
+  _update_clock &
+fi
+
+if [ "$DOTFILES" ]; then
   # set up SSH keychaing
   if [ -x /usr/bin/keychain ]; then
     eval "$(keychain --eval --ignore-missing ~/.ssh/id_rsa 2>/dev/null)"
