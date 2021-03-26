@@ -73,12 +73,40 @@ getPython() {
   fi
 }
 
+fparent_pattern() {
+  pattern="$1"
+  path="$PWD"
+
+  # okay=0
+  while :; do
+    cd "$path"
+
+    for file in * .*; do
+      if [ "$file" != . ] && [ "$file" != .. ]; then
+        if printf "%s" "$file" | grep -q "$pattern"; then
+          printf "%s" "$path"
+          return 0
+        fi
+      fi
+    done
+
+    [ "$path" = / ] && return 1
+    path=$(realpath -m "$path/..")
+  done
+}
+
 case "$1" in
   run)
     case "$2" in
       @make) fparent-run "Makefile" run-command file-dir make run ;;
       @zig-build) fparent-run "build.zig" run-command file-dir zig build run ;;
       @cargo) fparent-run "Cargo.toml" run-command file-dir cargo run ;;
+      @nimble)
+        dir=$(fparent_pattern '\.nimble$') || exit 1
+        echo "$dir"
+        cd "$dir"
+        nimble run
+        ;;
       @gradlew) fparent-run "gradlew" run-file script-dir run ;;
       rust) rustc "$file" -o "$tmp" && "$tmp" ;;
       haskell)
@@ -144,6 +172,12 @@ case "$1" in
     case "$2" in
       @make) fparent-run "Makefile" run-command file-dir make ;;
       @cargo) fparent-run "Cargo.toml" run-command file-dir cargo build ;;
+      @nimble)
+        dir=$(fparent_pattern '\.nimble$') || exit 1
+        echo "$dir"
+        cd "$dir"
+        nimble build
+        ;;
       @zig-build) fparent-run "build.zig" run-command file-dir zig build ;;
       @gradlew) fparent-run "gradlew" run-file script-dir build ;;
       markdown) md-compile "$file" > "$HOME/$(basename "$file").$(date +%Y-%m-%d).html" ;;
@@ -153,6 +187,12 @@ case "$1" in
     case "$2" in
       @make) fparent-run "Makefile" run-command file-dir make test ;;
       @cargo) fparent-run "Cargo.toml" run-command file-dir cargo test ;;
+      @nimble)
+        dir=$(fparent_pattern '\.nimble$') || exit 1
+        echo "$dir"
+        cd "$dir"
+        nimble test
+        ;;
       @zig-build) fparent-run "build.zig" run-command file-dir zig build test ;;
       zig) zig test "$file" ;;
       *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
@@ -162,6 +202,12 @@ case "$1" in
       @make) fparent-run "Makefile" run-command file-dir make check ;;
       @zig-build) fparent-run "build.zig" run-command file-dir zig build ;;
       @cargo) fparent-run "Cargo.toml" run-command file-dir cargo check ;;
+      @nimble)
+        dir=$(fparent_pattern '\.nimble$') || exit 1
+        echo "$dir"
+        cd "$dir"
+        nimble build # `check` doesn't seem to work well
+        ;;
       rust) rustc "$file" -o "$tmp" ;;
       nim)
         mkdir -p "$tmp" \

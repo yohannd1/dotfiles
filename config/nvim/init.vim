@@ -606,6 +606,15 @@ function! Ft_hy() " {{{
 endfunction " }}}
 function! Ft_nim() " {{{
   setlocal sw=2 ts=2 expandtab
+
+  if ReverseRSearch(expand("%:p:h"), '*.nimble')
+    let b:rifle_ft = "@nimble"
+  else
+    let b:rifle_ft = "nim"
+  endif
+endfunction " }}}
+function! Ft_nims() " {{{
+  call Ft_nim()
 endfunction " }}}
 function! Ft_ruby() " {{{
   setlocal fdm=syntax
@@ -659,6 +668,10 @@ function! Ft_zig() " {{{
 endfunction " }}}
 function! Ft_python() " {{{
   " let b:format_command = "python3 -m black -"
+
+  syn keyword Boolean True
+  syn keyword Boolean False
+  syn keyword Boolean None
 
   call AddSnippet("c", 'from dataclasses import dataclass')
   call AddSnippet("a", 'from abc import abstractmethod')
