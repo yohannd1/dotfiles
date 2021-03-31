@@ -471,6 +471,27 @@ if g:is_first
 
   " set listchars=tab:»\ ,trail:¬
   set listchars=tab:\ \ ,trail:¬
+
+  " TO-DO Highlighting (and more)
+  " Partially stolen from https://github.com/sakshamgupta05/vim-todo-highlight
+  if v:true
+    let g:annotations_to_highlight = ['TODO', 'FIXME', 'XXX', 'NOTE']
+
+    " creates annotation group and highlight it according to the config
+    for name in g:annotations_to_highlight
+      let group_name = 'annotation_' . tolower(name)
+
+      " make group for annotation where its pattern matches and is inside comment
+      execute 'augroup ' . group_name
+      autocmd!
+      execute 'autocmd Syntax * syntax match ' . group_name .
+            \ ' /\v\_.<' . name . ':/hs=s+1 containedin=.*Comment.*'
+      execute 'augroup end'
+
+      " highlight the group according to the config
+      execute 'hi link ' . group_name . ' Todo'
+    endfor
+  endif
 endif
 
 " }}}
@@ -506,6 +527,9 @@ function! Ft_c() " {{{
   setlocal noet sw=8 ts=8
   setlocal fdm=syntax
   let b:format_command = "clang-multicfg-format c"
+
+  call AddSnippet("s", '#include <stdio.h>')
+  call AddSnippet("m", 'int main(void) {<CR><CR>}<Up>')
 endfunction " }}}
 function! Ft_cpp() " {{{
   setlocal fdm=syntax
@@ -664,7 +688,7 @@ function! Ft_zig() " {{{
   setlocal textwidth=120
 
   call AddSnippet("s", 'const std = @import("std");')
-  call AddSnippet("m", 'pub fn main() !void {<CR><CR>}<Up>')
+  call AddSnippet("m", 'pub fn main() anyerror!void {<CR><CR>}<Up>')
 endfunction " }}}
 function! Ft_python() " {{{
   " let b:format_command = "python3 -m black -"

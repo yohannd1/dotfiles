@@ -2,7 +2,7 @@
 # vim: ft=conf fdm=marker foldmarker={{,}} sw=2
 
 set shell bash
-set previewer preview
+set previewer cat
 set preview
 # set hidden
 # set drawbox
