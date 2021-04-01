@@ -485,7 +485,7 @@ if g:is_first
       execute 'augroup ' . group_name
       autocmd!
       execute 'autocmd Syntax * syntax match ' . group_name .
-            \ ' /\v\_.<' . name . ':/hs=s+1 containedin=.*Comment.*'
+            \ ' /\v\_.<' . name . ':?/hs=s+1 containedin=.*Comment.*'
       execute 'augroup end'
 
       " highlight the group according to the config
