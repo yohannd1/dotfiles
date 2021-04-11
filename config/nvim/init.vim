@@ -511,6 +511,7 @@ augroup buffer_load
   au FileType * call SetupMakefileRifle()
   au BufNewFile,BufRead * call AddToRecFile()
   au BufEnter * call ApcReenable()
+  au BufNewFile,BufRead,BufEnter *.wk set filetype=wk
   au BufNewFile,BufRead,BufEnter *.fx set filetype=c
   au BufNewFile,BufRead,BufEnter *.clj set filetype=clojure
   au BufNewFile,BufRead,BufEnter *.alg set filetype=visualg
@@ -704,6 +705,9 @@ function! Ft_javascript() " {{{
   let b:format_command = "prettier-stdin"
 endfunction " }}}
 function! Ft_yaml() " {{{
+  setlocal sw=2
+endfunction " }}}
+function! Ft_wk() " {{{
   setlocal sw=2
 endfunction " }}}
 

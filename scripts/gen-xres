@@ -26,9 +26,9 @@
 . ~/.config/dots/env.sh
 eval "$(load-base16-theme)"
 
-FONT="JetBrains Mono"
-FONT_PIXELSIZE="13.5"
-FONT_POINTSIZE="10pt"
+FONT="Fixedsys Excelsior"
+FONT_PIXELSIZE="15.5"
+FONT_POINTSIZE="11pt"
 
 xset() { printf "%s: %s\n" "$1" "$2"; }
 font() { printf "%s:pixelsize=%s:antialias=true:autohint=true;" "$FONT" "$1"; }
@@ -59,6 +59,8 @@ xset 'dmenu.sel.hl.bg' "$base02"
 xset 'dmenu.sel.hl.fg' "$base09"
 xset 'dmenu.out.bg' "$base0F"
 xset 'dmenu.out.fg' "$base0F"
+
+xset 'xterm.font' "$(font $FONT_PIXELSIZE)"
 
 # qutebrowser
 xset 'qutebrowser.font_size' "$FONT_POINTSIZE"

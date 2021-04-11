@@ -28,7 +28,7 @@ if [ "$output" != "-" ] && [ -e "$output" ]; then
 fi
 
 if exists curl; then
-  curl "$url" --output "$output"
+  curl "$url" --output "$output" --retry 999 --retry-delay 0
 elif exists wget; then
   wget "$url" -O "$output"
 else

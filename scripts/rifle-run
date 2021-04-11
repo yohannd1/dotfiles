@@ -99,7 +99,7 @@ case "$1" in
   run)
     case "$2" in
       @make) fparent-run "Makefile" run-command file-dir make run ;;
-      @zig-build) fparent-run "build.zig" run-command file-dir zig build run ;;
+      @zig-build) fparent-run "build.zig" run-command file-dir zig build run --color off ;;
       @cargo) fparent-run "Cargo.toml" run-command file-dir cargo run ;;
       @nimble)
         dir=$(fparent_pattern '\.nimble$') || exit 1
@@ -165,7 +165,7 @@ case "$1" in
       racket) racket "$file" ;;
       html) openfork "$file" ;;
       moon) moon "$file" ;;
-      zig) zig run "$file" ;;
+      zig) zig run "$file" --color off ;;
       *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
     esac ;;
   build)
@@ -178,7 +178,7 @@ case "$1" in
         cd "$dir"
         nimble build
         ;;
-      @zig-build) fparent-run "build.zig" run-command file-dir zig build ;;
+      @zig-build) fparent-run "build.zig" run-command file-dir zig build --color off ;;
       @gradlew) fparent-run "gradlew" run-file script-dir build ;;
       markdown) md-compile "$file" > "$HOME/$(basename "$file").$(date +%Y-%m-%d).html" ;;
       *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
@@ -193,14 +193,14 @@ case "$1" in
         cd "$dir"
         nimble test
         ;;
-      @zig-build) fparent-run "build.zig" run-command file-dir zig build test ;;
-      zig) zig test "$file" ;;
+      @zig-build) fparent-run "build.zig" run-command file-dir zig build test --color off ;;
+      zig) zig test "$file" --color off ;;
       *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
     esac ;;
   check)
     case "$2" in
       @make) fparent-run "Makefile" run-command file-dir make check ;;
-      @zig-build) fparent-run "build.zig" run-command file-dir zig build ;;
+      @zig-build) fparent-run "build.zig" run-command file-dir zig build --color off ;;
       @cargo) fparent-run "Cargo.toml" run-command file-dir cargo check ;;
       @nimble)
         dir=$(fparent_pattern '\.nimble$') || exit 1

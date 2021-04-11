@@ -100,11 +100,15 @@ super + shift + e
 # super-o apps
 super + o; c
     $TERMINAL -c float -g 65x10 -e runread cal -3
+super + o; m
+    $TERMINAL -c float -e pulsemixer
 super + o; shift + c
     $TERMINAL -c float -g 100x35 -e calc
 super + o; b
     runnsend error-and-output bkmk menu
 super + o; j
     runnsend error-and-output @journalentry
+super + o; shift + j
+    runnsend error-and-output @daylogentry
 super + o; d
     runnsend error $BROWSER https://discordapp.com/channels/@me
