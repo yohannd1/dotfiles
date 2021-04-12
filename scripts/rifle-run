@@ -23,11 +23,12 @@ else
   file=$(realpath -m "$3") || exit 1
 fi
 
-printf >&2 "@[TEMP: %s]\n\n" "$tmp"
+printf >&2 "@[TEMP DIR: %s]\n\n" "$tmp"
 rm -f "$tmp" # remove temp file for preventing any errors related to "file already exists"
 
+set -e
+
 cleanup() {
-  [ -f "$tmp" ] && rm "$tmp"
   [ -d "$tmp" ] && rm -r "$tmp"
   return 0
 }
@@ -108,17 +109,22 @@ case "$1" in
         nimble run
         ;;
       @gradlew) fparent-run "gradlew" run-file script-dir run ;;
-      rust) rustc "$file" -o "$tmp" && "$tmp" ;;
+      rust) rustc "$file" -o "$tmp/exe" && "$tmp/exe" ;;
       haskell)
         nameFull=${file%.*}
         name=$(basename "$nameFull")
-        ghc -o "$tmp" -dynamic "$file" \
-          && rm "$nameFull.o" "$nameFull.hi" \
-          && "$tmp"
+
+        (
+          cd "$tmp"
+          ghc -o "$tmp/exe" -dynamic "$file"
+          rm "$nameFull.o" "$nameFull.hi"
+        )
+
+        "$tmp/exe"
         ;;
-      c) gcc "$file" -o "$tmp" && "$tmp" ;;
-      cpp|c++|cc) g++ "$file" -o "$tmp" -std=c++20 && "$tmp" ;;
-      cs|csharp) mcs "$file" -out:"$tmp" && mono "$tmp" ;;
+      c) gcc "$file" -o "$tmp/exe" && "$tmp/exe" ;;
+      cpp|c++|cc) g++ "$file" -o "$tmp/exe" -std=c++20 && "$tmp/exe" ;;
+      cs|csharp) mcs "$file" -out:"$tmp/exe" && mono "$tmp/exe" ;;
       clojure) clojure "$file" ;;
       markdown) md-preview "$file" ;;
       sh)
@@ -144,10 +150,9 @@ case "$1" in
       vim) nvim -u "$file" ;;
       scheme) guile "$file" ;;
       latex|tex)
-        name=$(basename "${file%.*}") \
-          && mkdir -p "$tmp" \
-          && pdflatex -output-directory "$tmp" "$file" \
-          && OPEN_GUI=1 open "$tmp/$name.pdf"
+        name=$(basename "${file%.*}")
+        pdflatex -output-directory "$tmp" "$file"
+        OPEN_GUI=1 open "$tmp/$name.pdf"
         ;;
       python)
         python=$(getPython)
@@ -157,19 +162,15 @@ case "$1" in
       fsharp) fsharpi "$file" ;;
       lua) lua "$file" ;;
       nim)
-        mkdir -p "$tmp" \
-          && nim compile --out:"out" --outdir:"$tmp" "$file" \
-          && "$tmp/out"
+        nim compile --out:"out" --outdir:"$tmp" "$file"
+        "$tmp/out"
         ;;
       ruby) ruby "$file" ;;
       racket) racket "$file" ;;
       html) openfork "$file" ;;
       moon) moon "$file" ;;
-      zig)
-        mkdir -p "$tmp"
-        zig run "$file" --color off --cache-dir "$tmp"
-        ;;
-      *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
+      zig) zig run "$file" --color off --cache-dir "$tmp" ;;
+      *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
     esac ;;
   build)
     case "$2" in
@@ -184,7 +185,7 @@ case "$1" in
       @zig-build) fparent-run "build.zig" run-command file-dir zig build --color off ;;
       @gradlew) fparent-run "gradlew" run-file script-dir build ;;
       markdown) md-compile "$file" > "$HOME/$(basename "$file").$(date +%Y-%m-%d).html" ;;
-      *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
+      *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
     esac ;;
   test)
     case "$2" in
@@ -197,11 +198,8 @@ case "$1" in
         nimble test
         ;;
       @zig-build) fparent-run "build.zig" run-command file-dir zig build test --color off ;;
-      zig)
-        mkdir -p "$tmp"
-        zig test "$file" --color off --cache-dir "$tmp"
-        ;;
-      *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
+      zig) zig test "$file" --color off --cache-dir "$tmp" ;;
+      *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
     esac ;;
   check)
     case "$2" in
@@ -214,12 +212,9 @@ case "$1" in
         cd "$dir"
         nimble build # `check` doesn't seem to work well
         ;;
-      rust) rustc "$file" -o "$tmp" ;;
-      nim)
-        mkdir -p "$tmp" \
-          && nim compile --out:"out" --outdir:"$tmp" "$file"
-        ;;
-      cpp|c++|cc) g++ -c "$file" -o "$tmp" -std=c++20 ;;
+      rust) rustc "$file" -o "$tmp/exe" ;;
+      nim) nim compile --out:"out" --outdir:"$tmp" "$file" ;;
+      cpp|c++|cc) g++ -c "$file" -o "$tmp/exe" -std=c++20 ;;
       python)
         python=$(getPython)
         dmypy run --timeout 600 "$file" &
@@ -230,7 +225,7 @@ case "$1" in
         wait "$proc1"
         wait "$proc2"
         ;;
-      *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
+      *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
     esac ;;
   *) die "Invalid action: %s\n" "$1" ;;
 esac
