@@ -165,7 +165,10 @@ case "$1" in
       racket) racket "$file" ;;
       html) openfork "$file" ;;
       moon) moon "$file" ;;
-      zig) zig run "$file" --color off ;;
+      zig)
+        mkdir -p "$tmp"
+        zig run "$file" --color off --cache-dir "$tmp"
+        ;;
       *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
     esac ;;
   build)
@@ -194,7 +197,10 @@ case "$1" in
         nimble test
         ;;
       @zig-build) fparent-run "build.zig" run-command file-dir zig build test --color off ;;
-      zig) zig test "$file" --color off ;;
+      zig)
+        mkdir -p "$tmp"
+        zig test "$file" --color off --cache-dir "$tmp"
+        ;;
       *) die "(action '%s') unhandled filetype: %s\n" "$1" "$2" ;;
     esac ;;
   check)
