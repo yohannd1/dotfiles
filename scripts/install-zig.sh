@@ -75,7 +75,12 @@ fi
   fi
 
   # documentation
-  mv 'docs' -t "$ZIG_PACKDIR"
+  if [ -d 'docs' ]; then
+    mv 'docs' -t "$ZIG_PACKDIR"
+  else
+    mkdir "$ZIG_PACKDIR/docs"
+    mv 'langref.html' -t "$ZIG_PACKDIR/docs"
+  fi
   mv 'LICENSE' -t "$ZIG_PACKDIR/docs"
 
   # binaries
