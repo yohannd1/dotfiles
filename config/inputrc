@@ -9,6 +9,10 @@ set editing-mode vi
 # Press tab only once to show completions (tab twice is exhaustive and, as my bell is disabled, it is pretty much useless)
 set show-all-if-ambiguous on
 
+set enable-bracketed-paste on
+set blink-matching-paren on
+set show-all-if-ambiguous on
+
 # Ignore case on completion
 # set completion-ignore-case on
 

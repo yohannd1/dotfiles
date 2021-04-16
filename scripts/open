@@ -190,7 +190,7 @@ if match mime 'image/vnd.djvu'; then
 fi
 
 if match mime 'image/*'; then
-  try gui sxiv "$FILE"
+  try gui sxiv -p "$FILE"
   try tty runpage viu -n "$FILE"
   try tty runpage img2txt --gamma=0.6 -- "$FILE"
   try tty runpage exiftool "$FILE"

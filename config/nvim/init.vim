@@ -68,6 +68,7 @@ if g:is_first
   Plug 'Vimjas/vim-python-pep8-indent'
   Plug 'vim-python/python-syntax'
   Plug 'https://gitlab.com/HiPhish/guile.vim'
+  Plug 'bakpakin/fennel.vim'
   " Plug 'tbastos/vim-lua'
   " Plug 'hylang/vim-hy'
   " Plug 'fsharp/vim-fsharp'
@@ -431,7 +432,7 @@ if g:is_first
   set autoindent
   set hlsearch incsearch
   set linebreak wrap
-  set nocursorline
+  set cursorline
   set showcmd
   set shortmess+=atcI
   set belloff+=ctrlg
@@ -710,6 +711,9 @@ endfunction " }}}
 function! Ft_wk() " {{{
   setlocal sw=2
 endfunction " }}}
+function! Ft_moon() " {{{
+  setlocal sw=2
+endfunction " }}}
 
 " }}}
 
@@ -843,5 +847,12 @@ nnoremap <silent> <C-k> :call PrevBuffer()<CR>
 
 " Open a file
 nnoremap <Leader>o :Clap recent<CR>
+
+" Move through soft lines when without count
+for char in ['j', 'k', '0', '$']
+  exec printf("nnoremap <expr> %s (v:count == 0 ? 'g%s' : '%s')", char, char, char)
+  " TODO: make this work with 0 $ operators too, I think, but maybe with
+  " some other key
+endfor
 
 " }}}

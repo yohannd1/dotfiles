@@ -11,7 +11,7 @@ done
 
 ZIG_IDX='https://ziglang.org/download/index.json'
 ZIG_PACKDIR="${XDG_CACHE_HOME:-$HOME/.cache}/packs/zig"
-ARCH='x86_64-linux'
+ARCH=${ZIG_ARCH:-'x86_64-linux'}
 
 # exit on errors
 set -e
