@@ -69,6 +69,7 @@ if g:is_first
   Plug 'vim-python/python-syntax'
   Plug 'https://gitlab.com/HiPhish/guile.vim'
   Plug 'bakpakin/fennel.vim'
+  Plug 'udalov/kotlin-vim'
   " Plug 'tbastos/vim-lua'
   " Plug 'hylang/vim-hy'
   " Plug 'fsharp/vim-fsharp'
@@ -483,10 +484,11 @@ if g:is_first
       let group_name = 'annotation_' . tolower(name)
 
       " make group for annotation where its pattern matches and is inside comment
+      " TODO: make work with strings too
       execute 'augroup ' . group_name
       autocmd!
       execute 'autocmd Syntax * syntax match ' . group_name .
-            \ ' /\v\_.<' . name . ':?/hs=s+1 containedin=.*Comment.*'
+            \ ' /\v\_.<' . name . ':?/hs=s+1 contained containedin=.*Comment.*'
       execute 'augroup end'
 
       " highlight the group according to the config
@@ -535,6 +537,7 @@ function! Ft_c() " {{{
 endfunction " }}}
 function! Ft_cpp() " {{{
   setlocal fdm=syntax
+  setlocal commentstring=//\ %s
   let b:format_command = "clang-multicfg-format cpp"
 
   call AddSnippet("s", '#include <iostream>')
@@ -691,6 +694,7 @@ function! Ft_zig() " {{{
 
   call AddSnippet("s", 'const std = @import("std");')
   call AddSnippet("m", 'pub fn main() anyerror!void {<CR><CR>}<Up>')
+  call AddSnippet("t", 'test {<CR><CR>}<Up>')
 endfunction " }}}
 function! Ft_python() " {{{
   " let b:format_command = "python3 -m black -"
@@ -848,11 +852,34 @@ nnoremap <silent> <C-k> :call PrevBuffer()<CR>
 " Open a file
 nnoremap <Leader>o :Clap recent<CR>
 
-" Move through soft lines when without count
-for char in ['j', 'k', '0', '$']
-  exec printf("nnoremap <expr> %s (v:count == 0 ? 'g%s' : '%s')", char, char, char)
-  " TODO: make this work with 0 $ operators too, I think, but maybe with
-  " some other key
-endfor
+" Visual mappings
+" {{{
+function! SetSoftWrapBinds(enable)
+  for char in ['j', 'k', '0', '$']
+    if a:enable
+      exec printf("nnoremap <expr> %s (v:count == 0 ? 'g%s' : '%s')", char, char, char)
+      exec printf("vnoremap <expr> %s (v:count == 0 ? 'g%s' : '%s')", char, char, char)
+    else
+      exec printf("nunmap %s", char)
+    endif
+  endfor
+
+  let g:soft_wrap_binds_state = a:enable
+endfunction
+
+" Initially call the function to enable wrap bindings by default
+call SetSoftWrapBinds(v:true)
+
+" Related Commands
+command! -nargs=0 SWBindOn call SetSoftWrapBinds(v:true)
+command! -nargs=0 SWBindOff call SetSoftWrapBinds(v:false)
+command! -nargs=0 SWBindToggle call SetSoftWrapBinds(!get(g:, "soft_wrap_binds_state", v:false))
+
+cnoreabbrev sbt SWBindToggle
+
+" }}}
+
+" Find TO-DO's
+nnoremap <Leader>ft /\v(TODO\|FIXME\|XXX)<CR>
 
 " }}}

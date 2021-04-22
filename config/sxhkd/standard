@@ -104,6 +104,10 @@ super + o; m
     $TERMINAL -c float -e pulsemixer
 super + o; shift + c
     $TERMINAL -c float -g 100x35 -e calc
+super + o; t
+    $TERMINAL -e tmux-tray
+super + o; shift + t
+    $TERMINAL -c float -g 100x35 -e tmux-tray
 super + o; b
     runnsend error-and-output bkmk menu
 super + o; j

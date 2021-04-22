@@ -47,7 +47,7 @@ precmd() {
   fi
 
   # set terminal title
-  setTitle "$(whoami)@$(hostname 2>/dev/null || echo "???"):$cwd"
+  setTitle "$(whoami)@${HOST}:$cwd"
 }
 
 current-tab() {

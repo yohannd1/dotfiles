@@ -202,6 +202,7 @@ map v :move-here; unselect
 map p :copy-here; unselect
 map R ${{ vidir }}
 map E extract-this
+map P :set preview!
 
 # bookmark mappings
 map gh cd ~

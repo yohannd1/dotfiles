@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+SESSION_NAME="main"
+
+hasSession() { tmux ls | grep -q '^'"$SESSION_NAME"': '; }
+
+if hasSession "$SESSION_NAME"; then
+  exec tmux attach -t "$SESSION_NAME"
+else
+  exec tmux new -t "$SESSION_NAME"
+fi

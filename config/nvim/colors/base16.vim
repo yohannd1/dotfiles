@@ -225,6 +225,7 @@ call s:hl("Tag",          "0A", "NONE", "", "")
 call s:hl("Todo",         "0A", "01",   "", "")
 call s:hl("Type",         "0A", "NONE", "none", "")
 call s:hl("Typedef",      "0A", "NONE", "", "")
+call s:hl("Ignore",       "02", "NONE", "", "")
 
 " C highlighting
 call s:hl("cOperator",    "0C", "NONE", "", "")
@@ -380,9 +381,12 @@ call s:hl("StartifySpecial",  "03", "NONE", "", "")
 call s:hl("javaOperator",      "0D", "NONE", "", "")
 
 " Zig highlighting
-call s:hl("zigComparatorWord", "0C", "NONE", "", "")
+call s:hl("zigComparatorWord",           "0C", "NONE", "", "")
+hi link zigStringDelimiter Delimiter
+hi link zigMultilineStringDelimiter Delimiter
+hi link zigMultilineStringDelimiter Delimiter
 
-" Clap (vim-clap @ https://github.com/liuchengxu/vim-clap) highlighting
+" Clap (https://github.com/liuchengxu/vim-clap) highlighting
 call s:hl("ClapInput",            "NONE", "01",   "", "")
 call s:hl("ClapDisplay",          "NONE", "00",   "NONE", "")
 call s:hl("ClapSelected",         "NONE", "01",   "NONE", "")

@@ -121,8 +121,8 @@ case "$1" in
 
         "$tmp/exe"
         ;;
-      c) gcc "$file" -o "$tmp/exe" && "$tmp/exe" ;;
-      cpp|c++|cc) g++ "$file" -o "$tmp/exe" -std=c++20 && "$tmp/exe" ;;
+      c) gcc "$file" -o "$tmp/exe" -Wpedantic -Wall && "$tmp/exe" ;;
+      cpp|c++|cc) g++ "$file" -o "$tmp/exe" -std=c++20 -Wpedantic -Wall && "$tmp/exe" ;;
       cs|csharp) mcs "$file" -out:"$tmp/exe" && mono "$tmp/exe" ;;
       clojure) clojure "$file" ;;
       markdown) md-preview "$file" ;;
@@ -214,7 +214,13 @@ case "$1" in
         ;;
       rust) rustc "$file" -o "$tmp/exe" ;;
       nim) nim compile --out:"out" --outdir:"$tmp" "$file" ;;
-      cpp|c++|cc) g++ -c "$file" -o "$tmp/exe" -std=c++20 ;;
+      cpp|c++|cc)
+        if exists clang-tidy; then
+          clang-tidy "$file"
+        else
+          g++ -c "$file" -o "$tmp/exe" -std=c++20 -Wall -Wpedantic
+        fi
+        ;;
       python)
         python=$(getPython)
         dmypy run --timeout 600 "$file" &
