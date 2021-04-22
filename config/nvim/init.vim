@@ -882,4 +882,33 @@ cnoreabbrev sbt SWBindToggle
 " Find TO-DO's
 nnoremap <Leader>ft /\v(TODO\|FIXME\|XXX)<CR>
 
+" A join command similar to the one in emacs (or evil-mode, idk)
+" {{{
+function! s:TheBetterJoin()
+  let l:data = ""
+
+  " Go to the end of the current line and set a mark there
+  let l:data ..= "$"
+  let l:data ..= "m`"
+
+  " Remove trailing whitespace on the current line
+  let l:data ..= "V:s/\s\+$//e<CR>"
+
+  " Actually join the lines
+  let l:data ..= "J"
+
+  " Remove trailing whitespace, again...
+  let l:data ..= "V:s/\s\+$//e<CR>"
+
+  " Go to that mark we just set, and move one character to the right, if
+  " possible
+  let l:data ..= "``"
+  let l:data ..= "l"
+
+  return l:data
+endfunction
+
+exec 'nnoremap <silent> J ' . s:TheBetterJoin()
+" }}}
+
 " }}}

@@ -9,15 +9,23 @@
 
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
-_update_clock() {
-  printf >&2 "[ Clock ] Updating...\n"
+startjob() {
+  local line
 
-  output=$(sudo -n ntpd -gq 2>&1)
+  printf >&2 'Starting job -> "%s"\n' "$1"
+
+  "$2" 2>&1 | while read line; do
+    printf >&2 "\033[2K\r@job[%s] :: %s\n" "$1" "$line"
+  done &
+}
+
+_updateClock() {
+  local output=$(sudo -n ntpd -gq 2>&1)
 
   if [ $# = 0 ]; then
-    printf >&2 "[ Clock ] Updating finished\n"
+    printf >&2 "Update finished!\n"
   else
-    printf >&2 "[ Clock ] Updating failed. Output:\n"
+    printf >&2 "Update failed - printing output..."
     printf >&2 "%s\n" "$output"
   fi
 }
@@ -27,9 +35,7 @@ if [ "$DOTFILES" ]; then
 fi
 
 # update the date because clock problems
-if exists ntpd; then
-  _update_clock &
-fi
+exists ntpd && startjob "Clock Update" _updateClock
 
 if [ "$DOTFILES" ]; then
   # set up SSH keychaing

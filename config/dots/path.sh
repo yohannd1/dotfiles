@@ -1,5 +1,6 @@
 pathadd() {
   [ $# != 1 ] && return 1
+  [ "$1" = "" ] && return
 
   # normalize path
   _normalized="$(printf "%s" "$1" | sed 's / \\/ g')"
@@ -24,7 +25,19 @@ pathadd "$GOPATH"
 pathadd "$CARGO_HOME/bin"
 pathadd "${GEM_HOME:-$HOME/.gem}/ruby/2.7.0/bin"
 pathadd ~/.nimble/bin
-pathadd ~/.luarocks/bin
+pathadd "$LUAROCKS_HOME/bin"
 
 globpathadd "/opt"
 globpathadd "${XDG_CACHE_HOME:-$HOME/.cache}/packs"
+
+_luaPkgsAt() {
+  printf "%s/?.lua;%s/?/init.lua" "$1" "$1"
+}
+
+for luaVer in 2 3 4; do
+  shareDir="$LUAROCKS_HOME/share/lua/5.${luaVer}"
+  libDir="$LUAROCKS_HOME/lib/lua/5.${luaVer}"
+
+  eval "export LUA_PATH_5_${luaVer}='$(_luaPkgsAt "$shareDir");$(_luaPkgsAt "$libDir");;'"
+  eval "export LUA_CPATH_5_${luaVer}='$libDir/loadall.so;$libDir/?.so;;'"
+done
