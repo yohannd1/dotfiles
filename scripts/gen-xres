@@ -82,6 +82,15 @@ xset 'qutebrowser.warning' "$base09"
 xset 'qutebrowser.info' "$base0D"
 xset 'qutebrowser.success' "$base0B"
 
+# qtile
+xset 'qtile.font-family' "$FONT"
+xset 'qtile.font-size' "14"
+xset 'qtile.border-focus' "$base03"
+xset 'qtile.border-normal' "$base00"
+xset 'qtile.bar.bg' "$base00"
+xset 'qtile.bar.fg' "$base05"
+xset 'qtile.bar.fg.inactive' "$base03"
+
 # others
 xset 'Emacs.font' "$FONT"
 xset 'pencilwm.highlight' "$base03"

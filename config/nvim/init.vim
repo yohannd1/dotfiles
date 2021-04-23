@@ -386,6 +386,16 @@ function! PrevBuffer() " {{{
   bprevious
   silent doautocmd User BufSwitch
 endfunction " }}}
+function! GetCurrentChar() " {{{
+  " TODO: refactor into a char utilities file
+  return strcharpart(getline('.')[col('.') - 1:], 0, 1)
+endfunction! " }}}
+function! GetLineToEnd() " {{{
+  return getline('.')[col('.') - 1:]
+endfunction! " }}}
+function! GetCharAt(line, col) " {{{
+  return strcharpart(getline(a:line)[a:col - 1:], 0, 1)
+endfunction! " }}}
 if g:is_first | function! SourceIf(...) " {{{
   for path in a:000
     if filereadable(path)
@@ -697,7 +707,7 @@ function! Ft_zig() " {{{
   call AddSnippet("t", 'test {<CR><CR>}<Up>')
 endfunction " }}}
 function! Ft_python() " {{{
-  " let b:format_command = "python3 -m black -"
+  " let b:format_command = "python3 -m black - 2>/dev/null"
 
   syn keyword Boolean True
   syn keyword Boolean False
@@ -884,7 +894,7 @@ nnoremap <Leader>ft /\v(TODO\|FIXME\|XXX)<CR>
 
 " A join command similar to the one in emacs (or evil-mode, idk)
 " {{{
-function! s:TheBetterJoin()
+function! s:TheBetterJoin_backup()
   let l:data = ""
 
   " Go to the end of the current line and set a mark there
@@ -892,23 +902,84 @@ function! s:TheBetterJoin()
   let l:data ..= "m`"
 
   " Remove trailing whitespace on the current line
-  let l:data ..= "V:s/\s\+$//e<CR>"
+  let l:data ..= "V:s/\s\+$//e\<CR>"
 
   " Actually join the lines
   let l:data ..= "J"
 
   " Remove trailing whitespace, again...
-  let l:data ..= "V:s/\s\+$//e<CR>"
+  let l:data ..= "V:s/\s\+$//e\<CR>"
 
   " Go to that mark we just set, and move one character to the right, if
   " possible
   let l:data ..= "``"
   let l:data ..= "l"
 
+  " Remove extra whitespace that gets generated for some reason, but
+  " only if what's after the whitespace is a delimiter or the end of the
+  " line.
+  let l:data ..= ":call SpecialRemoveWhitespace()\<CR>"
+
   return l:data
 endfunction
 
-exec 'nnoremap <silent> J ' . s:TheBetterJoin()
+function! TheBetterJoin()
+  " Go to the end of the current line and set a mark there
+  normal! $
+  normal! m`
+
+  " Remove trailing whitespace on the current line
+  normal! V:s/\s\+$//e\<CR>
+
+  " Actually join the lines
+  normal! J
+
+  " Remove trailing whitespace, again...
+  normal! V:s/\s\+$//e\<CR>
+
+  " Go to that mark we just set, and move one character to the right, if
+  " possible
+  normal! ``
+  normal! l
+
+  " Remove extra whitespace that gets generated for some reason, but
+  " only if what's after the whitespace is a delimiter or the end of the
+  " line.
+  call SpecialRemoveWhitespace()
+endfunction
+
+function! SpecialRemoveWhitespace()
+  if (GetLineToEnd() =~ '\v^\s+[()\[\]{}]') || (GetLineToEnd() =~ '\v^\s+$') || (GetCharAt('.', col('.') - 1) =~ '\v[(\[{<]')
+    normal dw
+  elseif (GetLineToEnd() =~ '\v\s{2,}')
+    exec 'normal dwi '
+  endif
+endfunction
+
+function! TheBetterVisualJoin()
+  let line_start = getpos("'<")[1]
+  let line_end = getpos("'>")[1]
+  let line_diff = line_end - line_start
+
+  exec 'normal ' .. "\<Esc>" .. line_start .. 'G'
+
+  for _ in range(line_diff)
+    call TheBetterJoin2()
+  endfor
+
+  exec 'normal ' .. line_start .. 'G'
+
+"   let better_join_string = 'normal ' .. s:TheBetterJoin()
+
+"   for _ in range(line_diff)
+"     exec better_join_string
+"     let b:foo = better_join_string
+"   endfor
+endfunction
+
+" exec 'nnoremap <silent> J ' . s:TheBetterJoin() " NOTE: BACKUP
+nnoremap J :call TheBetterJoin2()<CR>
+vnoremap J :call TheBetterVisualJoin()<CR>
 " }}}
 
 " }}}
