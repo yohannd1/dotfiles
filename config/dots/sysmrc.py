@@ -11,6 +11,7 @@ else:
         "picom",
         "xorg",
         "awesome",
+        "qtile",
         "zathura",
         "taskwarrior",
         "sxiv",
