@@ -894,35 +894,6 @@ nnoremap <Leader>ft /\v(TODO\|FIXME\|XXX)<CR>
 
 " A join command similar to the one in emacs (or evil-mode, idk)
 " {{{
-function! s:TheBetterJoin_backup()
-  let l:data = ""
-
-  " Go to the end of the current line and set a mark there
-  let l:data ..= "$"
-  let l:data ..= "m`"
-
-  " Remove trailing whitespace on the current line
-  let l:data ..= "V:s/\s\+$//e\<CR>"
-
-  " Actually join the lines
-  let l:data ..= "J"
-
-  " Remove trailing whitespace, again...
-  let l:data ..= "V:s/\s\+$//e\<CR>"
-
-  " Go to that mark we just set, and move one character to the right, if
-  " possible
-  let l:data ..= "``"
-  let l:data ..= "l"
-
-  " Remove extra whitespace that gets generated for some reason, but
-  " only if what's after the whitespace is a delimiter or the end of the
-  " line.
-  let l:data ..= ":call SpecialRemoveWhitespace()\<CR>"
-
-  return l:data
-endfunction
-
 function! TheBetterJoin()
   " Go to the end of the current line and set a mark there
   normal! $
@@ -964,22 +935,14 @@ function! TheBetterVisualJoin()
   exec 'normal ' .. "\<Esc>" .. line_start .. 'G'
 
   for _ in range(line_diff)
-    call TheBetterJoin2()
+    call TheBetterJoin()
   endfor
 
   exec 'normal ' .. line_start .. 'G'
-
-"   let better_join_string = 'normal ' .. s:TheBetterJoin()
-
-"   for _ in range(line_diff)
-"     exec better_join_string
-"     let b:foo = better_join_string
-"   endfor
 endfunction
 
-" exec 'nnoremap <silent> J ' . s:TheBetterJoin() " NOTE: BACKUP
-nnoremap J :call TheBetterJoin2()<CR>
-vnoremap J :call TheBetterVisualJoin()<CR>
+nnoremap <silent> J :call TheBetterJoin()<CR>
+vnoremap <silent> J :call TheBetterVisualJoin()<CR>
 " }}}
 
 " }}}
