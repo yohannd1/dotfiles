@@ -608,6 +608,7 @@ function! Ft_markdown() " {{{
   setlocal fdm=expr foldexpr=MarkdownFoldExpr(v:lnum)
   setlocal textwidth=72 noautoindent
   setlocal tabstop=2 shiftwidth=2
+  setlocal commentstring=<!--\ %s\ -->
 
   command! -buffer MakeHeader exec "normal ggO---\<CR>created: ".strftime("%Y-%m-%d")."\<CR>---\<CR>\<Esc>2k:Tabularize /:\\zs\<Esc>3j"
 

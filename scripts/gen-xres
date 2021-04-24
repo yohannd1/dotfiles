@@ -34,7 +34,7 @@ xset() { printf "%s: %s\n" "$1" "$2"; }
 font() { printf "%s:pixelsize=%s:antialias=true:autohint=true;" "$FONT" "$1"; }
 
 # st
-xset 'st.alpha' "0.97"
+xset 'st.alpha' "0.9"
 xset 'st.cursor' "$base0D"
 xset 'st.font' "$(font $FONT_PIXELSIZE)"
 
