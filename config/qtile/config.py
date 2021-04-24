@@ -68,6 +68,9 @@ task_list = widget.TaskList(
     max_title_width=200,
 )
 
+vol_widget = None # TODO
+mem_widget = None # TODO
+
 standard_bar = bar.Bar(
     [
         widget.GroupBox(
@@ -85,6 +88,10 @@ standard_bar = bar.Bar(
         #     },
         #     name_transform=lambda name: name.upper(),
         # ),
+        widget.TextBox("|"),
+        # vol_widget,
+        widget.TextBox("|"),
+        # mem_widget,
         widget.TextBox("|"),
         widget.CPU( # depends on psutil
             update_interval=5.0,
@@ -139,7 +146,7 @@ floating_layout = layout.Floating(
         Match(title="pinentry"),  # GPG key password entry
     ]
 )
-auto_fullscreen = True
+auto_fullscreen = False
 focus_on_window_activation = "smart"
 
 # XXX: Gasp! We're lying here. In fact, nobody really uses or cares about this
