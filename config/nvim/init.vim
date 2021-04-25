@@ -70,6 +70,7 @@ if g:is_first
   Plug 'https://gitlab.com/HiPhish/guile.vim'
   Plug 'bakpakin/fennel.vim'
   Plug 'udalov/kotlin-vim'
+  Plug 'ollykel/v-vim'
   " Plug 'tbastos/vim-lua'
   " Plug 'hylang/vim-hy'
   " Plug 'fsharp/vim-fsharp'
@@ -92,6 +93,7 @@ if g:is_first
   " Misc.
   Plug 'tpope/vim-vinegar'
   " Plug 'itchyny/lightline.vim'
+  Plug 'vimwiki/vimwiki'
 
   call plug#end()
 endif
@@ -176,6 +178,9 @@ nnoremap <silent> <C-w>l <C-w>l:call PearTreeUpdate()<CR>
 " Zig.vim
 let g:zig_fmt_autosave = 0
 
+" VimWiki
+let g:vimwiki_list = [{"path": "~/wiki/vimwiki", "path_html": "~/.cache/output/vimwiki_html"}]
+
 " }}}
 " Functions {{{
 
@@ -199,7 +204,7 @@ function! AddBookmark(letter, path) " {{{
   execute 'nnoremap <silent> <Leader>e'.a:letter.' :e '.a:path.'<CR>'
 endfunction " }}}
 function! AddSnippet(key, data) " {{{
-  execute 'nnoremap <silent> <Leader>i'.a:key.' i'.a:data.'<Esc>'
+  execute 'nnoremap <silent> <buffer> <Leader>i'.a:key.' i'.a:data.'<Esc>'
 endfunction " }}}
 function! TabOrComplete(mode) " {{{
   """ Used when no completion plugin is available.
@@ -514,7 +519,6 @@ endif
 
 augroup extras
   au!
-  au FileType xdefaults setlocal commentstring=\!%s
   au TermOpen * setlocal norelativenumber nonumber nocursorline
 augroup end
 
@@ -537,9 +541,13 @@ augroup end
 " }}}
 " Filetypes {{{
 
+function! Ft_xdefaults() " {{{
+  setlocal commentstring=\!%s
+endfunction " }}}
 function! Ft_c() " {{{
   setlocal noet sw=8 ts=8
   setlocal fdm=syntax
+  setlocal commentstring=/*\ %s\ */
   let b:format_command = "clang-multicfg-format c"
 
   call AddSnippet("s", '#include <stdio.h>')
@@ -551,6 +559,8 @@ function! Ft_cpp() " {{{
   let b:format_command = "clang-multicfg-format cpp"
 
   call AddSnippet("s", '#include <iostream>')
+  call AddSnippet("v", '#include <vector>')
+  call AddSnippet("M", '#include <memory>')
   call AddSnippet("m", 'int main() {<CR><CR>}<Up>')
 endfunction " }}}
 function! Ft_markdown() " {{{

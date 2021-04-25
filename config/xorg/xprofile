@@ -6,6 +6,7 @@
 
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
+# xrandr --output HDMI1 --auto --right-of eDP1
 gen-xres | xrdb # update xresources database
 setbg &
 
