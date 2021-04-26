@@ -401,6 +401,9 @@ endfunction! " }}}
 function! GetCharAt(line, col) " {{{
   return strcharpart(getline(a:line)[a:col - 1:], 0, 1)
 endfunction! " }}}
+function! GetLink(string) " {{{
+  return matchstr(a:string, '\v(https?|www\.)://[a-zA-Z0-9/\-\.%]+')
+endfunction " }}}
 if g:is_first | function! SourceIf(...) " {{{
   for path in a:000
     if filereadable(path)
