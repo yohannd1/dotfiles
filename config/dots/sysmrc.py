@@ -15,6 +15,7 @@ else:
         "zathura",
         "taskwarrior",
         "sxiv",
+        "tig",
         # "i3",
         # "rofi",
         # "bspwm",
