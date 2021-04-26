@@ -718,12 +718,13 @@ function! Ft_zig() " {{{
   call AddSnippet("t", 'test {<CR><CR>}<Up>')
 endfunction " }}}
 function! Ft_python() " {{{
-  " let b:format_command = "python3 -m black - 2>/dev/null"
+  let b:format_command = "python3 -m black - 2>/dev/null"
 
   syn keyword Boolean True
   syn keyword Boolean False
   syn keyword Boolean None
 
+  call AddSnippet("m", 'def main():<CR>pass<CR><CR>if __name__ == "__main__":<CR>main()')
   call AddSnippet("c", 'from dataclasses import dataclass')
   call AddSnippet("a", 'from abc import abstractmethod')
 endfunction " }}}
@@ -790,8 +791,11 @@ let &statusline = ""
 " }}}
 " Mappings {{{
 
+" Define leader keys
 nmap <Space> <Leader>
 vmap <Space> <Leader>
+nmap , <Leader>
+vmap , <Leader>
 
 " Key input delays
 set timeoutlen=1000 ttimeoutlen=10
@@ -955,5 +959,8 @@ endfunction
 nnoremap <silent> J :call TheBetterJoin()<CR>
 vnoremap <silent> J :call TheBetterVisualJoin()<CR>
 " }}}
+
+" Wiki - Toggle bullet items
+nnoremap <Leader>, :VimwikiToggleListItem<CR>
 
 " }}}

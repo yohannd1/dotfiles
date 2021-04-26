@@ -1,0 +1,27 @@
+#!/usr/bin/env sh
+
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
+exists nvim && alias vim=nvim
+
+case $# in
+  0) vim +VimwikiIndex ;;
+  1)
+    case "$1" in
+      browse)
+        cd ~/wiki/vimwiki
+        choice=$(fd -tf '\.(md|wiki)$' | fzagnostic) || exit 1
+        vim "$choice"
+        ;;
+      *) exit 1 ;;
+    esac ;;
+  2)
+    case "$1" in
+      open)
+        cd ~/wiki/vimwiki
+        vim ~/wiki/vimwiki/"$2".wiki
+        ;;
+      *) exit 1 ;;
+    esac ;;
+  *) exit 1 ;;
+esac

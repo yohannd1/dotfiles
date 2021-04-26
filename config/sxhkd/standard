@@ -98,6 +98,12 @@ super + shift + e
     $TERMINAL -c float -g 100x35 -e $EDITOR
 
 # super-o apps
+super + o; s
+    $TERMINAL -e vimwiki open ScratchPad
+super + o; w
+    $TERMINAL -e vimwiki
+super + o; W
+    $TERMINAL -e vimwiki browse
 super + o; c
     $TERMINAL -c float -g 65x10 -e runread cal -3
 super + o; m
