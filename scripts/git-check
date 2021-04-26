@@ -19,7 +19,6 @@ if ! is_git_dir; then
 fi
 
 # show status
-gitAddAll
 git status -sb
 
 # show help message
@@ -48,6 +47,7 @@ while [ ! "$exit" ]; do
     "") clear ;;
     "") exit=0 ;;
     "") exit=0 ;;
+    t) tig ;;
     h) cat >&2 <<EOF ;;
   i     info (git status -sb)
   a     stage all changes
@@ -64,6 +64,7 @@ while [ ! "$exit" ]; do
   q     exit
   ESC   exit
   h     show this message
+  t     open tig
 EOF
     *) printf 'Invalid option: %q\n' "$option" ;;
   esac
