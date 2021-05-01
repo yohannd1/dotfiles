@@ -4,7 +4,7 @@
 import argparse, os, sys, re, subprocess as sp
 from pathlib import Path
 
-COMPILER_COMMAND = ["comrak", "--gfm"]
+COMPILER_COMMAND = ["comrak", "--gfm", "--unsafe"]
 
 def main(argv):
     parser = argparse.ArgumentParser(

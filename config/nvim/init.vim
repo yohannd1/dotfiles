@@ -179,7 +179,13 @@ nnoremap <silent> <C-w>l <C-w>l:call PearTreeUpdate()<CR>
 let g:zig_fmt_autosave = 0
 
 " VimWiki
-let g:vimwiki_list = [{"path": "~/wiki/vimwiki", "path_html": "~/.cache/output/vimwiki_html"}]
+let g:vimwiki_list = [{ "path": "~/wiki/vimwiki",
+                      \ "path_html": "~/.cache/output/vimwiki_html",
+                      \ "syntax": "default",
+                      \ "ext": ".wiki"}]
+
+let g:vimwiki_global_ext = 0
+let g:vimwiki_conceallevel = 0
 
 " }}}
 " Functions {{{
@@ -401,8 +407,53 @@ endfunction! " }}}
 function! GetCharAt(line, col) " {{{
   return strcharpart(getline(a:line)[a:col - 1:], 0, 1)
 endfunction! " }}}
-function! GetLink(string) " {{{
-  return matchstr(a:string, '\v(https?|www\.)://[a-zA-Z0-9/\-\.%]+')
+function! GetURL(string) " {{{
+  return matchstr(a:string, '\v(https?|www\.)://[a-zA-Z0-9/\-\.%_?#=]+')
+endfunction " }}}
+function! GetFile(string) " {{{
+  return matchstr(a:string, '\v[a-zA-Z0-9_\-\./]+')
+endfunction " }}}
+function! ReadLine(prompt) " {{{
+  call inputsave()
+  let line = input(a:prompt)
+  call inputrestore()
+
+  echo ""
+  return line
+endfunction " }}}
+function! OpenSelected() " {{{
+  let current_word = expand("<cWORD>")
+
+  let url = GetURL(current_word)
+  if len(url) != 0
+    let browser = $BROWSER
+
+    echo "Found URL: " .. url
+    if browser == ""
+      echoerr "Could not find a suitable browser to open (set it via $BROWSER)"
+    endif
+    let choice = ReadLine("Open it using a browser? [Y/n] ")
+
+    if choice == "Y" || choice == "y" || choice == ""
+      call jobstart([browser, url])
+    endif
+
+    return
+  endif
+
+  let file = GetFile(current_word)
+  if len(file) != 0
+    echo "Found file: " .. file
+    let choice = ReadLine("Open it in a new buffer? [Y/n] ")
+
+    if choice == "Y" || choice == "y" || choice == ""
+      exec 'edit ' .. file
+    endif
+
+    return
+  endif
+
+  echo "Could not find a suitable file or url in the current WORD"
 endfunction " }}}
 if g:is_first | function! SourceIf(...) " {{{
   for path in a:000
@@ -743,6 +794,12 @@ endfunction " }}}
 function! Ft_moon() " {{{
   setlocal sw=2
 endfunction " }}}
+function! Ft_vimwiki() " {{{
+  setlocal sw=2
+
+  nunmap <buffer> o
+  nunmap <buffer> O
+endfunction " }}}
 
 " }}}
 
@@ -965,5 +1022,23 @@ vnoremap <silent> J :call TheBetterVisualJoin()<CR>
 
 " Wiki - Toggle bullet items
 nnoremap <Leader>, :VimwikiToggleListItem<CR>
+
+" Improved file opener
+nnoremap gf :call OpenSelected()<CR>
+
+" Toggle virtualedit
+" {{{
+function! ToggleVirtualEdit()
+  if &virtualedit == ""
+    setlocal ve=all
+    echom "Virtual Edit ON"
+  else
+    setlocal ve=
+    echom "Virtual Edit OFF"
+  endif
+endfunction
+
+nnoremap <Leader>tv :call ToggleVirtualEdit()<CR>
+" }}}
 
 " }}}
