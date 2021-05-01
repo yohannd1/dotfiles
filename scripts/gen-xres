@@ -26,9 +26,9 @@
 . ~/.config/dots/env.sh
 eval "$(load-base16-theme)"
 
-FONT="Fixedsys Excelsior"
-FONT_PIXELSIZE="15.5"
-FONT_POINTSIZE="11pt"
+FONT="Cascadia Code"
+FONT_PIXELSIZE="13.5"
+FONT_POINTSIZE="12pt"
 
 xset() { printf "%s: %s\n" "$1" "$2"; }
 font() { printf "%s:pixelsize=%s:antialias=true:autohint=true;" "$FONT" "$1"; }
