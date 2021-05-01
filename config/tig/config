@@ -3,6 +3,10 @@ set tab-size = 8
 
 bind generic g none
 bind generic G none
+bind main G move-last-line
+bind stage G move-last-line
+bind main G move-last-line
+bind generic G move-last-line
 bind generic gg move-first-line
 bind generic gG move-last-line
 bind generic gk move-first-line
