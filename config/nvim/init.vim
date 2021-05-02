@@ -133,12 +133,26 @@ let g:apc_custom_states = {
       \ "clap_input": 0,
       \ }
 
-" Clap recent files command
+" Clap command: recent files
 let g:clap_provider_recent = {
       \ "source": "filehist list | tac",
       \ "sink": "e",
       \ "description": "Load a file from the recent list",
       \ }
+
+" Clap command: search on wiki
+" {{{
+function! _OpenWikiFile(file)
+  let file_name = $WIKI .. "/vimwiki/" .. split(a:file)[0]
+  exec 'e ' .. file_name
+endfunction
+
+let g:clap_provider_wiki = {
+      \ "source": "vimwiki list-titles",
+      \ "sink": { sel -> _OpenWikiFile(sel) },
+      \ "description": "Search on my wiki",
+      \ }
+" }}}
 
 " Make it so <Esc> cancels clap even while on insert mode
 augroup clap_esc_fix
@@ -935,8 +949,9 @@ vnoremap <Leader>s :s/\v/g<Left><Left>
 nnoremap <silent> <C-j> :call NextBuffer()<CR>
 nnoremap <silent> <C-k> :call PrevBuffer()<CR>
 
-" Open a file
+" Clap bindings
 nnoremap <Leader>o :Clap recent<CR>
+nnoremap <Leader>wo :Clap wiki<CR>
 
 " Visual mappings
 " {{{

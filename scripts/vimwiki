@@ -1,6 +1,20 @@
 #!/usr/bin/env sh
 
+WIKI_DIR="${WIKI:-$HOME/wiki}/vimwiki"
+
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
+getNoteTitle() {
+  local firstLine
+
+  firstLine=$(head -n1 "$1")
+
+  if printf "%s" "$firstLine" | grep -q '^\s*=\s*.*\s*=\s*$'; then
+    printf "%s" "$firstLine" | sed 's|^\s*=\s*\(.*\)\s*=\s*$|\1|'
+  else
+    return 1
+  fi
+}
 
 exists nvim && alias vim=nvim
 
@@ -9,17 +23,30 @@ case $# in
   1)
     case "$1" in
       browse)
-        cd ~/wiki/vimwiki
+        cd "$wiki_dir"
         choice=$(fd -tf '\.(md|wiki)$' | fzagnostic) || exit 1
         vim "$choice"
+        ;;
+      list-titles)
+        cd "$WIKI_DIR"
+
+        fd -tf | while read file; do
+          firstLine=$(getNoteTitle "$file")
+
+          if test $? = 0; then
+            printf "%s :: %s\n" "$file" "$firstLine"
+          else
+            printf "%s :: ???\n" "$file"
+          fi
+        done
         ;;
       *) exit 1 ;;
     esac ;;
   2)
     case "$1" in
       open)
-        cd ~/wiki/vimwiki
-        vim ~/wiki/vimwiki/"$2".wiki
+        cd "$WIKI_DIR"
+        vim "$WIKI_DIR/$2".wiki
         ;;
       *) exit 1 ;;
     esac ;;
