@@ -99,7 +99,7 @@ super + shift + e
 
 # super-o apps
 super + o; s
-    $TERMINAL -e vimwiki open ScratchPad
+    $TERMINAL -e vimwiki open Scratchpad
 super + o; w
     $TERMINAL -e vimwiki
 super + o; W

@@ -799,6 +799,7 @@ function! Ft_vimwiki() " {{{
 
   nunmap <buffer> o
   nunmap <buffer> O
+  nmap <buffer> <C-h> <BS>
 endfunction " }}}
 
 " }}}
