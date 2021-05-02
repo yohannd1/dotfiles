@@ -387,7 +387,7 @@ hi link zigMultilineStringDelimiter Delimiter
 hi link zigMultilineStringDelimiter Delimiter
 
 " Clap (https://github.com/liuchengxu/vim-clap) highlighting
-call s:hl("ClapInput",            "NONE", "01",   "", "")
+call s:hl("ClapInput",            "NONE", "02",   "", "")
 call s:hl("ClapDisplay",          "NONE", "00",   "NONE", "")
 call s:hl("ClapSelected",         "NONE", "01",   "NONE", "")
 call s:hl("ClapCurrentSelection", "NONE", "01",   "NONE", "")
