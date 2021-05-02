@@ -46,7 +46,7 @@ showErrorOrOutput() {
 case "$notifyIf" in
   error-and-output)
     if [ "$exitCode" != 0 ] && [ "$output" ]; then
-      headingMessage=$(printf 'Error while running <%s> @(%s)' "$exitCode" "$*")
+      headingMessage=$(printf 'Error code %s while running: %s' "$exitCode" "$*")
       notify-send "$headingMessage" "$output"
     fi
     ;;
