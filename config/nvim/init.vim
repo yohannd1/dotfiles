@@ -143,7 +143,7 @@ let g:clap_provider_recent = {
 " Clap command: search on wiki
 " {{{
 function! _OpenWikiFile(file)
-  let file_name = $WIKI .. "/vimwiki/" .. split(a:file)[0]
+  let file_name = $WIKI .. "/vimwiki/" .. split(a:file)[0] .. ".wiki"
   exec 'e ' .. file_name
 endfunction
 
@@ -154,12 +154,38 @@ let g:clap_provider_wiki = {
       \ }
 " }}}
 
+" Clap command: insert from file
+" {{{
+function! _InsertWikiFileRef(input, after_cursor)
+  normal! m`
+  exec 'normal! ' .. (a:after_cursor ? 'a' : 'i') .. '[[' .. split(a:input)[0] .. ']]'
+  normal! ``
+  if a:after_cursor
+    normal! l
+  endif
+endfunction
+
+let g:clap_provider_wiki_iref = {
+      \ "source": "vimwiki list-titles",
+      \ "sink": { sel -> _InsertWikiFileRef(sel, v:false) },
+      \ "description": "...",
+      \ }
+
+let g:clap_provider_wiki_aref = {
+      \ "source": "vimwiki list-titles",
+      \ "sink": { sel -> _InsertWikiFileRef(sel, v:true) },
+      \ "description": "...",
+      \ }
+" }}}
+
 " Make it so <Esc> cancels clap even while on insert mode
 augroup clap_esc_fix
   au!
   au User ClapOnEnter inoremap <silent> <buffer> <Esc> <Esc>:<c-u>call clap#handler#exit()<CR>
   au User ClapOnExit silent! iunmap <buffer> <Esc>
 augroup end
+
+let g:clap_open_preview = "never"
 
 " So, pear-tree kept undloading the keybindings, so I forced it to reload
 " everytime I switch or load buffers.
@@ -1038,6 +1064,10 @@ vnoremap <silent> J :call TheBetterVisualJoin()<CR>
 
 " Wiki - Toggle bullet items
 nnoremap <Leader>, :VimwikiToggleListItem<CR>
+
+" Wiki - Insert note from title
+nnoremap <Leader>wI :Clap wiki_iref<CR>
+nnoremap <Leader>wi :Clap wiki_aref<CR>
 
 " Improved file opener
 nnoremap gf :call OpenSelected()<CR>

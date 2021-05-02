@@ -10,7 +10,9 @@ getNoteTitle() {
   firstLine=$(head -n1 "$1")
 
   if printf "%s" "$firstLine" | grep -q '^\s*=\s*.*\s*=\s*$'; then
-    printf "%s" "$firstLine" | sed 's|^\s*=\s*\(.*\)\s*=\s*$|\1|'
+    printf "%s" "$firstLine" \
+      | sed 's|^\s*=\s*\(.*\)\s*=\s*$|\1|' \
+      | sed 's| \+$||'
   else
     return 1
   fi
@@ -30,13 +32,14 @@ case $# in
       list-titles)
         cd "$WIKI_DIR"
 
-        fd -tf | while read file; do
+        fd -tf '\.wiki$' | while read file; do
+          fileWithoutExt=$(printf "%s" "$file" | sed 's|\.wiki$||')
           firstLine=$(getNoteTitle "$file")
 
           if test $? = 0; then
-            printf "%s :: %s\n" "$file" "$firstLine"
+            printf "%s %s\n" "$fileWithoutExt" "$firstLine"
           else
-            printf "%s :: ???\n" "$file"
+            printf "%s <No Title>\n" "$fileWithoutExt"
           fi
         done
         ;;
