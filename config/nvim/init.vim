@@ -228,6 +228,7 @@ let g:vimwiki_list = [{ "path": g:wiki_dir,
                       \ "syntax": "default",
                       \ "ext": ".wiki"}]
 
+let g:vimwiki_map_prefix = "<NOP>"
 let g:vimwiki_global_ext = 0
 let g:vimwiki_conceallevel = 0
 
@@ -847,8 +848,6 @@ function! Ft_vimwiki() " {{{
   nunmap <buffer> o
   nunmap <buffer> O
   nmap <buffer> <C-h> <BS>
-
-  nunmap <buffer> <Leader>wn
 endfunction " }}}
 
 " }}}
@@ -1012,7 +1011,6 @@ nnoremap <silent> <C-k> :call PrevBuffer()<CR>
 
 " Clap bindings
 nnoremap <Leader>o :Clap recent<CR>
-nnoremap <Leader>wo :Clap wiki<CR>
 
 " Visual mappings
 " {{{
@@ -1100,13 +1098,10 @@ vnoremap <silent> J :call TheBetterVisualJoin()<CR>
 " Wiki - Toggle bullet items
 nnoremap <Leader>, :VimwikiToggleListItem<CR>
 
-" Wiki - Insert note from title
-nnoremap <Leader>wI :Clap wiki_iref<CR>
-nnoremap <Leader>wi :Clap wiki_aref<CR>
-
-" Wiki - create file, insert it inline and go to the new file
+" Vimwiki hydra
 " {{{
-function! _CreateWikiFileAndGoThere(after_cursor)
+" Wiki - create file, insert it inline and go to the new file
+function! Vimwiki_NewFileAddRef(after_cursor)
   while v:true
     let title = WikiGenTitle()
     let file_path = g:wiki_dir .. "/" .. title .. ".wiki"
@@ -1121,8 +1116,39 @@ function! _CreateWikiFileAndGoThere(after_cursor)
   endwhile
 endfunction
 
-nnoremap <Leader>wN :call _CreateWikiFileAndGoThere(v:false)<CR>
-nnoremap <Leader>wn :call _CreateWikiFileAndGoThere(v:true)<CR>
+silent call hydra#hydras#register({
+      \ "name":           "vimwiki",
+      \ "title":          "Vimwiki",
+      \ "show":           "popup",
+      \ "exit_key":       "q",
+      \ "feed_key":       v:false,
+      \ "foreign_key":    v:true,
+      \ "single_command": v:true,
+      \ "keymap": [
+      \   {
+      \     "name": "General",
+      \     "keys": [
+      \       ["w", "VimwikiIndex", "open index"],
+      \       ["o", "Clap wiki", "select a wiki file"],
+      \       ["H", "Vimwiki2HTMLBrowse", "compile current & browse"],
+      \       ["h", "Vimwiki2HTML", "compile current"],
+      \       ["A", "VimwikiAll2HTML", "compile all"],
+      \     ]
+      \   },
+      \   {
+      \     "name": "References",
+      \     "keys": [
+      \       ["I", "Clap wiki_iref", "add reference ←"],
+      \       ["i", "Clap wiki_aref", "add reference →"],
+      \       ["N", "call Vimwiki_NewFileAddRef(v:false)", "new note + add reference ←"],
+      \       ["n", "call Vimwiki_NewFileAddRef(v:true)", "new note + add reference →"],
+      \     ]
+      \   },
+      \ ]
+      \ }
+      \ )
+
+nnoremap <silent> <Leader>w :Hydra vimwiki<CR>
 " }}}
 
 " Improved file opener
