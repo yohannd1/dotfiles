@@ -95,6 +95,9 @@ if g:is_first
   " Plug 'itchyny/lightline.vim'
   Plug 'vimwiki/vimwiki'
 
+  " Plug 'brenopacheco/vim-hydra'
+  Plug 'YohananDiamond/vim-hydra'
+
   call plug#end()
 endif
 
@@ -219,7 +222,8 @@ nnoremap <silent> <C-w>l <C-w>l:call PearTreeUpdate()<CR>
 let g:zig_fmt_autosave = 0
 
 " VimWiki
-let g:vimwiki_list = [{ "path": "~/wiki/vimwiki",
+let g:wiki_dir = $HOME .. "/wiki/vimwiki"
+let g:vimwiki_list = [{ "path": g:wiki_dir,
                       \ "path_html": "~/.cache/output/vimwiki_html",
                       \ "syntax": "default",
                       \ "ext": ".wiki"}]
@@ -494,6 +498,9 @@ function! OpenSelected() " {{{
   endif
 
   echo "Could not find a suitable file or url in the current WORD"
+endfunction " }}}
+function! WikiGenTitle() " {{{
+  return strftime("%Y%m%d%H%M-") .. trim(system("hexdump -n 3 -e '4/4 \"%08X\" 1 \"\\n\"' /dev/random | cut -c 3-"))
 endfunction " }}}
 if g:is_first | function! SourceIf(...) " {{{
   for path in a:000
@@ -840,6 +847,8 @@ function! Ft_vimwiki() " {{{
   nunmap <buffer> o
   nunmap <buffer> O
   nmap <buffer> <C-h> <BS>
+
+  nunmap <buffer> <Leader>wn
 endfunction " }}}
 
 " }}}
@@ -944,11 +953,37 @@ inoremap <expr> <Down> pumvisible() ? "\<C-n>" : "<Down>"
 inoremap <expr> <Up> pumvisible() ? "\<C-p>" : "<Up>"
 inoremap <expr> <C-m> pumvisible() ? "\<C-y>" : "<C-m>"
 
-" Rifle Commands
-nnoremap <silent> <Leader>rr :Rifle "run"<CR>
-nnoremap <silent> <Leader>rc :Rifle "check"<CR>
-nnoremap <silent> <Leader>rb :Rifle "build"<CR>
-nnoremap <silent> <Leader>rt :Rifle "test"<CR>
+" Rifle commands
+" {{{
+silent call hydra#hydras#register({
+      \ "name":           "rifle",
+      \ "title":          "Rifle Commands",
+      \ "show":           "popup",
+      \ "exit_key":       "q",
+      \ "feed_key":       v:false,
+      \ "foreign_key":    v:true,
+      \ "single_command": v:true,
+      \ "keymap": [
+      \   {
+      \     "name": "Commands to run",
+      \     "keys": [
+      \       ["r", "Rifle 'run'", "run"],
+      \       ["b", "Rifle 'build'", "build"],
+      \       ["c", "Rifle 'check'", "check"],
+      \       ["t", "Rifle 'test'", "test"],
+      \     ]
+      \   },
+      \ ]
+      \ }
+      \ )
+
+nnoremap <silent> <Leader>r :Hydra rifle<CR>
+
+" nnoremap <silent> <Leader>rr :Rifle "run"<CR>
+" nnoremap <silent> <Leader>rc :Rifle "check"<CR>
+" nnoremap <silent> <Leader>rb :Rifle "build"<CR>
+" nnoremap <silent> <Leader>rt :Rifle "test"<CR>
+" }}}
 
 " Formatting Commands
 nnoremap <Leader>bf :FormatBuffer<CR>
@@ -1068,6 +1103,27 @@ nnoremap <Leader>, :VimwikiToggleListItem<CR>
 " Wiki - Insert note from title
 nnoremap <Leader>wI :Clap wiki_iref<CR>
 nnoremap <Leader>wi :Clap wiki_aref<CR>
+
+" Wiki - create file, insert it inline and go to the new file
+" {{{
+function! _CreateWikiFileAndGoThere(after_cursor)
+  while v:true
+    let title = WikiGenTitle()
+    let file_path = g:wiki_dir .. "/" .. title .. ".wiki"
+
+    if filereadable(file_path)
+      continue
+    endif
+
+    call _InsertWikiFileRef(title, a:after_cursor)
+    exec 'edit ' .. file_path
+    break
+  endwhile
+endfunction
+
+nnoremap <Leader>wN :call _CreateWikiFileAndGoThere(v:false)<CR>
+nnoremap <Leader>wn :call _CreateWikiFileAndGoThere(v:true)<CR>
+" }}}
 
 " Improved file opener
 nnoremap gf :call OpenSelected()<CR>
