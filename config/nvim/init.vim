@@ -626,7 +626,7 @@ augroup end
 
 augroup buffer_load
   au!
-  au FileType * if exists("*Ft_".&ft) | exec 'call Ft_'.&ft.'()' | endif
+  au FileType * if exists("g:ft") && has_key(g:ft, &filetype) | call g:ft[&filetype]() | endif
   au FileType * call SetupMakefileRifle()
   au BufNewFile,BufRead * call AddToRecFile()
   au BufEnter * call ApcReenable()
@@ -643,10 +643,12 @@ augroup end
 " }}}
 " Filetypes {{{
 
-function! Ft_xdefaults() " {{{
+let g:ft = {}
+
+function! ft.xdefaults() " {{{
   setlocal commentstring=\!%s
 endfunction " }}}
-function! Ft_c() " {{{
+function! ft.c() " {{{
   setlocal noet sw=8 ts=8
   setlocal fdm=syntax
   setlocal commentstring=/*\ %s\ */
@@ -655,7 +657,7 @@ function! Ft_c() " {{{
   call AddSnippet("s", '#include <stdio.h>')
   call AddSnippet("m", 'int main(void) {<CR><CR>}<Up>')
 endfunction " }}}
-function! Ft_cpp() " {{{
+function! ft.cpp() " {{{
   setlocal fdm=syntax
   setlocal commentstring=//\ %s
   let b:format_command = "clang-multicfg-format cpp"
@@ -665,7 +667,7 @@ function! Ft_cpp() " {{{
   call AddSnippet("M", '#include <memory>')
   call AddSnippet("m", 'int main() {<CR><CR>}<Up>')
 endfunction " }}}
-function! Ft_markdown() " {{{
+function! ft.markdown() " {{{
   " Thanks to https://gist.github.com/olmokramer/feadbf14a055efd46a8e1bf1e4be4447
   let s:bullet = '^\s*\%(\d\+\.\|[-+*]\)'
   function! MarkdownCheckboxToggle(...) abort " {{{
@@ -733,7 +735,7 @@ function! Ft_markdown() " {{{
   vnoremap <silent> <buffer> <Leader>o :call MarkdownCheckboxToggle("x")<CR>
   vnoremap <silent> <buffer> <Leader>O :call MarkdownCheckboxRemove()<CR>
 endfunction " }}}
-function! Ft_sh() " {{{
+function! ft.sh() " {{{
   setlocal tabstop=2 shiftwidth=2 fdm=syntax
   " let g:is_bash = 1
   " let g:sh_fold_enabled = 0
@@ -747,16 +749,16 @@ function! Ft_sh() " {{{
   " 4 (100): fold if/for/case/...
   " let g:sh_fold_enabled += 4
 endfunction " }}}
-function! Ft_zsh() " {{{
+function! ft.zsh() " {{{
   setlocal tabstop=2 shiftwidth=2 fdm=syntax
 endfunction " }}}
-function! Ft_vim() " {{{
+function! ft.vim() " {{{
   setlocal fdm=marker tw=72
 endfunction " }}}
-function! Ft_hy() " {{{
+function! ft.hy() " {{{
   setlocal tabstop=2 shiftwidth=2
 endfunction " }}}
-function! Ft_nim() " {{{
+function! ft.nim() " {{{
   setlocal sw=2 ts=2 expandtab
 
   if ReverseRSearch(expand("%:p:h"), '*.nimble')
@@ -765,19 +767,19 @@ function! Ft_nim() " {{{
     let b:rifle_ft = "nim"
   endif
 endfunction " }}}
-function! Ft_nims() " {{{
-  call Ft_nim()
+function! ft.nims() " {{{
+  call ft.nim()
 endfunction " }}}
-function! Ft_ruby() " {{{
+function! ft.ruby() " {{{
   setlocal fdm=syntax
 endfunction " }}}
-function! Ft_haskell() " {{{
+function! ft.haskell() " {{{
   setlocal ts=2 sw=2
 endfunction " }}}
-function! Ft_html() " {{{
+function! ft.html() " {{{
   let b:rifle_mode = "silent"
 endfunction " }}}
-function! Ft_rust() " {{{
+function! ft.rust() " {{{
   if ReverseRSearch(expand("%:p:h"), "Cargo.toml")
     let b:rifle_ft = "@cargo"
   else
@@ -787,25 +789,25 @@ function! Ft_rust() " {{{
   let b:format_command = "rustfmt"
   setlocal fdm=syntax textwidth=100
 endfunction " }}}
-function! Ft_java() " {{{
+function! ft.java() " {{{
   if ReverseRSearch(expand("%:p:h"), "gradlew")
     let b:rifle_ft = "@gradlew"
   endif
 
   setlocal fdm=syntax
 endfunction " }}}
-function! Ft_make() " {{{
+function! ft.make() " {{{
   setlocal sw=8 ts=8 noet
 endfunction " }}}
-function! Ft_tex() " {{{
+function! ft.tex() " {{{
   let b:rifle_ft = "tex"
   let b:rifle_mode = "buffer"
   setlocal textwidth=72
 endfunction
-function! Ft_plaintex()
-  call Ft_tex()
+function! ft.plaintex()
+  call ft.tex()
 endfunction " }}}
-function! Ft_zig() " {{{
+function! ft.zig() " {{{
   if ReverseRSearch(expand("%:p:h"), "build.zig")
     let b:rifle_ft = "@zig-build"
   else
@@ -819,7 +821,7 @@ function! Ft_zig() " {{{
   call AddSnippet("m", 'pub fn main() anyerror!void {<CR><CR>}<Up>')
   call AddSnippet("t", 'test {<CR><CR>}<Up>')
 endfunction " }}}
-function! Ft_python() " {{{
+function! ft.python() " {{{
   let b:format_command = "python3 -m black - 2>/dev/null"
 
   syn keyword Boolean True
@@ -830,19 +832,19 @@ function! Ft_python() " {{{
   call AddSnippet("c", 'from dataclasses import dataclass')
   call AddSnippet("a", 'from abc import abstractmethod')
 endfunction " }}}
-function! Ft_javascript() " {{{
+function! ft.javascript() " {{{
   let b:format_command = "prettier-stdin"
 endfunction " }}}
-function! Ft_yaml() " {{{
+function! ft.yaml() " {{{
   setlocal sw=2
 endfunction " }}}
-function! Ft_wk() " {{{
+function! ft.wk() " {{{
   setlocal sw=2
 endfunction " }}}
-function! Ft_moon() " {{{
+function! ft.moon() " {{{
   setlocal sw=2
 endfunction " }}}
-function! Ft_vimwiki() " {{{
+function! ft.vimwiki() " {{{
   setlocal sw=2
 
   nunmap <buffer> o
