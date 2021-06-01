@@ -46,7 +46,7 @@ else
 fi
 
 if [ -d "$ZIG_PACKDIR" ]; then
-  backupDirectory=$(mktemp -d zig-backup-XXXXXX)
+  backupDirectory=$(mktemp -d "${TMP:-/tmp}/zig-backup-XXXXXX") || exit 1
   printf >&2 "A zig package is already installed; backing it up to %s\n" "$backupDirectory"
   printf >&2 "NOTE: you are responsible for manually deleting mentioned folder.\n"
 
