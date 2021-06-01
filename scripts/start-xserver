@@ -37,12 +37,14 @@ if printf "%s" "$tty" | grep -q '^/dev/tty'; then
 elif [ "$USE_XEPHYR" ]; then
   # TODO: find a way to detect if this specific display is being used
   tty=$(printf "%04d" "$(shuf -i 10-9999 -n 1)")
+elif test "$SX_TTY"; then
+  tty=${SX_TTY#/dev/tty}
 else
   printf >&2 "%s\n" "Unknown TTY string: '$tty'"
   exit 1
 fi
 
-export XSESSIONDIR=/tmp/xsessions/$tty
+export XSESSIONDIR="/tmp/xsessions/$tty"
 [ -d "$XSESSIONDIR" ] && rm -r "$XSESSIONDIR"
 mkdir -p "$XSESSIONDIR"
 

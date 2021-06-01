@@ -183,8 +183,10 @@ case "$1" in
         nimble build
         ;;
       @zig-build) fparent-run "build.zig" run-command file-dir zig build --color off ;;
+      zig) zig build-exe "$file" --color off --cache-dir "$tmp" ;;
       @gradlew) fparent-run "gradlew" run-file script-dir build ;;
       markdown) md-compile "$file" > "$HOME/$(basename "$file").$(date +%Y-%m-%d).html" ;;
+      fennel) fennel --compile "$file" 2>&1 | vi - ;;
       *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
     esac ;;
   test)
@@ -199,6 +201,7 @@ case "$1" in
         ;;
       @zig-build) fparent-run "build.zig" run-command file-dir zig build test --color off ;;
       zig) zig test "$file" --color off --cache-dir "$tmp" ;;
+      rust) rustc --test "$file" -o "$tmp/exe" && "$tmp/exe" ;;
       *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
     esac ;;
   check)

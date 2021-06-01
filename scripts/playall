@@ -92,7 +92,9 @@ def main():
     limit = opts.limit[0] if opts.limit else None
 
     limit_count = 0
-    for file in files[starting_offset:]:
+    slice = files[starting_offset:]
+    slice_len = len(slice)
+    for i, file in enumerate(slice):
         name = file.name
 
         skip = False
@@ -110,7 +112,9 @@ def main():
             print(f"File {file} has unknown extension", file=sys.stderr)
             continue
 
-        print(f"Playing {file} ...", file=sys.stderr)
+        os.system("clear")
+
+        print(f"({i+1}/{slice_len}) Playing {file} ...", file=sys.stderr)
 
         inc_limitc = True
         with sp.Popen(

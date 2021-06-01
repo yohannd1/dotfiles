@@ -9,7 +9,7 @@ XDG_DATA_DIR="${XDG_DATA_DIR:-$HOME/.local/share}"
 PROGNAME=$(basename $0)
 
 usage() {
-  printf >&2 "Usage: %s\n" "$PROGNAME { open <BIN> | cmd | cfg | add-recent <BIN> | tricks <ARGS> }"
+  printf >&2 "Usage: %s\n" "$PROGNAME { open <BIN> [ARGS...] | cmd | cfg | add-recent <BIN> | tricks <ARGS...> }"
   printf >&2 "Environment variables:\n"
   printf >&2 "  WINEW_ARCH := { 32 | 64 }\n"
   printf >&2 "                (Default: 32)\n"
@@ -81,6 +81,7 @@ case $# in
      ;;
   *) case "$1" in
        tricks) shift; launch_shell winetricks "$@" ;;
+       open) check_file_existence "$2" && shift && launch_wine "$@" ;;
        *) usage ;;
      esac
      ;;

@@ -19,7 +19,7 @@ if ! is_git_dir; then
 fi
 
 # show status
-git status -sb
+# git status -sb
 
 # show help message
 printf >&2 "Type 'h' for help.\n"
