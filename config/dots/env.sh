@@ -39,6 +39,7 @@ export FILEMAN=lf
 
 # configuration files/folders
 export _ZL_DATA="$XDG_DATA_DIR/zlua"
+export _ZL_FZF_HEIGHT="" # no height limit!
 export WINEPREFIX="$XDG_DATA_DIR/wine32"
 export WINEW_32_PREFIX="$XDG_DATA_DIR/wine32"
 export WINEW_64_PREFIX="$XDG_DATA_DIR/wine64"
@@ -64,18 +65,24 @@ export LUAROCKS_HOME="$HOME/.luarocks"
 # program options
 export XORG_KBRATE_DELAY="300"
 export XORG_KBRATE_INTERVAL="30"
-export GIT_EDITOR="${EDITOR:-vim}"
+export GIT_EDITOR="$EDITOR"
 export LESS="-RC"
 export KEYTIMEOUT=1
 export NNN_OPENER="$OPENER"
 export NNN_TRASH=1
 export FZF_DEFAULT_OPTS='--layout=reverse --border
-                         --color fg:4,fg+:5
-                         --color hl:3,hl+:10
+                         --color fg:5,fg+:2
+                         --color hl:6,hl+:4
                          --color prompt:8,marker:5,pointer:8
                          --color spinner:3,gutter:1,info:3'
 export GREP_COLORS='ms=01;34:mc=01;34:sl=:cx=:fn=35:ln=32:bn=32:se=36'
-export PINENTRY_USER_DATA="DISPLAY=$([ "$DISPLAY" ] && echo "1" || echo "0")"
+
+if [ "$DISPLAY" ]; then
+  export PINENTRY_USER_DATA="DISPLAY=1"
+else
+  export PINENTRY_USER_DATA="DISPLAY=0"
+fi
+
 export GPG_TTY=$(tty)
 
 _gcc_colors='error    = 01;38;5;8
@@ -99,6 +106,11 @@ export GUILE_LOAD_PATH="$DOTFILES/lib/guile"
 export CLANG_FORMAT_C_CONFIG="$DOTFILES/config/clang-format-c.yaml"
 export CLANG_FORMAT_CPP_CONFIG="$DOTFILES/config/clang-format-cpp.yaml"
 export X_COMPOSITOR="picom"
+
+export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+export SDL_IM_MODULE=fcitx
+export XMODIFIERS='@im=fcitx'
 
 # dircolors
 if [ -r ~/.config/dircolors ]; then
