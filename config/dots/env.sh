@@ -98,7 +98,7 @@ _exists sccache && export RUSTC_WRAPPER=sccache
 # dotfiles program options
 export DIR_BOOKMARKS=~/storage/share/bookmarks.sh
 export FLAMEW_SCR_FOLDER=~/storage/pictures/screenshots
-export SETBG_WALLPAPER_TYPE="image"
+export SETBG_WALLPAPER_TYPE="color"
 export BKMK_FILE="$WIKI/data/bookmarks.json"
 export ITMN_FILE="$WIKI/data/itmn.json"
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"
