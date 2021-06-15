@@ -22,14 +22,16 @@ super + shift + o
     runnsend error-and-output fzpow
 
 # screenshot related
-Print
-    runnsend error flamew fullc
-super + Print
-    runnsend error flamew gui
-ctrl + Print
-    runnsend error flamew full
+# Print
+#     runnsend error flamew fullc
+# super + Print
+#     runnsend error flamew gui
+# ctrl + Print
+#     runnsend error flamew full
 super + c
     runnsend error flamew gui
+super + alt + c
+    runnsend error flamew fullc
 super + shift + c
     runnsend error flamew full
 
@@ -68,10 +70,15 @@ super + alt + y
     playerctl play-pause
 
 # brightness
-XF86MonBrightness{Down,Up}
-    xbacklight -{dec,inc} 20
+# XF86MonBrightness{Down,Up}
+#     xbacklight -{dec,inc} 20
+# super + {minus,equal}
+#     xbacklight -{dec,inc} 20
+# XF86MonBrightness{Down,Up}
+#     lua -e 'require("backlightctl.lua").inc_dec('{-5,+5}', { lower_limit = 0.5 })'
+
 super + {minus,equal}
-    xbacklight -{dec,inc} 20
+    backlightctl mod {-5,5}
 
 # toggle red screen
 super + F12
@@ -96,6 +103,14 @@ super + e
 # editor
 super + shift + e
     $TERMINAL -c float -g 100x35 -e $EDITOR
+
+# simulate scolling with xdotool
+super + {Up,Down,Left,Right}
+    xdotool click {4,5,6,7}
+
+# simulate zoom
+super + ctrl + {Up,Down,Left,Right}
+    xdotool keydown ctrl click {4,5,6,7}
 
 # super-o apps
 super + o; s

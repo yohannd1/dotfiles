@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+test $# != 2 && exit 1
+test $1 != mod && exit 1
+
+if ! test "$2" -eq "$2"; then
+  printf >&2 "Error: %s is not a number\n" "$2"
+  exit 1
+fi
+
+num=$(printf "%s" "$2" | sed 's|^+||')
+
+lua <<EOF
+local bctl = require("backlightctl")
+bctl.inc_dec($num, { lower_limit = 0.5 })
+EOF
