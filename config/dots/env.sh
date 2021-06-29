@@ -24,7 +24,7 @@ export XDG_CURRENT_DESKTOP="none"
 export WIKI=~/wiki
 
 # global options
-[ -z "$DISPLAY" ] && export WM=dwm # only export if it hasn't been set before
+[ -z "$DISPLAY" ] && export WM=awesome # only export if it hasn't been set before
 export TERM=xterm-256color
 export EDITOR=nvim
 # _isAndroid && export EDITOR=nvim || export EDITOR=start-emacs
