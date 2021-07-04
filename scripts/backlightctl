@@ -1,16 +1,22 @@
-#!/usr/bin/env sh
+#!/usr/bin/env lua
 
-test $# != 2 && exit 1
-test $1 != mod && exit 1
+local stderr = io.stderr
 
-if ! test "$2" -eq "$2"; then
-  printf >&2 "Error: %s is not a number\n" "$2"
-  exit 1
-fi
+if #arg ~= 2 then
+  os.exit(1)
+end
 
-num=$(printf "%s" "$2" | sed 's|^+||')
+local first_arg = arg[1]
+if first_arg ~= "mod" then
+  os.exit(1)
+end
 
-lua <<EOF
+local second_arg = arg[2]
+local second_arg_n = tonumber(second_arg)
+if second_arg_n == nil then
+  stderr:write(string.format("Failed to parse argument #2: %d: expected number\n", second_arg_n))
+  os.exit(1)
+end
+
 local bctl = require("backlightctl")
-bctl.inc_dec($num, { lower_limit = 0.5 })
-EOF
+bctl.inc_dec(second_arg_n, {lower_limit = 0.5})
