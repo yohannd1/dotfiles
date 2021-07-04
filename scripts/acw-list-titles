@@ -1,0 +1,59 @@
+#!/usr/bin/env sh
+
+# TODO: this is currently broken
+# TODO: make this more sophisticated but use C, Zig or something else
+
+XDG_CACHE_HOME=${XDG_CACHE_HOME:-"$HOME/.cache"}
+ACW_CACHE_DIR=${ACW_CACHE_DIR:-"$XDG_CACHE_HOME/acw"}
+
+ACW_WIKI_DIR=~/wiki/vimwiki
+
+if [ -z "$ACW_WIKI_DIR" ]; then
+  printf >&2 "ACW_WIKI_DIR not set - please set it\n"
+  exit 1
+fi
+
+titlegenTimeFile="$ACW_CACHE_DIR/titlegen-last-time"
+titlegenFile="$ACW_CACHE_DIR/titlegen"
+
+mkdir -p "$ACW_CACHE_DIR"
+if [ -f "$titlegenTimeFile" ]; then
+  genLastTime=$(cat "$titlegenTimeFile") || exit 1
+else
+  genLastTime=0
+fi
+
+wikiLastTime=$(date "+%Y%m%d%H%M%S" -r "$ACW_WIKI_DIR")
+
+getNoteTitle() {
+  local firstLine
+
+  firstLine=$(head -n1 "$1")
+
+  if printf "%s" "$firstLine" | grep -q '^\s*=\s*.*\s*=\s*$'; then
+    printf "%s" "$firstLine" \
+      | sed 's|^\s*=\s*\(.*\)\s*=\s*$|\1|' \
+      | sed 's| \+$||'
+  else
+    return 1
+  fi
+}
+
+if test "$wikiLastTime" -gt "$genLastTime" || ! test -f "$titlegenFile"; then
+  cd "$ACW_WIKI_DIR"
+
+  fd -tf '\.wiki$' | while read file; do
+    fileWithoutExt=$(printf "%s" "$file" | sed 's|\.wiki$||')
+    title=$(getNoteTitle "$file")
+
+    if test $? = 0; then
+      printf "%s %s\n" "$fileWithoutExt" "$title"
+    else
+      printf "%s <No Title>\n" "$fileWithoutExt"
+    fi
+  done | tee "$titlegenFile"
+
+  printf "%s" "$wikiLastTime" >"$titlegenTimeFile"
+else
+  cat "$titlegenFile"
+fi

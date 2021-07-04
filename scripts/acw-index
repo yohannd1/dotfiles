@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
+if exists nvim; then
+  alias vim=nvim
+elif exists vim; then
+  true # do nothing
+else
+  printf >&2 "Could not find a suitable vim-compliant editor - do you have Vim or NeoVim?\n"
+  exit 1
+fi
+
+vim +VimwikiIndex
