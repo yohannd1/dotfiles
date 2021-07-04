@@ -1,4 +1,12 @@
 ;; TODO: try out dynamic tagging: https://github.com/pw4ever/awesome-wm-config#persistent-dynamic-tagging
+;; TODO: bar padding
+;; TODO: rootblocks integration
+;; TODO: center new windows
+;; TODO: add keybinding to minimize/unminimize window
+;; TODO: brave windows seem to be always floating
+;; TODO: always resize from bottom
+;; TODO: dismiss notification via left click
+;; TODO: change layout graphics
 
 (local user (assert _G.user "Failed to get `user` global variable"))
 
@@ -90,7 +98,6 @@
       (awful.tag ["1" "2" "3" "4" "5" "6" "7" "8" "9"]
                  screen (. awful.layout.layouts 1))
 
-      ;; FIXME: is this even used?
       (local prompt-box (awful.widget.prompt))
       (set screen.prompt-box prompt-box)
 
@@ -115,7 +122,7 @@
            :filter awful.widget.tasklist.filter.currenttags
            :buttons tasklist-buttons
            :style {:shape gears.shape.rounded_bar}
-           :layout {:spacing 10
+           :layout {:spacing 20
                     :spacing_widget {1 {:forced_width 5
                                         :shape gears.shape.circle
                                         :widget wibox.widget.separator}
@@ -149,7 +156,7 @@
             3 layout-box}}))))
 
 (do ; rules
-  (set awful.rules.rules ; TODO: study the syntax of this properly
+  (set awful.rules.rules
        [{:rule {} ; all clients will match this rule
          :properties {:border_width beautiful.border_width
                       :border_color beautiful.border_color
@@ -162,7 +169,7 @@
                       :placement (+ awful.placement.no_overlap
                                     awful.placement.no_offscreen)}}
         {:rule_any {:instance ["pinentry"]
-                    :class ["Sxiv"]
+                    :class ["Sxiv" "float"]
                     :name ["Event Tester"]
                     :role ["pop-up"]}
          :properties {:floating true}}

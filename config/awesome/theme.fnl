@@ -80,6 +80,15 @@
 (set theme.menu_height (dpi 15))
 (set theme.menu_width  (dpi 100))
 
+;; Variable set for theming notifications:
+;; notification_font
+;; notification_[bg|fg]
+;; notification_[width|height|margin]
+;; notification_[border_color|border_width|shape|opacity]
+(set theme.notification_font theme.font)
+(set theme.notification_bg (xgetres :awesome.color0))
+(set theme.notification_fg (xgetres :awesome.color5))
+
 ;; layout icons
 (set theme.layout_fairh      (.. theme-path "default/layouts/fairhw.png"))
 (set theme.layout_fairv      (.. theme-path "default/layouts/fairvw.png"))
@@ -97,13 +106,6 @@
 (set theme.layout_cornerne   (.. theme-path "default/layouts/cornernew.png"))
 (set theme.layout_cornersw   (.. theme-path "default/layouts/cornersww.png"))
 (set theme.layout_cornerse   (.. theme-path "default/layouts/cornersew.png"))
-
-;; Variable set for theming notifications:
-;; notification_font
-;; notification_[bg|fg]
-;; notification_[width|height|margin]
-;; notification_[border_color|border_width|shape|opacity]
-;; TODO
 
 ;; generate awesome icon
 (set theme.awesome_icon

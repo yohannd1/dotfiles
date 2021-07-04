@@ -5,27 +5,13 @@
 (local gears (require :gears))
 (local hotkeys-popup (require :awful.hotkeys_popup))
 (local fennel (require :fennel))
+(local fennel/view (require :fennel.view))
+(local naughty (require :naughty))
 
 (set export.mod-key "Mod4")
 (local mod-key export.mod-key)
 (local shift "Shift")
 (local ctrl "Control")
-
-; (fn focus-by-idx [idx]
-;   (match client.focus
-;     nil (match (. (client.get) 1)
-;           nil (awful.client.focus.byidx 0)
-;           )
-;     (awful.client.focus.byidx idx)
-;     clt
-
-;     )
-
-;   (if client.focus
-;     (awful.client.focus.byidx idx)
-;     (when (-> (client.get) (length) (> 0))
-;       (awful.client.focus.byidx 0
-;                                 (. (client.get) 1)))))
 
 (->> [(awful.key [mod-key] "s" hotkeys-popup.show_help
                   {:description "show keybindings"
@@ -60,10 +46,10 @@
                   {:description "focus previous screen"
                    :group "screen"})
 
-       (awful.key [mod-key ctrl] "h" #(awful.tag.incmwfact -0.05)
+       (awful.key [mod-key] "h" #(awful.tag.incmwfact -0.05)
                   {:description "decrease master width factor"
                    :group "layout"})
-       (awful.key [mod-key ctrl] "l" #(awful.tag.incmwfact +0.05)
+       (awful.key [mod-key] "l" #(awful.tag.incmwfact +0.05)
                   {:description "increase master width factor"
                    :group "layout"})
        (awful.key [mod-key shift] "h" #(awful.tag.incnmaster +1 nil true)
@@ -90,7 +76,9 @@
                      {:prompt "eval(fnl): "
                       :textbox (-> (awful.screen.focused)
                                    (. :prompt-box :widget))
-                      :exe_callback #(fennel.eval $1 user.fennel_load_opts)
+                      :exe_callback #(let [result (fennel.eval $1 user.fennel_load_opts)]
+                                       (naughty.notify {:title "eval(fnl) output"
+                                                        :text (fennel/view result)}))
                       :history_path (string.format "%s/eval-fnl-hist"
                                                    (awful.util.get_cache_dir))})
                   {:description "show fennel eval prompt"
@@ -101,7 +89,9 @@
                      {:prompt "eval(lua): "
                       :textbox (-> (awful.screen.focused)
                                    (. :prompt-box :widget))
-                      :exe_callback awful.util.eval
+                      :exe_callback #(let [result (awful.util.eval $1)]
+                                       (naughty.notify {:title "eval(lua) output"
+                                                        :text (fennel/view result)}))
                       :history_path (string.format "%s/eval-lua-hist"
                                                    (awful.util.get_cache_dir))})
                   {:description "show lua eval prompt"
@@ -157,45 +147,52 @@
                      :group "tag"})
          )))
 
-(set export.client-keys
-     (gears.table.join
-       (awful.key [mod-key] "f"
-                  #(do
-                     (set $1.fullscreen (not $1.fullscreen))
-                     ($1:raise))
-                  {:description "toggle fullscreen"
-                   :group "client"})
+(->> [(awful.key [mod-key] "f"
+                 #(do
+                    (set $1.fullscreen (not $1.fullscreen))
+                    ($1:raise))
+                 {:description "toggle fullscreen"
+                  :group "client"})
 
-       (awful.key [mod-key shift] "space"
-                  #($1:kill)
-                  {:description "close window"
-                   :group "client"})
+      (awful.key [mod-key] "q"
+                 #($1:kill)
+                 {:description "close window"
+                  :group "client"})
 
-       (awful.key [mod-key] "q" awful.client.floating.toggle
-                  {:description "toggle floating"
-                   :group "client"})
+      (awful.key [mod-key shift] "space"
+                 awful.client.floating.toggle
+                 {:description "toggle floating"
+                  :group "client"})
 
-       (awful.key [mod-key] "p"
-                  #($1:swap (awful.client.getmaster))
-                  {:description "move to master"
-                   :group "client"})
+      (awful.key [mod-key] "p"
+                 #($1:swap (awful.client.getmaster))
+                 {:description "move to master"
+                  :group "client"})
 
-       (awful.key [mod-key] "t"
-                  #(set $1.ontop (not $1.ontop))
-                  {:description "toggle keep on top"
-                   :group "client"})
-       ))
+      (awful.key [mod-key] "t"
+                 #(set $1.ontop (not $1.ontop))
+                 {:description "toggle keep on top"
+                  :group "client"})
+      ]
+     (table.unpack)
+     (gears.table.join)
+     (set export.client-keys))
 
-(set export.client-buttons
-     [(awful.button [] 1
+(->> [(awful.button [] 1
                     #($1:emit_signal "request::activate" "mouse_click" {:raise true}))
       (awful.button [mod-key] 1
                     #(do
                        ($1:emit_signal "request::activate" "mouse_click" {:raise true})
                        (awful.mouse.client.move $1)))
+      (awful.button [mod-key] 2
+                    awful.client.floating.toggle)
       (awful.button [mod-key shift] 1
                     #(do
                        ($1:emit_signal "request::activate" "mouse_click" {:raise true})
-                       (awful.mouse.client.resize $1)))])
+                       (awful.mouse.client.resize $1)))
+      ]
+     (table.unpack)
+     (gears.table.join)
+     (set export.client-buttons))
 
 export
