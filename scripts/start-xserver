@@ -79,7 +79,7 @@ printf >&2 "Exit code: %s\n" "$exitCode"
 
 if [ -z "$NO_SAFETY_LOGOUT_MESSAGE" ] && [ -z "$USE_XEPHYR" ] && [ "$exitCode" != 0 ]; then
   printf >&2 "Xorg server failed! It is recommended to log out for security reasons (this can be detected by the exit code != 0).\n"
-  printf >&2 "If ya the hacker, lucky you! You now have the access to this machine.\n"
+  printf >&2 "If ya the hacker, lucky you! You now have access to this machine.\n"
 fi
 
 exit "$exitCode"

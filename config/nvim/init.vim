@@ -52,7 +52,7 @@ if g:is_first
 
   " Filetypes
   Plug 'Clavelito/indent-sh.vim'
-  Plug 'ziglang/zig.vim'
+  Plug 'YohananDiamond/zig.vim' " Plug 'ziglang/zig.vim'
   Plug 'JuliaEditorSupport/julia-vim'
   Plug 'cespare/vim-toml'
   Plug 'neoclide/jsonc.vim'
@@ -63,14 +63,17 @@ if g:is_first
   Plug 'neovimhaskell/haskell-vim'
   Plug 'leafo/moonscript-vim'
   Plug 'rust-lang/rust.vim'
-  Plug 'raymond-w-ko/vim-lua-indent'
+  " Plug 'raymond-w-ko/vim-lua-indent'
   Plug 'justinmk/vim-syntax-extra'
   Plug 'Vimjas/vim-python-pep8-indent'
   Plug 'vim-python/python-syntax'
   Plug 'https://gitlab.com/HiPhish/guile.vim'
-  Plug 'bakpakin/fennel.vim'
+  Plug 'YohananDiamond/fennel.vim' " fork of 'bakpakin/fennel.vim'
   Plug 'udalov/kotlin-vim'
   Plug 'ollykel/v-vim'
+  Plug 'Tetralux/odin.vim'
+  Plug 'junegunn/goyo.vim'
+  Plug 'YohananDiamond/danmakufu-ph3.vim'
   " Plug 'tbastos/vim-lua'
   " Plug 'hylang/vim-hy'
   " Plug 'fsharp/vim-fsharp'
@@ -97,15 +100,21 @@ if g:is_first
 
   " Plug 'brenopacheco/vim-hydra'
   Plug 'YohananDiamond/vim-hydra'
+  Plug 'RRethy/vim-illuminate'
+
+  Plug 'vim-crystal/vim-crystal'
 
   call plug#end()
 endif
+
+" random bug fix
+let g:lua_version = luaeval("_VERSION")
 
 " }}}
 " Plugin Config {{{
 
 " Emmet
-let g:user_emmet_leader_key='<C-y>'
+let g:user_emmet_leader_key = '<Leader>E'
 
 " Markdown
 let g:vim_markdown_frontmatter = 1
@@ -151,7 +160,7 @@ function! _OpenWikiFile(file)
 endfunction
 
 let g:clap_provider_wiki = {
-      \ "source": "vimwiki list-titles",
+      \ "source": "acw-list-titles",
       \ "sink": { sel -> _OpenWikiFile(sel) },
       \ "description": "Search on my wiki",
       \ }
@@ -169,13 +178,13 @@ function! _InsertWikiFileRef(input, after_cursor)
 endfunction
 
 let g:clap_provider_wiki_iref = {
-      \ "source": "vimwiki list-titles",
+      \ "source": "acw-list-titles",
       \ "sink": { sel -> _InsertWikiFileRef(sel, v:false) },
       \ "description": "...",
       \ }
 
 let g:clap_provider_wiki_aref = {
-      \ "source": "vimwiki list-titles",
+      \ "source": "acw-list-titles",
       \ "sink": { sel -> _InsertWikiFileRef(sel, v:true) },
       \ "description": "...",
       \ }
@@ -189,6 +198,7 @@ augroup clap_esc_fix
 augroup end
 
 let g:clap_open_preview = "never"
+let g:clap_layout = { "relative": "editor" }
 
 " So, pear-tree kept undloading the keybindings, so I forced it to reload
 " everytime I switch or load buffers.
@@ -231,6 +241,9 @@ let g:vimwiki_list = [{ "path": g:wiki_dir,
 let g:vimwiki_map_prefix = "<NOP>"
 let g:vimwiki_global_ext = 0
 let g:vimwiki_conceallevel = 0
+
+" Illuminate - delay to highlight words (in millisceconds)
+let g:Illuminate_delay = 250
 
 " }}}
 " Functions {{{
@@ -373,7 +386,7 @@ function! FormatBuffer() " {{{
       endif
     endif
 
-    set modifiable
+    setlocal modifiable
     normal ggdG
     call append("$", "Formatting failed:")
     for line in l:output
@@ -381,7 +394,7 @@ function! FormatBuffer() " {{{
     endfor
     call append("$", "Note - use :ShowFormatErr to show the error again.")
     normal ggdd
-    " set nomodifiable
+    setlocal nomodifiable
   else
     let l:bufwindow = bufwinid("*Format Errors*")
 
@@ -453,7 +466,7 @@ function! GetCharAt(line, col) " {{{
   return strcharpart(getline(a:line)[a:col - 1:], 0, 1)
 endfunction! " }}}
 function! GetURL(string) " {{{
-  return matchstr(a:string, '\v(https?|www\.)://[a-zA-Z0-9/\-\.%_?#=]+')
+  return matchstr(a:string, '\v(https?|www\.)://[a-zA-Z0-9/\-\.%_?#=&]+')
 endfunction " }}}
 function! GetFile(string) " {{{
   return matchstr(a:string, '\v[a-zA-Z0-9_\-\./]+')
@@ -477,9 +490,8 @@ function! OpenSelected() " {{{
     if browser == ""
       echoerr "Could not find a suitable browser to open (set it via $BROWSER)"
     endif
-    let choice = ReadLine("Open it using a browser? [Y/n] ")
 
-    if choice == "Y" || choice == "y" || choice == ""
+    if confirm("Open using a browser?", "&Yes\n&No") == 1
       call jobstart([browser, url])
     endif
 
@@ -489,9 +501,8 @@ function! OpenSelected() " {{{
   let file = GetFile(current_word)
   if len(file) != 0
     echo "Found file: " .. file
-    let choice = ReadLine("Open it in a new buffer? [Y/n] ")
 
-    if choice == "Y" || choice == "y" || choice == ""
+    if confirm("Open in a new buffer", "&Yes\n&No") == 1
       exec 'edit ' .. file
     endif
 
@@ -605,7 +616,7 @@ if g:is_first
       execute 'augroup ' . group_name
       autocmd!
       execute 'autocmd Syntax * syntax match ' . group_name .
-            \ ' /\v\_.<' . name . ':?/hs=s+1 contained containedin=.*Comment.*'
+            \ ' /\v\_.<' . name . '>:?/hs=s+1 contained containedin=.*Comment.*'
       execute 'augroup end'
 
       " highlight the group according to the config
@@ -626,7 +637,7 @@ augroup end
 
 augroup buffer_load
   au!
-  au FileType * if exists("g:ft") && has_key(g:ft, &filetype) | call g:ft[&filetype]() | endif
+  au FileType * if has_key(g:, "ft") && has_key(g:ft, &filetype) | call g:ft[&filetype]() | endif
   au FileType * call SetupMakefileRifle()
   au BufNewFile,BufRead * call AddToRecFile()
   au BufEnter * call ApcReenable()
@@ -768,7 +779,7 @@ function! ft.nim() " {{{
   endif
 endfunction " }}}
 function! ft.nims() " {{{
-  call ft.nim()
+  call g:ft.nim()
 endfunction " }}}
 function! ft.ruby() " {{{
   setlocal fdm=syntax
@@ -805,7 +816,7 @@ function! ft.tex() " {{{
   setlocal textwidth=72
 endfunction
 function! ft.plaintex()
-  call ft.tex()
+  call g:ft.tex()
 endfunction " }}}
 function! ft.zig() " {{{
   if ReverseRSearch(expand("%:p:h"), "build.zig")
@@ -816,6 +827,8 @@ function! ft.zig() " {{{
 
   let b:format_command = "zig fmt --stdin"
   setlocal textwidth=120
+
+  hi link zigBuiltinFn Special
 
   call AddSnippet("s", 'const std = @import("std");')
   call AddSnippet("m", 'pub fn main() anyerror!void {<CR><CR>}<Up>')
@@ -847,9 +860,14 @@ endfunction " }}}
 function! ft.vimwiki() " {{{
   setlocal sw=2
 
-  nunmap <buffer> o
-  nunmap <buffer> O
-  nmap <buffer> <C-h> <BS>
+  silent! nunmap <buffer> o
+  silent! nunmap <buffer> O
+  silent! nmap <buffer> <C-h> <BS>
+endfunction " }}}
+function! ft.vlang() " {{{
+  setlocal sw=4 ts=4 noet
+
+  let b:format_command = "fmt-wrapper-v"
 endfunction " }}}
 
 " }}}
@@ -954,6 +972,11 @@ inoremap <expr> <Down> pumvisible() ? "\<C-n>" : "<Down>"
 inoremap <expr> <Up> pumvisible() ? "\<C-p>" : "<Up>"
 inoremap <expr> <C-m> pumvisible() ? "\<C-y>" : "<C-m>"
 
+" goyo
+nnoremap <silent> <C-x>j :Goyo 120<CR>
+au User GoyoEnter nested nnoremap <silent> <buffer> <C-x>j :Goyo!<CR>
+au User GoyoLeave nested nnoremap <silent> <buffer> <C-x>j :Goyo 120<CR>
+
 " Rifle commands
 " {{{
 silent call hydra#hydras#register({
@@ -963,6 +986,7 @@ silent call hydra#hydras#register({
       \ "exit_key":       "q",
       \ "feed_key":       v:false,
       \ "foreign_key":    v:true,
+      \ "position":       "s:bottom_right",
       \ "single_command": v:true,
       \ "keymap": [
       \   {
@@ -997,15 +1021,25 @@ tnoremap <silent> <C-w>j <C-\><C-n><C-w>j
 tnoremap <silent> <C-w>k <C-\><C-n><C-w>k
 tnoremap <silent> <C-w>l <C-\><C-n><C-w>l
 
+" Insert date
+inoremap <silent> <C-u> <Nop>
+inoremap <silent> <expr> <C-u>d strftime("%Y/%m/%d")
+
 " Use perl-ish regexes (I guess)
 nnoremap / /\v
 vnoremap / /\v
 nnoremap ? ?\v
 vnoremap ? ?\v
+nnoremap <Leader>/ /\v\c
+vnoremap <Leader>/ /\v\c
+nnoremap <Leader>? ?\v\c
+vnoremap <Leader>? ?\v\c
 
 " Open a prompt to replace everything in the screen
 nnoremap <Leader>s :%s/\v/g<Left><Left>
 vnoremap <Leader>s :s/\v/g<Left><Left>
+nnoremap <Leader>S :%s/<C-r>///g<Left><Left>
+vnoremap <Leader>S :s/<C-r>///g<Left><Left>
 
 " Buffer navigation mappings
 nnoremap <silent> <C-j> :call NextBuffer()<CR>
@@ -1126,6 +1160,7 @@ silent call hydra#hydras#register({
       \ "feed_key":       v:false,
       \ "foreign_key":    v:true,
       \ "single_command": v:true,
+      \ "position":       "s:bottom_right",
       \ "keymap": [
       \   {
       \     "name": "General",
@@ -1140,8 +1175,8 @@ silent call hydra#hydras#register({
       \   {
       \     "name": "References",
       \     "keys": [
-      \       ["I", "Clap wiki_iref", "add reference ←"],
-      \       ["i", "Clap wiki_aref", "add reference →"],
+      \       ["R", "Clap wiki_iref", "add reference ←"],
+      \       ["r", "Clap wiki_aref", "add reference →"],
       \       ["N", "call Vimwiki_NewFileAddRef(v:false)", "new note + add reference ←"],
       \       ["n", "call Vimwiki_NewFileAddRef(v:true)", "new note + add reference →"],
       \     ]
@@ -1171,4 +1206,12 @@ endfunction
 nnoremap <Leader>tv :call ToggleVirtualEdit()<CR>
 " }}}
 
+" Okay
+nnoremap K <Nop>
+vnoremap K <Nop>
+nnoremap gK K
+vnoremap gK K
+
 " }}}
+
+au BufRead *.dnh set filetype=danmakufu_ph3 syntax=danmakufu_ph3

@@ -150,7 +150,8 @@ case "$1" in
       scheme) guile "$file" ;;
       latex|tex)
         name=$(basename "${file%.*}")
-        pdflatex -output-directory "$tmp" "$file" </dev/null
+        # pdflatex -output-directory "$tmp" "$file" </dev/null
+        latexmk -pdf -outdir="$tmp" "$file" </dev/null
         OPEN_GUI=1 open "$tmp/$name.pdf"
         ;;
       python)
@@ -170,6 +171,15 @@ case "$1" in
       moon) moon "$file" ;;
       zig) zig run "$file" --color off --cache-dir "$tmp" ;;
       fennel) fennel "$file" ;;
+      crystal) crystal run "$file" ;;
+      vlang) v run "$file" ;;
+      javascript)
+        if exists deno; then
+          deno "$file"
+        else
+          nodejs "$file"
+        fi
+        ;;
       *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
     esac ;;
   build)
@@ -186,7 +196,8 @@ case "$1" in
       zig) zig build-exe "$file" --color off --cache-dir "$tmp" ;;
       @gradlew) fparent-run "gradlew" run-file script-dir build ;;
       markdown) md-compile "$file" > "$HOME/$(basename "$file").$(date +%Y-%m-%d).html" ;;
-      fennel) fennel --compile "$file" 2>&1 | vi - ;;
+      fennel) fennel --compile "$file" 2>&1 | vi ;;
+      crystal) crystal build "$file" -o "$tmp/out" ;;
       *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
     esac ;;
   test)
@@ -215,6 +226,7 @@ case "$1" in
         cd "$dir"
         nimble build # `check` doesn't seem to work well
         ;;
+      lua) luacheck "$file" ;;
       rust) rustc "$file" -o "$tmp/exe" ;;
       nim) nim compile --out:"out" --outdir:"$tmp" "$file" ;;
       cpp|c++|cc)

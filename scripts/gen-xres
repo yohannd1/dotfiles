@@ -26,7 +26,7 @@
 . ~/.config/dots/env.sh
 eval "$(load-base16-theme)"
 
-FONT="Iosevka Medium"
+FONT="mononoki"
 FONT_PIXELSIZE="13"
 FONT_POINTSIZE="13pt"
 
@@ -37,6 +37,12 @@ font() { printf "%s:pixelsize=%s:antialias=true:autohint=true;" "$FONT" "$1"; }
 xset 'st.alpha' "0.75"
 xset 'st.cursor' "$base0D"
 xset 'st.font' "$(font $FONT_PIXELSIZE)"
+
+# awesomewm
+xset 'awesome.font' "$FONT 10"
+xset 'awesome.border-normal' "$base00"
+xset 'awesome.border-focus' "$base03"
+xset 'awesome.border-marked' "$base0A"
 
 # dwm
 xset 'dwm.norm.bg' "$base00"

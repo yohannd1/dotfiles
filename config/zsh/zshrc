@@ -206,6 +206,13 @@ find-file() {
   esac
 }
 
+fgrep-open() {
+  local choice=$(rg "${@:-.}" | fzagnostic) || return 1
+  edit "$(printf "%s" "$choice" | awk -F":" '{ print $1 }')"
+}
+
+alias fgo='fgrep-open'
+
 duplicate-shell() {
   case $# in
     0) nohup "$TERMINAL" &>/dev/null ;;

@@ -76,8 +76,16 @@ def main():
     else:
         recursive = True
 
+    def has_ignorable_extension(file):
+        for extension in IGNORE_EXTENSIONS:
+            if file.name.endswith(extension):
+                return True
+        return False
+
     print("Getting file list...", file=sys.stderr)
-    files = get_files(folder, recursive=recursive)
+    files = [file for file in
+             get_files(folder, recursive=recursive)
+             if not has_ignorable_extension(file)]
 
     if opts.shuffle:
         print("Shuffling songs list...", file=sys.stderr)
@@ -93,17 +101,8 @@ def main():
 
     limit_count = 0
     slice = files[starting_offset:]
-    slice_len = len(slice)
     for i, file in enumerate(slice):
         name = file.name
-
-        skip = False
-        for extension in IGNORE_EXTENSIONS:
-            if name.endswith(extension):
-                skip = True
-
-        if skip:
-            continue
 
         for extension in VALID_EXTENSIONS:
             if name.endswith(extension):
@@ -114,7 +113,7 @@ def main():
 
         os.system("clear")
 
-        print(f"({i+1}/{slice_len}) Playing {file} ...", file=sys.stderr)
+        print(f"Playing file {i + 1} of {len(slice)}: {file}", file=sys.stderr)
 
         inc_limitc = True
         with sp.Popen(

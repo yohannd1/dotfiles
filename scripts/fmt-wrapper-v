@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+temp=$(mktemp /tmp/XXXXXX.v) || exit 1
+_cleanup() { rm -f "$temp"; }
+trap '_cleanup' EXIT
+
+cat >"$temp"
+v fmt "$temp"
