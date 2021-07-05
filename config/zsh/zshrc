@@ -1,16 +1,24 @@
 #!/usr/bin/env zsh
 
-if source "$(uselib std)" &>/dev/null; then
-  _LIBRARY_LOADED=1
-else
-  _LIBRARY_LOADED=0
-  printf >&2 "Couldn't load library file - this might cause many problems\n"
-fi
+ZSH_RC_PATH="${ZDOTDIR:-$HOME}/.zshrc"
+XDG_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}
+XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
 
-if exists lua; then
-  eval "$(lua "$DOTFILES/lib/z.lua" --init zsh enhanced once echo fzf)"
-else
-  printf >&2 "lua binary not found; z.lua won't be loaded.\n"
+exists() { command -v "$1" &>/dev/null; }
+sourceIf() {
+  [ $# != 1 ] && return 1
+  [ -f "$1" ] && source "$1"
+}
+setTitle() { printf '\033]0;%s\007' "$1"; }
+isAndroid() { test "$(uname -o)" = Android; }
+isRoot() { [ "$EUID" = 0 ] }
+
+if ! isAndroid; then
+  if exists lua; then
+    eval "$(lua "$DOTFILES/lib/z.lua" --init zsh enhanced once echo fzf)"
+  else
+    printf >&2 "lua binary not found; z.lua won't be loaded.\n"
+  fi
 fi
 
 # Load some other libraries
@@ -21,19 +29,19 @@ sourceIf ~/storage/share/zshrc.personal
 setopt interactivecomments # can use '#' for comments in interactive
 setopt PROMPT_SUBST # $(cmd) literals are run on $PS1/$PS2/$RPROMPT
 
-# plugins
-autoload -U colors && colors # color support
-autoload -U compinit # completion support
-
 # history config
-HISTFILE="${XDG_CACHE_HOME:-$HOME/.cache}/zhistory"
+HISTFILE="$XDG_CACHE_HOME/zhistory"
 HISTSIZE=SAVEHIST=100000
 setopt sharehistory
 setopt extendedhistory
 setopt nobanghist # i fuc king hate !!!!!!!
 setopt HIST_IGNORE_DUPS
 
-# completion config
+# color plugin config
+autoload -U colors && colors
+
+# completion plugin config
+autoload -U compinit # completion support
 zstyle ':completion:*' menu select
 zmodload zsh/complist
 compinit
@@ -50,21 +58,11 @@ precmd() {
   setTitle "$(whoami)@${HOST}:$cwd"
 }
 
-current-tab() {
-  if [ "$TAB" ]; then
-    printf "tab:%s " "$TAB"
-  else
-    printf ""
-  fi
-}
-
-isRoot() { [ "$EUID" = 0 ] }
-
 # construct prompt string
 _PS1_SYMBOL="%F{13}$(isRoot && printf '#' || printf '$') " # ❯ was the old one
 PS1="%F{14}%~%(?.. %F{10}%?) $_PS1_SYMBOL%b%F{5}"
 PS2="%B%F{3}---%{$reset_color%} "
-RPROMPT='%F{12}$(current-tab)%F{11}$(git-branch)'
+! isAndroid && RPROMPT='%F{11}$(git-branch)'
 # [ "${NNNLVL:-0}" -ge 1 ] && PS1="%B%F{3}(%F{5}n%F{3})%b $PS1"
 
 # use vim keys in tab completion menu
@@ -91,7 +89,7 @@ function zle-line-init {
 zle -N zle-keymap-select
 zle -N zle-line-init
 
-fzhistory.gen() {
+fzhistoryGen() {
   { [ -n "$ZSH_NAME" ] && fc -l 1 || history 1; } \
     | sed -r 's/ *[0-9]*\*? *//' \
     | tac | fzagnostic \
@@ -99,105 +97,99 @@ fzhistory.gen() {
 }
 
 fzhistory() {
-  local result=$(fzhistory.gen) || return 1
+  local result=$(fzhistoryGen) || return 1
   print -z "$result"
 }
 
-fz-select-file() {
-  LBUFFER="${LBUFFER}$(_fz-select-file-inner)"
-  local ret="$?"
-  zle reset-prompt
-  return "$ret"
-}
-
-_fz-select-file-inner() {
+fzSelectFileGen() {
   local item
   fd -tf | fzf -m "$@" | while read item; do
     echo -n "${(q)item} "
   done
 }
 
+fzSelectFile() {
+  LBUFFER="${LBUFFER}$(fzSelectFileGen)"
+  local ret="$?"
+  zle reset-prompt
+  return "$ret"
+}
+
 # Actual binding
 bindkey -s '^R' '\eSfzhistory\n'
 if exists lf; then
-  bindkey -s '^o' '\eSlf-and-cd\n'
+  bindkey -s '^o' '\eSlfAndCd\n'
 elif exists nnn; then
-  bindkey -s '^o' '\eSnnn-and-cd\n'
+  bindkey -s '^o' '\eSnnnAndCd\n'
 fi
 
 bindkey -s '^P' '\e[C'
-bindkey '^F' fz-select-file
 
-zle -N fz-select-file
+bindkey '^F' fzSelectFile
+zle -N fzSelectFile
 
-assist::find-file.gen() {
-  printf "%s (%s)\n" "@upper-directory" ".."
-  printf "%s (%s)\n" "@stay-here" "{ $(pwd) }"
+lfAndCd() {
+  local tmp=$(mktemp)
 
-  local args=()
-  # FIXME: this is a little bit clunky
-  [ "$1" = 1 ] && args+=('-H')
-  [ "$_FINDFILE_DIRONLY" ] && args+=('-td')
-
-  fd "${args[@]}"
-}
-
-where-to-go() {
-  gen=$(fzbookdirs) || return 1
-  cd "$gen"
-}
-
-lf-and-cd() {
-  local tmp="$(mktemp)"
   (cd "${1:-.}" && lf -last-dir-path="$tmp" "$@")
+
   if [ -f "$tmp" ]; then
-    dir="$(cat "$tmp")"
+    dir=$(cat "$tmp")
     rm -f "$tmp" >/dev/null
     [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
   fi
 
-  :
+  return 0
 }
 
-nnn-and-cd() {
+nnnAndCd() {
   # block nesting of nnn in subshells
   if [ -n "$NNNLVL" ] && [ "${NNNLVL:-0}" -ge 1 ]; then
     printf "%s\n" "nnn is already running"
     return 1
   fi
 
-  export NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
+  export NNN_TMPFILE="$XDG_CONFIG_HOME/nnn/.lastd"
   nnn "$@"
   if [ -f "$NNN_TMPFILE" ]; then
     . "$NNN_TMPFILE"
     rm -f "$NNN_TMPFILE" >/dev/null
   fi
 
-  :
+  return 0
 }
 
-find-file() {
-  # FIXME: potential stack overflow
-  local prog choice choices hidden
-  hidden=0
+findFileGen() {
+  printf "%s (%s)\n" "@updir" ".."
+  printf "%s (%s)\n" "@here " "$(pwd)"
+
+  local args=()
+  [ "$FINDFILE_SHOWHIDDEN" ] && args+=('-H')
+  [ "$FINDFILE_DIRONLY" ] && args+=('-td')
+
+  fd "${args[@]}"
+}
+
+findFile() {
+  local prog choice choices show_hidden
 
   if [ "$1" = "-H" ]; then
-    hidden=1
+    show_hidden=1
     shift
   fi
 
-  [ $# = 0 ] && set -- "${EDITOR:-vi}"
-  prog="${1:-$EDITOR}"
-  choice="$(assist::find-file.gen "$hidden" | fzagnostic)" || return 1
+  [ $# = 0 ] && prog="${EDITOR:-vi}" || prog="$1"
+  choice="$(FINDFILE_SHOWHIDDEN="$show_hidden" findFileGen | fzagnostic)" || return 1
 
   case "$choice" in
-    "@upper-directory"*) cd .. && find-file ;;
-    "@stay-here"*) ;;
+    "@updir"*) cd .. && findFile ;; # FIXME: annoying recursion
+    "@here "*) ;;
     *)
       if [ -f "$choice" ]; then
         "$@" "$choice"
       elif [ -d "$choice" ]; then
-        cd "$choice" && find-file
+        # FIXME: annoying recursion
+        cd "$choice" && findFile
       else
         printf >&2 "Don't know what to do with choice %s; returning" "$choice"
         exit 1
@@ -206,46 +198,40 @@ find-file() {
   esac
 }
 
-fgrep-open() {
-  local choice=$(rg "${@:-.}" | fzagnostic) || return 1
-  edit "$(printf "%s" "$choice" | awk -F":" '{ print $1 }')"
-}
-
-alias fgo='fgrep-open'
-
-duplicate-shell() {
+dupTerm() {
   case $# in
-    0) nohup "$TERMINAL" &>/dev/null ;;
-    1) (cd "$1" && nohup "$TERMINAL" &>/dev/null) ;;
+    0) "$TERMINAL" &>/dev/null ;;
+    1) (cd "$1" && "$TERMINAL" &>/dev/null) ;;
     *) exit 1 ;;
   esac & disown
 }
 
-cd-to-file() {
+cdNearFile() {
   [ $# = 1 ] || exit 1
+
   if [ -f "$1" ]; then
     cd "$(dirname "$1")"
   elif [ -d "$1" ]; then
     cd "$1"
   else
-    printf >&2 "cd-to-file: invalid file\n"
+    printf >&2 "%s: invalid file\n" "$0"
   fi
 }
 
-reload-shell() { source "${ZDOTDIR:-$HOME}/.zshrc"; }
-alias rl='reload-shell'
+reloadRc() { source "$ZSH_RC_PATH/.zshrc" }
+alias rl='reloadRc'
 
-_warn-block() {
+# Blocked commands
+_warnBlockedCmd() {
   printf >&2 "[Command Blocked: %s]\n" "$1"
   return 1
 }
-r() { _warn-block "$0"; }
+r() { _warnBlockedCmd "$0"; }
 
-alias W='where-to-go' w='z -I -t .'
-alias f='find-file'
-alias fof='find-file openfork'
-alias fcd='_FINDFILE_DIRONLY=1 find-file cd-to-file'
-alias d='duplicate-shell'
+alias w='z -I -t .'
+alias f='findFile'
+alias fof='findFile openfork'
+alias fcd='FINDFILE_DIRONLY=1 findFile cd-to-file'
 alias make='fparent-run Makefile run-command file-dir make'
 
 alias ls='ls --color=auto'
@@ -263,23 +249,30 @@ alias jpdo='LANG=ja_JP.UTF8 LC_ALL=ja_JP'
 alias sy='dotsync'
 alias of='openfork'
 
-sx() { start-xserver || logout; }
-er() { filehist select "$EDITOR"; }
+startXServerOrLogout() { start-xserver || logout; }
+alias sx='startXServerOrLogout'
 
-exists nvim \
-  && alias vi='nvim' vim='nvim' \
-  || alias vi='vim'
+editRecentf() { filehist select "$EDITOR"; }
+alias er='editRecentf'
+
+if exists nvim; then
+  alias vi='nvim' vim='nvim'
+elif exists vim; then
+  alias vi='vim'
+fi
 
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
+# A wrapper for the `info` command
 info() {
   printf "\033[2 q"
   command info --vi-keys "$@"
 }
 
-sourceIf /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-sourceIf /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+if ! isAndroid; then
+  sourceIf /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+fi
 
-: # Assert first prompt doesn't show any non-zero return value
+return true # assert first prompt doesn't show any non-zero return value
