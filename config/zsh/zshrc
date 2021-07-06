@@ -1,5 +1,10 @@
 #!/usr/bin/env zsh
 
+# time debugging
+if [ -z "$_STARTUP_DEBUG_TIME" ]; then
+  _STARTUP_DEBUG_TIME=$(date +"%s%3N")
+fi
+
 ZSH_RC_PATH="${ZDOTDIR:-$HOME}/.zshrc"
 XDG_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}
 XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
@@ -13,13 +18,9 @@ setTitle() { printf '\033]0;%s\007' "$1"; }
 isAndroid() { test "$(uname -o)" = Android; }
 isRoot() { [ "$EUID" = 0 ] }
 
-if ! isAndroid; then
-  if exists lua; then
-    eval "$(lua "$DOTFILES/lib/z.lua" --init zsh enhanced once echo fzf)"
-  else
-    printf >&2 "lua binary not found; z.lua won't be loaded.\n"
-  fi
-fi
+eval "$(lua "$DOTFILES/lib/z.lua" --init zsh enhanced once echo fzf)" || {
+  printf >&2 "error: failed to load z.lua\n"
+}
 
 # Load some other libraries
 sourceIf "$XDG_CONFIG_HOME/dots/env.sh"
@@ -273,6 +274,12 @@ info() {
 
 if ! isAndroid; then
   sourceIf /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+fi
+
+if [ "$_STARTUP_DEBUG_TIME" ]; then
+  local current_time=$(date +"%s%3N")
+  local time_elapsed=$(($current_time - $_STARTUP_DEBUG_TIME))
+  printf >&2 "Time elapsed since startup: %s ms\n" "$time_elapsed"
 fi
 
 return true # assert first prompt doesn't show any non-zero return value

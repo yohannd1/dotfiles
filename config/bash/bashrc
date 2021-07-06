@@ -1,3 +1,5 @@
+_STARTUP_DEBUG_TIME=$(date +"%s%3N")
+
 . ~/.config/dots/env.sh
 
 if [ -z "$_INSIDE_TRUE_SHELL" ] && [ "$(uname -o)" = Android ] && [ "$TERMUX_SHELL" != "$0" ]; then
