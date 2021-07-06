@@ -278,7 +278,7 @@ fi
 
 if [ "$_STARTUP_DEBUG_TIME" ]; then
   local current_time=$(date +"%s%3N")
-  local time_elapsed=$(($current_time - $_STARTUP_DEBUG_TIME))
+  local time_elapsed=$(bc <<<"$current_time - $_STARTUP_DEBUG_TIME")
   printf >&2 "Time elapsed since startup: %s ms\n" "$time_elapsed"
 fi
 
