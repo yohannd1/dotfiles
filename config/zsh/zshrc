@@ -186,7 +186,7 @@ findFile() {
     "@here "*) ;;
     *)
       if [ -f "$choice" ]; then
-        "$@" "$choice"
+        "$prog" "$choice"
       elif [ -d "$choice" ]; then
         # FIXME: annoying recursion
         cd "$choice" && findFile
@@ -218,7 +218,7 @@ cdNearFile() {
   fi
 }
 
-reloadRc() { source "$ZSH_RC_PATH/.zshrc" }
+reloadRc() { source "$ZSH_RC_PATH" }
 alias rl='reloadRc'
 
 # Blocked commands
