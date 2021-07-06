@@ -12,6 +12,8 @@ else
   export DOTFILES="$_fallback_dotpath"
 fi
 
+export TERMUX_SHELL=zsh
+
 # XDG dirs
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DOWNLOAD_DIR="$HOME/inbox"
