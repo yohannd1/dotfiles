@@ -1,9 +1,12 @@
-if [ -z "$_INSIDE_TRUE_SHELL" ] && [ "$(uname -o)" = Android ] && [ "$SHELL" != "$0" ]; then
-  # . ~/.config/dots/env.sh
+. ~/.config/dots/env.sh
+
+if [ -z "$_INSIDE_TRUE_SHELL" ] && [ "$(uname -o)" = Android ] && [ "$TERMUX_SHELL" != "$0" ]; then
   . ~/.config/dots/path.sh
 
-  command "$SHELL" >/dev/null 2>/dev/null \
-    && _INSIDE_TRUE_SHELL=1 exec "$SHELL"
+  printf >&2 "Entering %s...\n" "$TERMUX_SHELL"
+
+  command -v "$TERMUX_SHELL" >/dev/null 2>/dev/null \
+    && SHELL="$TERMUX_SHELL" _INSIDE_TRUE_SHELL=1 exec "$TERMUX_SHELL"
 fi
 
 HISTFILE=~/.cache/bash_history
