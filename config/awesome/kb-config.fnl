@@ -9,9 +9,18 @@
 (local naughty (require :naughty))
 
 (set export.mod-key "Mod4")
-(local mod-key export.mod-key)
-(local shift "Shift")
-(local ctrl "Control")
+(local {: mod-key} export)
+
+(set export.shift "Shift")
+(local {: shift} export)
+
+(set export.ctrl "Control")
+(local {: ctrl} export)
+
+(fn export.client/toggle-minimize [c]
+  (if (= c client.focus)
+    (set c.minimized true)
+    (c:emit_signal "request::activate" "tasklist" {:raise true})))
 
 (->> [(awful.key [mod-key] "s" hotkeys-popup.show_help
                   {:description "show keybindings"
@@ -152,6 +161,11 @@
                     (set $1.fullscreen (not $1.fullscreen))
                     ($1:raise))
                  {:description "toggle fullscreen"
+                  :group "client"})
+
+      (awful.key [mod-key] "m"
+                 export.client/toggle-minimize
+                 {:description "toggle minimize"
                   :group "client"})
 
       (awful.key [mod-key] "q"

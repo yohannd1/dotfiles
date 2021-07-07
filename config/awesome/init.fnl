@@ -49,9 +49,11 @@
 
 ;; load keybindings
 (local {: mod-key
+        : ctrl
         : client-keys
         : client-buttons
-        : global-keys}
+        : global-keys
+        : client/toggle-minimize}
   (user.loadFnlConfig :kb-config.fnl))
 
 ;; set global keys
@@ -83,11 +85,7 @@
 
   (local tasklist-buttons
     (gears.table.join
-      (awful.button [] 1 #(if (= $1 client.focus)
-                            (set $1.minimized true)
-                            ($1:emit_signal "request::activate"
-                                            "tasklist"
-                                            {:raise true})))
+      (awful.button [ctrl] 1 client/toggle-minimize)
       (awful.button [] 3 #(awful.menu.client_list {:theme {:width 250}}))
       (awful.button [] 4 #(awful.client.focus.byidx -1))
       (awful.button [] 5 #(awful.client.focus.byidx +1))
@@ -121,10 +119,11 @@
           {: screen
            :filter awful.widget.tasklist.filter.currenttags
            :buttons tasklist-buttons
-           :style {:shape gears.shape.rounded_bar}
-           :layout {:spacing 20
-                    :spacing_widget {1 {:forced_width 5
+           ; :style {:shape gears.shape.rounded_bar}
+           :layout {:spacing 10
+                    :spacing_widget {1 {:forced_width 2
                                         :shape gears.shape.circle
+                                        :color beautiful.fg_minimize
                                         :widget wibox.widget.separator}
                                      :valign "center"
                                      :halign "center"
@@ -133,8 +132,8 @@
            :widget_template {1 {1 {1 {:id "text_role"
                                       :widget wibox.widget.textbox}
                                    :layout wibox.layout.fixed.horizontal}
-                                :left 10
-                                :right 10
+                                :left 5
+                                :right 5
                                 :widget wibox.container.margin}
                              :id "background_role"
                              :widget wibox.container.background}}))
@@ -149,7 +148,7 @@
          1 {:layout wibox.layout.fixed.horizontal
             1 tag-list
             2 prompt-box}
-         2 task-list
+         2 (wibox.container.margin task-list 5 5)
          3 {:layout wibox.layout.fixed.horizontal
             1 (wibox.widget.systray)
             2 text-clock
