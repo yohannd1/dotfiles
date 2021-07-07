@@ -46,7 +46,8 @@ if g:is_first
   Plug 'liuchengxu/vim-clap', { 'do': { -> clap#installer#force_download() } }
 
   " Editing enhancement: electric pairs
-  Plug 'tmsvg/pear-tree'
+  Plug 'windwp/nvim-autopairs'
+  " Plug 'tmsvg/pear-tree' " FIXME
   " Plug 'vim-scripts/AutoClose'
   " Plug 'jiangmiao/auto-pairs'
 
@@ -63,6 +64,7 @@ if g:is_first
   Plug 'neovimhaskell/haskell-vim'
   Plug 'leafo/moonscript-vim'
   Plug 'rust-lang/rust.vim'
+  Plug 'vim-crystal/vim-crystal'
   " Plug 'raymond-w-ko/vim-lua-indent'
   Plug 'justinmk/vim-syntax-extra'
   Plug 'Vimjas/vim-python-pep8-indent'
@@ -98,17 +100,11 @@ if g:is_first
   " Plug 'itchyny/lightline.vim'
   Plug 'vimwiki/vimwiki'
 
-  " Plug 'brenopacheco/vim-hydra'
-  Plug 'YohananDiamond/vim-hydra'
+  Plug 'YohananDiamond/vim-hydra' " 'brenopacheco/vim-hydra'
   Plug 'RRethy/vim-illuminate'
-
-  Plug 'vim-crystal/vim-crystal'
 
   call plug#end()
 endif
-
-" random bug fix
-let g:lua_version = luaeval("_VERSION")
 
 " }}}
 " Plugin Config {{{
@@ -141,6 +137,7 @@ endif
 
 " vim-auto-popmenu x Clap
 let g:apc_default_state = 1
+let g:apc_map_enter_backspace = 0
 let g:apc_custom_states = {
       \ "clap_input": 0,
       \ }
@@ -200,33 +197,35 @@ augroup end
 let g:clap_open_preview = "never"
 let g:clap_layout = { "relative": "editor" }
 
-" So, pear-tree kept undloading the keybindings, so I forced it to reload
-" everytime I switch or load buffers.
-"
-" I fear this might be CPU expensive but since I'm too lazy to figure out
-" what is the bug and pear-tree is one of the best paren match plugins
-" out there I'll just do this.
-" {{{
-function! PearTreeUpdate()
-  if get(b:, "pear_tree_enabled", 0)
-    imap <buffer> <BS> <Plug>(PearTreeBackspace)
-    imap <buffer> <CR> <Plug>(PearTreeExpand)
-  endif
-endfunction
+if 0
+  " So, pear-tree kept undloading the keybindings, so I forced it to reload
+  " everytime I switch or load buffers.
+  "
+  " I fear this might be CPU expensive but since I'm too lazy to figure out
+  " what is the bug and pear-tree is one of the best paren match plugins
+  " out there I'll just do this.
+  " {{{
+  function! PearTreeUpdate()
+    if get(b:, "pear_tree_enabled", 0)
+      imap <buffer> <BS> <Plug>(PearTreeBackspace)
+      imap <buffer> <CR> <Plug>(PearTreeExpand)
+    endif
+  endfunction
 
-" Buffer autocommands
-augroup pear_tree_reload_on_buffer
-  au!
-  au BufRead,BufEnter,BufWinEnter * call PearTreeUpdate()
-  au User BufSwitch call PearTreeUpdate()
-augroup end
+  " Buffer autocommands
+  augroup pear_tree_reload_on_buffer
+    au!
+    au BufRead,BufEnter,BufWinEnter * call PearTreeUpdate()
+    au User BufSwitch call PearTreeUpdate()
+  augroup end
 
-" Key mappings
-nnoremap <silent> <C-w>h <C-w>h:call PearTreeUpdate()<CR>
-nnoremap <silent> <C-w>j <C-w>j:call PearTreeUpdate()<CR>
-nnoremap <silent> <C-w>k <C-w>k:call PearTreeUpdate()<CR>
-nnoremap <silent> <C-w>l <C-w>l:call PearTreeUpdate()<CR>
-" }}}
+  " Key mappings
+  nnoremap <silent> <C-w>h <C-w>h:call PearTreeUpdate()<CR>
+  nnoremap <silent> <C-w>j <C-w>j:call PearTreeUpdate()<CR>
+  nnoremap <silent> <C-w>k <C-w>k:call PearTreeUpdate()<CR>
+  nnoremap <silent> <C-w>l <C-w>l:call PearTreeUpdate()<CR>
+  " }}}
+endif
 
 " Zig.vim
 let g:zig_fmt_autosave = 0
@@ -240,7 +239,8 @@ let g:vimwiki_list = [{ "path": g:wiki_dir,
 
 let g:vimwiki_map_prefix = "<NOP>"
 let g:vimwiki_global_ext = 0
-let g:vimwiki_conceallevel = 0
+let g:vimwiki_conceallevel = 2
+let g:vimwiki_url_maxsave = 0
 
 " Illuminate - delay to highlight words (in millisceconds)
 let g:Illuminate_delay = 250
@@ -1165,7 +1165,7 @@ silent call hydra#hydras#register({
       \   {
       \     "name": "General",
       \     "keys": [
-      \       ["w", "VimwikiIndex", "open index"],
+      \       ["w", "e ~/wiki/vimwiki/index.wiki", "open index"],
       \       ["o", "Clap wiki", "select a wiki file"],
       \       ["H", "Vimwiki2HTMLBrowse", "compile current & browse"],
       \       ["h", "Vimwiki2HTML", "compile current"],
@@ -1213,5 +1213,17 @@ nnoremap gK K
 vnoremap gK K
 
 " }}}
+" Experimental Stuff {{{
 
-au BufRead *.dnh set filetype=danmakufu_ph3 syntax=danmakufu_ph3
+" au BufRead,BufNewFile *.wiki set ft=acw " TODO: later
+au BufRead,BufNewFile *.acw set ft=acw
+au FileType vimwiki syn match VimwikiTag /\v\#<[A-Za-z_][A-Za-z0-9_]*>/
+au FileType vimwiki hi link VimwikiTag Function
+au BufRead,BufNewFile *.lang set ft=lang
+
+" }}}
+" Lua Tunnel {{{
+
+lua require("initrc")
+
+" }}}
