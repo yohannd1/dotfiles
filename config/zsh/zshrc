@@ -28,6 +28,7 @@ sourceIf ~/storage/share/zshrc.personal
 
 # general options
 setopt interactivecomments # can use '#' for comments in interactive
+setopt histignorespace # entries that start with a ' ' don't get to the history file
 setopt PROMPT_SUBST # $(cmd) literals are run on $PS1/$PS2/$RPROMPT
 
 # history config
@@ -117,11 +118,11 @@ fzSelectFile() {
 }
 
 # Actual binding
-bindkey -s '^R' '\eSfzhistory\n'
+bindkey -s '^R' '\eS fzhistory\n'
 if exists lf; then
-  bindkey -s '^o' '\eSlfAndCd\n'
+  bindkey -s '^o' '\eS lfAndCd\n'
 elif exists nnn; then
-  bindkey -s '^o' '\eSnnnAndCd\n'
+  bindkey -s '^o' '\eS nnnAndCd\n'
 fi
 
 bindkey -s '^P' '\e[C'
