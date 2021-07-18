@@ -1,59 +1,120 @@
-#!/usr/bin/env sh
+#!/usr/bin/env lua
 
-# TODO: this is currently broken
-# TODO: make this more sophisticated but use C, Zig or something else
+local lfs = require("lfs")
 
-XDG_CACHE_HOME=${XDG_CACHE_HOME:-"$HOME/.cache"}
-ACW_CACHE_DIR=${ACW_CACHE_DIR:-"$XDG_CACHE_HOME/acw"}
+local HOME = os.getenv("HOME") or error("_")
+local XDG_CACHE_HOME = os.getenv("XDG_CACHE_HOME") or (HOME .. "/.cache")
 
-ACW_WIKI_DIR=~/wiki/vimwiki
+local ACW_CACHE_DIR = os.getenv("ACW_CACHE_DIR") or (XDG_CACHE_HOME .. "/acw")
+local TIME_PATH = ACW_CACHE_DIR .. "/titlegen-last-time"
+local DATA_PATH = ACW_CACHE_DIR .. "/titlegen"
 
-if [ -z "$ACW_WIKI_DIR" ]; then
-  printf >&2 "ACW_WIKI_DIR not set - please set it\n"
-  exit 1
-fi
+local ACW_WIKI_DIR = HOME .. "/wiki/vimwiki"
 
-titlegenTimeFile="$ACW_CACHE_DIR/titlegen-last-time"
-titlegenFile="$ACW_CACHE_DIR/titlegen"
+if ACW_WIKI_DIR == nil or ACW_WIKI_DIR == "" then
+  io.stderr:write("error: ACW_WIKI_DIR is not set\n")
+  os.exit(1)
+end
 
-mkdir -p "$ACW_CACHE_DIR"
-if [ -f "$titlegenTimeFile" ]; then
-  genLastTime=$(cat "$titlegenTimeFile") || exit 1
+local function cmdoutput(cmd)
+  local proc_fd = io.popen(cmd, "r")
+  assert(proc_fd, "failed to open command")
+
+  local output = proc_fd:read("*a")
+  proc_fd:close()
+  assert(output, "failed to read output from command")
+
+  output = output:gsub("[\n\r]+", " ")
+  output = output:gsub("^%s+", "")
+  output = output:gsub("%s+$", "")
+
+  return output
+end
+
+local function fileExists(file)
+  local ok, err, code = os.rename(file, file)
+  if not ok then
+    if code == 13 then
+      -- Permission denied, but it exists
+      return true
+    end
+  end
+  return ok, err
+end
+
+local function isDirectory(path)
+  return lfs.attributes(path, "mode") == "directory"
+end
+
+if not isDirectory(ACW_WIKI_DIR) then
+  assert(lfs.mkdir(ACW_WIKI_DIR))
+end
+
+local gen_last_time
+if fileExists(TIME_PATH) then
+  local f = io.open(TIME_PATH, "r")
+  if f == nil then
+    io.stderr:write("Failed to open TIME_PATH\n") -- FIXME: better error
+    os.exit(1)
+  end
+
+  gen_last_time = tonumber(f:read("*all"))
+  f:close()
 else
-  genLastTime=0
-fi
+  gen_last_time = 0
+end
 
-wikiLastTime=$(date "+%Y%m%d%H%M%S" -r "$ACW_WIKI_DIR")
+local wiki_last_time = tonumber(cmdoutput("date +%Y%m%d%H%M%S -r " .. ACW_WIKI_DIR)) -- FIXME: I love injection
 
-getNoteTitle() {
-  local firstLine
+local function getNoteTitle(file)
+  local first_line = file:read("*line")
 
-  firstLine=$(head -n1 "$1")
-
-  if printf "%s" "$firstLine" | grep -q '^\s*=\s*.*\s*=\s*$'; then
-    printf "%s" "$firstLine" \
-      | sed 's|^\s*=\s*\(.*\)\s*=\s*$|\1|' \
-      | sed 's| \+$||'
+  if first_line:match("^%s*=%s*.*%s*=%s*$") then
+    local val = first_line:gsub("^%s*=%s*(.*)%s*=%s*$", "%1")
+    return val
+  elseif first_line:match("^%s*%%:title%s+.*%s*$") then
+    local val = first_line:gsub("^%s*%%:title%s+(.*)%s*$", "%1")
+    return val
   else
-    return 1
-  fi
-}
+    return nil
+  end
+end
 
-if test "$wikiLastTime" -gt "$genLastTime" || ! test -f "$titlegenFile"; then
-  cd "$ACW_WIKI_DIR"
+function fileIter(dir)
+  return coroutine.wrap(function()
+    for entry in lfs.dir(dir) do
+      if not isDirectory(dir .. "/" .. entry) then
+        coroutine.yield(entry)
+      end
+    end
+  end)
+end
 
-  fd -tf '\.wiki$' | while read file; do
-    fileWithoutExt=$(printf "%s" "$file" | sed 's|\.wiki$||')
-    title=$(getNoteTitle "$file")
+if wiki_last_time > gen_last_time or not fileExists(DATA_PATH) then
+  lfs.chdir(ACW_WIKI_DIR)
 
-    if test $? = 0; then
-      printf "%s %s\n" "$fileWithoutExt" "$title"
-    else
-      printf "%s <No Title>\n" "$fileWithoutExt"
-    fi
-  done | tee "$titlegenFile"
+  local output_file = assert(io.open(DATA_PATH, "w"))
 
-  printf "%s" "$wikiLastTime" >"$titlegenTimeFile"
+  for file in fileIter(ACW_WIKI_DIR) do
+    if file:match("%.wiki$") then
+      local file_without_ext = file:gsub("%.wiki$", "")
+      local title = getNoteTitle(assert(io.open(ACW_WIKI_DIR .. "/" .. file))) or "<No Title>"
+
+      local str = string.format("%s %s\n", file_without_ext, title)
+      io.stdout:write(str)
+      output_file:write(str)
+    end
+  end
+
+  output_file:close()
+
+  local time_file = assert(io.open(TIME_PATH, "w"))
+  time_file:write(wiki_last_time)
+  time_file:close()
 else
-  cat "$titlegenFile"
-fi
+  local output_file = assert(io.open(DATA_PATH), "r")
+  print(output_file:read("*all"))
+  output_file:close()
+end
+
+-- vim: sw=2 et
