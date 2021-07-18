@@ -1,6 +1,6 @@
 ;; TODO: try out dynamic tagging: https://github.com/pw4ever/awesome-wm-config#persistent-dynamic-tagging
 ;; TODO: bar padding
-;; TODO: rootblocks integration
+;; TODO: rootblocks integration (https://awesomewm.org/doc/api/classes/wibox.widget.textbox.html ?)
 ;; TODO: center new windows
 ;; TODO: add keybinding to minimize/unminimize window
 ;; TODO: brave windows seem to be always floating
@@ -168,8 +168,8 @@
                       :placement (+ awful.placement.no_overlap
                                     awful.placement.no_offscreen)}}
         {:rule_any {:instance ["pinentry"]
-                    :class ["Sxiv" "float"]
-                    :name ["Event Tester"]
+                    :class ["Sxiv" "float" "Pavucontrol" "Gnome-pomodoro"]
+                    :name ["Event Tester" "Steam - News"]
                     :role ["pop-up"]}
          :properties {:floating true}}
         ]))

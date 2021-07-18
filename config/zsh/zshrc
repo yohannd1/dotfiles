@@ -277,10 +277,12 @@ if ! isAndroid; then
   sourceIf /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 fi
 
-if [ "$_STARTUP_DEBUG_TIME" ]; then
+if [ "$_STARTUP_DEBUG_TIME" ] && [ -z "$_startup_time_shown" ]; then
   local current_time=$(date +"%s%3N")
   local time_elapsed=$(bc <<<"$current_time - $_STARTUP_DEBUG_TIME")
   printf >&2 "Time elapsed since startup: %s ms\n" "$time_elapsed"
+
+  _startup_time_shown=1
 fi
 
 return true # assert first prompt doesn't show any non-zero return value

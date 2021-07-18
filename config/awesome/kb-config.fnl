@@ -197,12 +197,14 @@
       (awful.button [mod-key] 1
                     #(do
                        ($1:emit_signal "request::activate" "mouse_click" {:raise true})
+                       (set $1.floating true)
                        (awful.mouse.client.move $1)))
       (awful.button [mod-key] 2
                     awful.client.floating.toggle)
       (awful.button [mod-key shift] 1
                     #(do
                        ($1:emit_signal "request::activate" "mouse_click" {:raise true})
+                       (set $1.floating true)
                        (awful.mouse.client.resize $1)))
       ]
      (table.unpack)

@@ -169,6 +169,7 @@ case "$1" in
       racket) racket "$file" ;;
       html) openfork "$file" ;;
       moon) moon "$file" ;;
+      teal) tl run "$file" ;;
       zig) zig run "$file" --color off --cache-dir "$tmp" ;;
       fennel) fennel "$file" ;;
       crystal) crystal run "$file" ;;
@@ -196,8 +197,13 @@ case "$1" in
       zig) zig build-exe "$file" --color off --cache-dir "$tmp" ;;
       @gradlew) fparent-run "gradlew" run-file script-dir build ;;
       markdown) md-compile "$file" > "$HOME/$(basename "$file").$(date +%Y-%m-%d).html" ;;
-      fennel) fennel --compile "$file" 2>&1 | vi ;;
+      fennel) fennel --compile "$file" 2>&1 | nvim +PagerMode ;;
+      moon) moonc -p "$file" 2>&1 | nvim +PagerMode ;;
       crystal) crystal build "$file" -o "$tmp/out" ;;
+      teal)
+        tl gen "$file" --output "$tmp/out"
+        nvim +PagerMode "$tmp/out"
+        ;;
       *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
     esac ;;
   test)
@@ -236,6 +242,7 @@ case "$1" in
           g++ -c "$file" -o "$tmp/exe" -std=c++20 -Wall -Wpedantic
         fi
         ;;
+      teal) tl check "$file" ;;
       python)
         python=$(getPython)
         dmypy run --timeout 600 "$file" &

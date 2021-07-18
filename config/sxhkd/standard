@@ -123,6 +123,8 @@ super + o; c
     $TERMINAL -c float -g 65x10 -e runread cal -3
 super + o; m
     $TERMINAL -c float -e pulsemixer
+super + o; y
+    $TERMINAL -c float -e ytop
 super + o; shift + c
     $TERMINAL -c float -g 100x35 -e calc
 super + o; t
