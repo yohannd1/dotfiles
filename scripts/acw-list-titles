@@ -1,4 +1,5 @@
 #!/usr/bin/env lua
+-- vim: sw=2 et
 
 local lfs = require("lfs")
 
@@ -14,21 +15,6 @@ local ACW_WIKI_DIR = HOME .. "/wiki/vimwiki"
 if ACW_WIKI_DIR == nil or ACW_WIKI_DIR == "" then
   io.stderr:write("error: ACW_WIKI_DIR is not set\n")
   os.exit(1)
-end
-
-local function cmdoutput(cmd)
-  local proc_fd = io.popen(cmd, "r")
-  assert(proc_fd, "failed to open command")
-
-  local output = proc_fd:read("*a")
-  proc_fd:close()
-  assert(output, "failed to read output from command")
-
-  output = output:gsub("[\n\r]+", " ")
-  output = output:gsub("^%s+", "")
-  output = output:gsub("%s+$", "")
-
-  return output
 end
 
 local function fileExists(file)
@@ -50,22 +36,6 @@ if not isDirectory(ACW_WIKI_DIR) then
   assert(lfs.mkdir(ACW_WIKI_DIR))
 end
 
-local gen_last_time
-if fileExists(TIME_PATH) then
-  local f = io.open(TIME_PATH, "r")
-  if f == nil then
-    io.stderr:write("Failed to open TIME_PATH\n") -- FIXME: better error
-    os.exit(1)
-  end
-
-  gen_last_time = tonumber(f:read("*all"))
-  f:close()
-else
-  gen_last_time = 0
-end
-
-local wiki_last_time = tonumber(cmdoutput("date +%Y%m%d%H%M%S -r " .. ACW_WIKI_DIR)) -- FIXME: I love injection
-
 local function getNoteTitle(file)
   local first_line = file:read("*line")
 
@@ -80,7 +50,7 @@ local function getNoteTitle(file)
   end
 end
 
-function fileIter(dir)
+local function fileIter(dir)
   return coroutine.wrap(function()
     for entry in lfs.dir(dir) do
       if not isDirectory(dir .. "/" .. entry) then
@@ -90,31 +60,115 @@ function fileIter(dir)
   end)
 end
 
-if wiki_last_time > gen_last_time or not fileExists(DATA_PATH) then
-  lfs.chdir(ACW_WIKI_DIR)
+local function split(text, separator, opts)
+  local separator = separator or " "
+  local separator_len = string.len(separator)
 
-  local output_file = assert(io.open(DATA_PATH, "w"))
+  local opts = opts or {}
 
-  for file in fileIter(ACW_WIKI_DIR) do
-    if file:match("%.wiki$") then
-      local file_without_ext = file:gsub("%.wiki$", "")
-      local title = getNoteTitle(assert(io.open(ACW_WIKI_DIR .. "/" .. file))) or "<No Title>"
+  local result = {}
+  local current_index = 1
+  while true do
+    local f = text:find(separator, current_index)
 
-      local str = string.format("%s %s\n", file_without_ext, title)
-      io.stdout:write(str)
-      output_file:write(str)
+    if f == nil then
+      table.insert(result, text:sub(current_index))
+      break
+    else
+      table.insert(result, text:sub(current_index, f - 1))
+      current_index = f + separator_len
     end
   end
 
-  output_file:close()
-
-  local time_file = assert(io.open(TIME_PATH, "w"))
-  time_file:write(wiki_last_time)
-  time_file:close()
-else
-  local output_file = assert(io.open(DATA_PATH), "r")
-  print(output_file:read("*all"))
-  output_file:close()
+  return result
 end
 
--- vim: sw=2 et
+local last_gen_time = lfs.attributes(DATA_PATH, "modification") or 0
+local wiki_mod_time = assert(lfs.attributes(ACW_WIKI_DIR, "modification"))
+
+if fileExists(DATA_PATH) and last_gen_time == wiki_mod_time then
+  -- The data file path exists and it's updated.
+  -- Just parse the file and output its contents, as nothing here seems to have been modified recently.
+
+  local in_fd = assert(io.open(DATA_PATH, "r"))
+
+  local line
+  while true do
+    line = in_fd:read("*line")
+    if line == nil then break end
+
+    local id, _, title = table.unpack(split(line), "\t")
+    io.stdout:write(id, " ", title, "\n")
+  end
+
+  in_fd:close()
+elseif fileExists(DATA_PATH) then
+  -- The data file exists but it's not updated.
+  -- Open it and decide, for each file, if it's updated enough.
+  -- TODO: delete entries that don't exist anymore
+  local entries = {}
+  local should_rewrite = false
+
+  do
+    -- First of all, read the current existing data.
+    local in_fd = assert(io.open(DATA_PATH, "r"))
+    local line
+    while true do
+      line = in_fd:read("*line")
+      if line == nil then break end
+
+      local id, mod_time, title = table.unpack(split(line, "\t"))
+      entries[id] = {mod_time = mod_time, title = title}
+    end
+    in_fd:close()
+  end
+
+  -- Then go through the list of files, update the ones that need it and print ot the screen.
+  for file in fileIter(ACW_WIKI_DIR) do
+    if file:match("%.wiki$") then
+      local file_path = ACW_WIKI_DIR .. "/" .. file
+      local id = file:gsub("%.wiki$", "")
+
+      local mod_time = assert(lfs.attributes(file_path, "modification"))
+      local entry_at = entries[id]
+      if entry_at and entry_at.mod_time == mod_time then
+        io.stdout:write(id, " ", entry_at.title, "\n")
+      else
+        should_rewrite = true -- we should rewrite to the data path file
+
+        local file_fd = assert(io.open(file_path))
+        local title = getNoteTitle(file_fd) or "<No Title>"
+        file_fd:close()
+
+        entries[id] = {title = title, mod_time = mod_time}
+        io.stdout:write(id, " ", title, "\n")
+      end
+
+      entry_at = entries[id]
+    end
+  end
+
+  -- For last, write back to the data file.
+  local out_fd = assert(io.open(DATA_PATH, "w"))
+  for id, entry in pairs(entries) do
+    out_fd:write(id, "\t", entry.mod_time, "\t", entry.title, "\n")
+  end
+  out_fd:close()
+else
+  -- The data file doesn't exist at all.
+  -- Generate the entire file, as we do not have it.
+
+  local out_fd = assert(io.open(DATA_PATH, "w"))
+  for file in fileIter(ACW_WIKI_DIR) do
+    if file:match("%.wiki$") then
+      local file_path = ACW_WIKI_DIR .. "/" .. file
+      local id = file:gsub("%.wiki$", "")
+      local title = getNoteTitle(assert(io.open(file_path))) or "<No Title>"
+      local mod_time = assert(lfs.attributes(file_path, "modification"))
+
+      io.stdout:write(id, " ", title, "\n")
+      out_fd:write(id, "\t", mod_time, "\t", title, "\n")
+    end
+  end
+  out_fd:close()
+end
