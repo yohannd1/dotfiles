@@ -1,0 +1,21 @@
+#!/usr/bin/env lua
+
+local lookup = {}
+for _, base_char in ipairs {string.byte("A"), string.byte("a")} do
+    for i = 0, 25 do
+        local c = base_char + (i + 13) % 26
+        lookup[base_char + i] = c
+    end
+end
+
+local line
+while true do
+    line = io.stdin:read("*line")
+    if line == nil then break end
+
+    io.stdout:write(line:gsub(".", function(s)
+        local c = lookup[string.byte(s)]
+
+        return string.char(c) or s
+    end), "\n")
+end
