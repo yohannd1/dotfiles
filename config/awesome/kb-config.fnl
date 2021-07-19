@@ -205,7 +205,7 @@
                     #(do
                        ($1:emit_signal "request::activate" "mouse_click" {:raise true})
                        (set $1.floating true)
-                       (awful.mouse.client.resize $1)))
+                       (awful.mouse.client.resize $1 "bottom_right")))
       ]
      (table.unpack)
      (gears.table.join)
