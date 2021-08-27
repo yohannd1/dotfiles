@@ -43,9 +43,10 @@ fi &
 [ "$WM" != awesome ] && dunst -config "$XDG_CACHE_HOME/gen/dunstrc" & # notification daemon
 flameshot & # screenshot app
 # nm-applet & # network manager on tray - currently experimenting not using this
-monitor-battery &
-blueman-applet &
-fcitx -d &
+monitor-battery & # notify when battery is running low
+# blueman-applet & # bluetooth manager on try - currently experimenting not using this
+fcitx -d & # input method manager (?)
+wi32 server &
 
 # extra config (async)
 systemd-inhibit --what=handle-power-key sleep infinity & # disable power button

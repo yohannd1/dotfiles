@@ -42,6 +42,11 @@ setopt HIST_IGNORE_DUPS
 # color plugin config
 autoload -U colors && colors
 
+# "edit in editor" plugin config
+autoload -z edit-command-line
+zle -N edit-command-line
+bindkey "^X^E" edit-command-line
+
 # completion plugin config
 autoload -U compinit # completion support
 zstyle ':completion:*' menu select
@@ -64,7 +69,8 @@ precmd() {
 _PS1_SYMBOL="%F{13}$(isRoot && printf '#' || printf '$') " # ❯ was the old one
 PS1="%F{14}%~%(?.. %F{10}%?) $_PS1_SYMBOL%b%F{5}"
 PS2="%B%F{3}---%{$reset_color%} "
-! isAndroid && RPROMPT='%F{11}$(git-branch)'
+! isAndroid && RPROMPT='%F{11}${SHELL_STACK}'
+# ! isAndroid && RPROMPT='%F{11}$(git-branch)'
 # [ "${NNNLVL:-0}" -ge 1 ] && PS1="%B%F{3}(%F{5}n%F{3})%b $PS1"
 
 # use vim keys in tab completion menu
@@ -117,7 +123,6 @@ fzSelectFile() {
   return "$ret"
 }
 
-# Actual binding
 bindkey -s '^R' '\eS fzhistory\n'
 if exists lf; then
   bindkey -s '^o' '\eS lfAndCd\n'
@@ -125,6 +130,7 @@ elif exists nnn; then
   bindkey -s '^o' '\eS nnnAndCd\n'
 fi
 
+bindkey -s '^g' '\eS zGoto\n'
 bindkey -s '^P' '\e[C'
 
 bindkey '^F' fzSelectFile
@@ -230,7 +236,9 @@ _warnBlockedCmd() {
 }
 r() { _warnBlockedCmd "$0"; }
 
-alias w='z -I -t .'
+zGoto() { z -I -t . "$@"; }
+
+alias w='zGoto'
 alias f='findFile'
 alias fof='findFile openfork'
 alias fcd='FINDFILE_DIRONLY=1 findFile cd-to-file'
@@ -285,4 +293,3 @@ if [ "$_STARTUP_DEBUG_TIME" ] && [ -z "$_startup_time_shown" ]; then
   _startup_time_shown=1
 fi
 
-return true # assert first prompt doesn't show any non-zero return value

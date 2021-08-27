@@ -124,9 +124,11 @@ super + o; c
 super + o; m
     $TERMINAL -c float -e pulsemixer
 super + o; y
-    $TERMINAL -c float -e ytop
-super + o; shift + c
-    $TERMINAL -c float -g 100x35 -e calc
+    $TERMINAL -c float -g 90x25 -e ytop
+# super + o; shift + c
+#     $TERMINAL -c float -g 100x35 -e calc
+super + o; f
+    $TERMINAL -c float -g 115x30 -e fennel
 super + o; t
     $TERMINAL -e tmux-tray
 super + o; shift + t

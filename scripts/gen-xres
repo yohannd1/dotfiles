@@ -26,9 +26,9 @@
 . ~/.config/dots/env.sh
 eval "$(load-base16-theme)"
 
-FONT="Roboto Mono"
-FONT_PIXELSIZE="12"
-FONT_POINTSIZE="12pt"
+FONT="mononoki"
+FONT_PIXELSIZE="13.4"
+FONT_POINTSIZE="13pt"
 
 xset() { printf "%s: %s\n" "$1" "$2"; }
 font() { printf "%s:pixelsize=%s:antialias=true:autohint=true;" "$FONT" "$1"; }
@@ -38,8 +38,20 @@ xset 'st.alpha' "0.9"
 xset 'st.cursor' "$base0D"
 xset 'st.font' "$(font $FONT_PIXELSIZE)"
 
+# tym
+xset 'tym.font' "$FONT $FONT_PIXELSIZE"
+
+# urxvt
+# xset 'urxvt.font' "xft:$(font $FONT_PIXELSIZE)"
+# xset 'urxvt.scrollBar' "false"
+# xset 'urxvt.keysym.Meta-k' 'command:\033]720;1\007'
+# xset 'urxvt.keysym.Meta-j' 'command:\033]721;1\007'
+# xset 'urxvt.depth' "32"
+# xset 'urxvt.background' "[85]$base00"
+# xset 'urxvt.smoothResize' "true"
+
 # awesomewm
-AWESOME_FONTSIZE="9"
+AWESOME_FONTSIZE="10"
 xset 'awesome.font' "$FONT $AWESOME_FONTSIZE"
 xset 'awesome.border-normal' "$base00"
 xset 'awesome.border-focus' "$base03"
@@ -70,7 +82,7 @@ xset 'dmenu.out.fg' "$base0F"
 xset 'xterm.font' "$(font $FONT_PIXELSIZE)"
 
 # qutebrowser
-xset 'qutebrowser.font_size' "$FONT_POINTSIZE"
+xset 'qutebrowser.font_size' "10pt"
 xset 'qutebrowser.fonts.monospace' "$FONT"
 xset 'qutebrowser.fonts.standard' "$FONT"
 # xset 'qutebrowser.fonts.sans-serif' "NotoSansMedium"
