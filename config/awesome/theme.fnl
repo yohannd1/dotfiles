@@ -36,14 +36,14 @@
 (set theme.font (xgetres :awesome.font))
 
 ;; foreground colors
-(set theme.fg_normal (xgetres :awesome.color5))
-(set theme.fg_focus (xgetres :awesome.color5))
+(set theme.fg_normal (xgetres :awesome.color4))
+(set theme.fg_focus (xgetres :awesome.color7))
 (set theme.fg_urgent (xgetres :awesome.color5))
 (set theme.fg_minimize (xgetres :awesome.color3))
 
 ;; background colors
-(set theme.bg_normal (xgetres :awesome.color1))
-(set theme.bg_focus (xgetres :awesome.color2))
+(set theme.bg_normal (xgetres :awesome.color0))
+(set theme.bg_focus (xgetres :awesome.color0))
 (set theme.bg_urgent (xgetres :awesome.color8))
 (set theme.bg_minimize (xgetres :awesome.color0))
 (set theme.bg_systray (xgetres :awesome.color1))

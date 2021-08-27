@@ -80,6 +80,10 @@
                   {:description "next layout"
                    :group "layout"})
 
+       (awful.key [mod-key ctrl shift] "s" #(awful.spawn.with_shell "start-sxhkd standard & notify-send 'sxhkd restarted!'")
+                  {:description "restart sxhkd"
+                   :group "layout"})
+
        (awful.key [mod-key] "x"
                   #(awful.prompt.run
                      {:prompt "eval(fnl): "

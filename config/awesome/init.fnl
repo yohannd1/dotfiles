@@ -3,8 +3,7 @@
 ;; TODO: rootblocks integration (https://awesomewm.org/doc/api/classes/wibox.widget.textbox.html ?)
 ;; TODO: center new windows
 ;; TODO: add keybinding to minimize/unminimize window
-;; TODO: brave windows seem to be always floating
-;; TODO: always resize from bottom
+;; TODO: fix - brave windows seem to be always floating
 ;; TODO: dismiss notification via left click
 ;; TODO: change layout graphics
 
@@ -85,6 +84,11 @@
 
   (local tasklist-buttons
     (gears.table.join
+      (awful.button [] 1 (fn [c]
+                           (if (= c client.focus)
+                             (set c.minimized true)
+                             (c:emit_signal "request::activate" "tasklist"
+                                            {:raise true}))))
       (awful.button [ctrl] 1 client/toggle-minimize)
       (awful.button [] 3 #(awful.menu.client_list {:theme {:width 250}}))
       (awful.button [] 4 #(awful.client.focus.byidx -1))
@@ -140,7 +144,7 @@
 
       (local widget-box
         (awful.wibar {: screen
-                      :position "top"
+                      :position "bottom"
                       :height 19}))
 
       (widget-box:setup
@@ -215,8 +219,8 @@
 
       (-> (awful.titlebar clt)
           (: :setup {1 {1 (awful.titlebar.widget.iconwidget clt)
-                        :buttons buttons
-                        :layout wibox.layout.fixed.horizontal}
+                       :buttons buttons
+                       :layout wibox.layout.fixed.horizontal}
                      2 {1 {:align "center"
                            :widget (awful.titlebar.widget.titlewidget clt)}
                         :buttons buttons
@@ -228,5 +232,15 @@
                           (awful.titlebar.widget.ontopbutton     clt)
                           (awful.titlebar.widget.closebutton     clt)]
                          {:layout (wibox.layout.fixed.horizontal)})
-                     :layout wibox.layout.align.horizontal}))
+                     :layout {:spacing 10
+                              :spacing_widget {1 {:forced_width 2
+                                                  :shape gears.shape.circle
+                                                  :color beautiful.fg_minimize
+                                                  :widget wibox.widget.separator}
+                                     :valign "center"
+                                     :halign "center"
+                                     :widget wibox.container.place}
+                    :layout wibox.layout.flex.horizontal}                     })
+
+          )
       )))
