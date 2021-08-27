@@ -39,11 +39,13 @@ if g:is_first
   Plug 'godlygeek/tabular'
   Plug 'ap/vim-buftabline'
   Plug 'tpope/vim-rsi'
+  Plug 'andymass/vim-matchup'
+  Plug 'luochen1990/rainbow'
 
   " :Clap install-binary[!] will always try to compile the binary locally,
   " if you do care about the disk used for the compilation, try using the force download way,
   " which will download the prebuilt binary even you have installed cargo.
-  Plug 'liuchengxu/vim-clap', { 'do': { -> clap#installer#force_download() } }
+  " Plug 'liuchengxu/vim-clap', { 'do': { -> clap#installer#force_download() } }
 
   " Editing enhancement: electric pairs
   Plug 'windwp/nvim-autopairs'
@@ -76,10 +78,19 @@ if g:is_first
   Plug 'Tetralux/odin.vim'
   Plug 'junegunn/goyo.vim'
   Plug 'YohananDiamond/danmakufu-ph3.vim'
+  Plug 'hellerve/carp-vim'
+
+  if isdirectory($HOME .. "/pj/code/nelua.vim")
+    " This repository doesn't actually exist on my GitHub. It's
+    " currently local and in very early stages (testing `nelua`).
+    Plug 'YohananDiamond/nelua.vim'
+  endif
+
   " Plug 'tbastos/vim-lua'
   " Plug 'hylang/vim-hy'
   " Plug 'fsharp/vim-fsharp'
   " Plug 'xolox/vim-lua-ftplugin'
+  Plug 'teal-language/vim-teal'
 
   " Filetypes - nim
   if executable("nim")
@@ -101,7 +112,10 @@ if g:is_first
   Plug 'vimwiki/vimwiki'
 
   Plug 'YohananDiamond/vim-hydra' " 'brenopacheco/vim-hydra'
-  Plug 'RRethy/vim-illuminate'
+  " Plug 'RRethy/vim-illuminate'
+  Plug 'nvim-telescope/telescope.nvim'
+  Plug 'nvim-lua/popup.nvim'
+  Plug 'nvim-lua/plenary.nvim'
 
   call plug#end()
 endif
@@ -109,8 +123,16 @@ endif
 " }}}
 " Plugin Config {{{
 
+" Rainbow
+let g:rainbow_active = 1
+let g:rainbow_conf = {
+    \ "separately": {
+        \ "vimwiki": 0,
+        \ },
+    \ }
+
 " Emmet
-let g:user_emmet_leader_key = '<Leader>E'
+let g:user_emmet_leader_key = '<C-x>e'
 
 " Markdown
 let g:vim_markdown_frontmatter = 1
@@ -143,12 +165,14 @@ let g:apc_custom_states = {
       \ }
 
 " Clap command: recent files
+" TODO: remove
 let g:clap_provider_recent = {
       \ "source": "filehist list | tac",
       \ "sink": "e",
       \ "description": "Load a file from the recent list",
       \ }
 
+" TODO: remove
 " Clap command: search on wiki
 " {{{
 function! _OpenWikiFile(file)
@@ -163,6 +187,7 @@ let g:clap_provider_wiki = {
       \ }
 " }}}
 
+" TODO: remove
 " Clap command: insert from file
 " {{{
 function! _InsertWikiFileRef(input, after_cursor)
@@ -188,14 +213,14 @@ let g:clap_provider_wiki_aref = {
 " }}}
 
 " Make it so <Esc> cancels clap even while on insert mode
-augroup clap_esc_fix
-  au!
-  au User ClapOnEnter inoremap <silent> <buffer> <Esc> <Esc>:<c-u>call clap#handler#exit()<CR>
-  au User ClapOnExit silent! iunmap <buffer> <Esc>
-augroup end
+" augroup clap_esc_fix
+"   au!
+"   au User ClapOnEnter inoremap <silent> <buffer> <Esc> <Esc>:<c-u>call clap#handler#exit()<CR>
+"   au User ClapOnExit silent! iunmap <buffer> <Esc>
+" augroup end
 
-let g:clap_open_preview = "never"
-let g:clap_layout = { "relative": "editor" }
+" let g:clap_open_preview = "never"
+" let g:clap_layout = { "relative": "editor" }
 
 if 0
   " So, pear-tree kept undloading the keybindings, so I forced it to reload
@@ -244,6 +269,8 @@ let g:vimwiki_url_maxsave = 0
 
 " Illuminate - delay to highlight words (in millisceconds)
 let g:Illuminate_delay = 250
+
+let g:matchup_matchparen_offscreen = {'method': 'popup'}
 
 " }}}
 " Functions {{{
@@ -561,7 +588,7 @@ if g:is_first
   set autoindent
   set hlsearch incsearch
   set linebreak wrap
-  set cursorline
+  " set cursorline " line highlighting
   set showcmd
   set shortmess+=atcI
   set belloff+=ctrlg
@@ -656,6 +683,9 @@ augroup end
 
 let g:ft = {}
 
+function! ft.asm() " {{{
+  setlocal noet sw=8 ts=8
+endfunction! " }}}
 function! ft.xdefaults() " {{{
   setlocal commentstring=\!%s
 endfunction " }}}
@@ -860,6 +890,18 @@ endfunction " }}}
 function! ft.vimwiki() " {{{
   setlocal sw=2
 
+  syn match VimwikiXTag /\v\#[A-Za-z_][A-Za-z0-9_]*/
+  hi link VimwikiXTag Function
+
+  syn match VimwikiXHeaderAttr /\v^\s*\%:[A-Za-z_][A-Za-z0-9_]*/
+  hi link VimwikiXHeaderAttr Function
+
+  syn match VimwikiXFuncCall /\v\@[A-Za-z_][A-Za-z0-9_]*/
+  hi link VimwikiXFuncCall Function
+
+  syn match VimwikiXFuncSpread /\v\@[A-Za-z_][A-Za-z0-9_]*-\>/
+  hi link VimwikiXFuncSpread Function
+
   silent! nunmap <buffer> o
   silent! nunmap <buffer> O
   silent! nmap <buffer> <C-h> <BS>
@@ -869,53 +911,13 @@ function! ft.vlang() " {{{
 
   let b:format_command = "fmt-wrapper-v"
 endfunction " }}}
+function! ft.fennel() " {{{
+  hi link FennelKeyword String
+endfunction " }}}
+function! ft.visualg() " {{{
+endfunction " }}}
 
 " }}}
-
-" }}}
-" Status Line {{{
-
-let g:mode_map = {
-      \ 'n'      : 'NORMAL',
-      \ 'no'     : 'NORMAL (OP)',
-      \ 'v'      : 'VISUAL',
-      \ 'V'      : 'VISUAL LINE',
-      \ "\<C-V>" : 'VISUAL BLOCK',
-      \ 's'      : 'SELECT',
-      \ 'S'      : 'SELECTION LINE',
-      \ "\<C-S>" : 'SELECTION BLOCK',
-      \ 'i'      : 'INSERT',
-      \ 'R'      : 'REPLACE',
-      \ 'Rv'     : 'VISUAL REPLACE',
-      \ 'c'      : 'COMMAND',
-      \ 'cv'     : 'VIM EX',
-      \ 'ce'     : 'EX',
-      \ 'r'      : 'PROMPT',
-      \ 'rm'     : 'MORE',
-      \ 'r?'     : 'CONFIRM',
-      \ '!'      : 'SHELL',
-      \ 't'      : 'TERMINAL',
-      \ }
-
-function! SLFiletype()
-  return &filetype == "" ? "no ft" : &filetype
-endfunction
-
-function! SLGetMode()
-  if has_key(g:mode_map, mode())
-    return g:mode_map[mode()]
-  else
-    return "{" . mode() . "}"
-  endif
-endfunction
-
-let &statusline = ""
-      \ . "%#TabLineSel# %{SLGetMode()} "
-      \ . "%#Normal# %r "
-      \ . "%#Normal# %="
-      \ . "%#Normal# %{SLFiletype()} (%{&fileformat}) "
-      \ . "%#TabLine# %p%% "
-      \ . "%#TabLineSel# %3l:%-3c "
 
 " }}}
 " Mappings {{{
@@ -1045,9 +1047,6 @@ vnoremap <Leader>S :s/<C-r>///g<Left><Left>
 nnoremap <silent> <C-j> :call NextBuffer()<CR>
 nnoremap <silent> <C-k> :call PrevBuffer()<CR>
 
-" Clap bindings
-nnoremap <Leader>o :Clap recent<CR>
-
 " Visual mappings
 " {{{
 function! SetSoftWrapBinds(enable)
@@ -1166,7 +1165,7 @@ silent call hydra#hydras#register({
       \     "name": "General",
       \     "keys": [
       \       ["w", "e ~/wiki/vimwiki/index.wiki", "open index"],
-      \       ["o", "Clap wiki", "select a wiki file"],
+      \       ["o", "lua dummy.open_wiki_file{}", "select a wiki file"],
       \       ["H", "Vimwiki2HTMLBrowse", "compile current & browse"],
       \       ["h", "Vimwiki2HTML", "compile current"],
       \       ["A", "VimwikiAll2HTML", "compile all"],
@@ -1175,8 +1174,8 @@ silent call hydra#hydras#register({
       \   {
       \     "name": "References",
       \     "keys": [
-      \       ["R", "Clap wiki_iref", "add reference ←"],
-      \       ["r", "Clap wiki_aref", "add reference →"],
+      \       ["R", "lua dummy.insert_wiki_file{after_cursor = false}", "add reference ←"],
+      \       ["r", "lua dummy.insert_wiki_file{after_cursor = true}", "add reference →"],
       \       ["N", "call Vimwiki_NewFileAddRef(v:false)", "new note + add reference ←"],
       \       ["n", "call Vimwiki_NewFileAddRef(v:true)", "new note + add reference →"],
       \     ]
@@ -1215,11 +1214,15 @@ vnoremap gK K
 " }}}
 " Experimental Stuff {{{
 
-" au BufRead,BufNewFile *.wiki set ft=acw " TODO: later
 au BufRead,BufNewFile *.acw set ft=acw
-au FileType vimwiki syn match VimwikiTag /\v\#<[A-Za-z_][A-Za-z0-9_]*>/
-au FileType vimwiki hi link VimwikiTag Function
 au BufRead,BufNewFile *.lang set ft=lang
+
+" Telescope builtins
+nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<CR>
+nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<CR>
+nnoremap <leader>o <cmd>lua dummy.open_recent()<CR>
+
+nnoremap <leader>W <cmd>MatchupWhereAmI?<CR>
 
 " }}}
 " Lua Tunnel {{{

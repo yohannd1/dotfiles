@@ -145,6 +145,20 @@ function! s:hl(group, fg_code, bg_code, attr, guisp)
   endif
 endfunction
 
+if has_key(g:, "rainbow_active") " rainbow parens configuration
+    let colors = ["09", "0A", "0B", "0D", "0E", "05"]
+
+    if !has_key(g:, "rainbow_conf")
+        let g:rainbow_conf = {}
+    end
+
+    if s:is_gui
+        let rainbow_conf.guifgs = map(colors, {_, n -> s:bases[n][s:GUI]})
+    else
+        let rainbow_conf.ctermfgs = map(colors, {_, n -> s:bases[n][s:TTY]})
+    end
+end
+
 " Vim editor colors
 if s:is_gui
   call s:hl("Normal",      "05",   "00",   "",     "")
@@ -209,7 +223,7 @@ call s:hl("Float",        "09", "NONE", "", "")
 call s:hl("Function",     "0D", "NONE", "", "")
 call s:hl("Identifier",   "05", "NONE", "none", "")
 call s:hl("Include",      "0D", "NONE", "", "")
-call s:hl("Keyword",      "0E", "NONE", "", "")
+call s:hl("Keyword",      "0E", "NONE", "bold", "")
 call s:hl("Label",        "0A", "NONE", "", "")
 call s:hl("Number",       "09", "NONE", "", "")
 call s:hl("Operator",     "05", "NONE", "none", "")
@@ -333,6 +347,13 @@ call s:hl("phpComparison",      "05", "NONE", "", "")
 call s:hl("phpParent",          "05", "NONE", "", "")
 call s:hl("phpMethodsVar",      "0C", "NONE", "", "")
 
+" Nim highlighting
+hi link nimOperator Keyword
+hi link nimOP9 Keyword
+hi link nimOP5 Keyword
+hi link nimOP4 Keyword
+hi link nimOP3 Keyword
+
 " Python highlighting
 call s:hl("pythonOperator",  "0E", "NONE", "", "")
 call s:hl("pythonRepeat",    "0E", "NONE", "", "")
@@ -385,6 +406,10 @@ call s:hl("zigComparatorWord",           "0C", "NONE", "", "")
 hi link zigStringDelimiter Delimiter
 hi link zigMultilineStringDelimiter Delimiter
 hi link zigMultilineStringDelimiter Delimiter
+
+" Lua highlighting
+hi link luaOperator Keyword
+hi link luaIn Keyword
 
 " Clap (https://github.com/liuchengxu/vim-clap) highlighting
 call s:hl("ClapInput",            "NONE", "02",   "", "")
