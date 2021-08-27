@@ -1,8 +1,50 @@
-# Highlighters
-try %{
-    add-highlighter global/ wrap
-    add-highlighter global/ number-lines
+evaluate-commands %sh{
+    plugins="$kak_config/plugins"
+    mkdir -p "$plugins"
+    if ! test -e "$plugins/plug.kak"; then
+        git clone -q https://github.com/andreyorst/plug.kak "$plugins/plug.kak"
+    fi
+
+    printf "%s\n" "source '$plugins/plug.kak/rc/plug.kak'"
 }
+
+plug "andreyorst/plug.kak" noload
+
+plug "andreyorst/smarttab.kak" config %{
+    set-option global tabstop 8
+    set-option global indentwidth 4
+
+    hook global WinSetOption filetype=(.*) %{
+        evaluate-commands %sh{
+            case "$kak_opt_filetype" in
+              makefile|gas) echo "noexpandtab" ;;
+              c|cpp) echo "smarttab" ;;
+              *) echo "expandtab" ;;
+            esac
+
+            echo "set-option global softtabstop $kak_opt_indentwidth"
+        }
+    }
+}
+
+plug "andreyorst/fzf.kak" config %{
+    map -docstring 'fzf mode' global normal '<c-p>' ': fzf-mode<ret>'
+} defer fzf %{
+    set-option global fzf_preview_width '65%'
+    evaluate-commands %sh{ echo "set-option global termcmd '$TERMINAL -e sh -c'" }
+}
+
+plug "alexherbo2/auto-pairs.kak" config %{
+    enable-auto-pairs
+}
+
+# Themes
+colorscheme base16neo
+
+# Highlighters
+add-highlighter global/ wrap
+add-highlighter global/ number-lines -hlcursor
+add-highlighter global/ regex \h+$ 0:Error
 
 hook global InsertCompletionShow .* %{
     map window insert <tab> <c-n>
@@ -18,19 +60,20 @@ hook global InsertCompletionHide .* %{
     unmap window insert <c-k> <c-p>
 }
 
-# Commands
-try %{
-    define-command rl %{
-        source ~/.config/kak/kakrc
-    }
+hook global WinSetOption filetype=nim %{
+    set-option buffer indentwidth 2
 }
 
-# Themes
-colorscheme gruvbox
-set-face global Default rgb:fbf1c7
-set-face global LineNumbers rgb:7c6f64
-set-face global BufferPadding rgb:7c6f64
-set-face global StatusLine rgb:fbf1c7
+# Misc. mappings
+map global normal -docstring "BR-ABNT2 convenient key" ç :
+map global normal -docstring "leader mapping" <space> ,
+map global normal -docstring "clear selection" , <space>
+map global user -docstring "yank to clipboard" y "<a-|>xclip -i -sel clip<ret>"
+map global user -docstring "paste from clipboard" p "!xclip -o -sel clip<ret>"
+map global user -docstring "delete buffer" B ":db<ret>"
 
-# Standard mappings
-map global normal ç :
+# TODO: https://github.com/mawww/kakoune/wiki/Selections
+# TODO: https://github.com/mawww/kakoune/wiki/Selections-combinations
+# TODO: https://stackoverflow.com/questions/44220509/how-do-i-select-multiple-lines-going-upwards-on-kakoune
+# TODO: https://github.com/mawww/kakoune/issues/1285 -- select upwards
+# TODO: https://github.com/mawww/kakoune/issues/2323 -- indentation guides
