@@ -7,8 +7,7 @@ local HOME = os.getenv("HOME") or error("_")
 local XDG_CACHE_HOME = os.getenv("XDG_CACHE_HOME") or (HOME .. "/.cache")
 
 local ACW_CACHE_DIR = os.getenv("ACW_CACHE_DIR") or (XDG_CACHE_HOME .. "/acw")
-local TIME_PATH = ACW_CACHE_DIR .. "/titlegen-last-time"
-local DATA_PATH = ACW_CACHE_DIR .. "/titlegen"
+local DATA_PATH = ACW_CACHE_DIR .. "/list-titles-cache"
 
 local ACW_WIKI_DIR = HOME .. "/wiki/vimwiki"
 
@@ -60,11 +59,10 @@ local function fileIter(dir)
   end)
 end
 
-local function split(text, separator, opts)
-  local separator = separator or " "
-  local separator_len = string.len(separator)
+local function split(text, separator)
+  separator = separator or " "
 
-  local opts = opts or {}
+  local separator_len = string.len(separator)
 
   local result = {}
   local current_index = 1
@@ -86,7 +84,7 @@ end
 local last_gen_time = lfs.attributes(DATA_PATH, "modification") or 0
 local wiki_mod_time = assert(lfs.attributes(ACW_WIKI_DIR, "modification"))
 
-if fileExists(DATA_PATH) and last_gen_time == wiki_mod_time then
+if fileExists(DATA_PATH) and last_gen_time >= wiki_mod_time then
   -- The data file path exists and it's updated.
   -- Just parse the file and output its contents, as nothing here seems to have been modified recently.
 
@@ -97,7 +95,7 @@ if fileExists(DATA_PATH) and last_gen_time == wiki_mod_time then
     line = in_fd:read("*line")
     if line == nil then break end
 
-    local id, _, title = table.unpack(split(line), "\t")
+    local id, _, title = table.unpack(split(line, "\t"))
     io.stdout:write(id, " ", title, "\n")
   end
 
@@ -105,7 +103,8 @@ if fileExists(DATA_PATH) and last_gen_time == wiki_mod_time then
 elseif fileExists(DATA_PATH) then
   -- The data file exists but it's not updated.
   -- Open it and decide, for each file, if it's updated enough.
-  -- TODO: delete entries that don't exist anymore
+  -- TODO: delete entries of files that don't exist anymore
+
   local entries = {}
   local should_rewrite = false
 
@@ -123,7 +122,7 @@ elseif fileExists(DATA_PATH) then
     in_fd:close()
   end
 
-  -- Then go through the list of files, update the ones that need it and print ot the screen.
+  -- Then go through the list of files, update the ones that need it and print them to the screen.
   for file in fileIter(ACW_WIKI_DIR) do
     if file:match("%.wiki$") then
       local file_path = ACW_WIKI_DIR .. "/" .. file
@@ -143,17 +142,17 @@ elseif fileExists(DATA_PATH) then
         entries[id] = {title = title, mod_time = mod_time}
         io.stdout:write(id, " ", title, "\n")
       end
-
-      entry_at = entries[id]
     end
   end
 
-  -- For last, write back to the data file.
-  local out_fd = assert(io.open(DATA_PATH, "w"))
-  for id, entry in pairs(entries) do
-    out_fd:write(id, "\t", entry.mod_time, "\t", entry.title, "\n")
+  -- For last, write back to the data file, if we need to.
+  if should_rewrite then
+    local out_fd = assert(io.open(DATA_PATH, "w"))
+    for id, entry in pairs(entries) do
+      out_fd:write(id, "\t", entry.mod_time, "\t", entry.title, "\n")
+    end
+    out_fd:close()
   end
-  out_fd:close()
 else
   -- The data file doesn't exist at all.
   -- Generate the entire file, as we do not have it.

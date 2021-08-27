@@ -111,6 +111,8 @@ block mime 'application/x-shellscript'
 match url 'vscode' && openXdg
 match url 'steam' && openXdg
 
+match ext 'drawio' && try gui drawio "$FILE"
+
 if match url 'http|https'; then
   printf "%s\n" "AAAAAAAAAAAAA"
   try gui "$BROWSER" "$FILE"
@@ -133,7 +135,7 @@ fi
 
 if match mime 'audio/*' ||
   match ext 'aac|flac|m4a|mid|midi|mpa|mp2|mp3|ogg|wav|wma'; then
-  try pop mpv --no-video "$FILE"
+  try gui termup -f mpv --no-video "$FILE"
   try pop mocplay "$FILE" "opener"
   try tty exiftool "$FILE"
   try pop runpage mediainfo "$FILE"

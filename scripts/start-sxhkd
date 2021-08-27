@@ -3,9 +3,10 @@
 # A script to load sxhkd based off the gen-sxhkd script.
 
 . "$(uselib std)"
+depCheck gen-sxhkd sxhkd mktemp
+
 . ~/.config/dots/env.sh
 . ~/.config/dots/path.sh
-depCheck gen-sxhkd sxhkd mktemp
 
 # get data folder based on current display
 dataFolder="$XSESSIONDIR/sxhkd"

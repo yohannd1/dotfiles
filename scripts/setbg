@@ -27,7 +27,7 @@ case "$SETBG_WALLPAPER_TYPE" in
     fi
 
     image=$(shuf -n1 -e "$SETBG_IMG_DIR"/*) || exit 1
-    hsetroot -cover "$image" || exit 1
+    hsetroot -extend "$image" -tint "#BBB" || exit 1
     ;;
   color)
     xresource="root.background"

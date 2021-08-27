@@ -9,12 +9,45 @@ showHelp() {
 
 [ $# != 1 ] && showHelp
 
+getActiveSink() {
+  pacmd list-sinks | awk '/* index:/ {print $3}'
+}
+
 case "$1" in
-  dec|decrease) amixer set Master "$increment"%- ;;
-  inc|increase) amixer set Master "$increment"%+ ;;
-  mute|togglemute) amixer -D pulse set Master 1+ toggle ;;
+  dec|decrease)
+    activeSink=$(getActiveSink) || exit 1
+    pactl set-sink-volume "$activeSink" -"$increment"%
+    # amixer set Master "$increment"%-
+    ;;
+  inc|increase)
+    activeSink=$(getActiveSink) || exit 1
+    pactl set-sink-volume "$activeSink" +"$increment"%
+    # amixer set Master "$increment"%+
+    ;;
+  mute|togglemute)
+    activeSink=$(getActiveSink) || exit 1
+    isMuted=$(pacmd list-sinks \
+      | grep -A 15 "index: ${activeSink}" \
+      | awk '/muted/ {print $2}')
+
+    case "$isMuted" in
+      yes)
+        pactl set-sink-mute "$activeSink" 0
+        ;;
+      no)
+        pactl set-sink-mute "$activeSink" 1
+        ;;
+      *)
+        printf >&2 "Unknown mute status: %s\n" "$isMuted"
+        ;;
+    esac
+
+    # amixer -D pulse set Master 1+ toggle
+    ;;
   *)
     printf >&2 "Invalid option: %s\n" "$1"
     showHelp
     ;;
 esac
+
+# Useful source: https://customlinux.blogspot.com/2013/02/pavolumesh-control-active-sink-volume.html
