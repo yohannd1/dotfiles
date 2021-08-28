@@ -10,6 +10,13 @@ local function parseEscapeCode(str)
     return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
+-- Copies the contents of src to dest.
+local function overrideTableWith(dest, src)
+  for k, v in pairs(src) do
+    dest[k] = v
+  end
+end
+
 local autopairs = require("nvim-autopairs")
 local mapKey = vim.api.nvim_set_keymap
 
@@ -57,7 +64,13 @@ local function hasIntegerRepr(num)
 end
 
 local function moveCursorHorizontal(offset)
-  assert(hasIntegerRepr(math.abs(offset)), "Absolute of `offset` (" .. tostring(math.abs(offset)) .. ") has no integer representation")
+  assert(
+    hasIntegerRepr(math.abs(offset)),
+    string.format(
+      "Absolute of `offset` (%s) has no integer representation",
+      math.abs(offset)
+    )
+  )
 
   if offset == 0 then
     return 0
@@ -95,7 +108,6 @@ local function makeAddTxt(after_cursor)
 
     local line = vim.fn.getline(".")
     local start_offset = after_cursor and 0 or -1
-    local ccol = vim.fn.col(".")
     local divide_point = columnAtCharOffset(start_offset) or 0
 
     vim.fn.setline(
@@ -109,14 +121,15 @@ local function makeAddTxt(after_cursor)
   end
 end
 
-local addTextAfterCursor = makeAddTxt(true)
-local addTextBeforeCursor = makeAddTxt(false)
+-- local addTextAfterCursor = makeAddTxt(true)
+-- local addTextBeforeCursor = makeAddTxt(false)
 
 do
   local telescope = require("telescope")
   local conf = require('telescope.config').values
   local finders = require('telescope.finders')
   local pickers = require('telescope.pickers')
+  local themes = require('telescope.themes')
   local action_state = require('telescope.actions.state')
   local actions = require("telescope.actions")
 
@@ -144,8 +157,13 @@ do
     },
   }
 
+  local main_theme = themes.get_ivy()
+
   -- Search and open on wiki
   dummy.open_wiki_file = function(opts)
+    opts = opts or {}
+    overrideTableWith(opts, main_theme)
+
     pickers.new(opts, {
       prompt_title = "Search on wiki",
       finder = finders.new_oneshot_job({"acw-list-titles"}, opts),
@@ -164,6 +182,9 @@ do
   end
 
   dummy.insert_wiki_file = function(opts)
+    opts = opts or {}
+    overrideTableWith(opts, main_theme)
+
     local repr_string = opts.after_cursor and "after" or "before"
 
     pickers.new(opts, {
@@ -174,9 +195,6 @@ do
         actions.select_default:replace(function(prompt_bufnr)
           local selection = action_state.get_selected_entry()
           actions.close(prompt_bufnr)
-
-          -- vim.cmd("normal! m`" .. (opts.after_cursor and "a" or "i") .. "[[" .. vim.fn.split(selection[1])[1] .. "]]")
-          -- vim.cmd("normal! ``")
 
           local link = "[[" .. vim.fn.split(selection[1])[1] .. "]]"
           makeAddTxt(opts.after_cursor)(link)
@@ -190,9 +208,12 @@ do
   end
 
   dummy.open_recent = function(opts)
+    opts = opts or {}
+    overrideTableWith(opts, main_theme)
+
     pickers.new(opts, {
       prompt_title = "Open recent file",
-      finder = finders.new_oneshot_job({"acw-list-titles"}, opts),
+      finder = finders.new_oneshot_job({"filehist", "list"}, opts),
       sorter = conf.generic_sorter(opts),
       attach_mappings = function()
         actions.select_default:replace(function(prompt_bufnr)
@@ -210,23 +231,23 @@ end
 
 do
   local mode_map = {
-    ["n"]      = "NORMAL",
-    ["no"]     = "NORMAL (OP)",
-    ["v"]      = "VISUAL",
-    ["V"]      = "VISUAL LINE",
-    ["s"]      = "SELECT",
-    ["S"]      = "SELECTION LINE",
-    ["i"]      = "INSERT",
-    ["R"]      = "REPLACE",
-    ["Rv"]     = "VISUAL REPLACE",
-    ["c"]      = "COMMAND",
-    ["cv"]     = "VIM EX",
-    ["ce"]     = "EX",
-    ["r"]      = "PROMPT",
-    ["rm"]     = "MORE",
-    ["r?"]     = "CONFIRM",
-    ["!"]      = "SHELL",
-    ["t"]      = "TERMINAL",
+    ["n"]  = "NORMAL",
+    ["no"] = "NORMAL (OP)",
+    ["v"]  = "VISUAL",
+    ["V"]  = "VISUAL LINE",
+    ["s"]  = "SELECT",
+    ["S"]  = "SELECTION LINE",
+    ["i"]  = "INSERT",
+    ["R"]  = "REPLACE",
+    ["Rv"] = "VISUAL REPLACE",
+    ["c"]  = "COMMAND",
+    ["cv"] = "VIM EX",
+    ["ce"] = "EX",
+    ["r"]  = "PROMPT",
+    ["rm"] = "MORE",
+    ["r?"] = "CONFIRM",
+    ["!"]  = "SHELL",
+    ["t"]  = "TERMINAL",
     [parseEscapeCode "<C-V>"] = "VISUAL BLOCK",
     [parseEscapeCode "<C-S>"] = "SELECTION BLOCK",
   }
