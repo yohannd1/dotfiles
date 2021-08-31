@@ -68,8 +68,10 @@ precmd() {
 # construct prompt string
 _rootSymbol=$(isRoot && printf '#' || printf '$')
 _ps1Symbol="%F{13}λ: " #  was the old one
-[ "$SHELL_STACK" ] && _shellStackSym=" %F{4}stack:%F{9}$SHELL_STACK" || _shellStackSym=""
-PS1="%F{3}[ %F{13}%n%F{4}@%F{13}%m %F{14}%~%(?.. %F{10}%?)$_shellStackSym %F{3}]
+isAndroid && _ps1Home="%F{13}... " || _ps1Home='%F{13}%n%F{4}@%F{13}%m '
+[ "$SHELL_STACK" ] && _shellStackSym=" %F{4}stack:%F{9}$(printf "%q" "$SHELL_STACK")" || _shellStackSym=""
+PS1="
+%F{3}[ $_ps1Home%F{14}%~%(?.. %F{4}exit:%F{10}%?)$_shellStackSym %F{3}]
 $_ps1Symbol%b%F{5}"
 
 PS2="%F{13} : %{$reset_color%}"
@@ -227,6 +229,14 @@ cdNearFile() {
     cd "$1"
   else
     printf >&2 "%s: invalid file\n" "$0"
+  fi
+}
+
+pushShell() {
+  if [ "$SHELL_STACK" ]; then
+    SHELL_STACK="$SHELL_STACK.${1:-zsh}" zsh
+  else
+    SHELL_STACK="${1:-zsh}" zsh
   fi
 }
 
