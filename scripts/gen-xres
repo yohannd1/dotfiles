@@ -27,7 +27,7 @@
 eval "$(load-base16-theme)"
 
 FONT="mononoki"
-FONT_PIXELSIZE="13.4"
+FONT_PIXELSIZE="14"
 FONT_POINTSIZE="13pt"
 
 xset() { printf "%s: %s\n" "$1" "$2"; }

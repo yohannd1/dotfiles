@@ -26,6 +26,7 @@ pathadd "$CARGO_HOME/bin"
 pathadd "${GEM_HOME:-$HOME/.gem}/ruby/2.7.0/bin"
 pathadd ~/.nimble/bin
 pathadd "$LUAROCKS_HOME/bin"
+pathadd "$NPM_DIR/bin"
 
 globpathadd "/opt"
 globpathadd "${XDG_CACHE_HOME:-$HOME/.cache}/packs"
