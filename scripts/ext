@@ -39,7 +39,7 @@ main() {
   case "$archive" in
     # tar stuff
     *.tar.bz2|*.tbz2) tar -xvjf "$archive" ;;
-    *.tar.xz) tar -xvf "$archive" ;;
+    *.tar.xz|*.txz) tar -xvf "$archive" ;;
     *.tar.gz|*.tgz) tar -xvzf "$archive" ;;
     *.lzma) unlzma "$archive" ;;
     *.tar) tar -xvf "$archive" ;;
@@ -49,7 +49,7 @@ main() {
 
     # encrypted tar archives
     *.tar.bz2.gpg|*.tbz2.gpg) gpg --decrypt "$archive" | tar -xvj ;;
-    *.tar.xz.gpg) gpg --decrypt "$archive" | tar -xv ;;
+    *.tar.xz.gpg|*.txz.gpg) gpg --decrypt "$archive" | tar -xv ;;
     *.tar.gz.gpg|*.tgz.gpg) gpg --decrypt "$archive" | tar -xvz ;;
 
     *.rar) unrar x -ad "$archive" ;;
@@ -104,13 +104,15 @@ if [ "${archive#*.}" = "$archive" ]; then
   exit 1
 fi
 
+printf >&2 "%s: analyzing file contents...\n" "$PROGNAME"
+
 if [ "$mode" = auto ]; then
   mode=$(case "$archive" in
     *.gpg) printf >&2 "%s: contents of archive cannot be looked up before decryption; MODE will default to 'new'\n" "$PROGNAME"
            printf "new"
            ;;
 
-    *.tar|*.tar.bz2|*.tbz2|*.tar.gz|*.tgz|*.tar.xz) tar -tf "$archive" | setModeFromInput ;;
+    *.tar|*.tar.bz2|*.tbz2|*.tar.gz|*.tgz|*.tar.xz|*.txz) tar -tf "$archive" | setModeFromInput ;;
     *.zip|*.7z) bsdtar --list --file "$archive" | setModeFromInput ;;
 
     *) printf >&2 "%s: unknown listing method for extension; using default MODE 'new'\n" "$PROGNAME" "$extension"
@@ -118,6 +120,8 @@ if [ "$mode" = auto ]; then
        ;;
   esac)
 fi
+
+printf >&2 "%s: commencing extraction...\n" "$PROGNAME"
 
 case "$mode" in
   new)
