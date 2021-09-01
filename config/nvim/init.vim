@@ -23,6 +23,7 @@ if g:is_first
   let g:is_mac = has("macunix")
   let g:is_android = isdirectory("/sdcard")
   let g:is_tty = $DISPLAY == "" && !g:is_android
+  let g:is_embedded = $NVIM_EMBEDDED_MODE == "1"
 endif
 
 " }}}
@@ -79,21 +80,21 @@ if g:is_first
   Plug 'junegunn/goyo.vim'
   Plug 'YohananDiamond/danmakufu-ph3.vim'
   Plug 'hellerve/carp-vim'
-
-  if isdirectory($HOME .. "/pj/code/nelua.vim")
-    " This repository doesn't actually exist on my GitHub. It's
-    " currently local and in very early stages (testing `nelua`).
-    Plug 'YohananDiamond/nelua.vim'
-  endif
+  " Plug 'stefanos82/nelua.vim'
+  " if isdirectory($HOME .. "/pj/code/nelua.vim")
+  "   " This repository doesn't actually exist on my GitHub. It's
+  "   " currently local and in very early stages (testing `nelua`).
+  "   Plug 'YohananDiamond/nelua.vim'
+  " endif
 
   " Plug 'tbastos/vim-lua'
   " Plug 'hylang/vim-hy'
   " Plug 'fsharp/vim-fsharp'
   " Plug 'xolox/vim-lua-ftplugin'
-  Plug 'teal-language/vim-teal'
+  " Plug 'teal-language/vim-teal'
 
   " Filetypes - nim
-  if executable("nim")
+  if executable("nim") && executable("nimsuggest")
     Plug 'baabelfish/nvim-nim'
   endif
 
@@ -102,20 +103,22 @@ if g:is_first
   " Plug 'dracula/vim'
   " Plug 'chriskempson/base16-vim'
 
-  " Forks
-  Plug 'https://gitlab.redox-os.org/YohananDiamond/ion-vim' " fork of redox-os/ion-vim
-  Plug 'YohananDiamond/vim-auto-popmenu' " fork of skywind3000/vim-auto-popmenu
+  " fork of redox-os/ion-vim
+  Plug 'https://gitlab.redox-os.org/YohananDiamond/ion-vim'
+
+  " fork of skywind3000/vim-auto-popmenu
+  Plug 'YohananDiamond/vim-auto-popmenu'
 
   " Misc.
   Plug 'tpope/vim-vinegar'
-  " Plug 'itchyny/lightline.vim'
   Plug 'vimwiki/vimwiki'
+  " Plug 'itchyny/lightline.vim'
 
-  Plug 'YohananDiamond/vim-hydra' " 'brenopacheco/vim-hydra'
-  " Plug 'RRethy/vim-illuminate'
+  Plug 'YohananDiamond/vim-hydra'
   Plug 'nvim-telescope/telescope.nvim'
   Plug 'nvim-lua/popup.nvim'
   Plug 'nvim-lua/plenary.nvim'
+  " Plug 'RRethy/vim-illuminate'
 
   call plug#end()
 endif
@@ -594,7 +597,7 @@ if g:is_first
   set belloff+=ctrlg
   set mouse=a
   set display+=lastline
-  set complete=.,w,b,u,t,k
+  set complete=.,w,b,u,t,k,kspell " 'i' was interesting too but it seems too expensive
   set completeopt-=preview
   set completeopt+=menuone,noselect
   set noshowmode
@@ -893,7 +896,7 @@ function! ft.vimwiki() " {{{
   syn match VimwikiXTag /\v\#[A-Za-z_][A-Za-z0-9_]*/
   hi link VimwikiXTag Function
 
-  syn match VimwikiXHeaderAttr /\v^\s*\%:[A-Za-z_][A-Za-z0-9_]*/
+  syn match VimwikiXHeaderAttr /\v^\s*\%:(custom\.)?[A-Za-z_][A-Za-z0-9_]*/
   hi link VimwikiXHeaderAttr Function
 
   syn match VimwikiXFuncCall /\v\@[A-Za-z_][A-Za-z0-9_]*/

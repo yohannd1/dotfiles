@@ -407,6 +407,9 @@ hi link zigStringDelimiter Delimiter
 hi link zigMultilineStringDelimiter Delimiter
 hi link zigMultilineStringDelimiter Delimiter
 
+" Typescript highlighting
+hi link typescriptVariable Function
+
 " Lua highlighting
 hi link luaOperator Keyword
 hi link luaIn Keyword
