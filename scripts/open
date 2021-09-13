@@ -103,6 +103,9 @@ if printf "%s" "$FILE" | grep -q '^file://'; then
 fi
 filematch_initialize "$FILE"
 
+# special urls in:this+format:idk
+[ "$_filematch_is_special" ] && openXdg
+
 block mime 'application/x-sharedlib'
 block mime 'application/x-shared-library-la'
 block mime 'application/x-executable'
@@ -114,7 +117,6 @@ match url 'steam' && openXdg
 match ext 'drawio' && try gui drawio "$FILE"
 
 if match url 'http|https'; then
-  printf "%s\n" "AAAAAAAAAAAAA"
   try gui "$BROWSER" "$FILE"
   try tty "$TERMBROWSER" "$FILE"
 fi
@@ -123,6 +125,7 @@ if match ext 'swf'; then
   try gui flashplayer "$FILE"
 fi
 
+match ext 'djvu' && try gui zathura "$FILE"
 match ext 'ps' && try gui zathura "$FILE"
 match ext 'epub' && try gui zathura "$FILE"
 
