@@ -80,6 +80,7 @@ if g:is_first
   Plug 'junegunn/goyo.vim'
   Plug 'YohananDiamond/danmakufu-ph3.vim'
   Plug 'hellerve/carp-vim'
+  Plug 'habamax/vim-godot'
   " Plug 'stefanos82/nelua.vim'
   " if isdirectory($HOME .. "/pj/code/nelua.vim")
   "   " This repository doesn't actually exist on my GitHub. It's
@@ -118,6 +119,7 @@ if g:is_first
   Plug 'nvim-telescope/telescope.nvim'
   Plug 'nvim-lua/popup.nvim'
   Plug 'nvim-lua/plenary.nvim'
+  " Plug 'nvim-lua/completion-nvim'
   " Plug 'RRethy/vim-illuminate'
 
   call plug#end()
@@ -591,7 +593,7 @@ if g:is_first
   set autoindent
   set hlsearch incsearch
   set linebreak wrap
-  " set cursorline " line highlighting
+  set cursorline " line highlighting
   set showcmd
   set shortmess+=atcI
   set belloff+=ctrlg
@@ -919,6 +921,9 @@ function! ft.fennel() " {{{
 endfunction " }}}
 function! ft.visualg() " {{{
 endfunction " }}}
+function! ft.gdscript() " {{{
+  setlocal noet sw=4 ts=4
+endfunction " }}}
 
 " }}}
 
@@ -1050,13 +1055,15 @@ vnoremap <Leader>S :s/<C-r>///g<Left><Left>
 nnoremap <silent> <C-j> :call NextBuffer()<CR>
 nnoremap <silent> <C-k> :call PrevBuffer()<CR>
 
-" Visual mappings
+" Soft wrap mappings
 " {{{
 function! SetSoftWrapBinds(enable)
   for char in ['j', 'k', '0', '$']
     if a:enable
       exec printf("nnoremap <expr> %s (v:count == 0 ? 'g%s' : '%s')", char, char, char)
       exec printf("vnoremap <expr> %s (v:count == 0 ? 'g%s' : '%s')", char, char, char)
+      exec printf("nnoremap <expr> g%s (v:count == 0 ? '%s' : 'g%s')", char, char, char)
+      exec printf("vnoremap <expr> g%s (v:count == 0 ? '%s' : 'g%s')", char, char, char)
     else
       exec printf("nunmap %s", char)
     endif
@@ -1168,6 +1175,7 @@ silent call hydra#hydras#register({
       \     "name": "General",
       \     "keys": [
       \       ["w", "e ~/wiki/vimwiki/index.wiki", "open index"],
+      \       ["s", "e ~/wiki/vimwiki/202105021825-E80938.wiki", "open scratchpad"],
       \       ["o", "lua dummy.open_wiki_file{}", "select a wiki file"],
       \       ["H", "Vimwiki2HTMLBrowse", "compile current & browse"],
       \       ["h", "Vimwiki2HTML", "compile current"],

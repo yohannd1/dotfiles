@@ -37,12 +37,18 @@ filematch_initialize() {
       _filematch_ext=$(printf "%s" "$_filematch_ext" | tr '[:upper:]' '[:lower:]')
     fi
     if printf "%s" "$_filematch_file" | grep -q '^\(\w*\)://'; then
-      # _filematch_urlprefix=${_filematch_file%://*}
       _filematch_urlprefix=$(printf "%s" "$_filematch_file" | sed 's|^\(\w\+\)://.*|\1|g')
     fi
 
-    if [ -z "$_filematch_urlprefix" ] && [ ! -e "$_filematch_file" ]; then
-      msg=$(printf 'Could not analyze "%s": no such file, directory or url' "$_filematch_file")
+    printf "%s" "$_filematch_file" | xclip -sel clipboard
+
+    _grep_expr='^\([a-zA-Z0-9%._-]\+:[a-zA-Z0-9%._-]*\)\(+[a-zA-Z0-9%._-]\+:[a-zA-Z0-9%._-]*\)*$'
+    if printf "%s" "$_filematch_file" | grep -q "$_grep_expr" && [ ! -e "$_filematch_file" ]; then
+      _filematch_is_special=1
+    fi
+
+    if [ -z "$_filematch_urlprefix" ] && [ ! -e "$_filematch_file" ] && [ -z "$_filematch_is_special" ]; then
+      msg=$(printf 'No such file, directory, url or special thing: %s' "$_filematch_file")
       if [ -t 2 ]; then
         printf >&2 "%s\n" "$msg"
       else

@@ -23,7 +23,7 @@ pathadd "$DOTFILES/scripts"
 pathadd ~/storage/scripts
 pathadd "$GOPATH"
 pathadd "$CARGO_HOME/bin"
-pathadd "${GEM_HOME:-$HOME/.gem}/ruby/2.7.0/bin"
+pathadd "${GEM_HOME:-$HOME/.gem}/bin"
 pathadd ~/.nimble/bin
 pathadd "$LUAROCKS_HOME/bin"
 pathadd "$NPM_DIR/bin"

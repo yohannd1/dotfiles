@@ -26,8 +26,8 @@
 . ~/.config/dots/env.sh
 eval "$(load-base16-theme)"
 
-FONT="mononoki"
-FONT_PIXELSIZE="14"
+FONT="Cascadia Code"
+FONT_PIXELSIZE="13"
 FONT_POINTSIZE="13pt"
 
 xset() { printf "%s: %s\n" "$1" "$2"; }
@@ -51,8 +51,7 @@ xset 'tym.font' "$FONT $FONT_PIXELSIZE"
 # xset 'urxvt.smoothResize' "true"
 
 # awesomewm
-AWESOME_FONTSIZE="10"
-xset 'awesome.font' "$FONT $AWESOME_FONTSIZE"
+xset 'awesome.font' "$FONT 9"
 xset 'awesome.border-normal' "$base00"
 xset 'awesome.border-focus' "$base03"
 xset 'awesome.border-marked' "$base0A"

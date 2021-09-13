@@ -21,7 +21,7 @@ elif [ -f ~/.xprofile ]; then
 fi
 
 case "$WM" in
-  i3|bspwm|dwm|qtile|awesome) ;;
+  i3|bspwm|dwm|qtile|awesome|pencil) ;;
   *) printf >&2 'WARNING: window manager "%s" is not yet supported - this might cause problems.\n' "$WM" ;;
 esac
 

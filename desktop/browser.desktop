@@ -2,4 +2,4 @@
 Name=Browser
 Exec=qutebrowser %u
 Type=Application
-Categories=Internet;
+Categories=Internet

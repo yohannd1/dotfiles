@@ -158,7 +158,7 @@ cmd move-here ${{
   clear; set -f
   IFS=$(printf '\n\t')
   for file in $fs; do
-    mv -vt . -- "$file"
+    mv -ivt . -- "$file"
 
     if [ $? != 0 ]; then
       printf "Failed to move file '%s'.\n" "$file"

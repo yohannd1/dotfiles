@@ -20,7 +20,7 @@ else:
         # "rofi",
         # "bspwm",
         # "polybar",
-        # "alacritty",
+        "alacritty",
     ]
 
     for i in {2, 3, 4}:

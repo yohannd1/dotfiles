@@ -354,6 +354,9 @@ hi link nimOP5 Keyword
 hi link nimOP4 Keyword
 hi link nimOP3 Keyword
 
+" Gdscript highlighting
+hi link gdscriptOperator Keyword
+
 " Python highlighting
 call s:hl("pythonOperator",  "0E", "NONE", "", "")
 call s:hl("pythonRepeat",    "0E", "NONE", "", "")
