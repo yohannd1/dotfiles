@@ -84,6 +84,10 @@
                   {:description "restart sxhkd"
                    :group "layout"})
 
+       (awful.key [mod-key] "f"
+                  #(let [wbox _G.widget-box]
+                     (set wbox.visible (not wbox.visible))))
+
        (awful.key [mod-key] "x"
                   #(awful.prompt.run
                      {:prompt "eval(fnl): "
@@ -160,7 +164,7 @@
                      :group "tag"})
          )))
 
-(->> [(awful.key [mod-key] "f"
+(->> [(awful.key [mod-key shift] "f"
                  #(do
                     (set $1.fullscreen (not $1.fullscreen))
                     ($1:raise))

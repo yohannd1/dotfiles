@@ -86,7 +86,7 @@
     (gears.table.join
       (awful.button [] 1 (fn [c]
                            (if (= c client.focus)
-                             (set c.minimized true)
+                             nil ; (set c.minimized true)
                              (c:emit_signal "request::activate" "tasklist"
                                             {:raise true}))))
       (awful.button [ctrl] 1 client/toggle-minimize)
@@ -156,7 +156,9 @@
          3 {:layout wibox.layout.fixed.horizontal
             1 (wibox.widget.systray)
             2 text-clock
-            3 layout-box}}))))
+            3 layout-box}})
+
+      (set _G.widget-box widget-box))))
 
 (do ; rules
   (set awful.rules.rules
