@@ -100,14 +100,12 @@ class Arch(enum.Enum):
         raise Exception(f"Invalid arch string: {repr(s)}")
 
 
-class Action(Protocol):
+class Action():
     @abc.abstractmethod
-    def run(self):
-        ...
+    def run(self): ...
 
     @abc.abstractmethod
-    def repr(self) -> ActionRepr:
-        ...
+    def repr(self) -> ActionRepr: ...
 
 
 @dataclass

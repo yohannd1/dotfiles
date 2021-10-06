@@ -146,7 +146,7 @@ function! s:hl(group, fg_code, bg_code, attr, guisp)
 endfunction
 
 if has_key(g:, "rainbow_active") " rainbow parens configuration
-    let colors = ["09", "0A", "0B", "0D", "0E", "05"]
+    let colors = ["09", "0A", "0B", "0D", "0E"]
 
     if !has_key(g:, "rainbow_conf")
         let g:rainbow_conf = {}

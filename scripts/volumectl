@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-increment=$(( ${VOLUMECTL_INCREMENT:-5} + 1 ))
+increment=${VOLUMECTL_INCREMENT:-5}
 
 showHelp() {
   printf >&2 "Usage: %s\n" "$(basename $0) { inc | dec | mute }"

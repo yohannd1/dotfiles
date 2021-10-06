@@ -115,6 +115,7 @@ match url 'vscode' && openXdg
 match url 'steam' && openXdg
 
 match ext 'drawio' && try gui drawio "$FILE"
+match ext 'godot' && try gui Godot "$FILE"
 
 if match url 'http|https'; then
   try gui "$BROWSER" "$FILE"

@@ -1,5 +1,5 @@
 _exists() { command -v "$1" >/dev/null 2>/dev/null; }
-_isAndroid() { [ -d ~/.termux ]; } # bad way of detecting lol
+_isAndroid() { test -d ~/.termux; } # bad way of detecting lol
 
 # dotfiles dir
 _dotpath=~/.local/share/dots/dotpath
@@ -7,8 +7,7 @@ _fallback_dotpath=~/.dotfiles
 if [ -f "$_dotpath" ]; then
   export DOTFILES=$(cat "$_dotpath")
 else
-  printf >&2 "warning: %s doesn't exist - %s will fallback to %s" \
-             "$_dotpath" '$DOTFILES' "$_fallback_dotpath"
+  printf >&2 "warning: %s doesn't exist - %s will fallback to %s" "$_dotpath" '$DOTFILES' "$_fallback_dotpath"
   export DOTFILES="$_fallback_dotpath"
 fi
 
@@ -32,7 +31,7 @@ export EDITOR=nvim
 # _isAndroid && export EDITOR=nvim || export EDITOR=start-emacs
 export MAYBE_GRAPHICAL_EDITOR=maybe-graphedit
 export TERMINAL=st
-export BROWSER=firefox
+export BROWSER=brave-async
 export TERMBROWSER=w3m
 export PAGER=less
 export OPENER=openfork
@@ -111,6 +110,7 @@ export GUILE_LOAD_PATH="$DOTFILES/lib/guile"
 export CLANG_FORMAT_C_CONFIG="$DOTFILES/config/clang-format-c.yaml"
 export CLANG_FORMAT_CPP_CONFIG="$DOTFILES/config/clang-format-cpp.yaml"
 export X_COMPOSITOR="picom"
+export FILEHIST_MAX_LIMIT=500
 
 export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx
