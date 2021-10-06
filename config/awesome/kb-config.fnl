@@ -85,8 +85,10 @@
                    :group "layout"})
 
        (awful.key [mod-key] "f"
-                  #(let [wbox _G.widget-box]
-                     (set wbox.visible (not wbox.visible))))
+                  #(let [top-bar _G.top-bar
+                         bottom-bar _G.bottom-bar]
+                     (when top-bar (set top-bar.visible (not top-bar.visible)))
+                     (when bottom-bar (set bottom-bar.visible (not bottom-bar.visible)))))
 
        (awful.key [mod-key] "x"
                   #(awful.prompt.run

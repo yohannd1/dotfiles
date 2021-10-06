@@ -1,11 +1,11 @@
 ;; TODO: try out dynamic tagging: https://github.com/pw4ever/awesome-wm-config#persistent-dynamic-tagging
-;; TODO: bar padding
 ;; TODO: rootblocks integration (https://awesomewm.org/doc/api/classes/wibox.widget.textbox.html ?)
 ;; TODO: center new windows
 ;; TODO: add keybinding to minimize/unminimize window
 ;; TODO: fix - brave windows seem to be always floating
 ;; TODO: dismiss notification via left click
-;; TODO: change layout graphics
+;; TODO: change layout indicator graphics
+;; TODO: gaps configuration
 
 (local user (assert _G.user "Failed to get `user` global variable"))
 
@@ -95,10 +95,16 @@
       (awful.button [] 5 #(awful.client.focus.byidx +1))
       ))
 
+  (local tag-names (icollect [_ n (ipairs [1 2 3 4 5 6 7 8 9])]
+                     (string.format "%s" n)))
+
   (awful.screen.connect_for_each_screen
     (fn [screen]
-      (awful.tag ["1" "2" "3" "4" "5" "6" "7" "8" "9"]
-                 screen (. awful.layout.layouts 1))
+      (each [_ name (ipairs tag-names)]
+        ;; Useful reference: https://awesomewm.org/doc/api/classes/tag.html
+        (awful.tag.add name {:gap 3
+                             :screen screen
+                             :layout (. awful.layout.layouts 1)}))
 
       (local prompt-box (awful.widget.prompt))
       (set screen.prompt-box prompt-box)
@@ -114,23 +120,29 @@
 
       (local tag-list
         (awful.widget.taglist {: screen
-                               :filter awful.widget.taglist.filter.all
+                               :filter awful.widget.taglist.filter.noempty
                                :buttons taglist-buttons
-                               :layout {:layout wibox.layout.fixed.horizontal}}))
+                               :style {:shape gears.shape.circle
+                                       :width 10
+                                       :height 10}
+                               :layout {:layout wibox.layout.fixed.horizontal
+                                        :spacing 2}}))
 
       (local task-list
         (awful.widget.tasklist
           {: screen
            :filter awful.widget.tasklist.filter.currenttags
            :buttons tasklist-buttons
-           ; :style {:shape gears.shape.rounded_bar}
+           :style {:shape gears.shape.rounded_bar
+                   :spacing 10}
            :layout {:spacing 10
                     :spacing_widget {1 {:forced_width 2
                                         :shape gears.shape.circle
-                                        :color beautiful.fg_minimize
+                                        :color "#00000000"
                                         :widget wibox.widget.separator}
                                      :valign "center"
                                      :halign "center"
+                                     :bg "#00000000"
                                      :widget wibox.container.place}
                     :layout wibox.layout.flex.horizontal}
            :widget_template {1 {1 {1 {:id "text_role"
@@ -142,23 +154,44 @@
                              :id "background_role"
                              :widget wibox.container.background}}))
 
-      (local widget-box
-        (awful.wibar {: screen
-                      :position "bottom"
-                      :height 19}))
+      (local top-bar (awful.wibar {: screen
+                                   :bg "#00000000"
+                                   :position "top"
+                                   :height 25}))
 
-      (widget-box:setup
-        {:layout wibox.layout.align.horizontal
-         1 {:layout wibox.layout.fixed.horizontal
-            1 tag-list
-            2 prompt-box}
-         2 (wibox.container.margin task-list 5 5)
-         3 {:layout wibox.layout.fixed.horizontal
-            1 (wibox.widget.systray)
-            2 text-clock
-            3 layout-box}})
+      (top-bar:setup
+        {:widget wibox.container.margin
+         :top 5
+         :left 5
+         :right 5
+         1 {:layout wibox.layout.align.horizontal
+            1 {1 {:layout wibox.layout.fixed.horizontal
+                     1 tag-list
+                     2 prompt-box}
+                  :widget wibox.container.background
+                  :bg beautiful.bg_normal
+                  :shape gears.shape.rounded_bar}
 
-      (set _G.widget-box widget-box))))
+            2 {1 task-list
+               :left 5
+               :right 5
+               :widget wibox.container.margin}
+
+            3 {1 {1 {:layout wibox.layout.fixed.horizontal
+                        1 (wibox.widget.systray)
+                        2 text-clock
+                        3 layout-box}
+                     :left 10
+                     :right 10
+                     :widget wibox.container.margin}
+                  :widget wibox.container.background
+                  :bg beautiful.bg_normal
+                  :shape gears.shape.rounded_bar}
+            }}
+
+        )
+
+      (set _G.top-bar top-bar))))
 
 (do ; rules
   (set awful.rules.rules
@@ -175,7 +208,7 @@
                                     awful.placement.no_offscreen)}}
         {:rule_any {:instance ["pinentry"]
                     :class ["Sxiv" "float" "Pavucontrol" "Gnome-pomodoro"]
-                    :name ["Event Tester" "Steam - News"]
+                    :name ["Event Tester" "Steam - News" "Krita - Edit Text — Krita"]
                     :role ["pop-up"]}
          :properties {:floating true}}
         ]))

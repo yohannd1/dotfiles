@@ -43,7 +43,7 @@
 
 ;; background colors
 (set theme.bg_normal (xgetres :awesome.color0))
-(set theme.bg_focus (xgetres :awesome.color0))
+(set theme.bg_focus (xgetres :awesome.color2))
 (set theme.bg_urgent (xgetres :awesome.color8))
 (set theme.bg_minimize (xgetres :awesome.color0))
 (set theme.bg_systray (xgetres :awesome.color1))
