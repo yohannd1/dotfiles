@@ -32,7 +32,7 @@ endif
 if g:is_first
   silent! call plug#begin(g:config_root . '/plugged')
 
-  " Editing enhancement
+  " " Editing enhancement
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-repeat'
   Plug 'tpope/vim-commentary'
@@ -40,21 +40,21 @@ if g:is_first
   Plug 'godlygeek/tabular'
   Plug 'ap/vim-buftabline'
   Plug 'tpope/vim-rsi'
-  Plug 'andymass/vim-matchup'
+  " " Plug 'andymass/vim-matchup'
   Plug 'luochen1990/rainbow'
 
-  " :Clap install-binary[!] will always try to compile the binary locally,
-  " if you do care about the disk used for the compilation, try using the force download way,
-  " which will download the prebuilt binary even you have installed cargo.
-  " Plug 'liuchengxu/vim-clap', { 'do': { -> clap#installer#force_download() } }
+  " " :Clap install-binary[!] will always try to compile the binary locally,
+  " " if you do care about the disk used for the compilation, try using the force download way,
+  " " which will download the prebuilt binary even you have installed cargo.
+  " " Plug 'liuchengxu/vim-clap', { 'do': { -> clap#installer#force_download() } }
 
-  " Editing enhancement: electric pairs
+  " " Editing enhancement: electric pairs
   Plug 'windwp/nvim-autopairs'
-  " Plug 'tmsvg/pear-tree' " FIXME
-  " Plug 'vim-scripts/AutoClose'
-  " Plug 'jiangmiao/auto-pairs'
+  " " Plug 'tmsvg/pear-tree'
+  " " Plug 'vim-scripts/AutoClose'
+  " " Plug 'jiangmiao/auto-pairs'
 
-  " Filetypes
+  " " Filetypes
   Plug 'Clavelito/indent-sh.vim'
   Plug 'YohananDiamond/zig.vim' " Plug 'ziglang/zig.vim'
   Plug 'JuliaEditorSupport/julia-vim'
@@ -68,7 +68,6 @@ if g:is_first
   Plug 'leafo/moonscript-vim'
   Plug 'rust-lang/rust.vim'
   Plug 'vim-crystal/vim-crystal'
-  " Plug 'raymond-w-ko/vim-lua-indent'
   Plug 'justinmk/vim-syntax-extra'
   Plug 'Vimjas/vim-python-pep8-indent'
   Plug 'vim-python/python-syntax'
@@ -88,32 +87,34 @@ if g:is_first
   "   Plug 'YohananDiamond/nelua.vim'
   " endif
 
-  " Plug 'tbastos/vim-lua'
-  " Plug 'hylang/vim-hy'
-  " Plug 'fsharp/vim-fsharp'
-  " Plug 'xolox/vim-lua-ftplugin'
-  " Plug 'teal-language/vim-teal'
+  " " Plug 'tbastos/vim-lua'
+  " " Plug 'hylang/vim-hy'
+  " " Plug 'fsharp/vim-fsharp'
+  " " Plug 'xolox/vim-lua-ftplugin'
+  " " Plug 'teal-language/vim-teal'
 
-  " Filetypes - nim
+  " " Filetypes - nim
   if executable("nim") && executable("nimsuggest")
-    Plug 'baabelfish/nvim-nim'
+    Plug 'YohananDiamond/nvim-nim'
   endif
 
-  " Themes
-  Plug 'morhetz/gruvbox' " for windows
-  " Plug 'dracula/vim'
-  " Plug 'chriskempson/base16-vim'
+  " " Themes
+  if g:is_win
+    Plug 'morhetz/gruvbox' " for windows
+  endif
+  " " Plug 'dracula/vim'
+  " " Plug 'chriskempson/base16-vim'
 
-  " fork of redox-os/ion-vim
+  " " fork of redox-os/ion-vim
   Plug 'https://gitlab.redox-os.org/YohananDiamond/ion-vim'
 
-  " fork of skywind3000/vim-auto-popmenu
+  " " fork of skywind3000/vim-auto-popmenu
   Plug 'YohananDiamond/vim-auto-popmenu'
 
-  " Misc.
-  Plug 'tpope/vim-vinegar'
-  Plug 'vimwiki/vimwiki'
-  " Plug 'itchyny/lightline.vim'
+  " " Misc.
+  " " Plug 'tpope/vim-vinegar'
+  Plug 'vimwiki/vimwiki' " NOTE: Slowdown candidate
+  " " Plug 'itchyny/lightline.vim'
 
   Plug 'YohananDiamond/vim-hydra'
   Plug 'nvim-telescope/telescope.nvim'
@@ -498,7 +499,7 @@ function! GetCharAt(line, col) " {{{
   return strcharpart(getline(a:line)[a:col - 1:], 0, 1)
 endfunction! " }}}
 function! GetURL(string) " {{{
-  return matchstr(a:string, '\v(https?|www\.)://[a-zA-Z0-9/\-\.%_?#=&]+')
+  return matchstr(a:string, '\v(https?|www\.)://[a-zA-Z0-9/\-\.%_?#=&+]+')
 endfunction " }}}
 function! GetFile(string) " {{{
   return matchstr(a:string, '\v[a-zA-Z0-9_\-\./]+')
