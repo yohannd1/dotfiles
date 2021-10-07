@@ -5,7 +5,7 @@
 ;; TODO: fix - brave windows seem to be always floating
 ;; TODO: dismiss notification via left click
 ;; TODO: change layout indicator graphics
-;; TODO: gaps configuration
+;; TODO: bug fix: when switching workspaces, taglist flashes
 
 (local user (assert _G.user "Failed to get `user` global variable"))
 
@@ -36,15 +36,15 @@
   (var is-handling-error false)
 
   (awesome.connect_signal "debug::error"
-    (fn [err]
-      (when (not is-handling-error)
-        (set is-handling-error true)
+                          (fn [err]
+                            (when (not is-handling-error)
+                              (set is-handling-error true)
 
-        (naughty.notify {:preset naughty.config.presets.critical
-                         :title "An error happened!"
-                         :text (tostring err)})
+                              (naughty.notify {:preset naughty.config.presets.critical
+                                               :title "An error happened!"
+                                               :text (tostring err)})
 
-        (set is-handling-error false)))))
+                              (set is-handling-error false)))))
 
 ;; load keybindings
 (local {: mod-key
@@ -96,7 +96,7 @@
       ))
 
   (local tag-names (icollect [_ n (ipairs [1 2 3 4 5 6 7 8 9])]
-                     (string.format "%s" n)))
+                             (string.format "%s" n)))
 
   (awful.screen.connect_for_each_screen
     (fn [screen]
@@ -118,15 +118,51 @@
           (awful.button [] 4 #(awful.layout.inc +1))
           (awful.button [] 5 #(awful.layout.inc -1))))
 
+      (fn update-tag-tree [tree tag-info]
+        (local bg_role
+          (-> (tree:get_children_by_id "neo_background_role")
+              (. 1)))
+
+        (local sel-tags
+          (-> (require "awful")
+              (. :screen :focused)
+              (#($1)) ; call the value piped in
+              (. :selected_tags)))
+
+        (var is-active false)
+
+        (each [_ tag (ipairs sel-tags)]
+          (when (= tag-info tag)
+            (set is-active true)
+            (lua "break")))
+
+        (set bg_role.bg (if is-active
+                          beautiful.bg_focus
+                          beautiful.bg_normal))
+        )
+
       (local tag-list
-        (awful.widget.taglist {: screen
-                               :filter awful.widget.taglist.filter.noempty
-                               :buttons taglist-buttons
-                               :style {:shape gears.shape.circle
-                                       :width 10
-                                       :height 10}
-                               :layout {:layout wibox.layout.fixed.horizontal
-                                        :spacing 2}}))
+        (awful.widget.taglist
+          {: screen
+           :filter awful.widget.taglist.filter.noempty
+           :buttons taglist-buttons
+           :widget_template {1 {1 {:id "text_role"
+                                   :widget wibox.widget.textbox}
+                                :top 2
+                                :bottom 2
+                                :left 7
+                                :right 7
+                                :widget wibox.container.margin}
+                             :id "neo_background_role"
+                             :shape gears.shape.circle
+                             :radius 30
+                             :widget wibox.container.background
+                             :create_callback (fn [self tag index _objects]
+                                                (update-tag-tree self tag))
+                             :update_callback (fn [self tag index _objects]
+                                                (update-tag-tree self tag))}
+           :layout {:layout wibox.layout.fixed.horizontal
+                    :spacing 2}}))
 
       (local task-list
         (awful.widget.tasklist
@@ -134,22 +170,12 @@
            :filter awful.widget.tasklist.filter.currenttags
            :buttons tasklist-buttons
            :style {:shape gears.shape.rounded_bar
-                   :spacing 10}
-           :layout {:spacing 10
-                    :spacing_widget {1 {:forced_width 2
-                                        :shape gears.shape.circle
-                                        :color "#00000000"
-                                        :widget wibox.widget.separator}
-                                     :valign "center"
-                                     :halign "center"
-                                     :bg "#00000000"
-                                     :widget wibox.container.place}
-                    :layout wibox.layout.flex.horizontal}
+                   :spacing 3}
            :widget_template {1 {1 {1 {:id "text_role"
                                       :widget wibox.widget.textbox}
                                    :layout wibox.layout.fixed.horizontal}
-                                :left 5
-                                :right 5
+                                :left 12
+                                :right 12
                                 :widget wibox.container.margin}
                              :id "background_role"
                              :widget wibox.container.background}}))
@@ -157,20 +183,23 @@
       (local top-bar (awful.wibar {: screen
                                    :bg "#00000000"
                                    :position "top"
-                                   :height 25}))
+                                   :height 32}))
 
       (top-bar:setup
         {:widget wibox.container.margin
-         :top 5
+         :top 6
          :left 5
          :right 5
          1 {:layout wibox.layout.align.horizontal
-            1 {1 {:layout wibox.layout.fixed.horizontal
+            1 {1 {1 {:layout wibox.layout.fixed.horizontal
                      1 tag-list
                      2 prompt-box}
-                  :widget wibox.container.background
-                  :bg beautiful.bg_normal
-                  :shape gears.shape.rounded_bar}
+                  :left 8
+                  :right 8
+                  :widget wibox.container.margin}
+               :widget wibox.container.background
+               :bg beautiful.bg_normal
+               :shape gears.shape.rounded_bar}
 
             2 {1 task-list
                :left 5
@@ -178,15 +207,15 @@
                :widget wibox.container.margin}
 
             3 {1 {1 {:layout wibox.layout.fixed.horizontal
-                        1 (wibox.widget.systray)
-                        2 text-clock
-                        3 layout-box}
-                     :left 10
-                     :right 10
-                     :widget wibox.container.margin}
-                  :widget wibox.container.background
-                  :bg beautiful.bg_normal
-                  :shape gears.shape.rounded_bar}
+                     1 (wibox.widget.systray)
+                     2 text-clock
+                     3 layout-box}
+                  :left 10
+                  :right 10
+                  :widget wibox.container.margin}
+               :widget wibox.container.background
+               :bg beautiful.bg_normal
+               :shape gears.shape.rounded_bar}
             }}
 
         )
@@ -254,8 +283,8 @@
 
       (-> (awful.titlebar clt)
           (: :setup {1 {1 (awful.titlebar.widget.iconwidget clt)
-                       :buttons buttons
-                       :layout wibox.layout.fixed.horizontal}
+                        :buttons buttons
+                        :layout wibox.layout.fixed.horizontal}
                      2 {1 {:align "center"
                            :widget (awful.titlebar.widget.titlewidget clt)}
                         :buttons buttons
@@ -272,10 +301,10 @@
                                                   :shape gears.shape.circle
                                                   :color beautiful.fg_minimize
                                                   :widget wibox.widget.separator}
-                                     :valign "center"
-                                     :halign "center"
-                                     :widget wibox.container.place}
-                    :layout wibox.layout.flex.horizontal}                     })
+                                               :valign "center"
+                                               :halign "center"
+                                               :widget wibox.container.place}
+                              :layout wibox.layout.flex.horizontal}                     })
 
           )
       )))
