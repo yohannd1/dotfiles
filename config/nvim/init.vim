@@ -594,7 +594,7 @@ if g:is_first
   set autoindent
   set hlsearch incsearch
   set linebreak wrap
-  set cursorline " line highlighting
+  " set cursorline " line highlighting
   set showcmd
   set shortmess+=atcI
   set belloff+=ctrlg
