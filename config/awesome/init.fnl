@@ -208,7 +208,16 @@
 
             3 {1 {1 {:layout wibox.layout.fixed.horizontal
                      1 (wibox.widget.systray)
-                     2 text-clock
+                     ; 2 text-clock
+                     2 {1 (let [textbox (wibox.widget.textbox)]
+                            (awful.spawn.with_line_callback
+                              "rootblocks"
+                              {:stdout (fn [line]
+                                         (set textbox.text line))})
+                            textbox)
+                        :left 5
+                        :right 5
+                        :widget wibox.container.margin}
                      3 layout-box}
                   :left 10
                   :right 10
