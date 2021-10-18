@@ -2,11 +2,12 @@
 
 acw-list-titles \
   | rg 'Journal' \
+  | sort -h \
   | while read line; do
     id=$(printf "%s" "$line" | awk '{ print $1 }') || return 1
     filename="$HOME/wiki/vimwiki/$id.wiki"
 
-    rg '(\[ \]|\( \))' "$filename" | while read match; do
+    rg '(^\s*([*-]\s+)?(\[ \]|\( \))|\b(TODO|FIXME)\b)' "$filename" | while read match; do
       printf "%s:%s\n" "$id" "$match"
     done
   done \
