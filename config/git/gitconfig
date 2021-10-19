@@ -58,7 +58,7 @@
     path = ~/.gitconfig.local
 
 [pull]
-	rebase = false
+    rebase = false
 
 [url "https://github.com/"]
     insteadOf = gh.https:
@@ -68,10 +68,12 @@
 
 [url "git@github.com:"]
     insteadOf = gh.ssh:
+
 [filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
+
 [init]
-	defaultBranch = master
+    defaultBranch = master
