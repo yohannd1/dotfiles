@@ -1,11 +1,11 @@
 ;; TODO: try out dynamic tagging: https://github.com/pw4ever/awesome-wm-config#persistent-dynamic-tagging
-;; TODO: rootblocks integration (https://awesomewm.org/doc/api/classes/wibox.widget.textbox.html ?)
-;; TODO: center new windows
-;; TODO: add keybinding to minimize/unminimize window
-;; TODO: fix - brave windows seem to be always floating
-;; TODO: dismiss notification via left click
+;; TODO: center new windows that spawn already floating
+;; TODO: add keybinding to unminimize window
 ;; TODO: change layout indicator graphics
 ;; TODO: bug fix: when switching workspaces, taglist flashes
+;; TODO: improve hotkeys popup
+;; TODO: notification history
+;; TODO: bug fix: on startup, all tags are selected for some reason
 
 (local user (assert _G.user "Failed to get `user` global variable"))
 
@@ -53,7 +53,7 @@
         : client-buttons
         : global-keys
         : client/toggle-minimize}
-  (user.loadFnlConfig :kb-config.fnl))
+  (user.loadFnlConfig "kb-config.fnl"))
 
 ;; set global keys
 (_G.root.keys global-keys)
@@ -64,9 +64,19 @@
 
 (set menubar.utils.terminal user.terminal)
 
+(do ; naughty configuration
+  (set naughty.config.icon_dirs []) ; I'm not a fan of notification icons
+  (let [config naughty.config.defaults]
+    (set config.margin 10)
+    (set config.width 400)
+    (set config.max_width 400)
+    ; (set config.shape gears.shape.rounded_bar)
+    )
+  )
+
 (do ; wibar configuration
-  (local text-clock (wibox.widget.textclock))
-  (set text-clock.format " %a, %Y-%m-%d %H:%M ")
+  ; (local text-clock (wibox.widget.textclock))
+  ; (set text-clock.format " %a, %Y-%m-%d %H:%M ")
 
   (local taglist-buttons
     (gears.table.join
@@ -103,6 +113,7 @@
       (each [_ name (ipairs tag-names)]
         ;; Useful reference: https://awesomewm.org/doc/api/classes/tag.html
         (awful.tag.add name {:gap 3
+                             :selected false
                              :screen screen
                              :layout (. awful.layout.layouts 1)}))
 
@@ -207,18 +218,24 @@
                :widget wibox.container.margin}
 
             3 {1 {1 {:layout wibox.layout.fixed.horizontal
-                     1 (wibox.widget.systray)
-                     ; 2 text-clock
-                     2 {1 (let [textbox (wibox.widget.textbox)]
+                     1 {1 (let [textbox (wibox.widget.textbox)]
                             (awful.spawn.with_line_callback
                               "rootblocks"
                               {:stdout (fn [line]
                                          (set textbox.text line))})
                             textbox)
                         :left 5
-                        :right 5
+                        :right 7
                         :widget wibox.container.margin}
-                     3 layout-box}
+                     2 {1 (wibox.widget.systray)
+                        :top 2
+                        :bottom 2
+                        :right 7
+                        :widget wibox.container.margin}
+                     3 {1 layout-box
+                        :top 2
+                        :bottom 2
+                        :widget wibox.container.margin}}
                   :left 10
                   :right 10
                   :widget wibox.container.margin}
