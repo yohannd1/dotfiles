@@ -23,7 +23,7 @@ else:
         "alacritty",
     ]
 
-    for i in {2, 3, 4}:
+    for i in {2, 4}:
         origin = DOTFILES / f"config/gtk-{i}.0"
         if origin.is_dir():
             m.link_glob(origin, f"~/.config/gtk-{i}.0")
@@ -67,5 +67,5 @@ print("Generating config...", file=sys.stderr, end='')
 
 # general config
 os.system(DOTFILES / "scripts/gen-config")
-    
+
 print(" done!", file=sys.stderr)

@@ -6,6 +6,7 @@ eval "$(load-base16-theme --export)"
 mkdir -p "$XDG_CACHE_HOME/gen"
 pp "$DOTFILES/config/gen/stalonetrayrc" > "$XDG_CACHE_HOME/gen/stalonetrayrc"
 pp "$DOTFILES/config/gen/dunstrc" > "$XDG_CACHE_HOME/gen/dunstrc"
+pp "$DOTFILES/config/gen/gtk3rc" > "$XDG_CONFIG_HOME/gtk-3.0/settings.ini"
 
 [ "$WGETRC" ] && printf "hsts-file = %s" "$XDG_CACHE_HOME/wget-hsts" >"$WGETRC"
 

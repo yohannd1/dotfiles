@@ -44,6 +44,9 @@ if [ "$DOTFILES" ]; then
   gpg-connect-agent updatestartuptty /bye >/dev/null
   printf >&2 "\n"
 
+  printf >&2 "Generating config (sysm)...\n"
+  sysm
+
   # set up SSH keychaing
   # if [ -x /usr/bin/keychain ]; then
   #   eval "$(keychain --eval --ignore-missing ~/.ssh/id_rsa 2>/dev/null)"

@@ -95,13 +95,13 @@ class Manager:
             do_symlink = True
 
         if do_backup:
-            eprint(f"{new_path} already exists; backing up...")
+            eprint(f"sysm: {new_path} already exists; backing up...")
             self.backup(new_path)
 
         if do_symlink:
             self.make_dir(new_path.parent)
-            eprint(f"[Symlink] At: {new_path}")
-            eprint(f"          Points to: {origin_path}")
+            eprint(f"sysm: making symlink at: {new_path}")
+            eprint(f"      points to: {origin_path}")
             new_path.symlink_to(origin_path)
 
 
@@ -113,33 +113,33 @@ class Manager:
         print(self.backup_path)
         to_backup = self.backup_path / str(path.absolute())[1:]
         self.make_dir(to_backup.parent)
-        eprint(f"[Backup] File: {path}")
-        eprint(f"         Moved to: {to_backup}")
+        eprint(f"sysm: backing up file: {path}")
+        eprint(f"      moved to: {to_backup}")
         path.rename(to_backup)
 
-def usage():
-    eprint(f"Usage: {sys.argv[0]}")
+def usage(args):
+    eprint(f"Usage: {args[0]}")
     exit(1)
 
-def main():
-    argc = len(sys.argv) - 1
+def main(args):
+    argc = len(args) - 1
 
     if argc != 0:
         eprint("too many arguments")
-        usage()
+        usage(args)
 
     m = Manager()
 
     for config in {DOTS_CONFIG, LOCAL_CONFIG}:
         if config.is_file():
-            eprint(f"[Sourcing] {config}")
+            eprint(f"sysm: sourcing: {config}")
             with config.open() as f:
                 exec(f.read(), {}, {
                     "m": m,
                     "DOTFILES": DOTFILES,
                 })
         else:
-            eprint(f"[Not found] {config} (skipping)")
+            eprint(f"sysm: skipping (not found): {config}")
 
 def generate_random_string(size):
     return str.join("", [random.choice(string.ascii_lowercase) for i in range(size)])
@@ -148,4 +148,4 @@ def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv)
