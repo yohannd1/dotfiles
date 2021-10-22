@@ -1,0 +1,6 @@
+# vim: ft=dosini
+
+[Settings]
+!! printf "gtk-font-name = %s\n" "$(xgetres gtk3.font)"
+gtk-application-prefer-dark-theme = 1
+gtk-decoration-layout = menu:
