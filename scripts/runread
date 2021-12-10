@@ -11,12 +11,12 @@ while true; do
   "$@"
   exitCode="$?"
   printf '\033[2 q'
-  printf '\n@[EC: %d]' "$exitCode"
+  printf '\n#[ec: %d]# (q)uit (R)eload: ' "$exitCode"
   while read -sn1 ch; do
     case "$ch" in
       q) exit "$exitCode" ;;
       R) clear && break ;;
-      '') exit "$exitCode" ;;
+      # '') exit "$exitCode" ;;
       *) ;;
     esac
   done
