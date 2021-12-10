@@ -159,6 +159,18 @@ do
 
   local main_theme = themes.get_ivy()
 
+  dummy.open_today_journal = function()
+    local proc = assert(io.popen("acw-today-journal", "r"))
+    local entry = proc:read("*a")
+    proc:close()
+
+    if entry == nil or entry == "" then
+      print("Failed to open today's journal")
+    else
+      vim.cmd("e" .. vim.g.wiki_dir .. "/" .. entry:gsub("^%s*", ""):gsub("%s*$", "") .. ".wiki")
+    end
+  end
+
   -- Search and open on wiki
   dummy.open_wiki_file = function(opts)
     opts = opts or {}
@@ -173,7 +185,9 @@ do
           local selection = action_state.get_selected_entry()
           actions.close(prompt_bufnr)
 
-          vim.cmd("e " .. vim.g.wiki_dir .. "/" .. vim.fn.split(selection[1])[1] .. ".wiki")
+          if selection then
+            vim.cmd("e " .. vim.g.wiki_dir .. "/" .. vim.fn.split(selection[1])[1] .. ".wiki")
+          end
         end)
 
         return true
@@ -196,10 +210,11 @@ do
           local selection = action_state.get_selected_entry()
           actions.close(prompt_bufnr)
 
-          local link = "[[" .. vim.fn.split(selection[1])[1] .. "]]"
-          makeAddTxt(opts.after_cursor)(link)
-
-          vim.cmd(string.format("normal! %dl", opts.after_cursor and 2 + link:len() or 1))
+          if selection then
+            local link = "[[" .. vim.fn.split(selection[1])[1] .. "]]"
+            makeAddTxt(opts.after_cursor)(link)
+            vim.cmd(string.format("normal! %dl", opts.after_cursor and 2 + link:len() or 1))
+          end
         end)
 
         return true
@@ -220,7 +235,9 @@ do
           local selection = action_state.get_selected_entry()
           actions.close(prompt_bufnr)
 
-          vim.cmd("e " .. selection[1])
+          if selection then
+            vim.cmd("e " .. selection[1])
+          end
         end)
 
         return true

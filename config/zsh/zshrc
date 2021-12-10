@@ -130,7 +130,7 @@ fzSelectFile() {
 }
 
 bindkey -s '^R' '\eS fzhistory\n'
-if exists lf; then
+if [ "$FILEMAN" = "lf" ] && exists lf; then
   bindkey -s '^o' '\eS lfAndCd\n'
 elif exists nnn; then
   bindkey -s '^o' '\eS nnnAndCd\n'
@@ -298,6 +298,9 @@ info() {
 if ! isAndroid; then
   sourceIf /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 fi
+
+# FIXME: I'm not exactly sure how to do this, specially because it messes up if I'm trying to use more than one X server.
+gpg-connect-agent updatestartuptty /bye >/dev/null
 
 if [ "$_STARTUP_DEBUG_TIME" ] && [ -z "$_startup_time_shown" ]; then
   local current_time=$(date +"%s%3N")

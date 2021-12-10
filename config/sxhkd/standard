@@ -28,6 +28,12 @@ super + shift + o
 #     runnsend error flamew gui
 # ctrl + Print
 #     runnsend error flamew full
+
+super + n
+    termup $FILEMAN
+super + shift + n
+    termup -f $FILEMAN
+
 super + c
     runnsend error flamew gui
 super + alt + c
@@ -112,6 +118,11 @@ super + {Up,Down,Left,Right}
 super + ctrl + {Up,Down,Left,Right}
     xdotool keydown ctrl click {4,5,6,7}
 
+super + o; a
+    $TERMINAL -c float -g 130x35 -e sh -c "acw-today-report 2>&1 | vimpager"
+super + o; j
+    termup acw-open-today-journal
+
 # super-o apps
 super + o; s
     $TERMINAL -e vimwiki open Scratchpad
@@ -121,19 +132,17 @@ super + o; W
     $TERMINAL -e vimwiki browse
 super + o; c
     $TERMINAL -c float -g 65x10 -e runread cal -3
+super + o; super + c
+    $TERMINAL -c float -g 66x25 -e runread cal -y
 super + o; m
     $TERMINAL -c float -e pulsemixer
 super + o; y
     $TERMINAL -c float -g 90x25 -e ytop
-# super + o; shift + c
-#     $TERMINAL -c float -g 100x35 -e calc
-super + o; f
-    $TERMINAL -c float -g 115x30 -e fennel
+super + o; shift + c
+    $TERMINAL -c float -g 100x35 -e calc
 super + o; t
     $TERMINAL -e tmux-tray
 super + o; shift + t
     $TERMINAL -c float -g 100x35 -e tmux-tray
 super + o; b
     runnsend error-and-output bkmk menu
-super + o; d
-    runnsend error $BROWSER https://discordapp.com/channels/@me

@@ -8,7 +8,7 @@
 #   printf "%s%%" "$(printf "%s" "$line" | awk '{print $3}')"
 # fi
 
-activeSink=$(pacmd list-sinks | awk '/* index:/ {print $3}')
+activeSink=$(pacmd list-sinks | awk '/* index:/ {print $3}') # TODO: actually use this
 line=$(
   pactl list sinks \
     | grep '^[[:space:]]Volume:' \
@@ -17,9 +17,12 @@ line=$(
     | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,'
 )
 
-printf "vol "
-if [ "$(printf "%s" "$line")" = "[off]" ]; then
-  printf "OFF"
-else
-  printf "%s%%" "$(printf "%s" "$line")"
-fi
+printf "vol %s%%" "$line"
+
+# TODO: vol OFF support again
+# printf "vol "
+# if [ "$(printf "%s" "$line")" = "[off]" ]; then
+#   printf "OFF"
+# else
+#   printf "%s%%" "$(printf "%s" "$line")"
+# fi

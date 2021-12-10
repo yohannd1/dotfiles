@@ -43,6 +43,9 @@ if g:is_first
   " " Plug 'andymass/vim-matchup'
   Plug 'luochen1990/rainbow'
 
+  Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+  Plug 'junegunn/fzf.vim'
+
   " " :Clap install-binary[!] will always try to compile the binary locally,
   " " if you do care about the disk used for the compilation, try using the force download way,
   " " which will download the prebuilt binary even you have installed cargo.
@@ -112,7 +115,7 @@ if g:is_first
   Plug 'YohananDiamond/vim-auto-popmenu'
 
   " " Misc.
-  " " Plug 'tpope/vim-vinegar'
+  Plug 'tpope/vim-vinegar'
   Plug 'vimwiki/vimwiki' " NOTE: Slowdown candidate
   " " Plug 'itchyny/lightline.vim'
 
@@ -120,8 +123,10 @@ if g:is_first
   Plug 'nvim-telescope/telescope.nvim'
   Plug 'nvim-lua/popup.nvim'
   Plug 'nvim-lua/plenary.nvim'
+  Plug 'mcchrish/nnn.vim'
   " Plug 'nvim-lua/completion-nvim'
   " Plug 'RRethy/vim-illuminate'
+  " Plug 'slakkenhuis/vim-margin'
 
   call plug#end()
 endif
@@ -270,7 +275,7 @@ let g:vimwiki_list = [{ "path": g:wiki_dir,
 
 let g:vimwiki_map_prefix = "<NOP>"
 let g:vimwiki_global_ext = 0
-let g:vimwiki_conceallevel = 2
+let g:vimwiki_conceallevel = 0
 let g:vimwiki_url_maxsave = 0
 
 " Illuminate - delay to highlight words (in millisceconds)
@@ -321,7 +326,7 @@ function! PagerMode(...) " {{{
   if len(a:000) >= 1
     let &ft = a:1
   endif
-  setlocal ts=8 nomod nolist noma timeoutlen=0 nocursorline
+  setlocal ts=8 nomod nolist noma timeoutlen=0 nocursorline norelativenumber
   setlocal noshowcmd
   nnoremap <buffer> <silent> d <C-d>
   nnoremap <buffer> <silent> u <C-u>
@@ -499,7 +504,7 @@ function! GetCharAt(line, col) " {{{
   return strcharpart(getline(a:line)[a:col - 1:], 0, 1)
 endfunction! " }}}
 function! GetURL(string) " {{{
-  return matchstr(a:string, '\v(https?|www\.)://[a-zA-Z0-9/\-\.%_?#=&+]+')
+  return matchstr(a:string, '\v(https?|www\.)://[a-zA-Z0-9/\-\.%_?#=&+~]+')
 endfunction " }}}
 function! GetFile(string) " {{{
   return matchstr(a:string, '\v[a-zA-Z0-9_\-\./]+')
@@ -546,6 +551,43 @@ function! OpenSelected() " {{{
 endfunction " }}}
 function! WikiGenTitle() " {{{
   return strftime("%Y%m%d%H%M-") .. trim(system("hexdump -n 3 -e '4/4 \"%08X\" 1 \"\\n\"' /dev/random | cut -c 3-"))
+endfunction " }}}
+function! VimwikiXToggleItem() " {{{
+  let current_line = getline('.')
+
+  let open_square_patt = '\v^(\s*)([*-]\s+)?\[ \]'
+  if current_line =~ open_square_patt
+    exec 's/' . open_square_patt . '/' . '\1\2[X]'
+    nohlsearch
+    normal ``
+    return
+  endif
+
+  let open_round_patt = '\v^(\s*)([*-]\s+)?\( \)'
+  if current_line =~ open_round_patt
+    exec 's/' . open_round_patt . '/' . '\1\2(X)'
+    nohlsearch
+    normal ``
+    return
+  endif
+
+  let closed_square_patt = '\v^(\s*)([*-]\s+)?\[X\]'
+  if current_line =~ closed_square_patt
+    exec 's/' . closed_square_patt . '/' . '\1\2[ ]'
+    nohlsearch
+    normal ``
+    return
+  endif
+
+  let closed_round_patt = '\v^(\s*)([*-]\s+)?\(X\)'
+  if current_line =~ closed_round_patt
+    exec 's/' . closed_round_patt . '/' . '\1\2( )'
+    nohlsearch
+    normal ``
+    return
+  endif
+
+  echo "No to-do detected on the current line"
 endfunction " }}}
 if g:is_first | function! SourceIf(...) " {{{
   for path in a:000
@@ -608,6 +650,7 @@ if g:is_first
   set nofoldenable
   set cinoptions+=g0
   set cinoptions+=:0
+  set scrolloff=3 " scroll ahead :)
 
   " That's how the italics work (or not)
   let &t_ZH = "\<Esc>[3m"
@@ -681,6 +724,7 @@ augroup buffer_load
   au BufNewFile,BufRead,BufEnter *.jl set filetype=julia
   au BufNewFile,BufRead,BufEnter *.scrbl set filetype=scribble
   au BufNewFile,BufRead,BufEnter *.h set filetype=c
+  au BufNewFile,BufRead,BufEnter *.mpp set filetype=cpp
   au BufNewFile,BufRead,BufEnter calcurse-note.* set filetype=markdown
 augroup end
 
@@ -896,8 +940,24 @@ endfunction " }}}
 function! ft.vimwiki() " {{{
   setlocal sw=2
 
-  syn match VimwikiXTag /\v\#[A-Za-z_][A-Za-z0-9_]*/
+  syn match VimwikiXNodeAttr /\v[A-Za-z0-9_.]+\{/
+  hi link VimwikiXNodeAttr String
+
+  syn match VimwikiXTag /\v\#[A-Za-z0-9_.]+/
   hi link VimwikiXTag Function
+
+  " syn match VimwikiXListItem /\v^\s*[*-]\s+/
+  " hi link VimwikiXListItem VimwikiXDone
+
+  syn match VimwikiXTodo /\v^\s*([*-]\s+)?\[ \]/
+  syn match VimwikiXTodo /\v^\s*([*-]\s+)?\( \)/
+
+  syn match VimwikiXDone /\v^\s*([*-]\s+)?\[X\]/
+  syn match VimwikiXDone /\v^\s*([*-]\s+)?\(X\)/
+
+  syn match VimwikiDatetime /\v\d{1,2}(:\d{2}){1,2}(AM|PM)?/
+  syn match VimwikiDatetime /\v\d{4}\/\d{2}\/\d{2}/
+  hi link VimwikiDatetime Special
 
   syn match VimwikiXHeaderAttr /\v^\s*\%:(custom\.)?[A-Za-z_][A-Za-z0-9_]*/
   hi link VimwikiXHeaderAttr Function
@@ -925,6 +985,13 @@ endfunction " }}}
 function! ft.gdscript() " {{{
   setlocal noet sw=4 ts=4
 endfunction " }}}
+function! ft.d() " {{{
+  setlocal et sw=4 ts=4
+  let b:format_command = "dfmt"
+endfunction " }}}
+function! ft.json() " {{{
+  let b:format_command = "jq ."
+endfunction " }}}
 
 " }}}
 
@@ -944,13 +1011,21 @@ set timeoutlen=1000 ttimeoutlen=10
 if !g:is_android
   nnoremap <ScrollWheelUp> <C-u>
   nnoremap <ScrollWheelDown> <C-d>
-  nnoremap <RightMouse> <nop>
-  nnoremap <LeftMouse> <nop>
-  inoremap <ScrollWheelUp> <C-u>
-  inoremap <ScrollWheelDown> <C-d>
-  inoremap <RightMouse> <nop>
-  inoremap <LeftMouse> <nop>
+  inoremap <ScrollWheelUp> <Esc><C-u>a
+  inoremap <ScrollWheelDown> <Esc><C-d>a
+
+  " TODO: disable visual mode in insert mode
 endif
+
+" TODO: visual mode drag when off normal mode
+nnoremap <RightMouse> <nop>
+nnoremap <LeftMouse> <nop>
+inoremap <RightMouse> <nop>
+inoremap <LeftMouse> <nop>
+nnoremap <C-RightMouse> <RightMouse>
+nnoremap <C-LeftMouse> <LeftMouse>
+inoremap <C-RightMouse> <RightMouse>
+inoremap <C-LeftMouse> <LeftMouse>
 
 " Clipboard versions of keymappings
 for mapmode in ['n', 'v']
@@ -1037,14 +1112,14 @@ inoremap <silent> <C-u> <Nop>
 inoremap <silent> <expr> <C-u>d strftime("%Y/%m/%d")
 
 " Use perl-ish regexes (I guess)
-nnoremap / /\v
-vnoremap / /\v
-nnoremap ? ?\v
-vnoremap ? ?\v
-nnoremap <Leader>/ /\v\c
-vnoremap <Leader>/ /\v\c
-nnoremap <Leader>? ?\v\c
-vnoremap <Leader>? ?\v\c
+nnoremap / /\v\c()<Left>
+vnoremap / /\v\c()<Left>
+nnoremap ? ?\v\c()<Left>
+vnoremap ? ?\v\c()<Left>
+nnoremap <Leader>/ /\v()<Left>
+vnoremap <Leader>/ /\v()<Left>
+nnoremap <Leader>? ?\v()<Left>
+vnoremap <Leader>? ?\v()<Left>
 
 " Open a prompt to replace everything in the screen
 nnoremap <Leader>s :%s/\v/g<Left><Left>
@@ -1142,7 +1217,7 @@ vnoremap <silent> J :call TheBetterVisualJoin()<CR>
 " }}}
 
 " Wiki - Toggle bullet items
-nnoremap <Leader>, :VimwikiToggleListItem<CR>
+nnoremap <Leader>, :call VimwikiXToggleItem()<CR>
 
 " Vimwiki hydra
 " {{{
@@ -1177,7 +1252,8 @@ silent call hydra#hydras#register({
       \     "keys": [
       \       ["w", "e ~/wiki/vimwiki/index.wiki", "open index"],
       \       ["s", "e ~/wiki/vimwiki/202105021825-E80938.wiki", "open scratchpad"],
-      \       ["o", "lua dummy.open_wiki_file{}", "select a wiki file"],
+      \       ["j", "lua dummy.open_today_journal()", "open today's journal"],
+      \       ["o", "lua dummy.open_wiki_file({})", "select a wiki file"],
       \       ["H", "Vimwiki2HTMLBrowse", "compile current & browse"],
       \       ["h", "Vimwiki2HTML", "compile current"],
       \       ["A", "VimwikiAll2HTML", "compile all"],
@@ -1230,11 +1306,20 @@ au BufRead,BufNewFile *.acw set ft=acw
 au BufRead,BufNewFile *.lang set ft=lang
 
 " Telescope builtins
+nnoremap <leader>. <cmd>lua require('telescope.builtin').fd()<CR>
 nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<CR>
 nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<CR>
 nnoremap <leader>o <cmd>lua dummy.open_recent()<CR>
 
+nnoremap <leader>g <cmd>Goyo 130<CR>
+nnoremap <leader>G <cmd>Goyo!<CR>
 nnoremap <leader>W <cmd>MatchupWhereAmI?<CR>
+
+let g:neovide_transparency = 0.8
+let g:neovide_cursor_vfx_mode = "ripple"
+
+nnoremap <Leader>L <cmd>set cursorline!<CR>
+nnoremap <Leader>C <cmd>set cursorcolumn!<CR>
 
 " }}}
 " Lua Tunnel {{{

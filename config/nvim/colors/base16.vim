@@ -194,7 +194,7 @@ call s:hl("Title",         "0D",   "NONE", "none", "")
 call s:hl("Conceal",       "0D",   "00",   "", "")
 call s:hl("Cursor",        "00",   "05",   "", "")
 call s:hl("NonText",       "03",   "NONE", "", "")
-call s:hl("LineNr",        "03",   "NONE", "", "")
+call s:hl("LineNr",        "04",   "NONE", "", "")
 call s:hl("SignColumn",    "03",   "01",   "", "")
 call s:hl("StatusLine",    "03",   "02",   "none", "")
 call s:hl("StatusLineNC",  "03",   "01",   "none", "")
@@ -202,13 +202,14 @@ call s:hl("VertSplit",     "02",   "02",   "none", "")
 call s:hl("ColorColumn",   "01",   "NONE", "", "")
 call s:hl("CursorColumn",  "01",   "NONE", "", "")
 call s:hl("CursorLine",    "NONE", "01",   "NONE", "")
+call s:hl("CursorColumn",  "NONE", "01",   "NONE", "")
 call s:hl("CursorLineNr",  "NONE", "NONE", "italic", "")
 call s:hl("QuickFixLine",  "01",   "NONE", "", "")
 call s:hl("PMenu",         "05",   "01",   "none", "")
 call s:hl("PMenuSel",      "01",   "05",   "", "")
 call s:hl("TabLine",       "05",   "01",   "none", "")
 call s:hl("TabLineFill",   "03",   "NONE", "none", "")
-call s:hl("TabLineSel",    "06",   "01",   "bold", "")
+call s:hl("TabLineSel",    "0A",   "01",   "bold,italic", "")
 call s:hl("MatchParen",    "00",   "03",   "none", "")
 
 " Standard syntax highlighting
@@ -433,6 +434,10 @@ call s:hl("ClapMatches7",         "0A",   "00",   "NONE", "")
 call s:hl("ClapMatches8",         "0A",   "00",   "NONE", "")
 call s:hl("ClapNoMatchesFound",   "08",   "NONE", "NONE", "")
 " See also: ClapPreview ClapDefaultSelected ClapDefaultCurrentSelection
+
+" Vimwiki
+call s:hl("VimwikiXTodo",         "0B", "01",   "", "")
+call s:hl("VimwikiXDone",         "03", "NONE",   "", "")
 
 " Illuminate
 call s:hl("illuminatedWord",      "NONE", "02",   "", "")

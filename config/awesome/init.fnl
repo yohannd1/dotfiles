@@ -5,7 +5,7 @@
 ;; TODO: bug fix: when switching workspaces, taglist flashes
 ;; TODO: improve hotkeys popup
 ;; TODO: notification history
-;; TODO: bug fix: on startup, all tags are selected for some reason
+;; TODO: bug fix: on startup, all tags (or none) are selected for some reason
 
 (local user (assert _G.user "Failed to get `user` global variable"))
 
@@ -263,7 +263,8 @@
                                     awful.placement.no_offscreen)}}
         {:rule_any {:instance ["pinentry"]
                     :class ["Sxiv" "float" "Pavucontrol" "Gnome-pomodoro"]
-                    :name ["Event Tester" "Steam - News" "Krita - Edit Text — Krita"]
+                    :name ["Event Tester" "Steam - News" "Krita - Edit Text — Krita"
+                           "CarlaRack-LMMS"]
                     :role ["pop-up"]}
          :properties {:floating true}}
         ]))

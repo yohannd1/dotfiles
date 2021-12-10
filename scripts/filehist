@@ -3,7 +3,7 @@
 PROGNAME=$(basename "$0")
 
 usage() {
-  printf >&2 "Usage: %s\n" "$PROGNAME { add [RECENT] | list | select [EDITOR] }"
+  printf >&2 "Usage: %s\n" "$PROGNAME { add [RECENT] | list | select [EDITOR] | tidy }"
   exit 1
 }
 
@@ -58,6 +58,10 @@ case $# in
         existCheck
         [ -z "$FILEHIST_NO_TIDY" ] && tidyHistory
         fzagnostic < "$FILEHIST_FILE"
+        ;;
+      tidy)
+        existCheck
+        tidyHistory
         ;;
       *) usage ;;
     esac
