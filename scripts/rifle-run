@@ -122,6 +122,7 @@ case "$1" in
         "$tmp/exe"
         ;;
       c) gcc "$file" -o "$tmp/exe" -Wpedantic -Wall && "$tmp/exe" ;;
+      d) dmd -run "$file" ;;
       cpp|c++|cc) g++ "$file" -o "$tmp/exe" -std=c++20 -Wpedantic -Wall && "$tmp/exe" ;;
       cs|csharp) mcs "$file" -out:"$tmp/exe" && mono "$tmp/exe" ;;
       clojure) clojure "$file" ;;
@@ -182,6 +183,13 @@ case "$1" in
           nodejs "$file"
         fi
         ;;
+      java)
+        printf >&2 "[ Warning ] the class with the main method needs to be 'Main'\n" # TODO: fix this limitation
+        cd "$tmp"
+        ln -s "$file" Main.java
+        javac -encoding utf8 -d "$tmp" Main.java
+        java Main
+        ;;
       *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
     esac ;;
   build)
@@ -204,6 +212,12 @@ case "$1" in
       teal)
         tl gen "$file" --output "$tmp/out"
         nvim +PagerMode "$tmp/out"
+        ;;
+      java)
+        printf >&2 "[ Warning ] the class with the main method needs to be 'Main'\n" # TODO: fix this limitation
+        cd "$tmp"
+        ln -s "$file" Main.java
+        javac -encoding utf8 -d "$tmp" Main.java
         ;;
       *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
     esac ;;
