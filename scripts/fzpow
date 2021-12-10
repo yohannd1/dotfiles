@@ -96,6 +96,6 @@ action_hibernate() {
 }
 
 action_reboot() { systemctl reboot; }
-action_shutdown() { systemctl poweroff; }
+action_shutdown() { termup -f shutdown-routine; }
 
 main "$@"
