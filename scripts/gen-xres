@@ -1,145 +1,96 @@
-#!/usr/bin/env bash
-# vim: foldmethod=marker
+#!/usr/bin/env lua
 
-# a bash file that outputs xresources based on some configurations.
-# I made this because managing a raw xresources file is very annoying - the C
-# preprocessor is annoying af.
+-- A small script that outputs xresources based on some configurations. I made
+-- this because managing a raw xresources file is very annoying - the C
+-- preprocessor is annoying af.
 
-# Meanings:
-# base00 - Default Background
-# base01 - Lighter Background (Used for status bars)
-# base02 - Selection Background
-# base03 - Comments, Invisibles, Line Highlighting
-# base04 - Dark Foreground (Used for status bars)
-# base05 - Default Foreground, Caret, Delimiters, Operators
-# base06 - Light Foreground
-# base07 - Light Background
-# base08 - Variables, XML Tags, Markup Link Text, Markup Lists, Diff Deleted
-# base09 - Integers, Boolean, Constants, XML Attributes, Markup Link Url
-# base0A - Classes, Markup Bold, Search Text Background
-# base0B - Strings, Inherited Class, Markup Code, Diff Inserted
-# base0C - Support, Regular Expressions, Escape Characters, Markup Quotes
-# base0D - Functions, Methods, Attribute IDs, Headings
-# base0E - Keywords, Storage, Selector, Markup Italic, Diff Changed
-# base0F - Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?>
+--[[
+Base16 Meanings:
+- base00 - Default Background
+- base01 - Lighter Background (Used for status bars)
+- base02 - Selection Background
+- base03 - Comments, Invisibles, Line Highlighting
+- base04 - Dark Foreground (Used for status bars)
+- base05 - Default Foreground, Caret, Delimiters, Operators
+- base06 - Light Foreground
+- base07 - Light Background
+- base08 - Variables, XML Tags, Markup Link Text, Markup Lists, Diff Deleted
+- base09 - Integers, Boolean, Constants, XML Attributes, Markup Link Url
+- base0A - Classes, Markup Bold, Search Text Background
+- base0B - Strings, Inherited Class, Markup Code, Diff Inserted
+- base0C - Support, Regular Expressions, Escape Characters, Markup Quotes
+- base0D - Functions, Methods, Attribute IDs, Headings
+- base0E - Keywords, Storage, Selector, Markup Italic, Diff Changed
+- base0F - Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?>
+--]]
 
-. ~/.config/dots/env.sh
-eval "$(load-base16-theme)"
+local function tableSize(t)
+  local x = 0
+  for _, _ in pairs(t) do
+    x = x + 1
+  end
+  return x
+end
 
-FONT="JetBrains Mono Medium"
-FONT_PIXELSIZE="13"
-FONT_POINTSIZE="13pt"
+local function tablePrintAll(t, fd)
+  fd = fd or io.stderr
 
-xset() { printf "%s: %s\n" "$1" "$2"; }
-font() { printf "%s:pixelsize=%s:antialias=true:autohint=true;" "$FONT" "$1"; }
+  for k, v in pairs(t) do
+    fd:write(k, " => ", v, "\n")
+  end
+end
 
-# st
-xset 'st.alpha' "0.7"
-xset 'st.cursor' "$base0D"
-xset 'st.font' "$(font $FONT_PIXELSIZE)"
+local function fileExists(name)
+  local f = io.open(name, "r")
+  if f ~= nil then
+    f:close()
+    return true
+  else
+    return false
+  end
+end
 
-# tym
-xset 'tym.font' "$FONT $FONT_PIXELSIZE"
+local theme = {}
+do
+  local theme_proc = assert(io.popen("load-base16-theme", "r"))
+  for line in theme_proc:lines() do
+    if line:match("^%s*$") then
+      -- skip
+    elseif line:match('^base0[0-9A-F]="#' .. string.rep("[0-9a-fA-F]", 6) .. '"$') then
+      local name = line:gsub('^(base0[0-9A-F]).*$', "%1")
+      local value = line:gsub(('^base0[0-9A-F]="(#' .. string.rep("[0-9a-fA-F]", 6) .. ')"$'), "%1")
+      theme[name] = value
+    else
+      io.stderr:write("Failed to parse (load-base16-theme) line: ", string.format("%q", line), "\n")
+      os.exit(1)
+    end
+  end
+  theme_proc:close()
+end
 
-# urxvt
-# xset 'urxvt.font' "xft:$(font $FONT_PIXELSIZE)"
-# xset 'urxvt.scrollBar' "false"
-# xset 'urxvt.keysym.Meta-k' 'command:\033]720;1\007'
-# xset 'urxvt.keysym.Meta-j' 'command:\033]721;1\007'
-# xset 'urxvt.depth' "32"
-# xset 'urxvt.background' "[85]$base00"
-# xset 'urxvt.smoothResize' "true"
+if tableSize(theme) ~= 16 then
+  io.stderr:write("Failed to get all 16 colors. Table contents:\n")
+  tablePrintAll(theme, io.stderr)
+  os.exit(1)
+end
 
-# awesomewm
-xset 'awesome.font' "$FONT 9"
-xset 'awesome.border-normal' "$base00"
-xset 'awesome.border-focus' "$base03"
-xset 'awesome.border-marked' "$base0A"
+local DOTFILES = os.getenv("DOTFILES")
+if DOTFILES == nil then
+  io.stderr:write("Failed to get DOTFILES env var.\n")
+  os.exit(1)
+end
 
-# dwm
-xset 'dwm.norm.bg' "$base00"
-xset 'dwm.norm.fg' "$base05"
-xset 'dwm.norm.border' "$base00"
-xset 'dwm.sel.bg' "$base02"
-xset 'dwm.sel.fg' "$base05"
-xset 'dwm.sel.border' "$base03"
-xset 'dwm.font' "$(font $FONT_PIXELSIZE)"
+local resources_file = DOTFILES .. "/config/dots/resources.lua"
+if not fileExists(resources_file) then
+  io.stderr:write("File ", string.format("%q", resources_file), " doesn't seem to exist. The configuration should be there.\n")
+  os.exit(1)
+end
 
-# dmenu
-xset 'dmenu.font' "$(font $FONT_PIXELSIZE)"
-xset 'dmenu.norm.bg' "$base00"
-xset 'dmenu.norm.fg' "$base05"
-xset 'dmenu.norm.hl.bg' "$base00"
-xset 'dmenu.norm.hl.fg' "$base09"
-xset 'dmenu.sel.bg' "$base02"
-xset 'dmenu.sel.fg' "$base05"
-xset 'dmenu.sel.hl.bg' "$base02"
-xset 'dmenu.sel.hl.fg' "$base09"
-xset 'dmenu.out.bg' "$base0F"
-xset 'dmenu.out.fg' "$base0F"
+local _meta = {}
+_meta.theme = theme
+_meta.decl = function(name, value)
+  io.stdout:write(name, ": ", value, "\n")
+end
+_G._meta = _meta
 
-xset 'xterm.font' "$(font $FONT_PIXELSIZE)"
-
-# qutebrowser
-xset 'qutebrowser.font_size' "10pt"
-xset 'qutebrowser.fonts.monospace' "$FONT"
-xset 'qutebrowser.fonts.standard' "$FONT"
-# xset 'qutebrowser.fonts.sans-serif' "NotoSansMedium"
-xset 'qutebrowser.fonts.serif' "$FONT"
-xset 'qutebrowser.bg' "$base00"
-xset 'qutebrowser.fg' "$base05"
-xset 'qutebrowser.bg-alt' "$base01"
-xset 'qutebrowser.fg-alt' "$base04"
-xset 'qutebrowser.bg-attention' "$base01"
-xset 'qutebrowser.fg-attention' "$base04"
-xset 'qutebrowser.sel.bg' "$base02"
-xset 'qutebrowser.sel.fg' "$base05"
-xset 'qutebrowser.match.fg' "$base09"
-xset 'qutebrowser.error' "$base08"
-xset 'qutebrowser.warning' "$base09"
-xset 'qutebrowser.info' "$base0D"
-xset 'qutebrowser.success' "$base0B"
-
-# luakit
-xset 'luakit.bg' "$base00"
-
-# qtile
-xset 'qtile.font-family' "$FONT"
-xset 'qtile.font-size' "14"
-xset 'qtile.border-focus' "$base03"
-xset 'qtile.border-normal' "$base00"
-xset 'qtile.bar.bg' "$base00"
-xset 'qtile.bar.fg' "$base05"
-xset 'qtile.bar.fg.inactive' "$base03"
-
-# others
-xset 'Emacs.font' "$FONT"
-xset 'pencilwm.highlight' "$base03"
-xset 'polybar.fontname' "$FONT"
-xset 'polybar.fontsize' "9.0"
-
-# general
-xset '*background' "$base00"
-xset '*foreground' "$base05"
-xset '*bg' "$base00"
-xset '*fg' "$base05"
-# xset '*cursor' "$base0D"
-# xset '*cursorColor' "$base0D"
-
-for n in {0..9}; do
-  xset "*.color$n" "$(eval 'echo $base0'$n)"
-  xset "*.base0$n" "$(eval 'echo $base0'$n)"
-done
-
-xset '*.color10' "$base0A"
-xset '*.color11' "$base0B"
-xset '*.color12' "$base0C"
-xset '*.color13' "$base0D"
-xset '*.color14' "$base0E"
-xset '*.color15' "$base0F"
-xset '*.base0A' "$base0A"
-xset '*.base0B' "$base0B"
-xset '*.base0C' "$base0C"
-xset '*.base0D' "$base0D"
-xset '*.base0E' "$base0E"
-xset '*.base0F' "$base0F"
+loadfile(resources_file)()

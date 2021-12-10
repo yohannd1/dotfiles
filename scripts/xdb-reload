@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+
+PROGNAME=$(basename "$0")
+
+usage() {
+  printf >&2 "Usage: %s\n" "$PROGNAME"
+  exit 1
+}
+
+main() {
+  [ $# != 0 ] && usage
+  gen-xres | xrdb
+}
+
+main "$@"
