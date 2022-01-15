@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
 if [ -z "$ACW_WIKI_DIR" ]; then
   printf >&2 "ACW_WIKI_DIR not set - please set it\n"
   exit 1

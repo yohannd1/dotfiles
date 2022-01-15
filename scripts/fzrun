@@ -3,8 +3,7 @@
 # type: ignore[union-attr]
 
 from __future__ import annotations
-from typing import List, Iterable, Optional, Tuple, Sized
-from typing_extensions import Protocol
+from typing import List, Iterable, Optional, Tuple, Sized, Protocol
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -65,7 +64,7 @@ def get_fzrun_recent() -> List[ShellAction]:
                 ShellAction(name=f"(recnt) {line.strip()}", command=str(line))
                 for line in file.readlines()
                 if len(line.strip()) > 0
-            ]
+
 
     return []
 

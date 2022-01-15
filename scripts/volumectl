@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+# TODO: limit volume (you can do more than 100%! That's torture for the speakers)
+
 increment=${VOLUMECTL_INCREMENT:-5}
 
 showHelp() {

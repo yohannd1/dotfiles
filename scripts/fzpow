@@ -87,7 +87,7 @@ action_exit() {
 action_suspend() {
   action_lock || return &
   sleep 1
-  systemctl suspend
+  sudo systemctl suspend
 }
 
 action_hibernate() {

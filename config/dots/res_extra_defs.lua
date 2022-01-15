@@ -52,7 +52,7 @@ M.font_presets = {
     },
     ["SpaceMono"] = {
         name = "Space Mono",
-        terminal_pixelsize = "13",
+        terminal_pixelsize = "14",
         awesome_size = "12px",
         qutebrowser_size = "10pt",
         supports_ligatures = false, -- because of glitches
@@ -74,6 +74,20 @@ M.font_presets = {
     ["Mononoki"] = {
         name = "Mononoki",
         terminal_pixelsize = "15",
+        awesome_size = "12.5px",
+        qutebrowser_size = "10pt",
+        supports_ligatures = true,
+    },
+    ["Hack"] = {
+        name = "Hack",
+        terminal_pixelsize = "14",
+        awesome_size = "12.5px",
+        qutebrowser_size = "10pt",
+        supports_ligatures = true,
+    },
+    ["IbmPlex"] = {
+        name = "Ibm Plex Mono",
+        terminal_pixelsize = "14.5",
         awesome_size = "12.5px",
         qutebrowser_size = "10pt",
         supports_ligatures = true,

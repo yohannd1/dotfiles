@@ -139,6 +139,7 @@ fi
 
 if match mime 'audio/*' ||
   match ext 'aac|flac|m4a|mid|midi|mpa|mp2|mp3|ogg|wav|wma'; then
+  try tty mpv --no-video "$FILE"
   try gui termup -f mpv --no-video "$FILE"
   try pop mocplay "$FILE" "opener"
   try tty exiftool "$FILE"

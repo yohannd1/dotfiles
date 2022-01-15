@@ -12,13 +12,21 @@ local this_basename = basename(this_path)
 local extra_defs = loadfile(this_basename .. "/res_extra_defs.lua")()
 local longFontFormat = extra_defs.longFontFormat
 
-local chosen_name = "Mononoki"
+local chosen_name = "FiraCode"
+if chosen_name == nil then -- if there's no selected font in the line above, just pick a random one.
+    local t = {}
+    for name, _ in pairs(extra_defs.font_presets) do
+        table.insert(t, name)
+    end
+
+    chosen_name = t[math.random(1, #t)]
+end
 
 local font_config = assert(extra_defs.font_presets[chosen_name], "no such font name \"" .. chosen_name .. "\"")
 local xft_font = longFontFormat(font_config.name, font_config.terminal_pixelsize)
 
 -- st
-decl("st.alpha", "0.85")
+decl("st.alpha", "0.95")
 decl("st.cursor", theme["base0D"])
 decl("st.font", xft_font)
 

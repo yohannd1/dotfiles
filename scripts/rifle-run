@@ -190,6 +190,9 @@ case "$1" in
         javac -encoding utf8 -d "$tmp" Main.java
         java Main
         ;;
+      janet)
+        janet "$file"
+        ;;
       *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
     esac ;;
   build)

@@ -83,6 +83,7 @@ if g:is_first
   Plug 'YohananDiamond/danmakufu-ph3.vim'
   Plug 'hellerve/carp-vim'
   Plug 'habamax/vim-godot'
+  Plug 'janet-lang/janet.vim'
   " Plug 'stefanos82/nelua.vim'
   " if isdirectory($HOME .. "/pj/code/nelua.vim")
   "   " This repository doesn't actually exist on my GitHub. It's
@@ -636,7 +637,7 @@ if g:is_first
   set autoindent
   set hlsearch incsearch
   set linebreak wrap
-  " set cursorline " line highlighting
+  set cursorline " line highlighting
   set showcmd
   set shortmess+=atcI
   set belloff+=ctrlg
@@ -971,6 +972,8 @@ function! ft.vimwiki() " {{{
   silent! nunmap <buffer> o
   silent! nunmap <buffer> O
   silent! nmap <buffer> <C-h> <BS>
+
+  call AddSnippet("j", '%:title Journal for <C-r>=strftime("%Y/%m/%d")<CR>')
 endfunction " }}}
 function! ft.vlang() " {{{
   setlocal sw=4 ts=4 noet
