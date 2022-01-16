@@ -64,7 +64,7 @@ def get_fzrun_recent() -> List[ShellAction]:
                 ShellAction(name=f"(recnt) {line.strip()}", command=str(line))
                 for line in file.readlines()
                 if len(line.strip()) > 0
-
+            ]
 
     return []
 
