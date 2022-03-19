@@ -21,6 +21,9 @@ local acw_cache_folder = XDG_CACHE_HOME .. "/acw"
 local cache_file = acw_cache_folder .. "/today-journal"
 local today_date = os.date("%Y%m%d")
 
+-- Regexes
+-- local ACW_ID_REGEX = "^" .. string.rep("%d", 12) .. "-" .. string.rep("[A-F0-9]", 6) .. "$"
+
 local findTodayEntry = function()
     local journal_entries = {}
     do
@@ -65,8 +68,11 @@ local writeTodayEntry = function(entry_id)
     handle:close()
 end
 
-local today_entry
-if fileExists(cache_file) then
+local getEntryFromCache = function()
+    if not fileExists(cache_file) then
+        return nil
+    end
+
     local cache_handle = assert(io.open(cache_file, "r"))
 
     local the_date = cache_handle:read("*line")
@@ -82,30 +88,32 @@ if fileExists(cache_file) then
 
     cache_handle:close()
 
-    if the_date:match("^" .. string.rep("%d", 8) .. "$") then
-        if the_date == today_date then
-            if the_id:match("^" .. string.rep("%d", 12) .. "-" .. string.rep("[A-F0-9]", 6) .. "$") then
-                if fileExists(WIKI_DIR .. "/vimwiki/" .. the_id .. ".wiki") then
-                    today_entry = findTodayEntry()
-                else
-                    today_entry = findTodayEntry()
-                    writeTodayEntry(today_entry)
-                end
-            else
-                today_entry = findTodayEntry()
-                writeTodayEntry(today_entry)
-            end
-        else
-            today_entry = findTodayEntry()
-            writeTodayEntry(today_entry)
-        end
-    else
-        today_entry = findTodayEntry()
-        writeTodayEntry(today_entry)
+    if not the_date:match("^" .. string.rep("%d", 8) .. "$") then
+        return nil
     end
-else
-    today_entry = findTodayEntry()
-    writeTodayEntry(today_entry)
+
+    if the_date ~= today_date then
+        return nil
+    end
+
+    local possible_today_journal = ACW_WIKI_DIR .. "/" .. the_id .. ".wiki"
+
+    -- FIXME: make the ACW_ID_REGEX work so we can use it here
+    -- if not the_id:match(ACW_ID_REGEX) then
+    --     return nil
+    -- end
+
+    if not fileExists(possible_today_journal) then
+        return nil
+    end
+
+    return the_id
 end
 
-io.stdout:write(today_entry, "\n")
+local entry = getEntryFromCache()
+if entry == nil then
+    entry = findTodayEntry()
+    writeTodayEntry(entry)
+end
+
+io.stdout:write(entry, "\n")

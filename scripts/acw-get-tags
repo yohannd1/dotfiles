@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-# TODO: support getting the tag of a specific file
-
 import os, sys, re
 from itertools import chain
 from pathlib import Path

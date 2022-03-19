@@ -38,6 +38,11 @@ end
 local function getNoteTitle(file)
   local first_line = file:read("*line")
 
+  if first_line == nil then
+    -- No first line means the file is empty
+    return nil
+  end
+
   if first_line:match("^%s*=%s*.*%s*=%s*$") then
     return first_line:gsub("^%s*=%s*", ""):gsub("%s*=%s*$", "")
   elseif first_line:match("^%s*%%:title%s+.*%s*$") then

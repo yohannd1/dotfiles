@@ -505,7 +505,7 @@ function! GetCharAt(line, col) " {{{
   return strcharpart(getline(a:line)[a:col - 1:], 0, 1)
 endfunction! " }}}
 function! GetURL(string) " {{{
-  return matchstr(a:string, '\v(https?|www\.)://[a-zA-Z0-9/\-\.%_?#=&+~]+')
+  return matchstr(a:string, '\v(https?|www\.)://[a-zA-Z0-9/\-\.%_?#=&+~:]+')
 endfunction " }}}
 function! GetFile(string) " {{{
   return matchstr(a:string, '\v[a-zA-Z0-9_\-\./]+')
@@ -643,7 +643,7 @@ if g:is_first
   set belloff+=ctrlg
   set mouse=a
   set display+=lastline
-  set complete=.,w,b,u,t,k,kspell " 'i' was interesting too but it seems too expensive
+  set complete=.,w,b,u,k,kspell " 'i' was interesting too but it seems too expensive; 't' for no tags
   set completeopt-=preview
   set completeopt+=menuone,noselect
   set noshowmode
@@ -887,6 +887,8 @@ function! ft.java() " {{{
   endif
 
   setlocal fdm=syntax
+
+  call AddSnippet("m", 'public class Main {<CR>public static void main(String[] args) {<CR>System.out.println("Hello, World!");<CR>}<CR>}<Up><Up><C-o>_')
 endfunction " }}}
 function! ft.make() " {{{
   setlocal sw=8 ts=8 noet
@@ -944,7 +946,7 @@ function! ft.vimwiki() " {{{
   syn match VimwikiXNodeAttr /\v[A-Za-z0-9_.]+\{/
   hi link VimwikiXNodeAttr String
 
-  syn match VimwikiXTag /\v\#[A-Za-z0-9_.]+/
+  syn match VimwikiXTag /\v\#([A-Za-z0-9_]+)(\.[A-Za-z0-9_]+)*/
   hi link VimwikiXTag Function
 
   " syn match VimwikiXListItem /\v^\s*[*-]\s+/
@@ -974,6 +976,7 @@ function! ft.vimwiki() " {{{
   silent! nmap <buffer> <C-h> <BS>
 
   call AddSnippet("j", '%:title Journal for <C-r>=strftime("%Y/%m/%d")<CR>')
+  call AddSnippet("t", '%:title ')
 endfunction " }}}
 function! ft.vlang() " {{{
   setlocal sw=4 ts=4 noet
@@ -1255,6 +1258,7 @@ silent call hydra#hydras#register({
       \     "keys": [
       \       ["w", "e ~/wiki/vimwiki/index.wiki", "open index"],
       \       ["s", "e ~/wiki/vimwiki/202105021825-E80938.wiki", "open scratchpad"],
+      \       ["p", "e ~/wiki/vimwiki/202112271411-5A4961.wiki", "open week plan (2022)"],
       \       ["j", "lua dummy.open_today_journal()", "open today's journal"],
       \       ["o", "lua dummy.open_wiki_file({})", "select a wiki file"],
       \       ["H", "Vimwiki2HTMLBrowse", "compile current & browse"],

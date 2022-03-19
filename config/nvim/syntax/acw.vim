@@ -15,7 +15,7 @@ for builtin_name in s:builtins
   exec 'syn match acwBuiltin /\v\@' .. builtin_name .. '>/'
 endfor
 
-hi def link VimwikiLink Underlined
+hi def link acwLink Underlined
 
 syn match acwDelimiter /\v[\[\]{}]/
 
