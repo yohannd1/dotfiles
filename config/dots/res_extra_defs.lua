@@ -17,7 +17,7 @@ M.font_presets = {
     },
     ["CascadiaCode"] = {
         name = "Cascadia Code",
-        terminal_pixelsize = "13",
+        terminal_pixelsize = "15",
         awesome_size = "12.5px",
         qutebrowser_size = "10pt",
         supports_ligatures = true,
@@ -74,7 +74,7 @@ M.font_presets = {
     ["Mononoki"] = {
         name = "Mononoki",
         terminal_pixelsize = "15",
-        awesome_size = "12.5px",
+        awesome_size = "13px",
         qutebrowser_size = "10pt",
         supports_ligatures = true,
     },
@@ -87,7 +87,7 @@ M.font_presets = {
     },
     ["IbmPlex"] = {
         name = "Ibm Plex Mono",
-        terminal_pixelsize = "14.5",
+        terminal_pixelsize = "14",
         awesome_size = "12.5px",
         qutebrowser_size = "10pt",
         supports_ligatures = true,
