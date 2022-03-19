@@ -256,7 +256,17 @@ alias w='zGoto'
 alias f='findFile'
 alias fof='findFile openfork'
 alias fcd='FINDFILE_DIRONLY=1 findFile cd-to-file'
-alias make='fparent-run Makefile run-command file-dir make'
+
+make() {
+  # a *very* crappy workaround for using `make -f`.
+  # FIXME: make this less painful somehow
+  if [ $# -gt 0 ] && [ "$1" = "-f" ]; then
+    printf >&2 '[Warning] `-f` argument detected, abandoning use of `fparent-run`\n'
+    command make "$@"
+  else
+    fparent-run Makefile run-command file-dir make "$@"
+  fi
+}
 
 alias ls='ls --color=auto'
 alias l='ls -l'
