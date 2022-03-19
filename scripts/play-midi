@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+
+# TODO: this script in very early stages. Very fragile!
+# TODO: maybe a shell script with trap works as good as this
+
+import sys, os
+import subprocess as sp
+
+try:
+    print("Press Ctrl-C to cancel the playing")
+    p = sp.Popen(["fluidsynth", "-a", "pulseaudio", "-m", "alsa_seq", "-l",  "-i", sys.argv[1]], stdout=sp.PIPE, stdin=sp.PIPE)
+    p.wait()
+except KeyboardInterrupt:
+    print("Interrupting the playing...")
+    os.system("pkill -9 fluidsynth")

@@ -137,8 +137,14 @@ if match ext 'pdf' || match mime 'application/pdf'; then
   try pop runpage exiftool "$FILE"
 fi
 
-if match mime 'audio/*' ||
-  match ext 'aac|flac|m4a|mid|midi|mpa|mp2|mp3|ogg|wav|wma'; then
+if match ext 'mid|midi'; then
+  try tty play-midi "$FILE"
+  try gui termup -f play-midi "$FILE"
+  try tty mpv --no-video "$FILE"
+  try gui termup -f mpv --no-video "$FILE"
+fi
+
+if match mime 'audio/*' || match ext 'aac|flac|m4a|mpa|mp2|mp3|ogg|wav|wma'; then
   try tty mpv --no-video "$FILE"
   try gui termup -f mpv --no-video "$FILE"
   try pop mocplay "$FILE" "opener"
@@ -168,6 +174,7 @@ if match ext 'torrent'; then
   try pop runpage transmission-show -- "$FILE"
 fi
 
+match ext 'mmpz' && try gui lmms "$FILE"
 match ext 'odt|rtf|docx|doc' && try gui libreoffice "$FILE"
 match ext 'pptx' && try gui libreoffice "$FILE"
 match ext 'odg' && try gui libreoffice "$FILE"
