@@ -35,11 +35,13 @@ super + shift + n
     termup -f $FILEMAN
 
 super + c
-    runnsend error flamew gui
-super + alt + c
-    runnsend error flamew fullc
-super + shift + c
-    runnsend error flamew full
+    runnsend error ksnip -r
+    # runnsend error flameshot gui
+    # runnsend error flamew gui
+# super + alt + c
+#     runnsend error flamew fullc
+# super + shift + c
+#     runnsend error flamew full
 
 # mounting
 super + F10
