@@ -112,7 +112,7 @@
     (fn [screen]
       (each [_ name (ipairs tag-names)]
         ;; Useful reference: https://awesomewm.org/doc/api/classes/tag.html
-        (awful.tag.add name {:gap 3
+        (awful.tag.add name {;:gap 3
                              :selected false
                              :screen screen
                              :layout (. awful.layout.layouts 1)}))
@@ -191,16 +191,35 @@
                              :id "background_role"
                              :widget wibox.container.background}}))
 
+      (local bar-position "bottom")
+      (local bar-mode "solid-blocks")
+      (local solid-alpha "AA")
+
       (local top-bar (awful.wibar {: screen
-                                   :bg "#00000000"
-                                   :position "top"
+                                   :bg (match bar-mode
+                                         "floating-blocks" "#00000000"
+                                         "solid-blocks" (.. beautiful.bg_normal solid-alpha))
+                                   :position bar-position
                                    :height 32}))
+
+      (local bar-side-margin (match bar-mode
+                           "floating-blocks" 5
+                           "solid-bar" 2))
 
       (top-bar:setup
         {:widget wibox.container.margin
-         :top 6
-         :left 5
-         :right 5
+         :top (match bar-mode
+                "floating-blocks" (match bar-position
+                                    "top" 6
+                                    "bottom" 2)
+                "solid-bar" 0)
+         :bottom (match bar-mode
+                   "floating-blocks" (match bar-position
+                                       "top" 0
+                                       "bottom" 4)
+                   "solid-bar" 0)
+         :left bar-side-margin
+         :right bar-side-margin
          1 {:layout wibox.layout.align.horizontal
             1 {1 {1 {:layout wibox.layout.fixed.horizontal
                      1 tag-list
@@ -262,7 +281,7 @@
                       :placement (+ awful.placement.no_overlap
                                     awful.placement.no_offscreen)}}
         {:rule_any {:instance ["pinentry"]
-                    :class ["Sxiv" "float" "Pavucontrol" "Gnome-pomodoro"]
+                    :class ["Sxiv" "float" "Pavucontrol" "Gnome-pomodoro" "qjackctl" "ksnip"]
                     :name ["Event Tester" "Steam - News" "Krita - Edit Text — Krita"
                            "CarlaRack-LMMS"]
                     :role ["pop-up"]}
