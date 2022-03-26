@@ -1,4 +1,5 @@
+#!/usr/bin/env xdg-open
 [Desktop Entry]
 Name=File manager
-Exec=termup lf %u
+Exec=termup ${FILEMAN} %u
 Type=Application
