@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
+if [ $# != 2 ]; then
+  printf >&2 "Usage: %s <FILE> <NEW-FORMAT>\n" "$(basename "$0")"
+  exit 1
+fi
+
+# TODO: validate "new-format" argument (just that it should match [\w.])
+
+if ! exists "trash-put"; then
+  printf >&2 "error: 'trash-put' not found\n"
+  exit 1
+fi
+
+# tmp_folder=$(mktemp -d "${TMP:-/tmp}/ffmpeg-convert-XXXXXX") || exit 1
+# trap 'rm -r "$tmp_folder"' EXIT
+
+dirname=$(dirname "$1")
+filename=$(basename "$1")
+no_ext=${filename%.*}
+ext=${filename##*.}
+
+new_filename="$dirname/$no_ext.$2"
+
+if [ -e "$new_filename" ]; then
+  printf >&2 "Path to new filename already exists! (%s)" "$new_filename"
+  exit 1
+fi
+
+ffmpeg -i "$1" "$new_filename" || exit 1
+trash-put "$1"
