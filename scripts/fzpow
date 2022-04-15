@@ -22,7 +22,7 @@ main() {
       fi ;;
 
     1) case "$1" in
-        lock|exit|suspend|hibernate|reboot|shutdown) \
+        lock|exit|suspend|hibernate|reboot|shutdown|shutdown_now) \
           eval "action_$1" ;;
         *) showHelp ;;
       esac ;;
@@ -39,12 +39,13 @@ suspend
 hibernate
 reboot
 shutdown
+shutdown_now
 EOF
 }
 
 showHelp() {
   printf >&2 "Usage: %s\n" \
-             "$PROGNAME [{lock | exit | suspend | hibernate | reboot | shutdown}]"
+             "$PROGNAME [{lock | exit | suspend | hibernate | reboot | shutdown | shutdown_now}]"
   printf >&2 "%s\n" "If no argument is specified, a fzagnostic pop-up is shown to select it manually."
 }
 
@@ -97,5 +98,6 @@ action_hibernate() {
 
 action_reboot() { systemctl reboot; }
 action_shutdown() { termup -f shutdown-routine; }
+action_shutdown_now() { systemctl poweroff; }
 
 main "$@"
