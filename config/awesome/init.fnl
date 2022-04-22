@@ -195,7 +195,7 @@
       (local bar-mode "solid-blocks")
       (local solid-alpha "AA")
 
-      (local top-bar (awful.wibar {: screen
+      (local taskbar (awful.wibar {: screen
                                    :bg (match bar-mode
                                          "floating-blocks" "#00000000"
                                          "solid-blocks" (.. beautiful.bg_normal solid-alpha))
@@ -206,7 +206,7 @@
                            "floating-blocks" 5
                            "solid-bar" 2))
 
-      (top-bar:setup
+      (taskbar:setup
         {:widget wibox.container.margin
          :top (match bar-mode
                 "floating-blocks" (match bar-position
@@ -265,7 +265,7 @@
 
         )
 
-      (set _G.top-bar top-bar))))
+      (set _G.taskbar taskbar))))
 
 (do ; rules
   (set awful.rules.rules
