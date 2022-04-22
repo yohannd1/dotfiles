@@ -1,5 +1,5 @@
 # Use the command 'task show' to see all defaults and overrides
-data.location=~/wiki/taskwarrior
+data.location=$WIKI/data/taskwarrior
 
 # Precedence
 rule.precedence.color=deleted,completed,active,keyword.,tag.,project.,overdue,due.today,due,recurring,scheduled,blocking,blocked,tagged,uda.
@@ -20,11 +20,11 @@ color.debug=color0 on color6
 # Task state
 color.completed=
 color.deleted=
-color.active=color5
+color.active=color5 bold
 color.recurring=
 color.scheduled=
 color.until=
-color.blocked=color8
+color.blocked=color3 bold
 color.blocking=bold
 
 # Project
@@ -76,3 +76,11 @@ color.sync.rejected=color13
 # Command: undo
 color.undo.after=color2
 color.undo.before=color1
+
+regex=on
+search.case.sensitive=false
+
+news.version=2.6.0
+uda.period.type=string
+uda.period.label=Period
+uda.period.values=morning,afternoon,night
