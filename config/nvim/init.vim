@@ -726,7 +726,7 @@ augroup buffer_load
   au BufNewFile,BufRead,BufEnter *.scrbl set filetype=scribble
   au BufNewFile,BufRead,BufEnter *.h set filetype=c
   au BufNewFile,BufRead,BufEnter *.mpp set filetype=cpp
-  au BufNewFile,BufRead,BufEnter calcurse-note.* set filetype=markdown
+  au BufNewFile,BufRead,BufEnter calcurse-note.* set filetype=vimwiki
 augroup end
 
 " }}}
@@ -870,6 +870,7 @@ function! ft.haskell() " {{{
 endfunction " }}}
 function! ft.html() " {{{
   let b:rifle_mode = "silent"
+  call AddSnippet("m", "<!DOCTYPE html><CR><html><CR><head><CR><title>Title</title><CR><meta charset=\"UTF-8\"/><CR><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/><CR><link rel=\"stylesheet\" href=\"style.css\"/><CR></head><CR><CR><body><CR><p>Hello, World!</p><CR></body><CR></html><Esc>gg")
 endfunction " }}}
 function! ft.rust() " {{{
   if ReverseRSearch(expand("%:p:h"), "Cargo.toml")
@@ -887,6 +888,7 @@ function! ft.java() " {{{
   endif
 
   setlocal fdm=syntax
+  let b:format_command = "google-java-format --aosp - 2>/dev/null"
 
   call AddSnippet("m", 'public class Main {<CR>public static void main(String[] args) {<CR>System.out.println("Hello, World!");<CR>}<CR>}<Up><Up><C-o>_')
 endfunction " }}}
@@ -1167,7 +1169,32 @@ cnoreabbrev sbt SWBindToggle
 " }}}
 
 " Find TO-DO's
-nnoremap <Leader>ft /\v(TODO\|FIXME\|XXX)<CR>
+nnoremap <silent> <Leader>f :Hydra extrafind<CR>
+silent call hydra#hydras#register({
+      \ "name":           "extrafind",
+      \ "title":          "Extra Find",
+      \ "show":           "popup",
+      \ "exit_key":       "q",
+      \ "feed_key":       v:false,
+      \ "foreign_key":    v:true,
+      \ "position":       "s:bottom_right",
+      \ "single_command": v:true,
+      \ "keymap": [
+      \   {
+      \     "name": "In buffer",
+      \     "keys": [
+      \       ["t", 'normal /\v(TODO\|FIXME\|XXX)', "TODOs (universal)"],
+      \     ],
+      \   },
+      \   {
+      \     "name": "Others",
+      \     "keys": [
+      \       ["b", "lua require('telescope.builtin').buffers()", "buffers"],
+      \       ["h", "lua require('telescope.builtin').help_tags()", "help tags"],
+      \     ],
+      \   },
+      \ ]
+      \ })
 
 " A join command similar to the one in emacs (or evil-mode, idk)
 " {{{
@@ -1314,8 +1341,6 @@ au BufRead,BufNewFile *.lang set ft=lang
 
 " Telescope builtins
 nnoremap <leader>. <cmd>lua require('telescope.builtin').fd()<CR>
-nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<CR>
-nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<CR>
 nnoremap <leader>o <cmd>lua dummy.open_recent()<CR>
 
 nnoremap <leader>g <cmd>Goyo 130<CR>
