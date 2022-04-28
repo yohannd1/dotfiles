@@ -1183,7 +1183,7 @@ silent call hydra#hydras#register({
       \   {
       \     "name": "In buffer",
       \     "keys": [
-      \       ["t", 'normal! /\v(TODO\|FIXME\|XXX)', "TODOs (universal)"],
+      \       ["t", 'normal /TODO|FIXME|XXX', "TODOs (universal)"],
       \     ],
       \   },
       \   {
