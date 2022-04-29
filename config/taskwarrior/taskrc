@@ -4,6 +4,18 @@ data.location=$WIKI/data/taskwarrior
 # Precedence
 rule.precedence.color=deleted,completed,active,keyword.,tag.,project.,overdue,due.today,due,recurring,scheduled,blocking,blocked,tagged,uda.
 
+report.thisday.description='Concise report of what there is to do today'
+report.thisday.columns=id,priority,due.relative,description.count,period,project,tags,depends,urgency.integer
+report.thisday.labels=ID,P,Due,Description,Period,Project,Tags,Deps,Urg
+report.thisday.sort=period-/,due+,priority-,urgency-
+report.thisday.filter=status:pending (sch:today or due:today)
+
+report.week.description='Report of the next 7 days' # FIXME: confirm whether I'm showing all 7 days.. uh.
+report.week.columns=id,priority,scheduled,due.relative,description.count,period,project,tags,depends
+report.week.labels=ID,P,Sch,Due,Description,Period,Project,Tags,Deps
+report.week.sort=scheduled+/,period-,due+,priority-,tags-,urgency-
+report.week.filter=status:pending ((sch.after:today sch.before:7d) or (due.after:tomorrow due.before:7d))
+
 # Sorting and Filtering
 report.next.sort=scheduled+,due+,urgency-
 report.next.filter=status:pending limit:page -hold
