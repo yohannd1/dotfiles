@@ -301,9 +301,10 @@ call s:hl("htmlEndTag",  "05", "NONE", "", "")
 call s:hl("htmlTag",     "05", "NONE", "", "")
 
 " JavaScript highlighting
-call s:hl("javaScript",        "05", "NONE", "", "")
-call s:hl("javaScriptBraces",  "05", "NONE", "", "")
-call s:hl("javaScriptNumber",  "09", "NONE", "", "")
+call s:hl("javaScript",       "05", "NONE", "", "")
+call s:hl("javaScriptBraces", "05", "NONE", "", "")
+call s:hl("javaScriptNumber", "09", "NONE", "", "")
+hi link javaScriptIdentifier Keyword
 
 " pangloss/vim-javascript highlighting
 call s:hl("jsOperator",          "0D", "NONE", "", "")
