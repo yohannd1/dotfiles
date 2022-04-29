@@ -13,6 +13,16 @@ gitAddAll() {
   (cd "$(realpath -m $(git rev-parse --git-dir)/..)" && git add -A)
 }
 
+confirm() {
+  local answer
+  printf >&2 "%s [Y/n] " "$1"
+  read -n1 answer
+  case "$answer" in
+    y|Y|'') return 0 ;;
+    n|N|*) return 1 ;;
+  esac
+}
+
 if ! is_git_dir; then
   printf >&2 "This directory is not part of a git repository.\n"
   exit 1
@@ -44,6 +54,11 @@ while [ ! "$exit" ]; do
     q) exit=0 ;;
     r) git remote -v ;;
     s) git push ;;
+    S)
+      current_branch=$(git branch --show-current) \
+        && confirm "Command to be ran: git push -u origin $current_branch" \
+        && git push -u origin "$current_branch"
+      ;;
     "") clear ;;
     "") exit=0 ;;
     "") exit=0 ;;
@@ -56,6 +71,7 @@ while [ ! "$exit" ]; do
   d     show diff
   p     pull
   s     push
+  S     push + set upstream
   l     log (compact)
   L     log (full)
   f     fetch
