@@ -1169,6 +1169,13 @@ cnoreabbrev sbt SWBindToggle
 " }}}
 
 " Find TO-DO's
+" {{{
+function! FindTodos()
+  let l:query = '\v<(TODO|FIXME|XXX)>'
+  exec 'normal! /' . l:query . 'nN'
+  call histadd("/", l:query)
+endfunction
+
 nnoremap <silent> <Leader>f :Hydra extrafind<CR>
 silent call hydra#hydras#register({
       \ "name":           "extrafind",
@@ -1183,7 +1190,7 @@ silent call hydra#hydras#register({
       \   {
       \     "name": "In buffer",
       \     "keys": [
-      \       ["t", 'normal /TODO|FIXME|XXX', "TODOs (universal)"],
+      \       ["t", 'call FindTodos()', "TODOs (universal)"],
       \     ],
       \   },
       \   {
@@ -1195,6 +1202,8 @@ silent call hydra#hydras#register({
       \   },
       \ ]
       \ })
+" }}}
+
 
 " A join command similar to the one in emacs (or evil-mode, idk)
 " {{{
@@ -1352,6 +1361,9 @@ let g:neovide_cursor_vfx_mode = "ripple"
 
 nnoremap <Leader>L <cmd>set cursorline!<CR>
 nnoremap <Leader>C <cmd>set cursorcolumn!<CR>
+
+nnoremap n /<Up><CR>
+nnoremap N ?<Up><CR>
 
 " }}}
 " Lua Tunnel {{{
