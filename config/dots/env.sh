@@ -55,6 +55,7 @@ export _JAVA_OPTIONS="-Djava.util.prefs.userRoot='$XDG_CONFIG_HOME/java' -Dawt.u
 export JAVA_FONTS="/usr/share/fonts/TTF"
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export TASKRC="$XDG_CONFIG_HOME/taskwarrior/taskrc"
+export TIMEWARRIORDB="$WIKI/data/timewarrior"
 export INPUTRC="$XDG_CONFIG_HOME/inputrc"
 export XAUTHORITY="$XDG_DATA_DIR/Xauthority" # might break some display managers, but I don't use them.
 export LESSKEY="$XDG_CONFIG_HOME/less/lesskey"

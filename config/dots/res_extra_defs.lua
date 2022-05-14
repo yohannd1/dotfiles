@@ -10,7 +10,7 @@ M.font_presets = {
     },
     ["FiraCode"] = {
         name = "Fira Code Medium",
-        terminal_pixelsize = "14",
+        terminal_pixelsize = "15",
         awesome_size = "12px",
         qutebrowser_size = "10pt",
         supports_ligatures = true,
@@ -31,21 +31,21 @@ M.font_presets = {
     },
     ["Fixedsys"] = {
         name = "Fixedsys Excelsior",
-        terminal_pixelsize = "16",
-        awesome_size = "12px",
+        terminal_pixelsize = "18",
+        awesome_size = "14px",
         qutebrowser_size = "10pt",
         supports_ligatures = false, -- because of glitches
     },
     ["UbuntuMono"] = {
         name = "Ubuntu Mono",
-        terminal_pixelsize = "16",
-        awesome_size = "11",
+        terminal_pixelsize = "17",
+        awesome_size = "10",
         qutebrowser_size = "10pt",
         supports_ligatures = false,
     },
     ["RobotoMono"] = {
         name = "Roboto Mono Medium",
-        terminal_pixelsize = "13",
+        terminal_pixelsize = "14",
         awesome_size = "12px",
         qutebrowser_size = "10pt",
         supports_ligatures = true,
@@ -73,8 +73,8 @@ M.font_presets = {
     },
     ["Mononoki"] = {
         name = "Mononoki",
-        terminal_pixelsize = "15",
-        awesome_size = "13px",
+        terminal_pixelsize = "16",
+        awesome_size = "12px",
         qutebrowser_size = "10pt",
         supports_ligatures = true,
     },

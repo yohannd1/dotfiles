@@ -191,7 +191,7 @@
                              :id "background_role"
                              :widget wibox.container.background}}))
 
-      (local bar-position "bottom")
+      (local bar-position "top")
       (local bar-mode "solid-blocks")
       (local solid-alpha "AA")
 

@@ -188,6 +188,7 @@ case "$1" in
         cd "$tmp"
         ln -s "$file" Main.java
         javac -encoding utf8 -d "$tmp" Main.java
+        # maybe I could scan the compiled file here to find the entry point? idk
         java Main
         ;;
       janet)
