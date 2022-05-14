@@ -148,3 +148,15 @@ super + o; shift + t
     $TERMINAL -c float -g 100x35 -e tmux-tray
 super + o; b
     runnsend error-and-output bkmk menu
+
+# Mouse middle button paste prevention
+# I don't know why but this disables middle-mouse-paste without preventing the middle button from working
+# Source: https://unix.stackexchange.com/a/472464
+~button2
+    echo -n | xsel -n -i
+~control + c
+    echo -n | xsel -n -i
+~control + shift + c
+    echo -n | xsel -n -i
+~control + x
+    echo -n | xsel -n -i
