@@ -12,7 +12,7 @@ report.dayplan.filter=status:pending (sch:today or due:today)
 
 report.weekplan.columns=id,priority,due.relative,description.count,period,project,tags,depends
 report.weekplan.labels=ID,P,Due,Description,Period,Project,Tags,Deps
-report.weekplan.sort=period-,due+,priority-,tags-,urgency-
+report.weekplan.sort=priority-,period-,due+,tags-,urgency-
 
 # Sorting and Filtering
 report.next.sort=scheduled+,due+,urgency-
@@ -94,3 +94,9 @@ news.version=2.6.0
 uda.period.type=string
 uda.period.label=Period
 uda.period.values=morning,afternoon,night
+uda.reviewed.type=date
+uda.reviewed.label=Reviewed
+report._reviewed.description=Tasksh review report.  Adjust the filter to your needs.
+report._reviewed.columns=uuid
+report._reviewed.sort=reviewed+,modified+
+report._reviewed.filter=( reviewed.none: or reviewed.before:now-6days ) and ( +PENDING or +WAITING )
