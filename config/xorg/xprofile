@@ -47,9 +47,11 @@ ksnip &
 [ "$WM" != awesome ] && dunst -config "$XDG_CACHE_HOME/gen/dunstrc" & # notification daemon
 # nm-applet & # network manager on tray - currently experimenting not using this
 monitor-battery & # notify when battery is running low
-# blueman-applet & # bluetooth manager on try - currently experimenting not using this
-fcitx -d & # input method manager (?)
-wi32 server &
+# blueman-applet & # bluetooth manager on tray - currently experimenting not using this
+fcitx -d & # input method for multilingual input
+if exists pulse-autoconf; then
+  pulse-autoconf & # nice pulseaudio assistant daemon
+fi
 
 # extra config (async)
 systemd-inhibit --what=handle-power-key sleep infinity & # disable power button

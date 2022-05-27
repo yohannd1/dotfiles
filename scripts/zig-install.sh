@@ -27,8 +27,9 @@ printf >&2 "Downloading metadata...\n"
 json=$(curl "$ZIG_IDX" | jq -r '.master["'"$ARCH"'"]')
 
 # download the file
-printf >&2 "Downloading the binary tarball...\n"
-curl "$(printf "%s" "$json" | jq -r '.tarball')" -o "$tmp/zig.tar.xz"
+tarball=$(printf "%s" "$json" | jq -r '.tarball')
+printf >&2 "Downloading the binary tarball (%s)...\n" "$tarball"
+curl "$tarball" -o "$tmp/zig.tar.xz"
 
 # fetch checksum and compare it
 printf >&2 "Calculating checksums...\n"
