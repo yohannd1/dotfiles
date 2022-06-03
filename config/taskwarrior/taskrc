@@ -5,8 +5,8 @@ data.location=$WIKI/data/taskwarrior
 rule.precedence.color=deleted,completed,active,keyword.,tag.,project.,overdue,due.today,due,recurring,scheduled,blocking,blocked,tagged,uda.
 
 report.dayplan.description='Concise report of what there is to do today'
-report.dayplan.columns=id,priority,due.relative,start.age,description.count,period,project,tags,depends,urgency.integer
-report.dayplan.labels=ID,P,Due,Active,Description,Period,Project,Tags,Deps,Urg
+report.dayplan.columns=id,priority,due.relative,start.age,description.count,period,project,tags,depends
+report.dayplan.labels=ID,P,Due,Active,Description,Period,Project,Tags,Deps
 report.dayplan.sort=period-/,due+,priority-,urgency-
 report.dayplan.filter=status:pending (sch:today or due:today)
 
