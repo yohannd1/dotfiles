@@ -1,0 +1,57 @@
+<!-- One of the most nonsensical pieces of code I've ever written. -->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Home Page</title>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width,initial-scale=1"/>
+        <link rel="stylesheet" href="style.css"/>
+        <style>
+            html {
+                background-color: #1C1E26;
+                font-family: "Unifont";
+                font-size: 1.2em;
+                text-align: center;
+                color: #DCDFE4;
+
+            }
+
+            a {
+                color: #E58D7D;
+            }
+        </style>
+        <script>
+            const _PHRASES = [
+                "lol, k.",
+                "???",
+                "epic day",
+            ];
+
+            window.onload = () => {
+                document.querySelector("#phrase-vessel").innerHTML = (() => {
+                    return _PHRASES[Math.floor(Math.random() * _PHRASES.length)];
+                })();
+            };
+        </script>
+    </head>
+
+    <body>
+        <main>
+            <p>.</p>
+            <p>.</p>
+            <p>.</p>
+            <h2>Hello, World!</h2>
+            <p>.</p>
+            <p>.</p>
+            <p>.</p>
+            <p>Not really much to put in here, is there?</p>
+            <p>.</p>
+            <p id="phrase-vessel">...</p>
+            <p>.</p>
+            <p>.</p>
+            <p>That's all.</p>
+            <p>Keep going.</p>
+        </main>
+    </body>
+</html>
