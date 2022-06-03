@@ -47,7 +47,7 @@ class Manager:
                 datetime.datetime.now().strftime("%Y-%d-%m"),
                 generate_random_string(5),
             )
-        ) 
+        )
 
     def make_dir(self, dir_path):
         assert not dir_path.is_file()

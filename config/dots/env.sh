@@ -53,6 +53,7 @@ export GEM_SPEC_CACHE="$XDG_CACHE_HOME/gem"
 export GRADLE_USER_HOME="$XDG_DATA_HOME/gradle"
 export _JAVA_OPTIONS="-Djava.util.prefs.userRoot='$XDG_CONFIG_HOME/java' -Dawt.useSystemAAFontSettings=on"
 export JAVA_FONTS="/usr/share/fonts/TTF"
+export QT_STYLE_OVERRIDE="kvantum"
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export TASKRC="$XDG_CONFIG_HOME/taskwarrior/taskrc"
 export TIMEWARRIORDB="$WIKI/data/timewarrior"
@@ -132,4 +133,3 @@ export XMODIFIERS='@im=fcitx'
 if [ -r ~/.config/dircolors ]; then
   eval "$(dircolors -b ~/.config/dircolors)"
 fi
-

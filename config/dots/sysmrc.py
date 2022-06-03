@@ -63,7 +63,28 @@ m.link_glob(DOTFILES / "desktop", "~/.local/share/applications")
 # m.link_glob(DOTFILES / "config/kak", "~/.config/kak")
 # m.link_glob(DOTFILES / "config/vscode", "~/.config/Code/User")
 
-print("Generating config...", file=sys.stderr, end='')
+XDG_CACHE_HOME = Path(os.environ["XDG_CACHE_HOME"])
+DOTS_CACHE = XDG_CACHE_HOME / "dots"
+
+print("Downloading/updating repos...", file=sys.stderr)
+
+(DOTS_CACHE / "repos").mkdir(parents=True, exist_ok=True)
+REPOS = {
+    "FlatColor": "https://github.com/YohananDiamond/FlatColor",
+}
+for (name, url) in REPOS.items():
+    print(f"Current repo: {name} ({url})", file=sys.stderr)
+    p = DOTS_CACHE / "repos" / name
+    if p.exists():
+        # os.system(f"cd {repr(str(p))} && git pull")
+        pass
+    else:
+        os.system(f"git clone {repr(url)} {repr(str(p))}")
+
+Path("~/.themes").expanduser().mkdir(parents=True, exist_ok=True)
+m.link_glob(DOTS_CACHE / "repos/FlatColor", "~/.themes/FlatColor")
+
+print("Generating config...", file=sys.stderr, end="")
 
 # general config
 os.system(DOTFILES / "scripts/gen-config")

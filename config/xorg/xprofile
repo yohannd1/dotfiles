@@ -52,6 +52,7 @@ fcitx -d & # input method for multilingual input
 if exists pulse-autoconf; then
   pulse-autoconf & # nice pulseaudio assistant daemon
 fi
+xsettingsd & # X settings daemon
 
 # extra config (async)
 systemd-inhibit --what=handle-power-key sleep infinity & # disable power button
