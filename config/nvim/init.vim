@@ -124,7 +124,6 @@ if g:is_first
   Plug 'nvim-telescope/telescope.nvim'
   Plug 'nvim-lua/popup.nvim'
   Plug 'nvim-lua/plenary.nvim'
-  Plug 'mcchrish/nnn.vim'
   " Plug 'nvim-lua/completion-nvim'
   " Plug 'RRethy/vim-illuminate'
   " Plug 'slakkenhuis/vim-margin'
@@ -726,6 +725,7 @@ augroup buffer_load
   au BufNewFile,BufRead,BufEnter *.scrbl set filetype=scribble
   au BufNewFile,BufRead,BufEnter *.h set filetype=c
   au BufNewFile,BufRead,BufEnter *.mpp set filetype=cpp
+  au BufNewFile,BufRead,BufEnter *.tsx if getline(1) =~ '^<?xml' | set filetype=xml | endif
   au BufNewFile,BufRead,BufEnter calcurse-note.* set filetype=vimwiki
 augroup end
 
