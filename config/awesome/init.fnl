@@ -200,7 +200,7 @@
                                          "floating-blocks" "#00000000"
                                          "solid-blocks" (.. beautiful.bg_normal solid-alpha))
                                    :position bar-position
-                                   :height 32}))
+                                   :height 24}))
 
       (local bar-side-margin (match bar-mode
                            "floating-blocks" 5
