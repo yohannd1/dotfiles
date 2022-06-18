@@ -57,6 +57,7 @@ m.link_conf("pylintrc", "~/.pylintrc")
 m.link_conf("tmux.conf", "~/.tmux.conf")
 
 m.link_glob(DOTFILES / "config/qutebrowser", "~/.config/qutebrowser")
+m.link_glob(DOTFILES / "config/furnace", "~/.config/furnace")
 m.link_glob(DOTFILES / "config/nvim", "~/.config/nvim")
 m.link_glob(DOTFILES / "config/emacs", "~/.emacs.d")
 m.link_glob(DOTFILES / "desktop", "~/.local/share/applications")
