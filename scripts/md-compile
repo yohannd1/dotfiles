@@ -4,7 +4,7 @@
 import argparse, os, sys, re, subprocess as sp
 from pathlib import Path
 
-COMPILER_COMMAND = ["comrak", "--gfm", "--unsafe"]
+COMPILER_COMMAND = ["comrak", "--unsafe"]
 
 def main(argv):
     parser = argparse.ArgumentParser(
@@ -83,7 +83,7 @@ def main(argv):
             return 1
     css_data = re.sub(r"\n", "", css_data)
 
-    final_html = (
+    final_html = str.join("\n", [
         '<!DOCTYPE html>'
         '<html>'
         '<head>'
@@ -98,7 +98,7 @@ def main(argv):
         '{}'
         '</body>'
         '</html>'
-    ).format(title, css_data, compiled_html)
+    ]).format(title, css_data, compiled_html)
 
     print(final_html)
 
