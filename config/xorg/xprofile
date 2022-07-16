@@ -53,6 +53,9 @@ if exists pulse-autoconf; then
   pulse-autoconf & # nice pulseaudio assistant daemon
 fi
 xsettingsd & # X settings daemon
+if exists element-desktop; then
+  element-desktop --hidden &
+fi
 
 # extra config (async)
 systemd-inhibit --what=handle-power-key sleep infinity & # disable power button

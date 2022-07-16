@@ -17,7 +17,7 @@ M.font_presets = {
     },
     ["CascadiaCode"] = {
         name = "Cascadia Code",
-        terminal_pixelsize = "15",
+        terminal_pixelsize = "14",
         awesome_size = "12.5px",
         qutebrowser_size = "10pt",
         supports_ligatures = true,
@@ -95,16 +95,30 @@ M.font_presets = {
     ["ShareTech"] = {
         name = "Share Tech Mono",
         terminal_pixelsize = "16",
-        awesome_size = "14px",
+        awesome_size = "12px",
         qutebrowser_size = "10pt",
         supports_ligatures = false,
     },
     ["Unifont"] = {
         name = "Unifont",
-        terminal_pixelsize = "18",
+        terminal_pixelsize = "16",
         awesome_size = "14px",
         qutebrowser_size = "10pt",
         supports_ligatures = true,
+    },
+    ["ProggyVector"] = {
+        name = "ProggyVector",
+        terminal_pixelsize = "14",
+        awesome_size = "12px",
+        qutebrowser_size = "10pt",
+        supports_ligatures = false,
+    },
+    ["PtMono"] = {
+        name = "PTMono",
+        terminal_pixelsize = "14",
+        awesome_size = "11px",
+        qutebrowser_size = "10pt",
+        supports_ligatures = false,
     },
 }
 
