@@ -727,6 +727,7 @@ augroup buffer_load
   au BufNewFile,BufRead,BufEnter *.mpp set filetype=cpp
   au BufNewFile,BufRead,BufEnter *.tsx if getline(1) =~ '^<?xml' | set filetype=xml | endif
   au BufNewFile,BufRead,BufEnter calcurse-note.* set filetype=vimwiki
+  au BufNewFile,BufRead,BufEnter *.PKGBUILD set filetype=PKGBUILD
 augroup end
 
 " }}}
