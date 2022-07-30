@@ -128,6 +128,7 @@ case "$1" in
       cs|csharp) mcs "$file" -out:"$tmp/exe" && mono "$tmp/exe" ;;
       clojure) clojure "$file" ;;
       markdown) md-preview "$file" ;;
+      php) php "$file" ;;
       sh)
         if [ -x "$file" ]; then
           # execute file if it is executable
