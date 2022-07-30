@@ -2,20 +2,7 @@ local dummy = {}
 _G.dummy = dummy
 
 local vim = _G.vim
-
--- The function is called `t` for `termcodes`.
--- You don't have to call it that, but I find the terseness convenient
-local function parseEscapeCode(str)
-    -- Adjust boolean arguments as needed
-    return vim.api.nvim_replace_termcodes(str, true, true, true)
-end
-
--- Copies the contents of src to dest.
-local function overrideTableWith(dest, src)
-  for k, v in pairs(src) do
-    dest[k] = v
-  end
-end
+local utils = require("cfg.utils")
 
 local autopairs = require("nvim-autopairs")
 local mapKey = vim.api.nvim_set_keymap
@@ -174,7 +161,7 @@ do
   -- Search and open on wiki
   dummy.open_wiki_file = function(opts)
     opts = opts or {}
-    overrideTableWith(opts, main_theme)
+    utils.overrideTableWith(opts, main_theme)
 
     pickers.new(opts, {
       prompt_title = "Search on wiki",
@@ -197,7 +184,7 @@ do
 
   dummy.insert_wiki_file = function(opts)
     opts = opts or {}
-    overrideTableWith(opts, main_theme)
+    utils.overrideTableWith(opts, main_theme)
 
     local repr_string = opts.after_cursor and "after" or "before"
 
@@ -224,7 +211,7 @@ do
 
   dummy.open_recent = function(opts)
     opts = opts or {}
-    overrideTableWith(opts, main_theme)
+    utils.overrideTableWith(opts, main_theme)
 
     pickers.new(opts, {
       prompt_title = "Open recent file",
@@ -246,46 +233,8 @@ do
   end
 end
 
-do
-  local mode_map = {
-    ["n"]  = "NORMAL",
-    ["no"] = "NORMAL (OP)",
-    ["v"]  = "VISUAL",
-    ["V"]  = "VISUAL LINE",
-    ["s"]  = "SELECT",
-    ["S"]  = "SELECTION LINE",
-    ["i"]  = "INSERT",
-    ["R"]  = "REPLACE",
-    ["Rv"] = "VISUAL REPLACE",
-    ["c"]  = "COMMAND",
-    ["cv"] = "VIM EX",
-    ["ce"] = "EX",
-    ["r"]  = "PROMPT",
-    ["rm"] = "MORE",
-    ["r?"] = "CONFIRM",
-    ["!"]  = "SHELL",
-    ["t"]  = "TERMINAL",
-    [parseEscapeCode "<C-V>"] = "VISUAL BLOCK",
-    [parseEscapeCode "<C-S>"] = "SELECTION BLOCK",
-  }
-
-  function dummy.statusLineGetFiletype()
-    return (vim.bo.filetype == "") and "no ft" or vim.bo.filetype
-  end
-
-  function dummy.statusLineGetMode()
-    local mode = vim.fn.mode()
-    return mode_map[mode] or ("{" .. mode .. "}")
-  end
-
-  vim.o.statusline = (
-    "%#TabLineSel# %{v:lua.dummy.statusLineGetMode()} " ..
-    "%#Normal# %r " ..
-    "%#Normal# %= " ..
-    "%#Normal# %{v:lua.dummy.statusLineGetFiletype()} (%{&fileformat}) " ..
-    "%#TabLine# %p%% " ..
-    "%#TabLineSel# %3l:%-3c "
-  )
-end
+-- Load configuration from other files
+require("cfg.general")()
+require("cfg.statusline")()
 
 -- vim: sw=2 et

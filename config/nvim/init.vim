@@ -622,9 +622,6 @@ cnoreabbrev rl Reload
 " This wrap might make reloading with :Reload less CPU-intensive.
 " Put settings that are unlikely to change here.
 if g:is_first
-  let &encoding = "utf-8"
-  let &langmenu = "en_US"
-  let $LANG = "en_US"
   call SourceIf($VIMRUNTIME."/delmenu.vim", $VIMRUNTIME."/menu.vim")
 
   set hidden
@@ -1369,6 +1366,6 @@ nnoremap N ?<Up><CR>
 " }}}
 " Lua Tunnel {{{
 
-lua require("initrc")
+lua require("cfg.initrc")
 
 " }}}
