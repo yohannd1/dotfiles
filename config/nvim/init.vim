@@ -998,6 +998,9 @@ endfunction " }}}
 function! ft.json() " {{{
   let b:format_command = "jq ."
 endfunction " }}}
+function! ft.php() " {{{
+  set commentstring=//\ %s
+endfunction " }}}
 
 " }}}
 
