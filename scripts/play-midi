@@ -1,13 +1,18 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
-if [ $# != 1 ]; then
-  printf >&2 "Usage: %s <FILE>\n" "$(basename "$0")"
+if [ $# = 0 ] || [ $# -gt 2 ]; then
+  printf >&2 "Usage: %s <FILE> [SOUNDFONT]\n" "$(basename "$0")"
   exit 1
+fi
+
+sf_args=()
+if [ $# = 2 ]; then
+  sf_args=("$2")
 fi
 
 printf >&2 "Tip: press Ctrl-C to stop playing\n"
 
-fluidsynth -a pulseaudio -m alsa_seq -l -i "$1" </dev/null &
+fluidsynth -a pulseaudio -m alsa_seq -l -i "${sf_args[@]}" "$1" </dev/null &
 fluidsynth_pid="$!"
 
 trap 'kill -9 "$fluidsynth_pid"' INT
