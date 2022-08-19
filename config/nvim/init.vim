@@ -91,31 +91,31 @@ if g:is_first
   "   Plug 'YohananDiamond/nelua.vim'
   " endif
 
-  " " Plug 'tbastos/vim-lua'
-  " " Plug 'hylang/vim-hy'
-  " " Plug 'fsharp/vim-fsharp'
-  " " Plug 'xolox/vim-lua-ftplugin'
-  " " Plug 'teal-language/vim-teal'
+  " Plug 'tbastos/vim-lua'
+  " Plug 'hylang/vim-hy'
+  " Plug 'fsharp/vim-fsharp'
+  " Plug 'xolox/vim-lua-ftplugin'
+  " Plug 'teal-language/vim-teal'
 
-  " " Filetypes - nim
+  " Filetypes - nim
   if executable("nim") && executable("nimsuggest")
     Plug 'YohananDiamond/nvim-nim'
   endif
 
-  " " Themes
+  " Themes
   if g:is_win
     Plug 'morhetz/gruvbox' " for windows
   endif
-  " " Plug 'dracula/vim'
-  " " Plug 'chriskempson/base16-vim'
+  " Plug 'dracula/vim'
+  " Plug 'chriskempson/base16-vim'
 
-  " " fork of redox-os/ion-vim
+  " fork of redox-os/ion-vim
   Plug 'https://gitlab.redox-os.org/YohananDiamond/ion-vim'
 
-  " " fork of skywind3000/vim-auto-popmenu
+  " fork of skywind3000/vim-auto-popmenu
   Plug 'YohananDiamond/vim-auto-popmenu'
 
-  " " Misc.
+  " Misc.
   Plug 'tpope/vim-vinegar'
   Plug 'vimwiki/vimwiki' " NOTE: Slowdown candidate
   " " Plug 'itchyny/lightline.vim'
@@ -127,6 +127,8 @@ if g:is_first
   " Plug 'nvim-lua/completion-nvim'
   " Plug 'RRethy/vim-illuminate'
   " Plug 'slakkenhuis/vim-margin'
+
+  Plug 'airblade/vim-gitgutter'
 
   call plug#end()
 endif
