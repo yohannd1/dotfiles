@@ -12,7 +12,7 @@ local this_basename = basename(this_path)
 local extra_defs = loadfile(this_basename .. "/res_extra_defs.lua")()
 local longFontFormat = extra_defs.longFontFormat
 
-local chosen_name = "CascadiaCode"
+local chosen_name = "IbmPlex"
 if chosen_name == nil then -- if there's no selected font in the line above, just pick a random one.
     local t = {}
     for name, _ in pairs(extra_defs.font_presets) do

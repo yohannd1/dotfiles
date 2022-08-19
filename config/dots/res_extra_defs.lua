@@ -9,7 +9,7 @@ M.font_presets = {
         supports_ligatures = true, -- FIXME: I don't think so?
     },
     ["FiraCode"] = {
-        name = "Fira Code Medium",
+        name = "Fira Code",
         terminal_pixelsize = "15",
         awesome_size = "12px",
         qutebrowser_size = "10pt",
@@ -17,7 +17,7 @@ M.font_presets = {
     },
     ["CascadiaCode"] = {
         name = "Cascadia Code",
-        terminal_pixelsize = "14",
+        terminal_pixelsize = "13",
         awesome_size = "12.5px",
         qutebrowser_size = "10pt",
         supports_ligatures = true,
@@ -52,7 +52,7 @@ M.font_presets = {
     },
     ["SpaceMono"] = {
         name = "Space Mono",
-        terminal_pixelsize = "14",
+        terminal_pixelsize = "13",
         awesome_size = "12px",
         qutebrowser_size = "10pt",
         supports_ligatures = false, -- because of glitches
@@ -73,7 +73,7 @@ M.font_presets = {
     },
     ["Mononoki"] = {
         name = "Mononoki",
-        terminal_pixelsize = "16",
+        terminal_pixelsize = "14",
         awesome_size = "12px",
         qutebrowser_size = "10pt",
         supports_ligatures = true,
@@ -88,13 +88,13 @@ M.font_presets = {
     ["IbmPlex"] = {
         name = "Ibm Plex Mono",
         terminal_pixelsize = "14",
-        awesome_size = "12.5px",
+        awesome_size = "11.5px",
         qutebrowser_size = "10pt",
         supports_ligatures = true,
     },
     ["ShareTech"] = {
         name = "Share Tech Mono",
-        terminal_pixelsize = "16",
+        terminal_pixelsize = "15",
         awesome_size = "12px",
         qutebrowser_size = "10pt",
         supports_ligatures = false,
