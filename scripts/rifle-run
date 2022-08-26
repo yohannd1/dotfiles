@@ -171,6 +171,7 @@ case "$1" in
       ruby) ruby "$file" ;;
       racket) racket "$file" ;;
       html) openfork "$file" ;;
+      svg) openfork "$file" ;;
       moon) moon "$file" ;;
       teal) tl run "$file" ;;
       zig) zig run "$file" --color off --cache-dir "$tmp" ;;
