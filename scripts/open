@@ -178,7 +178,7 @@ fi
 
 match ext 'mmpz' && try gui lmms "$FILE"
 match ext 'odt|rtf|docx|doc' && try gui libreoffice "$FILE"
-match ext 'pptx' && try gui libreoffice "$FILE"
+match ext 'ppt|pptx' && try gui libreoffice "$FILE"
 match ext 'odg' && try gui libreoffice "$FILE"
 match ext 'odt|ods|odp|sxw' && try pop runpage odt2txt "$FILE"
 match ext 'txt|log' && try pop runpage cat "$FILE"

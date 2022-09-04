@@ -84,6 +84,7 @@ if g:is_first
   Plug 'hellerve/carp-vim'
   Plug 'habamax/vim-godot'
   Plug 'janet-lang/janet.vim'
+  Plug 'jdonaldson/vaxe'
   " Plug 'stefanos82/nelua.vim'
   " if isdirectory($HOME .. "/pj/code/nelua.vim")
   "   " This repository doesn't actually exist on my GitHub. It's

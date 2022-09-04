@@ -197,6 +197,13 @@ case "$1" in
       janet)
         janet "$file"
         ;;
+      haxe)
+        printf >&2 "[ Warning ] the class with the main method needs to be 'Main'\n" # TODO: fix this limitation
+        cd "$tmp"
+        ln -s "$file" Main.hx
+
+        haxe --run Main --main Main
+        ;;
       *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
     esac ;;
   build)

@@ -112,7 +112,7 @@
     (fn [screen]
       (each [_ name (ipairs tag-names)]
         ;; Useful reference: https://awesomewm.org/doc/api/classes/tag.html
-        (awful.tag.add name {;:gap 3
+        (awful.tag.add name {:gap 1
                              :selected false
                              :screen screen
                              :layout (. awful.layout.layouts 1)}))
@@ -191,8 +191,8 @@
                              :id "background_role"
                              :widget wibox.container.background}}))
 
-      (local bar-position "top")
-      (local bar-mode "solid-blocks")
+      (local bar-position "bottom")
+      (local bar-mode "floating-blocks")
       (local solid-alpha "AA")
 
       (local taskbar (awful.wibar {: screen
@@ -200,7 +200,7 @@
                                          "floating-blocks" "#00000000"
                                          "solid-blocks" (.. beautiful.bg_normal solid-alpha))
                                    :position bar-position
-                                   :height 24}))
+                                   :height 26}))
 
       (local bar-side-margin (match bar-mode
                            "floating-blocks" 5
