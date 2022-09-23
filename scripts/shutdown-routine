@@ -6,8 +6,8 @@
   printf >&2 "Commiting on personal repos (via std-commits)...\n"
   std-commits
 
-  printf >&2 "Regenerating wiki cache...\n"
-  acw-list-titles >/dev/null
+  # printf >&2 "Regenerating wiki cache...\n"
+  # acw-list-titles >/dev/null
 
   printf >&2 "Tidying up filehist...\n"
   filehist tidy

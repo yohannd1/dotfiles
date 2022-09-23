@@ -85,6 +85,7 @@ if g:is_first
   Plug 'habamax/vim-godot'
   Plug 'janet-lang/janet.vim'
   Plug 'jdonaldson/vaxe'
+  Plug 'karolbelina/uxntal.vim'
   " Plug 'stefanos82/nelua.vim'
   " if isdirectory($HOME .. "/pj/code/nelua.vim")
   "   " This repository doesn't actually exist on my GitHub. It's
@@ -285,6 +286,10 @@ let g:vimwiki_url_maxsave = 0
 let g:Illuminate_delay = 250
 
 let g:matchup_matchparen_offscreen = {'method': 'popup'}
+
+" :help php-indent
+let g:PHP_outdentphpescape = 0
+let g:PHP_default_indenting = 0
 
 " }}}
 " Functions {{{
