@@ -17,7 +17,7 @@ main() {
 }
 
 usage() {
-  printf >&2 "Usage: %s\n" "$PROGNAME [-h | --help] [-e | --export] [ -e | --noprefix ] [THEME]"
+  printf >&2 "Usage: %s\n" "$PROGNAME [-h | --help] [-e | --export] [ -n | --noprefix ] [THEME]"
   printf >&2 "The theme data is loaded from %s\n" '$XDG_CONFIG_HOME/dots/themes/$THEME.yaml'
   exit 1
 }

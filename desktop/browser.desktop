@@ -1,5 +1,5 @@
 [Desktop Entry]
 Name=Browser
-Exec=qutebrowser %u
+Exec=xdg-wrapper-browser %u
 Type=Application
 Categories=Internet

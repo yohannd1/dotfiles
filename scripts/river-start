@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+XKB_DEFAULT_LAYOUT="br" river

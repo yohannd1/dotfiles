@@ -3,11 +3,16 @@
 # Shell Profile
 # This is ran at login on a TTY.
 
-# load environment variables, set up $PATH and load libraries
-. ~/.config/dots/env.sh
-. ~/.config/dots/path.sh
-
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
+loggedSource() {
+  [ $# = 1 ] || return 1
+  printf >&2 "Sourcing %s...\n" "$1"
+  . "$1"
+}
+
+# load environment variables, set up $PATH and load libraries
+loggedSource ~/.config/dots/env.sh
+loggedSource ~/.config/dots/path.sh
 
 startjob() {
   local line
