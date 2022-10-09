@@ -59,13 +59,19 @@ action_lock() {
     return 1
   fi
 
-  trap '' INT # prevent ctrl-c, this part is dangerous.
+  trap '' INT # prevent ctrl-c, as this part is finicky
 
-  if _lock; then
+  start_time=$(date +'%s')
+  _lock
+  exit_code=$?
+  end_time=$(date +'%s')
+
+  if [ "$exit_code" = 0 ]; then
     [ "$WM" = dwm ] && pkill -RTMIN+1 dwmblocks
     trap - INT # restore ctrl-c if it is successful
-  else
-    # shut down the system for security
+
+  # if it's been more than 5 seconds since the lockscreen spawned and it died from an error, then shut down the system for security reasons
+  elif [ $(($end_time - $start_time)) -gt 5 ]; then
     systemctl poweroff
   fi
 }
