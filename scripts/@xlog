@@ -1,3 +1,7 @@
 #!/usr/bin/env sh
 
-"$TERMINAL" -e less "$XSESSIONDIR/${1:-xlog}"
+if [ -t 2 ]; then
+  less "$XSESSIONDIR/${1:-xlog}"
+else
+  "$TERMINAL" -e less "$XSESSIONDIR/${1:-xlog}"
+fi

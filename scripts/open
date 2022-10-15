@@ -145,6 +145,7 @@ if match ext 'mid|midi'; then
 fi
 
 match ext 'fur|dmf' && try gui furnace "$FILE"
+match ext 'btm' && try gui BambooTracker "$FILE"
 
 if match mime 'audio/*' || match ext 'aac|flac|m4a|mpa|mp2|mp3|ogg|wav|wma'; then
   try tty mpv --no-video "$FILE"

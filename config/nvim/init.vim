@@ -1185,6 +1185,12 @@ function! FindTodos()
   call histadd("/", l:query)
 endfunction
 
+function! FindSections()
+  let l:query = '\v(\[SECTION\])'
+  exec 'normal! /' . l:query . 'nN'
+  call histadd("/", l:query)
+endfunction
+
 nnoremap <silent> <Leader>f :Hydra extrafind<CR>
 silent call hydra#hydras#register({
       \ "name":           "extrafind",
@@ -1200,6 +1206,7 @@ silent call hydra#hydras#register({
       \     "name": "In buffer",
       \     "keys": [
       \       ["t", 'call FindTodos()', "TODOs (universal)"],
+      \       ["s", 'call FindSections()', "find [SECTION]s"],
       \     ],
       \   },
       \   {
