@@ -53,12 +53,11 @@ if [ "$os" != Android ]; then
     printf >&2 "OK!\n"
 
     printf >&2 "Generating config (sysm)...\n"
+    sysm
 
     # set up SSH keychaing
     # if [ -x /usr/bin/keychain ]; then
     #   eval "$(keychain --eval --ignore-missing ~/.ssh/id_rsa 2>/dev/null)"
     # fi
   fi
-
-  sysm
 fi
