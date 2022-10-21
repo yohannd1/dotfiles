@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Shell Profile
-# This is ran at login on a TTY.
+# This is run at login on a TTY.
 
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
 loggedSource() {
@@ -13,6 +13,9 @@ loggedSource() {
 # load environment variables, set up $PATH and load libraries
 loggedSource ~/.config/dots/env.sh
 loggedSource ~/.config/dots/path.sh
+
+os=$(uname -o)
+printf >&2 "Uname: %s\n" "$os"
 
 startjob() {
   local line
@@ -35,24 +38,27 @@ _updateClock() {
   fi
 }
 
-if [ "$DOTFILES" ]; then
-  tty-loadcolors
-fi
+if [ "$os" != Android ]; then
+  if [ "$DOTFILES" ]; then
+    tty-loadcolors
+  fi
 
-# update the date because clock problems
-exists ntpd && startjob "Clock Update" _updateClock
+  # update the date because clock problems
+  exists ntpd && startjob "Clock Update" _updateClock
 
-if [ "$DOTFILES" ]; then
-  printf >&2 "Preparing SSH agent..."
-  gpgconf --launch gpg-agent
-  export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-  printf >&2 "OK!\n"
+  if [ "$DOTFILES" ]; then
+    printf >&2 "Preparing SSH agent..."
+    gpgconf --launch gpg-agent
+    export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+    printf >&2 "OK!\n"
 
-  printf >&2 "Generating config (sysm)...\n"
+    printf >&2 "Generating config (sysm)...\n"
+
+    # set up SSH keychaing
+    # if [ -x /usr/bin/keychain ]; then
+    #   eval "$(keychain --eval --ignore-missing ~/.ssh/id_rsa 2>/dev/null)"
+    # fi
+  fi
+
   sysm
-
-  # set up SSH keychaing
-  # if [ -x /usr/bin/keychain ]; then
-  #   eval "$(keychain --eval --ignore-missing ~/.ssh/id_rsa 2>/dev/null)"
-  # fi
 fi

@@ -21,7 +21,7 @@ globpathadd() {
       done
     )
   else
-    printf >&2 "globpathadd: not a directory (%s)\n" "$1"
+    # printf >&2 "globpathadd: not a directory (%s)\n" "$1"
     return 1
   fi
 }

@@ -77,3 +77,6 @@
 
 [init]
     defaultBranch = master
+[safe]
+	directory = /storage/emulated/0
+	directory = /storage/emulated/0/stuff/public-notes
