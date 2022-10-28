@@ -1009,6 +1009,9 @@ endfunction " }}}
 function! ft.php() " {{{
   set commentstring=//\ %s
 endfunction " }}}
+function! ft.apache() " {{{
+  setlocal commentstring=#\ %s
+endfunction " }}}
 
 " }}}
 
