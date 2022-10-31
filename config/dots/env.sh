@@ -65,7 +65,10 @@ export WGETRC="$XDG_CONFIG_HOME/wgetrc"
 export IRBRC="$XDG_CONFIG_HOME/irb/irbrc"
 export FZRUN_GAMES_FOLDER="$HOME/storage/software/bin-windows"
 export LUAROCKS_HOME="$HOME/.luarocks"
-export ANDROID_SDK_HOME="$XDG_CACHE_HOME/packs/android-sdk"
+
+# Instead of this, install 'android-sdk' on the AUR and re-log
+# export ANDROID_SDK_HOME="$XDG_CACHE_HOME/packs/android-sdk"
+
 export CARP_DIR="$HOME/pj/clone/Carp"
 export NPM_DIR="$XDG_DATA_DIR/npm"
 
