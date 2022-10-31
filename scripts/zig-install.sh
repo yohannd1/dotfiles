@@ -52,7 +52,7 @@ if [ -d "$ZIG_PACKDIR" ]; then
   printf >&2 "NOTE: you are responsible for manually deleting mentioned folder.\n"
 
   fd -H -d1 '.' "$ZIG_PACKDIR" | while read file; do
-    mv -v "$file" -t "$backupDirectory"
+    mv "$file" -t "$backupDirectory"
   done
 
   printf >&2 "Backup finished!\n"
@@ -64,7 +64,7 @@ fi
   printf >&2 "Extracting contents of downloaded archive...\n"
   mkdir "$tmp/extract"
   cd "$tmp/extract"
-  tar -xvJf "$tmp/zig.tar.xz"
+  tar -xJf "$tmp/zig.tar.xz"
 
   printf >&2 "Moving data to the right place...\n"
 
@@ -75,14 +75,14 @@ fi
     cd * # should go to the only directory available
   fi
 
-  # documentation
-  if [ -d 'docs' ]; then
-    mv 'docs' -t "$ZIG_PACKDIR"
+  # move doc dir; if it doesn't exist, create it
+  if [ -d 'doc' ]; then
+    mv 'doc' -t "$ZIG_PACKDIR"
   else
-    mkdir "$ZIG_PACKDIR/docs"
-    mv 'langref.html' -t "$ZIG_PACKDIR/docs"
+    mkdir "$ZIG_PACKDIR/doc"
   fi
-  mv 'LICENSE' -t "$ZIG_PACKDIR/docs"
+
+  mv 'LICENSE' -t "$ZIG_PACKDIR/doc"
 
   # binaries
   mkdir "$ZIG_PACKDIR/bin"
