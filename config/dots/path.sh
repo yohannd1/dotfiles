@@ -5,25 +5,22 @@ pathadd() {
   # I used to have a "normalization" thing here to replace '/' with '\/' but it seems grep doesn't care about that anymore? Or maybe it never did.
 
   # Check if the path's there
-  printf "%s" ":$PATH:" | grep -vq :"$1": && {
-    printf "%s" "$PATH" | grep -vq ':$' && export PATH="${PATH}:"
+  if printf "%s" ":$PATH:" | grep -vq ":${1}:"; then
+    if printf "%s" "$PATH" | grep -vq ':$'; then
+      export PATH="${PATH}:"
+    fi
+
     export PATH="${PATH}${1}"
-  }
+  fi
 }
 
 globpathadd() {
-  if [ -d "$1" ]; then
-    (
-      cd "$1"
-      fd -td -d1 | while read pack; do
-        pack_path=$(realpath -m "$1/$pack/bin")
-        pathadd "$pack_path"
-      done
-    )
-  else
-    # printf >&2 "globpathadd: not a directory (%s)\n" "$1"
-    return 1
-  fi
+  pushd "$1" >/dev/null || return 1
+  fd -td -d1 | while read pack; do
+    pack_path=$(realpath -m "$1/$pack/bin")
+    pathadd "$pack_path"
+  done
+  popd >/dev/null
 }
 
 pathadd ~/.local/bin
