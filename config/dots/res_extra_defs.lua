@@ -10,7 +10,7 @@ M.font_presets = {
     },
     ["FiraCode"] = {
         name = "Fira Code",
-        terminal_pixelsize = "15",
+        terminal_pixelsize = "13",
         awesome_size = "12px",
         qutebrowser_size = "10pt",
         supports_ligatures = true,
@@ -24,14 +24,14 @@ M.font_presets = {
     },
     ["JetbrainsMono"] = {
         name = "JetBrains Mono Medium",
-        terminal_pixelsize = "15",
-        awesome_size = "12.5px",
+        terminal_pixelsize = "13",
+        awesome_size = "11px",
         qutebrowser_size = "10pt",
         supports_ligatures = true,
     },
     ["Fixedsys"] = {
         name = "Fixedsys Excelsior",
-        terminal_pixelsize = "18",
+        terminal_pixelsize = "17",
         awesome_size = "14px",
         qutebrowser_size = "10pt",
         supports_ligatures = false, -- because of glitches
@@ -45,7 +45,7 @@ M.font_presets = {
     },
     ["RobotoMono"] = {
         name = "Roboto Mono Medium",
-        terminal_pixelsize = "14",
+        terminal_pixelsize = "13",
         awesome_size = "12px",
         qutebrowser_size = "10pt",
         supports_ligatures = true,
@@ -108,7 +108,7 @@ M.font_presets = {
     },
     ["ProggyVector"] = {
         name = "ProggyVector",
-        terminal_pixelsize = "14",
+        terminal_pixelsize = "13",
         awesome_size = "12px",
         qutebrowser_size = "10pt",
         supports_ligatures = false,
@@ -116,6 +116,13 @@ M.font_presets = {
     ["PtMono"] = {
         name = "PTMono",
         terminal_pixelsize = "14",
+        awesome_size = "11px",
+        qutebrowser_size = "10pt",
+        supports_ligatures = false,
+    },
+    ["Hermit"] = {
+        name = "Hermit",
+        terminal_pixelsize = "13",
         awesome_size = "11px",
         qutebrowser_size = "10pt",
         supports_ligatures = false,

@@ -12,7 +12,7 @@ local this_basename = basename(this_path)
 local extra_defs = loadfile(this_basename .. "/" .. "res_extra_defs.lua")()
 local longFontFormat = extra_defs.longFontFormat
 
-local chosen_name = "CascadiaCode"
+local chosen_name = "FiraCode"
 if chosen_name == nil then -- if there's no selected font in the line above, just pick a random one.
     local t = {}
     for name, _ in pairs(extra_defs.font_presets) do
@@ -28,7 +28,7 @@ local xft_font = longFontFormat(font_config.name, font_config.terminal_pixelsize
 local enable_ligatures = true
 
 -- st
-decl("st.alpha", "0.75")
+decl("st.alpha", "0.9")
 decl("st.cursor", theme["base0D"])
 decl("st.font", xft_font)
 decl("st.enableligatures", (enable_ligatures and font_config.supports_ligatures) and 1 or 0)
