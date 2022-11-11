@@ -185,6 +185,8 @@ match ext 'odt|ods|odp|sxw' && try pop runpage odt2txt "$FILE"
 match ext 'txt|log' && try pop runpage cat "$FILE"
 match ext 'kra' && try gui krita "$FILE"
 
+match ext 'tic' && try gui tic80 "$FILE"
+
 if match ext 'md'; then
   try tty runpage glowrapper "$FILE"
   try gui md-preview "$FILE"
