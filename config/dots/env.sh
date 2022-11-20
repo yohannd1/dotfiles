@@ -32,7 +32,7 @@ export EDITOR=nvim
 # _isAndroid && export EDITOR=nvim || export EDITOR=start-emacs
 export MAYBE_GRAPHICAL_EDITOR=maybe-graphedit
 export TERMINAL=st
-export BROWSER=firefox
+export BROWSER=chromium
 export TERMBROWSER=w3m
 export PAGER=less
 export OPENER=openfork
@@ -89,6 +89,7 @@ export GREP_COLORS='ms=01;34:mc=01;34:sl=:cx=:fn=35:ln=32:bn=32:se=36'
 {
   export NNN_OPENER="$OPENER"
   export NNN_TRASH=1
+  export NNN_OPTS="A"
 
   # FIXME: not working fully... I'm confused.
   _BLK="0B" _CHR="0B" _DIR="04" _EXE="06" _REG="00" _HARDLINK="06" _SYMLINK="06" _MISSING="00" _ORPHAN="09" _FIFO="06" _SOCK="0B" _OTHER="06"

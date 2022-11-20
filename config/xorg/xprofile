@@ -48,7 +48,9 @@ ksnip &
 # nm-applet & # network manager on tray - currently experimenting not using this
 monitor-battery & # notify when battery is running low
 # blueman-applet & # bluetooth manager on tray - currently experimenting not using this
-fcitx -d & # input method for multilingual input
+
+fcitx5 -d # input method for multilingual input
+
 if exists pulse-autoconf; then
   pulse-autoconf & # nice pulseaudio assistant daemon
 fi

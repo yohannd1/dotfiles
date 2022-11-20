@@ -3,6 +3,7 @@ _G.dummy = dummy
 
 local vim = _G.vim
 local utils = require("cfg.utils")
+_G._utils = utils
 
 local autopairs = require("nvim-autopairs")
 local mapKey = vim.api.nvim_set_keymap
@@ -236,5 +237,7 @@ end
 -- Load configuration from other files
 require("cfg.general")()
 require("cfg.statusline")()
+require("cfg.keybindings")()
+require("cfg.filetypes")()
 
 -- vim: sw=2 et

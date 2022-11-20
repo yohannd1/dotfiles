@@ -718,7 +718,6 @@ augroup end
 
 augroup buffer_load
   au!
-  au FileType * if has_key(g:, "ft") && has_key(g:ft, &filetype) | call g:ft[&filetype]() | endif
   au FileType * call SetupMakefileRifle()
   au BufNewFile,BufRead * call AddToRecFile()
   au BufEnter * call ApcReenable()
@@ -740,9 +739,6 @@ augroup end
 
 let g:ft = {}
 
-function! ft.asm() " {{{
-  setlocal noet sw=8 ts=8
-endfunction! " }}}
 function! ft.xdefaults() " {{{
   setlocal commentstring=\!%s
 endfunction " }}}
@@ -1018,66 +1014,6 @@ endfunction " }}}
 " }}}
 " Mappings {{{
 
-" Define leader keys
-nmap <Space> <Leader>
-vmap <Space> <Leader>
-nmap , <Leader>
-vmap , <Leader>
-
-" Key input delays
-set timeoutlen=1000 ttimeoutlen=10
-
-" Mouse wheel scrolling
-if !g:is_android
-  nnoremap <ScrollWheelUp> <C-u>
-  nnoremap <ScrollWheelDown> <C-d>
-  inoremap <ScrollWheelUp> <Esc><C-u>a
-  inoremap <ScrollWheelDown> <Esc><C-d>a
-
-  " TODO: disable visual mode in insert mode
-endif
-
-" TODO: visual mode drag when off normal mode
-nnoremap <RightMouse> <nop>
-nnoremap <LeftMouse> <nop>
-inoremap <RightMouse> <nop>
-inoremap <LeftMouse> <nop>
-nnoremap <C-RightMouse> <RightMouse>
-nnoremap <C-LeftMouse> <LeftMouse>
-inoremap <C-RightMouse> <RightMouse>
-inoremap <C-LeftMouse> <LeftMouse>
-
-" Clipboard versions of keymappings
-for mapmode in ['n', 'v']
-  for mapkey in split('y Y p P d D x X')
-    exec mapmode."noremap <silent> <Space>".mapkey.' "+'.mapkey
-  endfor
-endfor
-
-" <Esc> to clear search query
-nnoremap <silent> <Esc> :noh<CR>
-
-" Use ccedilla for entering into command modes
-nnoremap ç :
-vnoremap ç :
-nnoremap Ç q:A
-vnoremap Ç q:A
-
-" Folding Commands
-" nnoremap <silent> <Tab> za
-" nnoremap <silent> <S-Tab> zm
-
-" Use Tab to Complete or insert spaces
-inoremap <silent> <Tab> <C-r>=TabOrComplete(1)<CR>
-inoremap <silent> <S-Tab> <C-r>=TabOrComplete(0)<CR>
-
-" Navigate the completion menu with <C-k>, <C-j> and <C-m>
-inoremap <expr> <C-j> pumvisible() ? "\<C-n>" : "<C-j>"
-inoremap <expr> <C-k> pumvisible() ? "\<C-p>" : "<C-k>"
-inoremap <expr> <Down> pumvisible() ? "\<C-n>" : "<Down>"
-inoremap <expr> <Up> pumvisible() ? "\<C-p>" : "<Up>"
-inoremap <expr> <C-m> pumvisible() ? "\<C-y>" : "<C-m>"
-
 " goyo
 nnoremap <silent> <C-x>j :Goyo 120<CR>
 au User GoyoEnter nested nnoremap <silent> <buffer> <C-x>j :Goyo!<CR>
@@ -1115,41 +1051,6 @@ nnoremap <silent> <Leader>r :Hydra rifle<CR>
 " nnoremap <silent> <Leader>rb :Rifle "build"<CR>
 " nnoremap <silent> <Leader>rt :Rifle "test"<CR>
 " }}}
-
-" Formatting Commands
-nnoremap <Leader>bf :FormatBuffer<CR>
-
-" Keybindings to escape the terminal
-" tnoremap <silent> <Esc> <C-\><C-n>
-tnoremap <silent> <C-w><Esc> <Esc>
-tnoremap <silent> <C-w>h <C-\><C-n><C-w>h
-tnoremap <silent> <C-w>j <C-\><C-n><C-w>j
-tnoremap <silent> <C-w>k <C-\><C-n><C-w>k
-tnoremap <silent> <C-w>l <C-\><C-n><C-w>l
-
-" Insert date
-inoremap <silent> <C-u> <Nop>
-inoremap <silent> <expr> <C-u>d strftime("%Y/%m/%d")
-
-" Use perl-ish regexes (I guess)
-nnoremap / /\v\c()<Left>
-vnoremap / /\v\c()<Left>
-nnoremap ? ?\v\c()<Left>
-vnoremap ? ?\v\c()<Left>
-nnoremap <Leader>/ /\v()<Left>
-vnoremap <Leader>/ /\v()<Left>
-nnoremap <Leader>? ?\v()<Left>
-vnoremap <Leader>? ?\v()<Left>
-
-" Open a prompt to replace everything in the screen
-nnoremap <Leader>s :%s/\v/g<Left><Left>
-vnoremap <Leader>s :s/\v/g<Left><Left>
-nnoremap <Leader>S :%s/<C-r>///g<Left><Left>
-vnoremap <Leader>S :s/<C-r>///g<Left><Left>
-
-" Buffer navigation mappings
-nnoremap <silent> <C-j> :call NextBuffer()<CR>
-nnoremap <silent> <C-k> :call PrevBuffer()<CR>
 
 " Soft wrap mappings
 " {{{
@@ -1223,7 +1124,6 @@ silent call hydra#hydras#register({
       \ })
 " }}}
 
-
 " A join command similar to the one in emacs (or evil-mode, idk)
 " {{{
 function! TheBetterJoin()
@@ -1276,9 +1176,6 @@ endfunction
 nnoremap <silent> J :call TheBetterJoin()<CR>
 vnoremap <silent> J :call TheBetterVisualJoin()<CR>
 " }}}
-
-" Wiki - Toggle bullet items
-nnoremap <Leader>, :call VimwikiXToggleItem()<CR>
 
 " Vimwiki hydra
 " {{{
@@ -1337,11 +1234,6 @@ silent call hydra#hydras#register({
 nnoremap <silent> <Leader>w :Hydra vimwiki<CR>
 " }}}
 
-" Improved file opener
-nnoremap gf :call OpenSelected()<CR>
-
-" Toggle virtualedit
-" {{{
 function! ToggleVirtualEdit()
   if &virtualedit == ""
     setlocal ve=all
@@ -1351,15 +1243,6 @@ function! ToggleVirtualEdit()
     echom "Virtual Edit OFF"
   endif
 endfunction
-
-nnoremap <Leader>tv :call ToggleVirtualEdit()<CR>
-" }}}
-
-" Okay
-nnoremap K <Nop>
-vnoremap K <Nop>
-nnoremap gK K
-vnoremap gK K
 
 " }}}
 " Experimental Stuff {{{

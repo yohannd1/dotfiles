@@ -15,12 +15,13 @@ pathadd() {
 }
 
 globpathadd() {
-  pushd "$1" >/dev/null || return 1
+  _prev_path="$PWD"
+  cd "$1" || { cd "$_prev_path"; return 1; }
   fd -td -d1 | while read pack; do
     pack_path=$(realpath -m "$1/$pack/bin")
     pathadd "$pack_path"
   done
-  popd >/dev/null
+  cd "$_prev_path"
 }
 
 pathadd ~/.local/bin

@@ -13,12 +13,17 @@ printf >&2 "Session folder: $XSESSION"
 wm_raw="$WM"
 export WM=$(basename "$WM")
 
-# source xprofile
-if [ -f "$XDG_CONFIG_HOME/xorg/xprofile" ]; then
-  . "$XDG_CONFIG_HOME/xorg/xprofile"
-elif [ -f ~/.xprofile ]; then
-  . ~/.xprofile
+xprofile="$XDG_CONFIG_HOME/xorg/xprofile"
+if [ ! -f "$xprofile" ]; then
+  xprofile=~/.xprofile
 fi
+
+case "$WM" in
+  pencil)
+    # do nothing, but pencil should run the profile when it decides to
+    ;;
+  *) [ -f "$xprofile" ] && . "$xprofile" ;;
+esac
 
 case "$WM" in
   i3|bspwm|dwm|qtile|awesome|pencil) ;;
