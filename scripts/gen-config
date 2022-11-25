@@ -3,21 +3,26 @@
 . "$DOTFILES/config/dots/env.sh"
 eval "$(load-base16-theme --export)"
 
+doTheThing() {
+  mkdir -p "$(dirname "$2")"
+  pp "$1" > "$2"
+}
+
 mkdir -p "$XDG_CACHE_HOME/gen"
-pp "$DOTFILES/config/gen/stalonetrayrc" > "$XDG_CACHE_HOME/gen/stalonetrayrc"
-pp "$DOTFILES/config/gen/dunstrc" > "$XDG_CACHE_HOME/gen/dunstrc"
-pp "$DOTFILES/config/gen/gtk3rc" > "$XDG_CONFIG_HOME/gtk-3.0/settings.ini"
+doTheThing "$DOTFILES/config/gen/stalonetrayrc" "$XDG_CACHE_HOME/gen/stalonetrayrc"
+doTheThing "$DOTFILES/config/gen/dunstrc" "$XDG_CACHE_HOME/gen/dunstrc"
+doTheThing "$DOTFILES/config/gen/gtk3rc" "$XDG_CONFIG_HOME/gtk-3.0/settings.ini"
 
 for i in 2 3; do
   _ln_dir="$HOME/.themes/dummy"
   _flatcolor_dir="$HOME/.themes/FlatColor"
 
-  pp "$DOTFILES/config/gen/gtk-flatcolor-${i}.0" > "$_flatcolor_dir/colors${i}"
+  doTheThing "$DOTFILES/config/gen/gtk-flatcolor-${i}.0" "$_flatcolor_dir/colors${i}"
   [ ! -d "$_ln_dir" ] && ln -s "$_flatcolor_dir" "$_ln_dir"
 done
 
 [ "$WGETRC" ] && printf "hsts-file = %s" "$XDG_CACHE_HOME/wget-hsts" >"$WGETRC"
 
 if [ -d ~/.termux ]; then
-    pp "$DOTFILES/config/gen/termux-colors" > ~/.termux/colors.properties
+  doTheThing "$DOTFILES/config/gen/termux-colors" ~/.termux/colors.properties
 fi
