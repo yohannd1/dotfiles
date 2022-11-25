@@ -59,14 +59,14 @@ M.font_presets = {
     },
     ["FantasqueSans"] = {
         name = "Fantasque Sans Mono",
-        terminal_pixelsize = "16",
+        terminal_pixelsize = "15",
         awesome_size = "13px",
         qutebrowser_size = "10pt",
         supports_ligatures = false, -- FIXME: check
     },
     ["Sudo"] = {
         name = "Sudo",
-        terminal_pixelsize = "18",
+        terminal_pixelsize = "17",
         awesome_size = "16px",
         qutebrowser_size = "10pt",
         supports_ligatures = false,
