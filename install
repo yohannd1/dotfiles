@@ -77,7 +77,7 @@ case "$1" in
     [ "$1" = https-shallow ] && shallow=(--depth 1) || shallow=()
     git clone "${shallow[@]}" "$DOTFILES_URL" "$2" \
       && mkdir -p ~/.local/share/dots \
-      && echo "$2" > ~/.local/share/dots/dotpath \
+      && echo "$(realpath -m "$2")" > ~/.local/share/dots/dotpath \
       && echo "gruvbox-dark-medium" > ~/.local/share/dots/theme \
       && DOTFILES="$2" "$2/scripts/sysm"
     ;;
