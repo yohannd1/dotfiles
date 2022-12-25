@@ -199,6 +199,8 @@ if match ext 'htm|html|xhtml'; then
   try gui "$BROWSER" "$FILE"
 fi
 
+match ext 'rpy' && try pop edit "$FILE"
+
 if match ext 'json'; then
   try pop runpage jq --color-output . "$FILE"
   try pop runpage python -m json.tool -- "$FILE"

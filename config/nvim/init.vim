@@ -721,6 +721,7 @@ augroup buffer_load
   au FileType * call SetupMakefileRifle()
   au BufNewFile,BufRead * call AddToRecFile()
   au BufEnter * call ApcReenable()
+  au BufNewFile,BufRead,BufEnter *.rpy set filetype=python
   au BufNewFile,BufRead,BufEnter *.wk set filetype=wk
   au BufNewFile,BufRead,BufEnter *.fx set filetype=c
   au BufNewFile,BufRead,BufEnter *.clj set filetype=clojure
