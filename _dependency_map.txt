@@ -1,0 +1,38 @@
+pre-install:
+    curl
+    realpath
+
+mid-install:
+    git
+    python (for sysm)
+
+post-install:
+    lua
+    luarocks
+        fennel (luarocks install fennel)
+            TODO: it's still a struggle to install on the right lua version. To solve this I just copied it from share/5.1 to share/5.3 (awesome uses lua 5.3)
+    bc
+    fd
+    fzf
+    rg
+    nnn
+
+gui_essentials:
+xinit
+awesome (or the other menu used)
+dmenu (my own build)
+    headers/libs for: x11, xinerama, xft
+st (my own build)
+    headers/libs for: x11, xinerama(?), xft(?), harfbuzz
+sxhkd
+xgetres
+    https://github.com/tamirzb/xgetres
+picom
+xsettingsd
+fcitx5
+xinput
+
+ksnip
+
+TODO: .cache/packs and other directories that I forgot to make
+TODO: my own proper logging dir for this shit
