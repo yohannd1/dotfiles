@@ -1211,7 +1211,7 @@ silent call hydra#hydras#register({
       \     "keys": [
       \       ["w", "e ~/wiki/vimwiki/index.wiki", "open index"],
       \       ["s", "e ~/wiki/vimwiki/202105021825-E80938.wiki", "open scratchpad"],
-      \       ["p", "e ~/wiki/vimwiki/202112271411-5A4961.wiki", "open week plan (2022)"],
+      \       ["p", "e ~/wiki/vimwiki/202212311207-AFDA90.wiki", "open week plan (2023)"],
       \       ["j", "lua dummy.open_today_journal()", "open today's journal"],
       \       ["o", "lua dummy.open_wiki_file({})", "select a wiki file"],
       \       ["H", "Vimwiki2HTMLBrowse", "compile current & browse"],
