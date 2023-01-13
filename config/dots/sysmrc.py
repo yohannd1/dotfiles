@@ -56,6 +56,7 @@ m.link_conf("git/gitignore", "~/.gitignore")
 m.link_conf("cargo-config.toml", "~/.cache/cargo/config.toml")
 m.link_conf("pylintrc", "~/.pylintrc")
 m.link_conf("tmux.conf", "~/.tmux.conf")
+m.link_conf("icons_default.theme", "~/.icons/default/index.theme")
 
 m.link_glob(DOTFILES / "config/qutebrowser", "~/.config/qutebrowser")
 m.link_glob(DOTFILES / "config/furnace", "~/.config/furnace")
