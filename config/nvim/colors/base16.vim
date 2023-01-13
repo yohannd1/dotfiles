@@ -10,13 +10,19 @@ let s:is_linux = has("unix") && !has("macunix")
 let s:is_mac = has("macunix")
 let s:is_android = isdirectory("/sdcard")
 let s:is_tty = $DISPLAY == "" && !g:is_android
-let s:is_gui = has("gui_running") || exists("g:GuiFont") || (has("nvim") && nvim_list_uis()[0]["rgb"] == v:true)
+let s:supports_x_resources = ($DISPLAY != "") && executable("xgetres")
+" let s:is_gui = has("gui_running") || (has("nvim") && nvim_list_uis()[0]["rgb"] == v:true)
+let s:is_gui = has("gui_running")
 
+" Some constants, just to make stuff more readable
 let s:TTY = 0
 let s:GUI = 1
+
+" Color table
 let s:bases = {}
 
 function s:xgetres(string)
+    " FIXME: string escaping, or a better way to call shell commands
     return split(system("xgetres " .. a:string), "\n")[0]
 endfunction
 
@@ -38,8 +44,9 @@ let s:bases["0E"] = ["", ""]
 let s:bases["0F"] = ["", ""]
 
 if s:is_gui
-    " if on GUI
-    if s:is_linux && executable("xgetres")
+    " On a GUI version of Neovim - true base16 color codes probably won't make sense here, since t's not a terminal
+    if s:is_linux && s:supports_x_resources
+        " If possible, get X resources
         let s:bases["00"][s:GUI] = s:xgetres("nvim.base00")
         let s:bases["01"][s:GUI] = s:xgetres("nvim.base01")
         let s:bases["02"][s:GUI] = s:xgetres("nvim.base02")
@@ -57,6 +64,7 @@ if s:is_gui
         let s:bases["0E"][s:GUI] = s:xgetres("nvim.base0E")
         let s:bases["0F"][s:GUI] = s:xgetres("nvim.base0F")
     else
+        " If can't get X resources, then at least get a default color scheme
         let s:bases["00"][s:GUI] = "#f2e5bc"
         let s:bases["01"][s:GUI] = "#ebdbb2"
         let s:bases["02"][s:GUI] = "#d5c4a1"
@@ -75,6 +83,7 @@ if s:is_gui
         let s:bases["0F"][s:GUI] = "#d65d0e"
     endif
 
+    " Disable TTY color schemes, as it's not needed
     let s:bases["00"][s:TTY] = "NONE"
     let s:bases["01"][s:TTY] = "NONE"
     let s:bases["02"][s:TTY] = "NONE"
@@ -92,7 +101,8 @@ if s:is_gui
     let s:bases["0E"][s:TTY] = "NONE"
     let s:bases["0F"][s:TTY] = "NONE"
 else
-    " if not on GUI
+    " Not on GUI - let's use the terminal native coloring, assuming its
+    " colors match each base16 color
     let s:bases["00"][s:TTY] = "00"
     let s:bases["01"][s:TTY] = "01"
     let s:bases["02"][s:TTY] = "02"
@@ -110,6 +120,7 @@ else
     let s:bases["0E"][s:TTY] = "14"
     let s:bases["0F"][s:TTY] = "15"
 
+    " Ignore GUI coloring
     let s:bases["00"][s:GUI] = "NONE"
     let s:bases["01"][s:GUI] = "NONE"
     let s:bases["02"][s:GUI] = "NONE"
@@ -404,10 +415,10 @@ call s:hl("StartifySlash",    "03", "NONE", "", "")
 call s:hl("StartifySpecial",  "03", "NONE", "", "")
 
 " Java highlighting
-call s:hl("javaOperator",      "0D", "NONE", "", "")
+call s:hl("javaOperator",     "0D", "NONE", "", "")
 
 " Zig highlighting
-call s:hl("zigComparatorWord",           "0C", "NONE", "", "")
+call s:hl("zigComparatorWord", "0C", "NONE", "", "")
 hi link zigStringDelimiter Delimiter
 hi link zigMultilineStringDelimiter Delimiter
 hi link zigMultilineStringDelimiter Delimiter
