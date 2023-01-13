@@ -77,16 +77,9 @@ super + alt + {comma,period}
 super + alt + y
     playerctl play-pause
 
-# brightness
 # XF86MonBrightness{Down,Up}
-#     xbacklight -{dec,inc} 20
-# super + {minus,equal}
-#     xbacklight -{dec,inc} 20
-# XF86MonBrightness{Down,Up}
-#     lua -e 'require("backlightctl.lua").inc_dec('{-5,+5}', { lower_limit = 0.5 })'
-
 super + {minus,equal}
-    backlightctl mod {-5,5}
+    backlightctl mod {-10,10}
 
 # toggle red screen
 super + F12

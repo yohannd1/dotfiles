@@ -84,7 +84,9 @@ local function split(text, separator)
   return result
 end
 
-local last_gen_time = lfs.attributes(DATA_PATH, "modification") or 0
+local last_gen_time = fileExists(DATA_PATH)
+  and lfs.attributes(DATA_PATH, "modification")
+  or 0
 local wiki_mod_time = assert(lfs.attributes(ACW_WIKI_DIR, "modification"))
 
 if fileExists(DATA_PATH) and last_gen_time >= wiki_mod_time then
