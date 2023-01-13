@@ -33,6 +33,7 @@ apps += [
     "inputrc",
     "dircolors",
     "mimeapps.list",
+    "pulsemixer.cfg",
     "ripgreprc",
     "dots",
     "lf",
