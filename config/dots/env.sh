@@ -11,6 +11,9 @@ else
   export DOTFILES="$_fallback_dotpath"
 fi
 
+# the laziest way to force the locale I want
+export LC_ALL='en_US.UTF-8'
+
 export TERMUX_SHELL=zsh
 
 # XDG dirs
