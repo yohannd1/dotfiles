@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-# This is the first file ran on xinit, apparently.
+# This is the first user file that runs on xinit, apparently.
 # In a LARBS fashion, to be compatible with display managers, this file only
 # does what a display manager would do - source ~/.xprofile if it exists and
 # load the window manager.
@@ -8,10 +8,24 @@
 printf >&2 "Display: %s\n" "$DISPLAY"
 printf >&2 "Session folder: $XSESSION"
 
-# helps when, for example
-# if debugging dwm, opening the xserver with WM=./dwm
+# In this config, the WM env var has the basename of the window manager, for easy recognition.
+# Sometimes it's useful to specify which WM to run, and for that you can set it as an env var before running (even as a relative path)
+#
+# example: WM=./dwm start-xserver
 wm_raw="$WM"
 export WM=$(basename "$WM")
+
+# run system-specific startup scripts
+# some packages usually use this for X setup (e.g. GNOME desktop and systemd session config stuff)
+#
+# related GNOME dbus issue: https://bbs.archlinux.org/viewtopic.php?id=230036
+# "solution": https://wiki.archlinux.org/title/Xinit
+if [ -d /etc/X11/xinit/xinitrc.d ]; then
+  for f in /etc/X11/xinit/xinitrc.d/?*.sh; do
+    [ -x "$f" ] && . "$f"
+  done
+  unset f
+fi
 
 xprofile="$XDG_CONFIG_HOME/xorg/xprofile"
 if [ ! -f "$xprofile" ]; then
@@ -30,5 +44,12 @@ case "$WM" in
   *) printf >&2 'WARNING: window manager "%s" is not yet supported - this might cause problems.\n' "$WM" ;;
 esac
 
-wmLog="$XSESSIONDIR/wm"
-exec "$wm_raw" 2>&1 >"$wmLog"
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
+if exists dbus-launch; then
+  # TODO: figure out how to make logs work here
+  dbus-launch --exit-with-session "$wm_raw"
+else
+  wmLog="$XSESSIONDIR/wm"
+  exec "$wm_raw" 2>&1 >"$wmLog"
+fi
