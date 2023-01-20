@@ -191,8 +191,8 @@
                              :id "background_role"
                              :widget wibox.container.background}}))
 
-      (local bar-position "bottom")
-      (local bar-mode "floating-blocks")
+      (local bar-position "top")
+      (local bar-mode "solid-block")
       (local solid-alpha "AA")
 
       (local taskbar (awful.wibar {: screen
