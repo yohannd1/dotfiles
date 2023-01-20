@@ -206,6 +206,11 @@ if match ext 'json'; then
   try pop runpage python -m json.tool -- "$FILE"
 fi
 
+# OpenMPT modules
+if match ext 'it|mptm'; then
+  try pop openmpt123 "$FILE"
+fi
+
 if match mime 'image/vnd.djvu'; then
   try tty runpage djvutxt "$FILE"
   try tty runpage exiftool "$FILE"
