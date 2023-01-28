@@ -25,26 +25,29 @@ post-install:
     xclip
 
 gui_essentials:
-xinit
-awesome (or the other menu used)
-dmenu (my own build)
-    headers/libs for: x11, xinerama, xft
-st (my own build)
-    headers/libs for: x11, xinerama(?), xft(?), harfbuzz
-sxhkd
-xgetres
-    https://github.com/tamirzb/xgetres
-picom
-xsettingsd
-fcitx5
-xinput
-xcalib (for redscr)
-xbacklight
+    xinit
+    awesome (or the other menu used)
+    dmenu (my own build)
+        headers/libs for: x11, xinerama, xft
+    st (my own build)
+        headers/libs for: x11, xinerama(?), xft(?), harfbuzz
+    sxhkd
+    xgetres
+        https://github.com/tamirzb/xgetres
+    picom
+    xsettingsd
+    fcitx5
+    xinput
+    xcalib (for redscr)
+    xbacklight
+    playerctl (for play-pause keybinding)
+    pulse-autoconf
 
-ksnip
+gui_extras:
+    ksnip
+    kvantum (qt/kde theming)
 
 TODO: .cache/packs and other directories that I forget to make
 TODO: my own proper logging dir for this shit
-TODO: pulse-autoconf
 TODO: ksnip config backup
 TODO: pulse-autoconf config backup

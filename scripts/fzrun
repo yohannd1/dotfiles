@@ -360,18 +360,19 @@ class SelectGame:
         games = GameData.get_games(Path(FZRUN_GAMES_FOLDER))
         games.sort(key=lambda game: game.name, reverse=True)
 
-        choice = fzagnostic([game.name for game in games], height=30, starting_number=50)
+        starting_number = 50 # so I can select touhou games in peace
+        choice = fzagnostic([game.name for game in games], height=30, starting_number=starting_number)
         if choice is None:
             sys.exit(1)
 
-        choice = games[choice[0] - 50]
+        choice = games[choice[0] - starting_number]
 
         os.chdir(choice.exec_dir)
         args = [self.shell, "-c", choice.command]
         os.execvp(args[0], args)
 
     def repr(self) -> ActionRepr:
-        return ActionRepr("ext", "Select a game to run")
+        return ActionRepr("ext", "Select from the apps directory")
 
 
 @dataclass
@@ -442,18 +443,21 @@ class GameData:
         if not folder.is_dir():
             return []
 
-        toml_file = folder / "Game.toml"
+        for possible_name in {"Game.toml", "App.toml"}:
+            toml_file = folder / possible_name
 
-        if not toml_file.is_file():
-            return []
+            if not toml_file.is_file():
+                continue
 
-        with toml_file.open("r") as istream:
-            contents = istream.read()
-            return GameData.from_toml(
-                contents,
-                exec_dir=folder,
-                toml_path=toml_file,
-            )
+            with toml_file.open("r") as istream:
+                contents = istream.read()
+                return GameData.from_toml(
+                    contents,
+                    exec_dir=folder,
+                    toml_path=toml_file,
+                )
+
+        return []
 
 
 if __name__ == "__main__":

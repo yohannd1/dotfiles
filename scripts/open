@@ -117,6 +117,11 @@ match url 'steam' && openXdg
 match ext 'drawio' && try gui drawio "$FILE"
 match ext 'godot' && try gui Godot "$FILE"
 
+# OpenMPT modules
+if match ext 'it|s3m|mptm'; then
+  try pop openmpt123 "$FILE"
+fi
+
 if match url 'http|https'; then
   try gui "$BROWSER" "$FILE"
   try tty "$TERMBROWSER" "$FILE"
@@ -206,17 +211,12 @@ if match ext 'json'; then
   try pop runpage python -m json.tool -- "$FILE"
 fi
 
-# OpenMPT modules
-if match ext 'it|mptm'; then
-  try pop openmpt123 "$FILE"
-fi
-
 if match mime 'image/vnd.djvu'; then
   try tty runpage djvutxt "$FILE"
   try tty runpage exiftool "$FILE"
 fi
 
-if match mime 'image/*'; then
+if match mime 'image/*' || match ext 'gif|jpg|png'; then
   try gui sxiv -p "$FILE"
   try tty runpage viu -n "$FILE"
   try tty runpage img2txt --gamma=0.6 -- "$FILE"
