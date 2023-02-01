@@ -61,3 +61,6 @@ if [ "$os" != Android ]; then
     # fi
   fi
 fi
+
+export DOTCFG_PORT=3666 # fixed port but idk if it'll work forever,, I'll check this better someday
+dotcfg-daemon >/dev/null 2>/dev/null & disown # TODO: redirect this to a log file or something

@@ -1,5 +1,7 @@
 #!/usr/bin/env lua
 
+-- NEEDED LIBRARIES (via luarocks name): http
+
 -- Get port from the env var, or 0, which means "pick a random one that works"
 local port = os.getenv("DOTCFG_PORT") or 0
 

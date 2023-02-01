@@ -6,9 +6,6 @@
 
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
-export DOTCFG_PORT=3666 # fixed port but idk if it'll work forever,, I'll check this better someday
-dotcfg-daemon &
-
 # xrandr --output HDMI1 --auto --right-of eDP1
 gen-xres | xrdb # update xresources database
 setbg &
@@ -57,7 +54,9 @@ fcitx5 -d # input method for multilingual input
 if exists pulse-autoconf; then
   pulse-autoconf & # nice pulseaudio assistant daemon
 fi
+
 xsettingsd & # X settings daemon
+
 if exists element-desktop; then
   element-desktop --hidden &
 fi
