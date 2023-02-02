@@ -1,4 +1,5 @@
 #!/usr/bin/env lua
+-- vim: sw=2
 
 -- A small script that outputs xresources based on some configurations. I made
 -- this because managing a raw xresources file is very annoying - the C
@@ -87,10 +88,46 @@ if not fileExists(resources_file) then
 end
 
 local _meta = {}
-_meta.theme = theme
-_meta.decl = function(name, value)
-  io.stdout:write(name, ": ", value, "\n")
-end
 _G._meta = _meta
 
-loadfile(resources_file)()
+-- Make the current base16 theme accessible
+_meta.theme = theme
+
+-- The different available targets. This table store functions which are used as identifiers and also as converters.
+_meta.targets = {}
+
+_meta.targets.xresources = function(stream, key, val)
+  stream:write(key, ": ", val, "\n")
+end
+_meta.targets.dotcfg = function(stream, key, val)
+  stream:write(key, ":", val, "\n")
+end
+
+local current_target = nil
+if arg[1] == "xresources" then current_target = _meta.targets.xresources
+elseif arg[1] == "dotcfg" then current_target = _meta.targets.dotcfg
+else
+  io.stderr:write("Bad argument #1 (expected {xresources | dotcfg})\n")
+  os.exit(1)
+end
+
+_meta.decl = function(args)
+  local targets = args.targets or {}
+
+  local continue = false
+  for _, t in ipairs(targets) do
+    if t == current_target then
+      continue = true
+    end
+  end
+  if not continue then
+    return
+  end
+
+  for _, e in ipairs(args) do
+    current_target(io.stdout, e[1], e[2])
+  end
+end
+
+local cmd = assert(loadfile(resources_file))
+cmd()
