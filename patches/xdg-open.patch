@@ -6,7 +6,8 @@
 +# Delegate to local `open` script if it did not already delegate to here.
 +if [ -z "$VIA_OPEN" ]; then
 +  if command -v open >/dev/null 2>&1; then
-+    OPEN_GUI=1 open "$1" && exit
++    OPEN_GUI=1 open "$1"
++    exit
 +  fi
 +fi
 +
