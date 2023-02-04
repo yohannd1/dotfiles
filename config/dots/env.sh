@@ -136,6 +136,9 @@ export QT_IM_MODULE=fcitx
 export SDL_IM_MODULE=fcitx
 export XMODIFIERS='@im=fcitx'
 
+# because for some reason carla didn't add the /etc/ld.so.conf entry on my system
+export LD_LIBRARY_PATH='/usr/lib/carla'
+
 # dircolors
 if [ -r ~/.config/dircolors ]; then
   eval "$(dircolors -b ~/.config/dircolors)"
