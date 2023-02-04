@@ -183,7 +183,6 @@ decl {
     targets = {t_xres},
 }
 
--- TODO: https://stackoverflow.com/questions/37796287/convert-decimal-to-hex-in-lua-4
 for i = 0, 15 do
     local hex = string.format("%02X", i)
     local hex_id = "base" .. hex
