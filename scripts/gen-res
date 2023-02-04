@@ -104,10 +104,12 @@ _meta.targets.dotcfg = function(stream, key, val)
 end
 
 local current_target = nil
-if arg[1] == "xresources" then current_target = _meta.targets.xresources
-elseif arg[1] == "dotcfg" then current_target = _meta.targets.dotcfg
+if arg[1] == "xresources" then
+  current_target = _meta.targets.xresources
+elseif arg[1] == "dotcfg" then
+  current_target = _meta.targets.dotcfg
 else
-  io.stderr:write("Bad argument #1 (expected {xresources | dotcfg})\n")
+  io.stderr:write("Bad argument #1 (expected { xresources | dotcfg })\n")
   os.exit(1)
 end
 

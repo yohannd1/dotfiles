@@ -9,7 +9,8 @@ usage() {
 
 main() {
   [ $# != 0 ] && usage
-  gen-xres | xrdb
+  gen-res xresources | xrdb
+  gen-res dotcfg | dotcfg-client read-and-set
 }
 
 main "$@"

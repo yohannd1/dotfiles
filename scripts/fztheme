@@ -21,7 +21,7 @@ if [ -d "$THEME_FILES_PATH" ]; then
     && printf "%s" "$choice" > "$THEME_CFG_PATH" || exit 1
 
   if [ "$DISPLAY" ] && exists xrdb; then
-    gen-xres | xrdb || msg "Failed to reload theme to %s."
+    xdb-reload || msg "Failed to reload theme to %s."
     eval "$(load-base16-theme --noprefix)"
   elif isTTY; then
     tty-loadcolors
