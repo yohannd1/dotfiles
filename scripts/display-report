@@ -16,4 +16,14 @@ message() {
   printf "%s\n" "$(dwmblocks-volume)"
 }
 
-notify-send "$(message)"
+msg() {
+  _msg=$(echo "$@")
+
+  if [ -t 2 ]; then
+    printf >&2 "%s\n" "$_msg"
+  else
+    notify-send "$_msg"
+  fi
+}
+
+msg "$(message)"
