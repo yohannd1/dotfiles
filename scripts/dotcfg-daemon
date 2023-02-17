@@ -4,6 +4,12 @@
 
 -- Get port from the env var, or 0, which means "pick a random one that works"
 local port = os.getenv("DOTCFG_PORT") or 0
+local fifo = os.getenv("DOTCFG_FIFO")
+if not fifo then
+    error("Please specify DOTCFG_FIFO path")
+end
+
+local fifo_fd = assert(io.open(fifo, "w"))
 
 local http_server = require("http.server")
 local http_headers = require("http.headers")
@@ -158,6 +164,8 @@ local myserver = assert(http_server.listen({
 assert(myserver:listen())
 do
     local bound_port = select(3, myserver:localname())
+    fifo_fd:write(tostring(bound_port), "\n")
+    fifo_fd:close()
     assert(io.stderr:write(string.format("Now listening on port %d\n", bound_port)))
 end
 -- Start the main server loop

@@ -62,13 +62,15 @@ if [ "$os" != Android ]; then
   fi
 fi
 
-export DOTCFG_PORT=3666 # fixed port but idk if it'll work forever,, I'll check this better someday
+# Set up dotcfg-daemon
 {
-  # TODO: redirect output of the server to a log file or something
-  dotcfg-daemon >/dev/null 2>/dev/null & disown
+  while true; do
+    _fifo=$(mktemp -u)
+    mkfifo "$_fifo" && break
+  done
 
-  # TODO: actually wait the needed time to set up the server and not just 5 seconds
-  sleep 5
+  DOTCFG_FIFO="$_fifo" dotcfg-daemon >/dev/null 2>/dev/null & disown
+  export DOTCFG_PORT=$(cat "$_fifo")
 
   gen-res dotcfg | dotcfg-client read-and-set
-} & disown
+}
