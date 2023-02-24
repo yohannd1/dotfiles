@@ -38,7 +38,7 @@ M.font_presets = {
     },
     ["UbuntuMono"] = {
         name = "Ubuntu Mono",
-        terminal_pixelsize = "17",
+        terminal_pixelsize = "15",
         awesome_size = "10",
         qutebrowser_size = "10pt",
         supports_ligatures = false,
@@ -80,7 +80,7 @@ M.font_presets = {
     },
     ["Hack"] = {
         name = "Hack",
-        terminal_pixelsize = "14",
+        terminal_pixelsize = "13",
         awesome_size = "12.5px",
         qutebrowser_size = "10pt",
         supports_ligatures = true,
