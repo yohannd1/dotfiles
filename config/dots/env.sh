@@ -35,7 +35,7 @@ export EDITOR=nvim
 # _isAndroid && export EDITOR=nvim || export EDITOR=start-emacs
 export MAYBE_GRAPHICAL_EDITOR=maybe-graphedit
 export TERMINAL=st
-export BROWSER=chromium
+export BROWSER=librewolf
 export TERMBROWSER=w3m
 export PAGER=less
 export OPENER=openfork
