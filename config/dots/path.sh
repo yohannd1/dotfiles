@@ -15,6 +15,8 @@ pathadd() {
 }
 
 globpathadd() {
+  [ -d "$1" ] || return 1
+
   _prev_path="$PWD"
   cd "$1" || { cd "$_prev_path"; return 1; }
   fd -td -d1 | while read pack; do

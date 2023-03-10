@@ -9,6 +9,9 @@ loggedSource() {
   printf >&2 "Sourcing %s...\n" "$1"
   . "$1"
 }
+isTermux() {
+  [ "$os" == Android ] || [ -d /data/data/com.termux ]
+}
 
 # load environment variables, set up $PATH and load libraries
 loggedSource ~/.config/dots/env.sh
@@ -38,10 +41,8 @@ _updateClock() {
   fi
 }
 
-if [ "$os" != Android ]; then
-  if [ "$DOTFILES" ]; then
-    tty-loadcolors
-  fi
+if ! isTermux; then
+  [ "$DOTFILES" ] && tty-loadcolors
 
   # update the date because clock problems
   exists ntpd && startjob "Clock Update" _updateClock
