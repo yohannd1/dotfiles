@@ -10,15 +10,12 @@ loggedSource() {
   . "$1"
 }
 isTermux() {
-  [ "$os" == Android ] || [ -d /data/data/com.termux ]
+  [ "$(uname -o)" = Android ] || [ -d /data/data/com.termux ]
 }
 
 # load environment variables, set up $PATH and load libraries
 loggedSource ~/.config/dots/env.sh
 loggedSource ~/.config/dots/path.sh
-
-os=$(uname -o)
-printf >&2 "Uname: %s\n" "$os"
 
 startjob() {
   local line
@@ -41,12 +38,15 @@ _updateClock() {
   fi
 }
 
+isTermux || tty-loadcolors
+
+os=$(uname -o)
+printf >&2 "Uname: %s\n" "$os"
+
+# update the date because clock problems
+exists ntpd && startjob "Clock Update" _updateClock
+
 if ! isTermux; then
-  [ "$DOTFILES" ] && tty-loadcolors
-
-  # update the date because clock problems
-  exists ntpd && startjob "Clock Update" _updateClock
-
   if [ "$DOTFILES" ]; then
     printf >&2 "Preparing SSH agent..."
     gpgconf --launch gpg-agent
