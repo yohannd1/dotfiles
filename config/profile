@@ -43,35 +43,38 @@ isTermux || tty-loadcolors
 os=$(uname -o)
 printf >&2 "Uname: %s\n" "$os"
 
-# update the date because clock problems
-exists ntpd && startjob "Clock Update" _updateClock
-
 if ! isTermux; then
-  if [ "$DOTFILES" ]; then
-    printf >&2 "Preparing SSH agent..."
-    gpgconf --launch gpg-agent
-    export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-    printf >&2 "OK!\n"
+  # update the date because clock problems
+  exists ntpd && startjob "Clock Update" _updateClock
 
-    printf >&2 "Generating config (sysm)...\n"
-    sysm
+  # prepare GPG & SSH
+  printf >&2 "Preparing GPG and SSH..."
+  gpgconf --launch gpg-agent
+  export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+  printf >&2 "OK!\n"
 
-    # set up SSH keychaing
-    # if [ -x /usr/bin/keychain ]; then
-    #   eval "$(keychain --eval --ignore-missing ~/.ssh/id_rsa 2>/dev/null)"
-    # fi
-  fi
+  # generate configs
+  # too disk-intensive to do every time it boots up on Termux
+  printf >&2 "Generating config (sysm)...\n"
+  sysm
+
+  # set up dotcfg-daemon and load config
+  # i haven't figured out how to install the "http" lua rock on Termux yet
+  {
+    while true; do
+      _fifo=$(mktemp -u)
+      mkfifo "$_fifo" && break
+    done
+
+    DOTCFG_FIFO="$_fifo" dotcfg-daemon >/dev/null 2>/dev/null & disown
+    export DOTCFG_PORT=$(cat "$_fifo")
+
+    gen-res dotcfg | dotcfg-client read-and-set
+  }
+
+  # set up SSH keychaing
+  # if [ -x /usr/bin/keychain ]; then
+  #   eval "$(keychain --eval --ignore-missing ~/.ssh/id_rsa 2>/dev/null)"
+  # fi
 fi
 
-# Set up dotcfg-daemon
-{
-  while true; do
-    _fifo=$(mktemp -u)
-    mkfifo "$_fifo" && break
-  done
-
-  DOTCFG_FIFO="$_fifo" dotcfg-daemon >/dev/null 2>/dev/null & disown
-  export DOTCFG_PORT=$(cat "$_fifo")
-
-  gen-res dotcfg | dotcfg-client read-and-set
-}
