@@ -882,6 +882,8 @@ function! ft.rust() " {{{
     let b:rifle_ft = "rust"
   endif
 
+  call AddSnippet("m", "fn main() {<CR><CR>}<Up>")
+
   let b:format_command = "rustfmt"
   setlocal fdm=syntax textwidth=100
 endfunction " }}}
