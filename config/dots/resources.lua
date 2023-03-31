@@ -15,7 +15,7 @@ local this_basename = basename(this_path)
 local extra_defs = loadfile(this_basename .. "/" .. "res_extra_defs.lua")()
 local longFontFormat = extra_defs.longFontFormat
 
-local chosen_name = "Hack"
+local chosen_name = "Unifont"
 if chosen_name == nil then -- if there's no selected font in the line above, just pick a random one.
     local t = {}
     for name, _ in pairs(extra_defs.font_presets) do
@@ -28,7 +28,7 @@ end
 local font_config = assert(extra_defs.font_presets[chosen_name], "no such font name \"" .. chosen_name .. "\"")
 local xft_font = longFontFormat(font_config.name, font_config.terminal_pixelsize)
 
-local enable_ligatures = true
+local enable_ligatures = false
 
 local T_ALL = {t_xres, t_dots}
 

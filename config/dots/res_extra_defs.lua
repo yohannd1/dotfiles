@@ -31,8 +31,8 @@ M.font_presets = {
     },
     ["Fixedsys"] = {
         name = "Fixedsys Excelsior",
-        terminal_pixelsize = "17",
-        awesome_size = "14px",
+        terminal_pixelsize = "16",
+        awesome_size = "12px",
         qutebrowser_size = "10pt",
         supports_ligatures = false, -- because of glitches
     },
@@ -59,10 +59,10 @@ M.font_presets = {
     },
     ["FantasqueSans"] = {
         name = "Fantasque Sans Mono",
-        terminal_pixelsize = "15",
+        terminal_pixelsize = "16",
         awesome_size = "13px",
         qutebrowser_size = "10pt",
-        supports_ligatures = false, -- FIXME: check
+        supports_ligatures = false,
     },
     ["Sudo"] = {
         name = "Sudo",
