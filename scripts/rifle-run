@@ -204,6 +204,10 @@ case "$1" in
 
         haxe --run Main --main Main
         ;;
+      alda)
+        alda stop # stop all other playback
+        alda play --file "$file"
+        ;;
       *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
     esac ;;
   build)

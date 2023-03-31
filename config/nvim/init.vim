@@ -86,6 +86,7 @@ if g:is_first
   Plug 'janet-lang/janet.vim'
   Plug 'jdonaldson/vaxe'
   Plug 'karolbelina/uxntal.vim'
+  Plug 'daveyarwood/vim-alda'
   " Plug 'stefanos82/nelua.vim'
   " if isdirectory($HOME .. "/pj/code/nelua.vim")
   "   " This repository doesn't actually exist on my GitHub. It's
@@ -953,11 +954,11 @@ function! ft.vimwiki() " {{{
   syn match VimwikiXNodeAttr /\v[A-Za-z0-9_.]+\{/
   hi link VimwikiXNodeAttr String
 
+  syn match VimwikiXEscapedHash /\v\\\#/
+  hi link VimwikiXEscapedHash Function
+
   syn match VimwikiXTag /\v\#([A-Za-z0-9_]+)(\.[A-Za-z0-9_]+)*/
   hi link VimwikiXTag Function
-
-  " syn match VimwikiXListItem /\v^\s*[*-]\s+/
-  " hi link VimwikiXListItem VimwikiXDone
 
   syn match VimwikiXTodo /\v^\s*([*-]\s+)?\[ \]/
   syn match VimwikiXTodo /\v^\s*([*-]\s+)?\( \)/
@@ -1010,6 +1011,9 @@ function! ft.php() " {{{
 endfunction " }}}
 function! ft.apache() " {{{
   setlocal commentstring=#\ %s
+endfunction " }}}
+function! ft.alda() " {{{
+  setlocal sw=2 et
 endfunction " }}}
 
 " }}}
