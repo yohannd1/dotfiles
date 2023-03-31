@@ -66,7 +66,7 @@ export LESSKEY="$XDG_CONFIG_HOME/less/lesskey"
 export LESSHISTFILE="$XDG_CACHE_HOME/less/history"
 export WGETRC="$XDG_CONFIG_HOME/wgetrc"
 export IRBRC="$XDG_CONFIG_HOME/irb/irbrc"
-export FZRUN_GAMES_FOLDER="$HOME/storage/software/bin-windows"
+export FZRUN_PACKAGES_FOLDER="$HOME/storage/software/packages"
 export LUAROCKS_HOME="$HOME/.luarocks"
 
 # Instead of this, install 'android-sdk' on the AUR and re-log

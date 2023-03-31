@@ -17,7 +17,7 @@ HOME = os.environ["HOME"]
 XDG_CACHE_HOME = os.getenv("XDG_CACHE_HOME") or (HOME + "/.cache")
 TERMINAL = os.getenv("TERMINAL") or "xterm"
 SHELL = os.getenv("SHELL") or "/bin/sh"
-FZRUN_GAMES_FOLDER = os.getenv("FZRUN_GAMES_FOLDER")
+FZRUN_PACKAGES_FOLDER = os.getenv("FZRUN_PACKAGES_FOLDER")
 FZRUN_RECENT_CMDS = os.getenv("FZRUN_RECENT_CMDS") or (
     XDG_CACHE_HOME + "/fzrun-recent-cmds"
 )
@@ -30,7 +30,7 @@ def main() -> int:
         CustomCommand(add_to_recent=False),
         SelectBinary(add_to_recent=True),
         SelectBinary(add_to_recent=False),
-        *(SelectGame() for _ in range(1) if FZRUN_GAMES_FOLDER is not None),
+        *(SelectGame() for _ in range(1) if FZRUN_PACKAGES_FOLDER is not None),
         EditRecent(),
         *get_fzrun_recent(),
     ]
@@ -357,7 +357,7 @@ class SelectGame:
     shell: str = SHELL
 
     def run(self):
-        games = GameData.get_games(Path(FZRUN_GAMES_FOLDER))
+        games = GameData.get_games(Path(FZRUN_PACKAGES_FOLDER))
         games.sort(key=lambda game: game.name, reverse=True)
 
         starting_number = 50 # so I can select touhou games in peace
@@ -443,7 +443,7 @@ class GameData:
         if not folder.is_dir():
             return []
 
-        for possible_name in {"Game.toml", "App.toml"}:
+        for possible_name in {"Pkg.toml", "App.toml", "Game.toml"}:
             toml_file = folder / possible_name
 
             if not toml_file.is_file():
