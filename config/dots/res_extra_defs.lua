@@ -23,7 +23,7 @@ M.font_presets = {
         supports_ligatures = true,
     },
     ["JetbrainsMono"] = {
-        name = "JetBrains Mono Medium",
+        name = "JetBrains Mono",
         terminal_pixelsize = "13",
         awesome_size = "11px",
         qutebrowser_size = "10pt",

@@ -85,7 +85,7 @@ if g:is_first
   Plug 'habamax/vim-godot'
   Plug 'janet-lang/janet.vim'
   Plug 'jdonaldson/vaxe'
-  Plug 'karolbelina/uxntal.vim'
+  Plug 'bellinitte/uxntal.vim'
   Plug 'daveyarwood/vim-alda'
   " Plug 'stefanos82/nelua.vim'
   " if isdirectory($HOME .. "/pj/code/nelua.vim")

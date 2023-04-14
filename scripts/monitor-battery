@@ -2,7 +2,7 @@
 
 BATTERY_PATH="/sys/class/power_supply/BAT0/capacity"
 CHARGE_STATE_PATH="/sys/class/power_supply/BAT0/status"
-DELAY=15
+DELAY=5
 
 LEVEL_CRITICAL=5
 LEVEL_LOW=20

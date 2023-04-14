@@ -211,6 +211,10 @@ if match ext 'json'; then
   try pop runpage python -m json.tool -- "$FILE"
 fi
 
+if match ext 'kdenlive'; then
+  try gui kdenlive "$FILE"
+fi
+
 if match mime 'image/vnd.djvu'; then
   try tty runpage djvutxt "$FILE"
   try tty runpage exiftool "$FILE"
