@@ -115,16 +115,8 @@ super + ctrl + {Up,Down,Left,Right}
 
 super + o; a
     $TERMINAL -c float -g 130x35 -e sh -c "acw-today-report 2>&1 | vimpager"
-super + o; j
-    termup acw-open-today-journal
 
 # super-o apps
-super + o; s
-    $TERMINAL -e vimwiki open Scratchpad
-super + o; w
-    $TERMINAL -e vimwiki
-super + o; W
-    $TERMINAL -e vimwiki browse
 super + o; c
     $TERMINAL -c float -g 65x10 -e runread cal -3
 super + o; super + c
