@@ -46,11 +46,13 @@ def main() -> int:
         idx = output[0]
 
         try:
-            actions[idx].run()
+            a = actions[idx]
         except ValueError as e:
             print(f"Invalid command: {repr(output)}", file=sys.stderr)
             print(f"Error code: {e}", file=sys.stderr)
             return 1
+
+        a.run()
     else:
         return 1
 
@@ -367,6 +369,9 @@ class SelectGame:
 
         choice = games[choice[0] - starting_number]
 
+        for k, v in choice.env.items():
+            os.environ[k] = v
+
         os.chdir(choice.exec_dir)
         args = [self.shell, "-c", choice.command]
         os.execvp(args[0], args)
@@ -381,31 +386,42 @@ class GameData:
     command: str
     toml_path: Path
     exec_dir: Path
+    env: dict[str, str]
 
     @staticmethod
-    def _parse_toml(tobj, exec_dir: Path, toml_path: Path) -> GameData:
+    def _parse_toml(tobj, exec_dir: Path, toml_path: Path, env: dict[str, str]) -> GameData:
         exec_dir = tobj.get("exec-dir") or exec_dir
+
+        o_env = tobj.get("env")
+        if o_env is None:
+            o_env = env
+        else:
+            o_env = env | o_env
 
         return GameData(
             name=str(tobj["name"]),
             command=str(tobj["command"]),
             exec_dir=exec_dir,
             toml_path=toml_path,
+            env=o_env,
         )
 
     @staticmethod
     def from_toml(tstr: str, exec_dir: Path, toml_path: Path) -> List[GameData]:
         tobj = toml.loads(tstr)
+        config = tobj.get("config") or {}
+        env = config.get("env") or {}
+
         entry_obj = tobj["entry"]
 
         ls = []
         if isinstance(entry_obj, list):
             ls.extend(
-                [GameData._parse_toml(obj, exec_dir, toml_path) for obj in entry_obj]
+                [GameData._parse_toml(obj, exec_dir, toml_path, env) for obj in entry_obj]
             )
         else:
             ls.append(
-                GameData._parse_toml(entry_obj, exec_dir=exec_dir, toml_path=toml_path)
+                GameData._parse_toml(entry_obj, exec_dir, toml_path, env)
             )
 
         if settings := tobj.get("global-settings"):
