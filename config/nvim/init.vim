@@ -79,14 +79,13 @@ if g:is_first
   Plug 'udalov/kotlin-vim'
   Plug 'ollykel/v-vim'
   Plug 'Tetralux/odin.vim'
-  Plug 'junegunn/goyo.vim'
   Plug 'YohananDiamond/danmakufu-ph3.vim'
   Plug 'hellerve/carp-vim'
   Plug 'habamax/vim-godot'
   Plug 'janet-lang/janet.vim'
   Plug 'jdonaldson/vaxe'
-  Plug 'bellinitte/uxntal.vim'
   Plug 'daveyarwood/vim-alda'
+  Plug 'bellinitte/uxntal.vim'
   " Plug 'stefanos82/nelua.vim'
   " if isdirectory($HOME .. "/pj/code/nelua.vim")
   "   " This repository doesn't actually exist on my GitHub. It's
@@ -104,6 +103,8 @@ if g:is_first
   if executable("nim") && executable("nimsuggest")
     Plug 'YohananDiamond/nvim-nim'
   endif
+
+  Plug 'junegunn/goyo.vim'
 
   " Themes
   if g:is_win
@@ -144,6 +145,7 @@ let g:rainbow_active = 1
 let g:rainbow_conf = {
     \ "separately": {
         \ "vimwiki": 0,
+        \ "uxntal": 0,
         \ },
     \ }
 
@@ -730,10 +732,14 @@ augroup buffer_load
   au BufNewFile,BufRead,BufEnter *.jl set filetype=julia
   au BufNewFile,BufRead,BufEnter *.scrbl set filetype=scribble
   au BufNewFile,BufRead,BufEnter *.h set filetype=c
+  " au BufNewFile,BufRead,BufEnter *.tal set filetype=uxntal
   au BufNewFile,BufRead,BufEnter *.mpp set filetype=cpp
   au BufNewFile,BufRead,BufEnter *.tsx if getline(1) =~ '^<?xml' | set filetype=xml | endif
   au BufNewFile,BufRead,BufEnter calcurse-note.* set filetype=vimwiki
   au BufNewFile,BufRead,BufEnter *.PKGBUILD set filetype=PKGBUILD
+
+  " TODO: figure out the type of assembly from something else
+  au BufNewFile,BufRead,BufEnter *.asm set filetype=nasm
 augroup end
 
 " }}}
@@ -1014,6 +1020,10 @@ function! ft.apache() " {{{
 endfunction " }}}
 function! ft.alda() " {{{
   setlocal sw=2 et
+endfunction " }}}
+function! ft.uxntal() " {{{
+  setlocal sw=8 noet
+  setlocal iskeyword+=-
 endfunction " }}}
 
 " }}}

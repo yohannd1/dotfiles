@@ -44,7 +44,7 @@ class Manager:
             )
             / "sysm-backups"
             / "{}-{}".format(
-                datetime.datetime.now().strftime("%Y-%d-%m"),
+                datetime.datetime.now().strftime("%Y-%m-%d"),
                 generate_random_string(5),
             )
         )
