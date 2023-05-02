@@ -30,115 +30,8 @@ endif
 " Plugins {{{
 
 if g:is_first
-  silent! call plug#begin(g:config_root . '/plugged')
-
-  " " Editing enhancement
-  Plug 'tpope/vim-surround'
-  Plug 'tpope/vim-repeat'
-  Plug 'tpope/vim-commentary'
-  Plug 'mattn/emmet-vim'
-  Plug 'godlygeek/tabular'
-  Plug 'ap/vim-buftabline'
-  Plug 'tpope/vim-rsi'
-  " " Plug 'andymass/vim-matchup'
-  Plug 'luochen1990/rainbow'
-
-  Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-  Plug 'junegunn/fzf.vim'
-
-  " " :Clap install-binary[!] will always try to compile the binary locally,
-  " " if you do care about the disk used for the compilation, try using the force download way,
-  " " which will download the prebuilt binary even you have installed cargo.
-  " " Plug 'liuchengxu/vim-clap', { 'do': { -> clap#installer#force_download() } }
-
-  " " Editing enhancement: electric pairs
-  Plug 'windwp/nvim-autopairs'
-  " " Plug 'tmsvg/pear-tree'
-  " " Plug 'vim-scripts/AutoClose'
-  " " Plug 'jiangmiao/auto-pairs'
-
-  " " Filetypes
-  Plug 'Clavelito/indent-sh.vim'
-  Plug 'YohananDiamond/zig.vim' " Plug 'ziglang/zig.vim'
-  Plug 'JuliaEditorSupport/julia-vim'
-  Plug 'cespare/vim-toml'
-  Plug 'neoclide/jsonc.vim'
-  Plug 'HerringtonDarkholme/yats.vim'
-  Plug 'plasticboy/vim-markdown'
-  Plug 'wlangstroth/vim-racket'
-  Plug 'vim-scripts/scribble.vim'
-  Plug 'neovimhaskell/haskell-vim'
-  Plug 'leafo/moonscript-vim'
-  Plug 'rust-lang/rust.vim'
-  Plug 'vim-crystal/vim-crystal'
-  Plug 'justinmk/vim-syntax-extra'
-  Plug 'Vimjas/vim-python-pep8-indent'
-  Plug 'vim-python/python-syntax'
-  Plug 'https://gitlab.com/HiPhish/guile.vim'
-  Plug 'YohananDiamond/fennel.vim' " fork of 'bakpakin/fennel.vim'
-  Plug 'udalov/kotlin-vim'
-  Plug 'ollykel/v-vim'
-  Plug 'Tetralux/odin.vim'
-  Plug 'YohananDiamond/danmakufu-ph3.vim'
-  Plug 'hellerve/carp-vim'
-  Plug 'habamax/vim-godot'
-  Plug 'janet-lang/janet.vim'
-  Plug 'jdonaldson/vaxe'
-  Plug 'daveyarwood/vim-alda'
-  Plug 'bellinitte/uxntal.vim'
-  " Plug 'stefanos82/nelua.vim'
-  " if isdirectory($HOME .. "/pj/code/nelua.vim")
-  "   " This repository doesn't actually exist on my GitHub. It's
-  "   " currently local and in very early stages (testing `nelua`).
-  "   Plug 'YohananDiamond/nelua.vim'
-  " endif
-
-  " Plug 'tbastos/vim-lua'
-  " Plug 'hylang/vim-hy'
-  " Plug 'fsharp/vim-fsharp'
-  " Plug 'xolox/vim-lua-ftplugin'
-  " Plug 'teal-language/vim-teal'
-
-  " Filetypes - nim
-  if executable("nim") && executable("nimsuggest")
-    Plug 'YohananDiamond/nvim-nim'
-  endif
-
-  Plug 'junegunn/goyo.vim'
-
-  " Themes
-  if g:is_win
-    Plug 'morhetz/gruvbox' " for windows
-  endif
-  " Plug 'dracula/vim'
-  " Plug 'chriskempson/base16-vim'
-
-  " fork of redox-os/ion-vim
-  Plug 'https://gitlab.redox-os.org/YohananDiamond/ion-vim'
-
-  " fork of skywind3000/vim-auto-popmenu
-  Plug 'YohananDiamond/vim-auto-popmenu'
-
-  " Misc.
-  Plug 'tpope/vim-vinegar'
-  Plug 'vimwiki/vimwiki' " NOTE: Slowdown candidate
-  " " Plug 'itchyny/lightline.vim'
-
-  Plug 'YohananDiamond/vim-hydra'
-  Plug 'nvim-telescope/telescope.nvim'
-  Plug 'nvim-lua/popup.nvim'
-  Plug 'nvim-lua/plenary.nvim'
-  " Plug 'nvim-lua/completion-nvim'
-  " Plug 'RRethy/vim-illuminate'
-  " Plug 'slakkenhuis/vim-margin'
-
-  Plug 'airblade/vim-gitgutter'
-
-  call plug#end()
+  lua require("cfg.plugins")
 endif
-
-" }}}
-" Plugin Config {{{
 
 " Rainbow
 let g:rainbow_active = 1
@@ -169,7 +62,7 @@ let g:gruvbox_italics = 1
 let g:buftabline_indicators = 1
 
 " Rifle
-if is_android
+if g:is_android
   let g:rifle_mode = "buffer"
 else
   let g:rifle_mode = "popup"
@@ -293,6 +186,62 @@ let g:matchup_matchparen_offscreen = {'method': 'popup'}
 " :help php-indent
 let g:PHP_outdentphpescape = 0
 let g:PHP_default_indenting = 0
+
+" neorg
+" one of the reasons I need to switch to lua ASAP.
+lua << EOF
+require('neorg').setup {
+    load = {
+        ["core.defaults"] = {}, -- Loads default behaviour
+        ["core.concealer"] = {}, -- Adds pretty icons to your documents
+    },
+}
+EOF
+
+" treesitter - aargh
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+  -- A list of parser names, or "all" (the five listed parsers should always be installed)
+  ensure_installed = { "c", "lua", "vim", "vimdoc", "query" },
+
+  -- Install parsers synchronously (only applied to `ensure_installed`)
+  sync_install = false,
+
+  -- Automatically install missing parsers when entering buffer
+  -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
+  auto_install = true,
+
+  -- List of parsers to ignore installing (for "all")
+  ignore_install = { "javascript" },
+
+  ---- If you need to change the installation directory of the parsers (see -> Advanced Setup)
+  -- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
+
+  highlight = {
+    enable = true,
+
+    -- NOTE: these are the names of the parsers and not the filetype. (for example if you want to
+    -- disable highlighting for the `tex` filetype, you need to include `latex` in this list as this is
+    -- the name of the parser)
+    -- list of language that will be disabled
+    disable = { "c", "rust" },
+    -- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
+    disable = function(lang, buf)
+        local max_filesize = 100 * 1024 -- 100 KB
+        local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+        if ok and stats and stats.size > max_filesize then
+            return true
+        end
+    end,
+
+    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+    -- Using this option may slow down your editor, and you may see some duplicate highlights.
+    -- Instead of true it can also be a list of languages
+    additional_vim_regex_highlighting = false,
+  },
+}
+EOF
 
 " }}}
 " Functions {{{
@@ -732,7 +681,6 @@ augroup buffer_load
   au BufNewFile,BufRead,BufEnter *.jl set filetype=julia
   au BufNewFile,BufRead,BufEnter *.scrbl set filetype=scribble
   au BufNewFile,BufRead,BufEnter *.h set filetype=c
-  " au BufNewFile,BufRead,BufEnter *.tal set filetype=uxntal
   au BufNewFile,BufRead,BufEnter *.mpp set filetype=cpp
   au BufNewFile,BufRead,BufEnter *.tsx if getline(1) =~ '^<?xml' | set filetype=xml | endif
   au BufNewFile,BufRead,BufEnter calcurse-note.* set filetype=vimwiki
@@ -754,6 +702,7 @@ function! ft.c() " {{{
   setlocal noet sw=8 ts=8
   setlocal fdm=syntax
   setlocal commentstring=/*\ %s\ */
+  setlocal textwidth=80
   let b:format_command = "clang-multicfg-format c"
 
   call AddSnippet("s", '#include <stdio.h>')
