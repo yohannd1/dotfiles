@@ -29,11 +29,7 @@ endif
 " }}}
 " Plugins {{{
 
-if g:is_first
-  lua require("cfg.plugins").loadPlugins()
-endif
-
-lua require("cfg.plugins").configurePlugins()
+lua require("cfg.plugins").load()
 
 " TODO: remove
 " Clap command: search on wiki

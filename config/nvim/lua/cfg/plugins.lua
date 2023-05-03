@@ -1,19 +1,48 @@
+-- vim: fdm=marker foldenable foldmarker={{{,}}}
+
+local vim = _G.vim
+local _configs = {}
 local M = {}
 
-local function plug(url)
-    vim.cmd(string.format("Plug '%s'", url))
+local function plug(arg)
+    local plugin = nil
+    local config = nil
+
+    if type(arg) == "string" then
+        plugin = arg
+    elseif type(arg) == "table" then
+        plugin = arg[1]
+        config = arg.config
+    else
+        error("Expected string or table, found " .. type(arg))
+    end
+
+    if plugin then
+        assert(type(plugin) == "string", "Tried to plug non-string")
+        vim.cmd(string.format("Plug '%s'", plugin))
+    end
+
+    if config then
+        table.insert(_configs, arg.config)
+    end
 end
 
-function M.loadPlugins()
-    vim.cmd("silent! call plug#begin(g:config_root . '/plugged')")
-
-    -- Editing enhancements
+local plugins = function()
+    -- Editing enhancements {{{
     plug("tpope/vim-surround")
     plug("tpope/vim-repeat")
     plug("tpope/vim-commentary")
-    plug("mattn/emmet-vim")
+
+    plug({"mattn/emmet-vim", config = function()
+        vim.g.user_emmet_leader_key = '<C-x>e'
+    end})
+
     plug("godlygeek/tabular")
-    plug("ap/vim-buftabline")
+
+    plug({"ap/vim-buftabline", config = function()
+        vim.g.buftabline_indicators = 1
+    end})
+
     plug("tpope/vim-rsi")
 
     -- Electric pairs
@@ -23,19 +52,63 @@ function M.loadPlugins()
     -- plug("jiangmiao/auto-pairs")
 
     -- Matching pairs
-    plug("luochen1990/rainbow")
-    -- plug("andymass/vim-matchup")
+    plug({"luochen1990/rainbow", config = function()
+        vim.g.rainbow_active = 1
+        vim.g.rainbow_conf = {
+            separately = {
+                vimwiki = 0,
+                uxntal = 0,
+            }
+        }
+    end})
+    -- plug({"andymass/vim-matchup", config = function()
+    --     vim.g.matchup_matchparen_offscreen = {method = "popup"}
+    -- end})
+
+    -- }}}
 
     -- Treesitter
-    plug("nvim-treesitter/nvim-treesitter")
+    plug({"nvim-treesitter/nvim-treesitter", config = function()
+        require('nvim-treesitter.configs').setup {
+            ensure_installed = { "c", "lua", "vim", "vimdoc", "query" },
 
-    -- Filetypes
+            -- Install parsers synchronously (only applied to `ensure_installed`)
+            sync_install = false,
+
+            -- Automatically install missing parsers when entering buffer
+            auto_install = true,
+
+            ignore_install = {},
+
+            highlight = {
+                enable = true,
+                disable = { "gitcommit" },
+                additional_vim_regex_highlighting = false,
+            },
+        }
+    end})
+
+    -- Filetypes {{{
     plug("Clavelito/indent-sh.vim")
-    plug("YohananDiamond/zig.vim") -- ziglang/zig.vim
+    plug({"YohananDiamond/zig.vim", config = function()
+        -- original: ziglang/zig.vim
+        vim.g.zig_fmt_autosave = 0
+    end})
     plug("cespare/vim-toml")
     plug("neoclide/jsonc.vim")
     plug("HerringtonDarkholme/yats.vim")
-    plug("plasticboy/vim-markdown")
+
+    plug({"plasticboy/vim-markdown", config = function()
+        -- markdown
+        vim.g.vim_markdown_frontmatter = 1
+        vim.g.vim_markdown_folding_disabled = 1
+        vim.g.vim_markdown_folding_style_pythonic = 0
+        vim.g.vim_markdown_override_foldtext = 0
+        vim.g.vim_markdown_no_extensions_in_markdown = 1
+        vim.g.vim_markdown_new_list_item_indent = 0
+        vim.g.vim_markdown_auto_insert_bullets = 0
+    end})
+
     plug("wlangstroth/vim-racket")
     plug("vim-scripts/scribble.vim")
     plug("neovimhaskell/haskell-vim")
@@ -65,82 +138,87 @@ function M.loadPlugins()
     -- plug("teal-language/vim-teal")
     -- plug("JuliaEditorSupport/julia-vim")
 
-    -- Filetypes - nim
+    -- nim
     if vim.fn.executable("nim") and vim.fn.executable("nimsuggest") then
         plug("YohananDiamond/nvim-nim")
     end
+    -- }}}
 
     plug("junegunn/goyo.vim")
 
     -- Themes
-    if vim.g.is_win == 1 then
-        plug("morhetz/gruvbox") -- for windows
+    if vim.g.is_win > 0 then
+        -- use gruvbox as the default theme for windows
+        plug {"morhetz/gruvbox", config = function()
+            vim.g.gruvbox_bold = 1
+            vim.g.gruvbox_italics = 1
+        end}
     end
-    -- plug("dracula/vim")
-    -- plug("chriskempson/base16-vim")
 
     -- fork of redox-os/ion-vim
     plug("https://gitlab.redox-os.org/YohananDiamond/ion-vim")
 
     -- fork of skywind3000/vim-auto-popmenu
-    plug("YohananDiamond/vim-auto-popmenu")
+    plug({"YohananDiamond/vim-auto-popmenu", config = function()
+        vim.g.apc_default_state = 1
+        vim.g.apc_map_enter_backspace = 0
+        vim.g.apc_custom_states = {
+            clap_input = 0, -- prevent conflicts with vim-clap
+        }
+    end})
 
     -- Misc.
     plug("tpope/vim-vinegar")
-    plug("vimwiki/vimwiki") -- NOTE: Slowdown candidate
-    plug("nvim-neorg/neorg")
-    -- plug("itchyny/lightline.vim")
+
+    plug({"vimwiki/vimwiki", config = function()
+        -- FIXME: Slowdown candidate
+
+        vim.g.wiki_dir = os.getenv("WIKI") .. "/vimwiki"
+        vim.g.vimwiki_list = {{
+            path = vim.g.wiki_dir,
+            path_html = "~/.cache/output/vimwiki_html",
+            syntax = "default",
+            ext = ".wiki"
+        }}
+        vim.g.vimwiki_map_prefix = "<NOP>"
+        vim.g.vimwiki_global_ext = 0
+        vim.g.vimwiki_conceallevel = 0
+        vim.g.vimwiki_url_maxsave = 0
+    end})
+
+    plug({"nvim-neorg/neorg", config = function()
+        require('neorg').setup {
+            load = {
+                ["core.defaults"] = {}, -- Loads default behaviour
+                ["core.concealer"] = {}, -- Adds pretty icons to your documents
+            },
+        }
+    end})
 
     plug("YohananDiamond/vim-hydra")
     plug("nvim-telescope/telescope.nvim")
     plug("nvim-lua/popup.nvim")
     plug("nvim-lua/plenary.nvim")
     -- plug("nvim-lua/completion-nvim")
-    -- plug("RRethy/vim-illuminate")
+
+    -- Illuminate - delay to highlight words (in millisceconds)
+    plug({"RRethy/vim-illuminate", config = function()
+        vim.g.Illuminate_delay = 250
+    end})
+
     -- plug("slakkenhuis/vim-margin")
 
     plug("airblade/vim-gitgutter")
 
-    vim.cmd("call plug#end()")
-end
+    -- Loose config
+    plug {config = function()
+        -- :help php-indent
+        vim.g.PHP_outdentphpescape = 0
+        vim.g.PHP_default_indenting = 0
 
-function M.configurePlugins()
-    -- rainbow
-    vim.g.rainbow_active = 1
-    vim.g.rainbow_conf = {
-        separately = {
-            vimwiki = 0,
-            uxntal = 0,
-        }
-    }
-
-    -- emmet
-    vim.g.user_emmet_leader_key = '<C-x>e'
-
-    -- markdown
-    vim.g.vim_markdown_frontmatter = 1
-    vim.g.vim_markdown_folding_disabled = 1
-    vim.g.vim_markdown_folding_style_pythonic = 0
-    vim.g.vim_markdown_override_foldtext = 0
-    vim.g.vim_markdown_no_extensions_in_markdown = 1
-    vim.g.vim_markdown_new_list_item_indent = 0
-    vim.g.vim_markdown_auto_insert_bullets = 0
-
-    -- gruvbox
-    vim.g.gruvbox_bold = 1
-    vim.g.gruvbox_italics = 1
-
-    -- Buftabline
-    vim.g.buftabline_indicators = 1
-
-    vim.g.rifle_mode = (vim.g.is_android == 1) and "buffer" or "popup"
-
-    -- " vim-auto-popmenu x Clap
-    -- let g:apc_default_state = 1
-    -- let g:apc_map_enter_backspace = 0
-    -- let g:apc_custom_states = {
-    --       \ "clap_input": 0,
-    --       \ }
+        -- rifle
+        vim.g.rifle_mode = (vim.g.is_android == 1) and "buffer" or "popup"
+    end}
 
     -- " Clap command: recent files
     -- " TODO: remove
@@ -149,83 +227,18 @@ function M.configurePlugins()
     --       \ "sink": "e",
     --       \ "description": "Load a file from the recent list",
     --       \ }
+end
 
-    -- zig.vim
-    vim.g.zig_fmt_autosave = 0
+function M.load()
+    local is_first = vim.g.is_first > 0
 
-    -- vimwiki
-    vim.g.wiki_dir = os.getenv("WIKI") .. "/vimwiki"
-    vim.g.vimwiki_list = {{
-        path = vim.g.wiki_dir,
-        path_html = "~/.cache/output/vimwiki_html",
-        syntax = "default",
-        ext = ".wiki"
-    }}
-    vim.g.vimwiki_map_prefix = "<NOP>"
-    vim.g.vimwiki_global_ext = 0
-    vim.g.vimwiki_conceallevel = 0
-    vim.g.vimwiki_url_maxsave = 0
+    if is_first then
+        vim.fn["plug#begin"](vim.g.config_root .. "/plugged")
+        plugins()
+        vim.fn["plug#end"]()
+    end
 
-    -- Illuminate - delay to highlight words (in millisceconds)
-    vim.g.Illuminate_delay = 250
-
-    -- matchup
-    vim.g.matchup_matchparen_offscreen = {method = "popup"}
-
-    -- :help php-indent
-    vim.g.PHP_outdentphpescape = 0
-    vim.g.PHP_default_indenting = 0
-
-    -- neorg
-    require('neorg').setup {
-        load = {
-            ["core.defaults"] = {}, -- Loads default behaviour
-            ["core.concealer"] = {}, -- Adds pretty icons to your documents
-        },
-    }
-
-    -- treesitter
-    require('nvim-treesitter.configs').setup {
-        -- A list of parser names, or "all" (the five listed parsers should always be installed)
-        ensure_installed = { "c", "lua", "vim", "vimdoc", "query" },
-
-        -- Install parsers synchronously (only applied to `ensure_installed`)
-        sync_install = false,
-
-        -- Automatically install missing parsers when entering buffer
-        -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
-        auto_install = true,
-
-        -- List of parsers to ignore installing (for "all")
-        ignore_install = { "javascript" },
-
-        ---- If you need to change the installation directory of the parsers (see -> Advanced Setup)
-        -- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
-
-        highlight = {
-            enable = true,
-
-            -- NOTE: these are the names of the parsers and not the filetype. (for example if you want to
-            -- disable highlighting for the `tex` filetype, you need to include `latex` in this list as this is
-            -- the name of the parser)
-            -- list of language that will be disabled
-            disable = { "c", "rust" },
-            -- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
-            disable = function(lang, buf)
-                local max_filesize = 100 * 1024 -- 100 KB
-                local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
-                if ok and stats and stats.size > max_filesize then
-                    return true
-                end
-            end,
-
-            -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-            -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-            -- Using this option may slow down your editor, and you may see some duplicate highlights.
-            -- Instead of true it can also be a list of languages
-            additional_vim_regex_highlighting = false,
-        },
-    }
+    for _, f in ipairs(_configs) do f() end
 end
 
 return M
