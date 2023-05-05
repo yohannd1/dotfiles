@@ -215,6 +215,14 @@ if match ext 'kdenlive'; then
   try gui kdenlive "$FILE"
 fi
 
+if match ext 'sunvox'; then
+  try gui sunvox "$FILE"
+fi
+
+if match ext 'ardour'; then
+  try gui ardour7 "$FILE"
+fi
+
 if match mime 'image/vnd.djvu'; then
   try tty runpage djvutxt "$FILE"
   try tty runpage exiftool "$FILE"
