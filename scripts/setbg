@@ -30,8 +30,7 @@ case "$SETBG_WALLPAPER_TYPE" in
     hsetroot -extend "$image" -tint "#BBB" || exit 1
     ;;
   color)
-    xresource="root.background"
-    color=$(xgetres "$xresource") || {
+    color=$(dotcfg-client get theme.base01) || {
       printf >&2 "Could not get X resource '%s'\n" "$xresource"
       exit 1
     }

@@ -15,7 +15,7 @@ local this_basename = basename(this_path)
 local extra_defs = loadfile(this_basename .. "/" .. "res_extra_defs.lua")()
 local longFontFormat = extra_defs.longFontFormat
 
-local chosen_name = "Mononoki"
+local chosen_name = "JetbrainsMono"
 if chosen_name == nil then -- if there's no selected font in the line above, just pick a random one.
     local t = {}
     for name, _ in pairs(extra_defs.font_presets) do
@@ -31,13 +31,6 @@ local xft_font = longFontFormat(font_config.name, font_config.terminal_pixelsize
 local enable_ligatures = false
 
 local T_ALL = {t_xres, t_dots}
-
-local declOld = function(k, v)
-    decl {
-        {k, v},
-        targets = T_ALL,
-    }
-end
 
 -- st (terminal)
 decl {
