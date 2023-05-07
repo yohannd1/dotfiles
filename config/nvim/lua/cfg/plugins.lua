@@ -190,7 +190,18 @@ local plugins = function()
         require('neorg').setup {
             load = {
                 ["core.defaults"] = {}, -- Loads default behaviour
-                ["core.concealer"] = {}, -- Adds pretty icons to your documents
+                ["core.keybinds"] = {
+                    config = { default_keybinds = false }
+                },
+                ["core.concealer"] = { -- Symbol concealing for a tidier view
+                    config = {
+                        icons = {
+                            todo = { enabled = false },
+                        },
+                    }
+                },
+                ["core.promo"] = {}, -- Semantic indentation
+                ["core.export"] = {}, -- export to markdonw
             },
         }
     end})
@@ -199,12 +210,11 @@ local plugins = function()
     plug("nvim-telescope/telescope.nvim")
     plug("nvim-lua/popup.nvim")
     plug("nvim-lua/plenary.nvim")
-    -- plug("nvim-lua/completion-nvim")
 
     -- Illuminate - delay to highlight words (in millisceconds)
-    plug({"RRethy/vim-illuminate", config = function()
-        vim.g.Illuminate_delay = 250
-    end})
+    -- plug({"RRethy/vim-illuminate", config = function()
+    --     vim.g.Illuminate_delay = 250
+    -- end})
 
     -- plug("slakkenhuis/vim-margin")
 

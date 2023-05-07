@@ -1,3 +1,4 @@
+local dummy = _G.dummy
 local utils = require("cfg.utils")
 
 local map = function(m, lhs, rhs, args)
@@ -64,6 +65,29 @@ return function()
         end)
     end)
 
+    -- Alt + h/l for quicker indentation across any mode.
+    --
+    -- I was thinking about doing Alt + ,/. for more consistency with << and >> but I think
+    -- my brain will accept using the direction keys more easily.
+    --
+    -- NOTE: I plan to use Alt keybindings for things that should work across any mode.
+    for k, once in pairs({h = "<", l = ">"}) do
+        local kb = "<M-" .. k .. ">"
+        local twice = once .. once
+        local arg = {}
+
+        map("i", kb, "<Esc>" .. twice .. "i", arg) -- using esc-i instead of c-o because the latter keeps the cursor static for some reason
+        map("n", kb, twice, arg)
+        map("v", kb, once .. "gv", arg)
+    end
+
+    -- Alt + o : toggle TODO-DONE in items
+    -- TODO: implement for visual mode
+    map("n", "<M-o>", ":call Item_ToggleTodo()<CR>", arg_nr)
+    map("i", "<M-o>", "<Esc>:call Item_ToggleTodo()<CR>a", arg_nr)
+
+    -- TODO: Alt+i for toggling an item's prefix
+
     -- Use Tab to complete or insert indent
     map("i", "<Tab>", "<C-r>=TabOrComplete(1)<CR>", arg_nr_s)
     map("i", "<S-Tab>", "<C-r>=TabOrComplete(0)<CR>", arg_nr_s)
@@ -100,9 +124,6 @@ return function()
 
     -- Improved file opener
     map("n", "gf", ":call OpenSelected()<CR>", arg_nr)
-
-    -- Wiki - toggle bullet items
-    map("n", "<Leader>,", ":call VimwikiXToggleItem()<CR>", arg_nr)
 
     -- Buffer formatting
     map("n", "<Leader>bf", ":FormatBuffer<CR>", arg_nr)

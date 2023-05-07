@@ -31,24 +31,6 @@ endif
 
 lua require("cfg.plugins").load()
 
-" TODO: remove
-" Clap command: search on wiki
-" {{{
-function! _OpenWikiFile(file)
-  let file_name = $WIKI .. "/vimwiki/" .. split(a:file)[0] .. ".wiki"
-  exec 'e ' .. file_name
-endfunction
-
-let g:clap_provider_wiki = {
-      \ "source": "acw-list-titles",
-      \ "sink": { sel -> _OpenWikiFile(sel) },
-      \ "description": "Search on my wiki",
-      \ }
-" }}}
-
-" TODO: remove
-" Clap command: insert from file
-" {{{
 function! _InsertWikiFileRef(input, after_cursor)
   normal! m`
   exec 'normal! ' .. (a:after_cursor ? 'a' : 'i') .. '[[' .. split(a:input)[0] .. ']]'
@@ -57,19 +39,6 @@ function! _InsertWikiFileRef(input, after_cursor)
     normal! l
   endif
 endfunction
-
-let g:clap_provider_wiki_iref = {
-      \ "source": "acw-list-titles",
-      \ "sink": { sel -> _InsertWikiFileRef(sel, v:false) },
-      \ "description": "...",
-      \ }
-
-let g:clap_provider_wiki_aref = {
-      \ "source": "acw-list-titles",
-      \ "sink": { sel -> _InsertWikiFileRef(sel, v:true) },
-      \ "description": "...",
-      \ }
-" }}}
 
 " Make it so <Esc> cancels clap even while on insert mode
 " augroup clap_esc_fix
@@ -380,12 +349,20 @@ endfunction " }}}
 function! WikiGenTitle() " {{{
   return strftime("%Y%m%d%H%M-") .. trim(system("hexdump -n 3 -e '4/4 \"%08X\" 1 \"\\n\"' /dev/random | cut -c 3-"))
 endfunction " }}}
-function! VimwikiXToggleItem() " {{{
+function! Item_ToggleTodo() " {{{
+  let l:Func = exists("b:item_toggletodo_func") ? b:item_toggletodo_func : funcref("Item_Default_ToggleTodo")
+  call l:Func()
+endfunction " }}}
+function! Item_Default_ToggleTodo() " {{{
   let current_line = getline('.')
+
+  let preferred_done = exists("b:item_toggletodo_preferred_done") 
+        \ ? b:item_toggletodo_preferred_done
+        \ : "x"
 
   let open_square_patt = '\v^(\s*)([*-]\s+)?\[ \]'
   if current_line =~ open_square_patt
-    exec 's/' . open_square_patt . '/' . '\1\2[X]'
+    exec 's/' . open_square_patt . '/' . '\1\2[' . preferred_done . ']'
     nohlsearch
     normal ``
     return
@@ -393,13 +370,13 @@ function! VimwikiXToggleItem() " {{{
 
   let open_round_patt = '\v^(\s*)([*-]\s+)?\( \)'
   if current_line =~ open_round_patt
-    exec 's/' . open_round_patt . '/' . '\1\2(X)'
+    exec 's/' . open_round_patt . '/' . '\1\2(' . preferred_done . ')'
     nohlsearch
     normal ``
     return
   endif
 
-  let closed_square_patt = '\v^(\s*)([*-]\s+)?\[X\]'
+  let closed_square_patt = '\v^(\s*)([*-]\s+)?\[[Xx]\]'
   if current_line =~ closed_square_patt
     exec 's/' . closed_square_patt . '/' . '\1\2[ ]'
     nohlsearch
@@ -407,7 +384,7 @@ function! VimwikiXToggleItem() " {{{
     return
   endif
 
-  let closed_round_patt = '\v^(\s*)([*-]\s+)?\(X\)'
+  let closed_round_patt = '\v^(\s*)([*-]\s+)?\([Xx]\)'
   if current_line =~ closed_round_patt
     exec 's/' . closed_round_patt . '/' . '\1\2( )'
     nohlsearch
@@ -808,6 +785,8 @@ function! ft.vimwiki() " {{{
 
   call AddSnippet("j", '%:title Journal for <C-r>=strftime("%Y/%m/%d")<CR>')
   call AddSnippet("t", '%:title ')
+
+  let b:item_toggletodo_preferred_done = "X"
 endfunction " }}}
 function! ft.vlang() " {{{
   setlocal sw=4 ts=4 noet
