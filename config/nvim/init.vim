@@ -360,33 +360,33 @@ function! Item_Default_ToggleTodo() " {{{
         \ ? b:item_toggletodo_preferred_done
         \ : "x"
 
-  let open_square_patt = '\v^(\s*)([*-]\s+)?\[ \]'
+  let open_square_patt = '\v^(\s*)([*-]*)(\s*)\[ \]'
   if current_line =~ open_square_patt
-    exec 's/' . open_square_patt . '/' . '\1\2[' . preferred_done . ']'
+    exec 's/' . open_square_patt . '/' . '\1\2\3[' . preferred_done . ']'
     nohlsearch
     normal ``
     return
   endif
 
-  let open_round_patt = '\v^(\s*)([*-]\s+)?\( \)'
+  let open_round_patt = '\v^(\s*)([*-]*)(\s*)\( \)'
   if current_line =~ open_round_patt
-    exec 's/' . open_round_patt . '/' . '\1\2(' . preferred_done . ')'
+    exec 's/' . open_round_patt . '/' . '\1\2\3(' . preferred_done . ')'
     nohlsearch
     normal ``
     return
   endif
 
-  let closed_square_patt = '\v^(\s*)([*-]\s+)?\[[Xx]\]'
+  let closed_square_patt = '\v^(\s*)([*-]*)(\s*)\[[Xx]\]'
   if current_line =~ closed_square_patt
-    exec 's/' . closed_square_patt . '/' . '\1\2[ ]'
+    exec 's/' . closed_square_patt . '/' . '\1\2\3[ ]'
     nohlsearch
     normal ``
     return
   endif
 
-  let closed_round_patt = '\v^(\s*)([*-]\s+)?\([Xx]\)'
+  let closed_round_patt = '\v^(\s*)([*-]*)(\s*)\([Xx]\)'
   if current_line =~ closed_round_patt
-    exec 's/' . closed_round_patt . '/' . '\1\2( )'
+    exec 's/' . closed_round_patt . '/' . '\1\2\3( )'
     nohlsearch
     normal ``
     return
@@ -821,6 +821,12 @@ function! ft.uxntal() " {{{
   setlocal sw=8 noet
   setlocal iskeyword+=-
 endfunction " }}}
+function! ft.acw() " {{{
+  let b:todo_queries = ['^(\s*)([-*]\s+)?\( \)', '^(\s*)([-*]\s+)?\[ \]']
+  let b:item_toggletodo_preferred_done = "x"
+  setlocal foldenable
+  setlocal sw=2
+endfunction " }}}
 
 " }}}
 
@@ -897,7 +903,13 @@ cnoreabbrev sbt SWBindToggle
 " Find TO-DO's
 " {{{
 function! FindTodos()
-  let l:query = '\v<(TODO|FIXME|XXX)>'
+  let l:queries = ['<TODO>', '<FIXME>', '<XXX>']
+  if exists("b:todo_queries")
+    let l:queries += b:todo_queries
+  endif
+
+  let l:query = '\v(' . l:queries->join("|") . ')'
+  let g:_foo = l:query
   exec 'normal! /' . l:query . 'nN'
   call histadd("/", l:query)
 endfunction

@@ -177,6 +177,7 @@ else
   call s:hl("Normal",      "05",   "NONE", "",     "")
 endif
 
+" Standard semantics
 call s:hl("Bold",          "NONE", "NONE", "bold", "")
 call s:hl("Debug",         "08",   "NONE", "", "")
 call s:hl("Directory",     "0D",   "NONE", "", "")
@@ -223,7 +224,10 @@ call s:hl("TabLineFill",   "03",   "NONE", "none", "")
 call s:hl("TabLineSel",    "0A",   "01",   "bold,italic", "")
 call s:hl("MatchParen",    "00",   "03",   "none", "")
 
-" Standard syntax highlighting
+" Custom semantics
+call s:hl("Dimmed", "03", "NONE", "", "")
+
+" Standard semantics - language definitions
 call s:hl("Boolean",      "09", "NONE", "", "")
 call s:hl("Character",    "08", "NONE", "", "")
 call s:hl("Comment",      "03", "NONE", "italic", "")
@@ -448,8 +452,11 @@ call s:hl("ClapNoMatchesFound",   "08",   "NONE", "NONE", "")
 " See also: ClapPreview ClapDefaultSelected ClapDefaultCurrentSelection
 
 " Vimwiki
-call s:hl("VimwikiXTodo",         "0B", "01",   "", "")
-call s:hl("VimwikiXDone",         "03", "NONE",   "", "")
+hi link VimwikiXDone Dimmed
+" call s:hl("VimwikiXDone",         "03", "NONE",   "", "")
+
+" acw
+hi link acwTaskDone Dimmed
 
 " Illuminate
 call s:hl("illuminatedWord",      "NONE", "02",   "", "")

@@ -57,6 +57,7 @@ local plugins = function()
         vim.g.rainbow_conf = {
             separately = {
                 vimwiki = 0,
+                acw = 0,
                 uxntal = 0,
             }
         }
@@ -193,13 +194,13 @@ local plugins = function()
                 ["core.keybinds"] = {
                     config = { default_keybinds = false }
                 },
-                ["core.concealer"] = { -- Symbol concealing for a tidier view
-                    config = {
-                        icons = {
-                            todo = { enabled = false },
-                        },
-                    }
-                },
+                -- ["core.concealer"] = { -- Symbol concealing for a tidier view
+                --     config = {
+                --         icons = {
+                --             todo = { enabled = false },
+                --         },
+                --     }
+                -- },
                 ["core.promo"] = {}, -- Semantic indentation
                 ["core.export"] = {}, -- export to markdonw
             },

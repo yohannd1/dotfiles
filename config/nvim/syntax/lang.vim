@@ -1,9 +1,10 @@
 if exists("b:current_syntax") | finish | endif
 let b:current_syntax = "lang"
 
-syn match langKeyword /\v<(\@|fn|if|else|match|for|return|comptime|runtime)>/
+syn match langKeyword /\v<(fn|if|else|match|for|return|comptime|runtime)>/
 syn match langDeclKeyword /\v<(let|var)>/
 syn match langConstant /\v<(nil|true|false)>/
+
 syn match langKeyword /\v\@/
 
 syn match langOperator /?=/ " default argument operator (FIXME: is this needed?)
