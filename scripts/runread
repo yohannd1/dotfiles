@@ -3,20 +3,27 @@
 # Runs "$@" and waits the user to press q.
 
 if [ $# = 0 ]; then
-  printf >&2 "%s\n" "Usage: $(basename $0) <command> [command]"
+  printf >&2 "%s\n" "Usage: $(basename $0) <ARGS...>"
+  printf >&2 "Related env vars:\n"
+  printf >&2 "  RUNREAD_PIPE : if set, the command is ran as piped, without interaction with the terminal."
   exit 1
 fi
 
 while true; do
-  "$@"
+  printf "@[COMMAND]: %s\n" "$*"
+  if [ "$RUNREAD_PIPE" ]; then
+    "$@" </dev/null 2>&1 | cat
+  else
+    "$@"
+  fi
   exitCode="$?"
   printf '\033[2 q'
-  printf '\n#[ec: %d]# (q)uit (R)eload: ' "$exitCode"
+  printf '\n#[ec: %d]# (q)uit (R)eload (s)hell: ' "$exitCode"
   while read -sn1 ch; do
     case "$ch" in
       q) exit "$exitCode" ;;
       R) clear && break ;;
-      # '') exit "$exitCode" ;;
+      s) printf "\n" && exec "$SHELL" ;;
       *) ;;
     esac
   done

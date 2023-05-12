@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+[ "$TMUX" ] && { printf >&2 "TMUX is set; aborting...\n"; exit 1; }
+[ $# != 1 ] && { printf >&2 "Usage: %s <COMMAND>\n" "$(basename "$0")"; exit 1; }
+
+session="bg-running"
+
+faketty() {
+  # so tmux thinks we're running from a terminal (bruh)
+  script -qfc "$(printf "%q " "$@")" /dev/null
+}
+
+export RUNREAD_PIPE=1
+
+cmd="runread $1" # and pray this isn't exploited
+if tmux has-session -t "$session" 2>/dev/null; then
+  faketty tmux attach -t "$session" ';' new-window "$cmd" ';' detach
+else
+  faketty tmux new-session -d -s "$session" "$cmd"
+fi

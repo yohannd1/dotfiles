@@ -208,9 +208,15 @@ class ShellAction(Action):
     shell: str = SHELL
 
     def run(self):
-        args = [self.shell, "-c", self.command]
+        os.environ["SHELL"] = self.shell
+        run = lambda args: os.execvp(args[0], args)
 
-        os.execvp(args[0], args)
+        if os.getenv("DISPLAY") is None:
+            run([self.shell, "-c", self.command])
+        else:
+            print(self.command, file=sys.stderr)
+            # FIXME: this WILL pile up. how to improve it?
+            run(["tmux-bg-run", self.command])
 
     def repr(self) -> ActionRepr:
         return ActionRepr("cmd", self.name)

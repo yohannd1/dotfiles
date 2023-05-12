@@ -3,4 +3,4 @@
 # A wrapper for the Heroic Games Launcher
 # Said software is available at: https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher
 
-heroic >"$XSESSIONDIR/heroic" 2>&1
+heroic # >"$XSESSIONDIR/heroic" 2>&1
