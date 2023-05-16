@@ -71,7 +71,7 @@ while [ ! "$exit" ]; do
   d     show diff
   p     pull
   s     push
-  S     push + set upstream
+  S     set upstream + push
   l     log (compact)
   L     log (full)
   f     fetch

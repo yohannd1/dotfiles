@@ -383,7 +383,7 @@ class SelectGame:
         os.execvp(args[0], args)
 
     def repr(self) -> ActionRepr:
-        return ActionRepr("ext", "Select from the apps directory")
+        return ActionRepr("ext", "Select from the packages directory (apps/games)")
 
 
 @dataclass

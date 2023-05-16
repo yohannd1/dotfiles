@@ -15,7 +15,7 @@ local this_basename = basename(this_path)
 local extra_defs = loadfile(this_basename .. "/" .. "res_extra_defs.lua")()
 local longFontFormat = extra_defs.longFontFormat
 
-local chosen_name = "JetbrainsMono"
+local chosen_name = "Unifont"
 if chosen_name == nil then -- if there's no selected font in the line above, just pick a random one.
     local t = {}
     for name, _ in pairs(extra_defs.font_presets) do
@@ -34,7 +34,7 @@ local T_ALL = {t_xres, t_dots}
 
 -- st (terminal)
 decl {
-    {"st.alpha", "0.9"},
+    {"st.alpha", "0.7"},
     {"st.cursor", theme["base0D"]},
     {"st.font", xft_font},
     {"st.enableligatures", (enable_ligatures and font_config.supports_ligatures) and 1 or 0},
