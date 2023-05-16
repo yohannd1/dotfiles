@@ -1119,7 +1119,6 @@ endfunction
 " Experimental Stuff {{{
 
 au BufRead,BufNewFile *.wiki set ft=acrylic
-au BufRead,BufNewFile *.acr set ft=acrylic
 au BufRead,BufNewFile *.lang set ft=lang
 
 " Telescope builtins

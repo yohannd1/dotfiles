@@ -27,7 +27,24 @@ local function plug(arg)
     end
 end
 
+local firstAvailableDir = function(arg)
+    for _, dir in ipairs(arg) do
+        if vim.fn.isdirectory(dir) then
+            return dir
+        end
+    end
+
+    if arg.fallback then
+        return arg.fallback
+    else
+        error("Could not find plugin + no fallback specified")
+    end
+end
+
 local plugins = function()
+    local HOME = assert(os.getenv("HOME"), "could not get home directory")
+    local pj_code = HOME .. "/pj/code"
+
     -- Editing enhancements {{{
     plug("tpope/vim-surround")
     plug("tpope/vim-repeat")
@@ -196,33 +213,36 @@ local plugins = function()
     --     vim.g.vimwiki_url_maxsave = 0
     -- end})
 
-    plug({"nvim-neorg/neorg", config = function()
-        require('neorg').setup {
-            load = {
-                ["core.defaults"] = {}, -- Loads default behaviour
-                ["core.keybinds"] = {
-                    config = { default_keybinds = false }
-                },
-                -- ["core.concealer"] = { -- Symbol concealing for a tidier view
-                --     config = {
-                --         icons = {
-                --             todo = { enabled = false },
-                --         },
-                --     }
-                -- },
-                ["core.promo"] = {}, -- Semantic indentation
-                ["core.export"] = {}, -- export to markdonw
-            },
-        }
-    end})
+    -- plug({"nvim-neorg/neorg", config = function()
+    --     require('neorg').setup {
+    --         load = {
+    --             ["core.defaults"] = {}, -- Loads default behaviour
+    --             ["core.keybinds"] = {
+    --                 config = { default_keybinds = false }
+    --             },
+    --             -- ["core.concealer"] = { -- Symbol concealing for a tidier view
+    --             --     config = {
+    --             --         icons = {
+    --             --             todo = { enabled = false },
+    --             --         },
+    --             --     }
+    --             -- },
+    --             ["core.promo"] = {}, -- Semantic indentation
+    --             ["core.export"] = {}, -- export to markdonw
+    --         },
+    --     }
+    -- end})
 
-    do
-        local p = os.getenv("HOME") .. "/pj/code/vim-hydra-fork"
-        if not vim.fn.isdirectory(p) then
-            p = "YohananDiamond/vim-hydra"
-        end
-        plug(p)
-    end
+    -- Acrylic
+    plug(firstAvailableDir {
+        pj_code .. "/acrylic.vim",
+        fallback = "YohananDiamond/acrylic.vim",
+    })
+
+    plug(firstAvailableDir {
+        pj_code .. "/vim-hydra-fork",
+        fallback = "YohananDiamond/vim-hydra-fork",
+    })
 
     plug("nvim-telescope/telescope.nvim")
     plug("nvim-lua/popup.nvim")
