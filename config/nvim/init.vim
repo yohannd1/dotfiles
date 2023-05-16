@@ -28,7 +28,7 @@ endif
 
 " }}}
 " Plugins {{{
-
+"
 lua require("cfg.plugins").load()
 
 function! _InsertWikiFileRef(input, after_cursor)
@@ -821,7 +821,9 @@ function! ft.uxntal() " {{{
   setlocal sw=8 noet
   setlocal iskeyword+=-
 endfunction " }}}
-function! ft.acw() " {{{
+function! ft.acrylic() " {{{
+  call AddSnippet("t", '%:title ')
+
   let b:todo_queries = ['^(\s*)([-*]\s+)?\( \)', '^(\s*)([-*]\s+)?\[ \]']
   let b:item_toggletodo_preferred_done = "x"
   setlocal foldenable
@@ -1006,55 +1008,99 @@ vnoremap <silent> J :call TheBetterVisualJoin()<CR>
 " {{{
 " Wiki - create file, insert it inline and go to the new file
 function! Vimwiki_NewFileAddRef(after_cursor)
-  while v:true
+  let LIMIT = 20
+  let i = 0
+  while 1
     let title = WikiGenTitle()
     let file_path = g:wiki_dir .. "/" .. title .. ".wiki"
 
-    if filereadable(file_path)
-      continue
+    if !filereadable(file_path)
+      call _InsertWikiFileRef(title, a:after_cursor)
+      exec 'edit ' .. file_path
+      return 1
     endif
 
-    call _InsertWikiFileRef(title, a:after_cursor)
-    exec 'edit ' .. file_path
-    break
+    let i += 1
+    if i > LIMIT
+      echo "EXCEEDED LIMIT"
+      return -1
+    endif
   endwhile
 endfunction
 
-silent call hydra#hydras#register({
-      \ "name":           "vimwiki",
-      \ "title":          "Vimwiki",
-      \ "show":           "popup",
-      \ "exit_key":       "q",
-      \ "feed_key":       v:false,
-      \ "foreign_key":    v:true,
-      \ "single_command": v:true,
-      \ "position":       "s:bottom_right",
-      \ "keymap": [
-      \   {
-      \     "name": "General",
-      \     "keys": [
-      \       ["w", "e ~/wiki/vimwiki/index.wiki", "open index"],
-      \       ["s", "e ~/wiki/vimwiki/202105021825-E80938.wiki", "open scratchpad"],
-      \       ["p", "e ~/wiki/vimwiki/202212311207-AFDA90.wiki", "open week plan (2023)"],
-      \       ["j", "lua dummy.open_today_journal()", "open today's journal"],
-      \       ["o", "lua dummy.open_wiki_file({})", "select a wiki file"],
-      \       ["H", "Vimwiki2HTMLBrowse", "compile current & browse"],
-      \       ["h", "Vimwiki2HTML", "compile current"],
-      \       ["A", "VimwikiAll2HTML", "compile all"],
-      \     ]
-      \   },
-      \   {
-      \     "name": "References",
-      \     "keys": [
-      \       ["R", "lua dummy.insert_wiki_file{after_cursor = false}", "add reference ←"],
-      \       ["r", "lua dummy.insert_wiki_file{after_cursor = true}", "add reference →"],
-      \       ["N", "call Vimwiki_NewFileAddRef(v:false)", "new note + add reference ←"],
-      \       ["n", "call Vimwiki_NewFileAddRef(v:true)", "new note + add reference →"],
-      \     ]
-      \   },
-      \ ]
-      \ }
-      \ )
+lua <<EOF
+vim.fn["hydra#hydras#register"] {
+  name = "vimwiki",
+  title = "Vimwiki",
+  show = "popup",
+  exit_key = "q",
+  feed_key = false,
+  foreign_key = true,
+  single_command = true,
+  position = "s:bottom_right",
+  keymap = {
+    {
+        name = "General",
+        keys = {
+          {"w", "e ~/wiki/vimwiki/index.wiki", "open index"},
+          {"s", "e ~/wiki/vimwiki/202105021825-E80938.wiki", "open scratchpad"},
+          {"p", "e ~/wiki/vimwiki/202212311207-AFDA90.wiki", "open week plan (2023)"},
+          {"j", "lua dummy.open_today_journal()", "open today's journal"},
+          {"o", "lua dummy.open_wiki_file({})", "select a wiki file"},
+          {"H", "Vimwiki2HTMLBrowse", "compile current & browse"},
+          {"h", "Vimwiki2HTML", "compile current"},
+          {"A", "VimwikiAll2HTML", "compile all"},
+        },
+    },
+
+    {
+        name = "References",
+        keys = {
+          {"R", "lua dummy.insert_wiki_file{after_cursor = false}", "add reference ←"},
+          {"r", "lua dummy.insert_wiki_file{after_cursor = true}", "add reference →"},
+          {"N", "call Vimwiki_NewFileAddRef(v:false)", "new note + add reference ←"},
+          {"n", "call Vimwiki_NewFileAddRef(v:true)", "new note + add reference →"},
+        }
+    }
+  }
+}
+EOF
+
+" silent call hydra#hydras#register({
+"       \ "name":           "vimwiki",
+"       \ "title":          "Vimwiki",
+"       \ "show":           "popup",
+"       \ "exit_key":       "q",
+"       \ "feed_key":       v:false,
+"       \ "foreign_key":    v:true,
+"       \ "single_command": v:true,
+"       \ "position":       "s:bottom_right",
+"       \ "keymap": [
+"       \   {
+"       \     "name": "General",
+"       \     "keys": [
+"       \       ["w", "e ~/wiki/vimwiki/index.wiki", "open index"],
+"       \       ["s", "e ~/wiki/vimwiki/202105021825-E80938.wiki", "open scratchpad"],
+"       \       ["p", "e ~/wiki/vimwiki/202212311207-AFDA90.wiki", "open week plan (2023)"],
+"       \       ["j", "lua dummy.open_today_journal()", "open today's journal"],
+"       \       ["o", "lua dummy.open_wiki_file({})", "select a wiki file"],
+"       \       ["H", "Vimwiki2HTMLBrowse", "compile current & browse"],
+"       \       ["h", "Vimwiki2HTML", "compile current"],
+"       \       ["A", "VimwikiAll2HTML", "compile all"],
+"       \     ]
+"       \   },
+"       \   {
+"       \     "name": "References",
+"       \     "keys": [
+"       \       ["R", "lua dummy.insert_wiki_file{after_cursor = false}", "add reference ←"],
+"       \       ["r", "lua dummy.insert_wiki_file{after_cursor = true}", "add reference →"],
+"       \       ["N", "call Vimwiki_NewFileAddRef(v:false)", "new note + add reference ←"],
+"       \       ["n", "call Vimwiki_NewFileAddRef(v:true)", "new note + add reference →"],
+"       \     ]
+"       \   },
+"       \ ]
+"       \ }
+"       \ )
 
 nnoremap <silent> <Leader>w :Hydra vimwiki<CR>
 " }}}
@@ -1072,7 +1118,8 @@ endfunction
 " }}}
 " Experimental Stuff {{{
 
-au BufRead,BufNewFile *.acw set ft=acw
+au BufRead,BufNewFile *.wiki set ft=acrylic
+au BufRead,BufNewFile *.acr set ft=acrylic
 au BufRead,BufNewFile *.lang set ft=lang
 
 " Telescope builtins
@@ -1082,9 +1129,6 @@ nnoremap <leader>o <cmd>lua dummy.open_recent()<CR>
 nnoremap <leader>g <cmd>Goyo 130<CR>
 nnoremap <leader>G <cmd>Goyo!<CR>
 nnoremap <leader>W <cmd>MatchupWhereAmI?<CR>
-
-let g:neovide_transparency = 0.8
-let g:neovide_cursor_vfx_mode = "ripple"
 
 nnoremap <Leader>L <cmd>set cursorline!<CR>
 nnoremap <Leader>C <cmd>set cursorcolumn!<CR>

@@ -55,9 +55,14 @@ local plugins = function()
     plug({"luochen1990/rainbow", config = function()
         vim.g.rainbow_active = 1
         vim.g.rainbow_conf = {
+            -- parentheses = {
+            --     [[start="(" end=")"]],
+            --     [[start="[" end="]"]],
+            --     [[start="{" end="}"]],
+            -- }
             separately = {
                 vimwiki = 0,
-                acw = 0,
+                acrylic = 0,
                 uxntal = 0,
             }
         }
@@ -171,21 +176,25 @@ local plugins = function()
     -- Misc.
     plug("tpope/vim-vinegar")
 
-    plug({"vimwiki/vimwiki", config = function()
-        -- FIXME: Slowdown candidate
+    -- acrylic
+    -- FIXME: change path lol
+    vim.g.wiki_dir = os.getenv("WIKI") .. "/vimwiki"
 
-        vim.g.wiki_dir = os.getenv("WIKI") .. "/vimwiki"
-        vim.g.vimwiki_list = {{
-            path = vim.g.wiki_dir,
-            path_html = "~/.cache/output/vimwiki_html",
-            syntax = "default",
-            ext = ".wiki"
-        }}
-        vim.g.vimwiki_map_prefix = "<NOP>"
-        vim.g.vimwiki_global_ext = 0
-        vim.g.vimwiki_conceallevel = 0
-        vim.g.vimwiki_url_maxsave = 0
-    end})
+    -- plug({"vimwiki/vimwiki", config = function()
+    --     -- FIXME: Slowdown candidate
+
+    --     vim.g.wiki_dir = os.getenv("WIKI") .. "/vimwiki"
+    --     vim.g.vimwiki_list = {{
+    --         path = vim.g.wiki_dir,
+    --         path_html = "~/.cache/output/vimwiki_html",
+    --         syntax = "default",
+    --         ext = ".wiki"
+    --     }}
+    --     vim.g.vimwiki_map_prefix = "<NOP>"
+    --     vim.g.vimwiki_global_ext = 0
+    --     vim.g.vimwiki_conceallevel = 0
+    --     vim.g.vimwiki_url_maxsave = 0
+    -- end})
 
     plug({"nvim-neorg/neorg", config = function()
         require('neorg').setup {
@@ -207,7 +216,14 @@ local plugins = function()
         }
     end})
 
-    plug("YohananDiamond/vim-hydra")
+    do
+        local p = os.getenv("HOME") .. "/pj/code/vim-hydra-fork"
+        if not vim.fn.isdirectory(p) then
+            p = "YohananDiamond/vim-hydra"
+        end
+        plug(p)
+    end
+
     plug("nvim-telescope/telescope.nvim")
     plug("nvim-lua/popup.nvim")
     plug("nvim-lua/plenary.nvim")
