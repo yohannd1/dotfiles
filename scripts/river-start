@@ -1,3 +1,15 @@
 #!/usr/bin/env sh
 
+tty=$(tty)
+if printf "%s" "$tty" | grep -q '^/dev/tty'; then
+  tty=${tty#/dev/tty}
+elif test "$SX_TTY"; then
+  tty=${SX_TTY#/dev/tty}
+else
+  printf >&2 "%s\n" "Unknown TTY string: '$tty'"
+  exit 1
+fi
+
+export XSESSIONDIR="/tmp/xsessions/wayland-$tty"
+
 XKB_DEFAULT_LAYOUT="br" river

@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+pkill yambar
+eval $(load-base16-theme --export)
+yambar

@@ -1,0 +1,97 @@
+#!/usr/bin/env janet
+
+(def WAYLAND-TERMINAL (or (os/getenv "WAYLAND_TERMINAL") "foot"))
+(def XORG-TERMINAL (or (os/getenv "XORG_TERMINAL") "xterm"))
+
+(defn shell-cmd-exists [cmd]
+  (def p (os/spawn ["sh" "-c" (string/join ["command -v" cmd] " ")]
+                   :p {:out :pipe :err :pipe}))
+  (= (:wait p) 0))
+
+(def WAYLAND-DISPLAY (os/getenv "WAYLAND_DISPLAY"))
+(def XORG-DISPLAY (os/getenv "DISPLAY"))
+
+(when (and WAYLAND-DISPLAY
+           (not (shell-cmd-exists WAYLAND-TERMINAL))
+  (printf "WAYLAND_DISPLAY is set, but couldn't find %s" WAYLAND-TERMINAL)
+  (os/exit 1)))
+
+(when (and XORG-DISPLAY
+           (not (shell-cmd-exists XORG-TERMINAL))
+  (printf "DISPLAY is set, but couldn't find %s" XORG-TERMINAL)
+  (os/exit 1)))
+
+(def arguments @{})
+(def empty-args @[])
+(var current-opt nil)
+(var args-till-pop 0)
+
+(defn add-argument [opt val]
+  (if (= opt nil)
+    (do
+      (array/push empty-args val)
+      (set args-till-pop 0))
+    (do
+      (when (= (get arguments opt) nil)
+        (put arguments opt @[]))
+
+      (array/push (get arguments opt) val)
+      (set args-till-pop (- args-till-pop 1))
+      (when (= args-till-pop 0)
+        (set current-opt nil))
+      )
+    )
+  )
+
+(def cli-args (dyn :args))
+(for i 1 (length cli-args)
+  (def arg (get cli-args i))
+  (cond
+    # if currently parsing an option's args, let it be
+    (and (not current-opt)
+         (> args-till-pop 0)) (add-argument current-opt arg)
+
+    # option: geometry
+    (= arg "-g") (do
+                   (set current-opt :geometry)
+                   (set args-till-pop 1))
+
+    # option: class
+    (= arg "-c") (do
+                   (set current-opt :class)
+                   (set args-till-pop 1))
+
+    # option: eval
+    (= arg "-e") (do
+                   (set current-opt :eval)
+                   (set args-till-pop 0))
+
+    true (add-argument current-opt arg)
+    ))
+
+(def terminal (cond
+                WAYLAND-DISPLAY WAYLAND-TERMINAL
+                XORG-DISPLAY XORG-TERMINAL
+                true (error "Could not decide on terminal")))
+
+(def exec-args
+  (let [a-geo (get arguments :geometry)
+        a-eval (get arguments :eval)
+        a-class (get arguments :class)]
+    (cond
+      (= terminal "foot") ["foot"
+                           ;(if a-geo ["-W" ;a-geo] [])
+                           # open tmux as default hehe; this probably should be elsewhere
+                           ;(if a-class ["-a" ;a-class] [])
+                           ;(if a-eval a-eval ["tmux"])
+                           ]
+
+      # all other terminals
+      true [terminal
+            ;(if a-geo ["-g" ;a-geo] [])
+            ;(if a-class ["-c" ;a-class] [])
+            ;(if a-eval ["-e" ;a-eval] [])
+            ]
+      )))
+
+(os/execute exec-args :p)

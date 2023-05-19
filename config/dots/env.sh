@@ -11,6 +11,18 @@ else
   export DOTFILES="$_fallback_dotpath"
 fi
 
+# wayland stuff
+if [ "$WAYLAND_DISPLAY" ]; then
+  # https://mastransky.wordpress.com/2020/03/16/wayland-x11-how-to-run-firefox-in-mixed-environment/
+
+  export MOZ_DBUS_REMOTE=1
+  export SDL_VIDEODRIVER=wayland
+  export _JAVA_AWT_WM_NONREPARENTING=1
+  export QT_QPA_PLATFORM=wayland
+  # export XDG_CURRENT_DESKTOP=sway
+  # export XDG_SESSION_DESKTOP=sway
+fi
+
 # the laziest way to force the locale I want
 export LC_ALL='en_US.UTF-8'
 
@@ -32,9 +44,12 @@ export ACW_WIKI_DIR="$WIKI/vimwiki"
 [ -z "$DISPLAY" ] && export WM=awesome # only export if it hasn't been set before
 export TERM=xterm-256color
 export EDITOR=nvim
-# _isAndroid && export EDITOR=nvim || export EDITOR=start-emacs
 export MAYBE_GRAPHICAL_EDITOR=maybe-graphedit
-export TERMINAL=st
+
+export WAYLAND_TERMINAL=foot
+export XORG_TERMINAL=st
+export TERMINAL=dotf.wrap.terminal
+
 export BROWSER=librewolf
 export TERMBROWSER=w3m
 export PAGER=less
@@ -75,9 +90,11 @@ export LUAROCKS_HOME="$HOME/.luarocks"
 export CARP_DIR="$HOME/pj/clone/Carp"
 export NPM_DIR="$XDG_DATA_DIR/npm"
 
+# xorg & wayland
+export KBRATE_DELAY="250"
+export KBRATE_INTERVAL="45"
+
 # program options
-export XORG_KBRATE_DELAY="300"
-export XORG_KBRATE_INTERVAL="30"
 export GIT_EDITOR="$EDITOR"
 export LESS="-RC"
 export KEYTIMEOUT=1
@@ -120,7 +137,7 @@ _exists sccache && export RUSTC_WRAPPER=sccache
 # dotfiles program options
 export DIR_BOOKMARKS=~/storage/share/bookmarks.sh
 export FLAMEW_SCR_FOLDER=~/storage/pictures/screenshots
-export SETBG_WALLPAPER_TYPE="color"
+export SETBG_WALLPAPER_TYPE="image"
 export BKMK_FILE="$WIKI/data/bookmarks.json"
 export ITMN_FILE="$WIKI/data/itmn.json"
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"
@@ -130,6 +147,11 @@ export CLANG_FORMAT_CPP_CONFIG="$DOTFILES/config/clang-format-cpp.yaml"
 export X_COMPOSITOR="picom"
 export FILEHIST_MAX_LIMIT=500
 export FILEHIST_NO_TIDY=1
+
+# prevent annoying timeouts on some GTK applications.
+# FIXME: is there any downside to this?
+# FIXME: IS THIS EVEN WORKING????????????
+export GTK_USE_PORTAL=0
 
 export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx

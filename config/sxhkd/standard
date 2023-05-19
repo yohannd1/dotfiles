@@ -1,17 +1,18 @@
 # -*- mode: conf -*-
 # vim: ft=conf fdm=marker
 #
-# a set of keybindings for general use, working idnependently of wm
+# a set of keybindings for general use, working independently of wm
 
 # start/restart compositor
 super + control + shift + c
     start-compositor
 
 # terminal
-super + Return
-    $TERMINAL
-super + shift + Return
-    $TERMINAL -g 100x35 -c 'float'
+# super + Return
+#     notify-send dotf.wrap.terminal
+
+# super + shift + Return
+#     termup zsh
 
 # program launcher
 super + space
@@ -38,6 +39,7 @@ super + c
     runnsend error ksnip -r
     # runnsend error flameshot gui
     # runnsend error flamew gui
+
 # super + alt + c
 #     runnsend error flamew fullc
 # super + shift + c
@@ -103,7 +105,7 @@ super + e
 
 # editor
 super + shift + e
-    $TERMINAL -c float -g 100x35 -e $EDITOR
+    dotf.wrap.terminal -c float -g 100x35 -e $EDITOR
 
 # simulate scolling with xdotool
 super + {Up,Down,Left,Right}
@@ -113,35 +115,39 @@ super + {Up,Down,Left,Right}
 super + ctrl + {Up,Down,Left,Right}
     xdotool keydown ctrl click {4,5,6,7}
 
-super + o; a
-    $TERMINAL -c float -g 130x35 -e sh -c "acw-today-report 2>&1 | vimpager"
+# open mode
+super + o
+    @enter open && notify-send "ENTER OPEN"
 
-# super-o apps
-super + o; c
-    $TERMINAL -c float -g 65x10 -e runread cal -3
-super + o; super + c
-    $TERMINAL -c float -g 66x25 -e runread cal -y
-super + o; m
-    $TERMINAL -c float -e pulsemixer
-super + o; y
-    $TERMINAL -c float -g 90x25 -e ytop
-super + o; shift + c
-    $TERMINAL -c float -g 100x35 -e calc
-super + o; t
-    $TERMINAL -e tmux-tray
-super + o; shift + t
-    $TERMINAL -c float -g 100x35 -e tmux-tray
-super + o; b
-    runnsend error-and-output bkmk menu
+mode open
+a
+    dotf.wrap.terminal -c float -g 130x35 -e sh -c "acw-today-report 2>&1 | vimpager" && @escape
+c
+    dotf.wrap.terminal -c float -g 65x10 -e runread cal -3 && @escape
+super + c
+    dotf.wrap.terminal -c float -g 66x25 -e runread cal -y && @escape
+m
+    dotf.wrap.terminal -c float -e pulsemixer && @escape
+y
+    dotf.wrap.terminal -c float -g 90x25 -e ytop && @escape
+shift + c
+    dotf.wrap.terminal -c float -g 100x35 -e calc && @escape
+t
+    dotf.wrap.terminal -e tmux-tray && @escape
+shift + t
+    dotf.wrap.terminal -c float -g 100x35 -e tmux-tray && @escape
+b
+    runnsend error-and-output bkmk menu && @escape
+endmode
 
 # Mouse middle button paste prevention
 # I don't know why but this disables middle-mouse-paste without preventing the middle button from working
 # Source: https://unix.stackexchange.com/a/472464
-~button2
-    echo -n | xsel -n -i
-~control + c
-    echo -n | xsel -n -i
-~control + shift + c
-    echo -n | xsel -n -i
-~control + x
-    echo -n | xsel -n -i
+# ~button2
+#     echo -n | xsel -n -i
+# ~control + c
+#     echo -n | xsel -n -i
+# ~control + shift + c
+#     echo -n | xsel -n -i
+# ~control + x
+#     echo -n | xsel -n -i

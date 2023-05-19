@@ -283,8 +283,10 @@ alias jpdo='LANG=ja_JP.UTF8 LC_ALL=ja_JP'
 alias sy='dotsync'
 alias of='openfork'
 
-startXServerOrLogout() { start-xserver || logout; }
-alias sx='startXServerOrLogout'
+# startXServerOrLogout() { start-xserver || logout; }
+# alias sx='startXServerOrLogout'
+
+sg() { dbus-launch --exit-with-session river-start; }
 
 editRecentf() { filehist select "$EDITOR"; }
 alias er='editRecentf'
@@ -298,6 +300,10 @@ fi
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
+
+tmux-nest() {
+  TMUX= tmux "$@"
+}
 
 # A wrapper for the `info` command
 info() {

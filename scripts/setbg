@@ -1,12 +1,32 @@
 #!/usr/bin/env sh
 
+set -x
+
 if [ $# != 0 ]; then
   printf >&2 "Usage: %s\n" "$(basename $0)"
   printf >&2 "Control is done via the following environment variables:\n"
   printf >&2 " %s : %s\n" "SETBG_IMG_DIR" "The directory where the wallpapers are located (if image)"
   printf >&2 " %s : %s\n" "SETBG_WALLPAPER_TYPE" "The type of background to be set."
-  printf >&2 "    -> %s\n" "color -> use hsetroot to set background to 'root.background' resource"
+  printf >&2 "    -> %s\n" "color -> set background to 'root.background' resource"
   printf >&2 "    -> %s\n" "{ image | img } -> set background image (see SETBG_IMG_DIR)"
+  exit 1
+fi
+
+if [ "$WAYLAND_DISPLAY" ]; then
+  killOld() { pkill swaybg; }
+  setImg() {
+    killOld
+    swaybg -i "$1" & disown
+  }
+  setColor() {
+    killOld
+    swaybg -c "$1" & disown
+  }
+elif [ "$DISPLAY" ]; then
+  setImg() { hsetroot -extend "$1" -tint "#BBB"; }
+  setColor() { hsetroot -solid "$1" -brightness -0.05; }
+else
+  printf >&2 "Neither Wayland nor X11 was detected; aborting\n"
   exit 1
 fi
 
@@ -27,14 +47,14 @@ case "$SETBG_WALLPAPER_TYPE" in
     fi
 
     image=$(shuf -n1 -e "$SETBG_IMG_DIR"/*) || exit 1
-    hsetroot -extend "$image" -tint "#BBB" || exit 1
+    setImg "$image" || exit 1
     ;;
   color)
     color=$(dotcfg-client get theme.base01) || {
       printf >&2 "Could not get X resource '%s'\n" "$xresource"
       exit 1
     }
-    hsetroot -solid "$color" -brightness -0.05
+    setColor "$color" || exit 1
     ;;
   *)
     printf >&2 "Invalid wallpaper type: %s\n" "$SETBG_WALLPAPER_TYPE"

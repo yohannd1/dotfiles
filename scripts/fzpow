@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # vim: fdm=marker
 
 # A simple script for power actions.
@@ -49,11 +49,28 @@ showHelp() {
   printf >&2 "%s\n" "If no argument is specified, a fzagnostic pop-up is shown to select it manually."
 }
 
+isWayland() { [ "$WAYLAND_DISPLAY" ]; }
+isXorg() { ! isWayland && [ "$DISPLAY" ]; }
+
 action_lock() {
-  if exists bslock; then
+  _getWaylockColors() {
+    c_init="0x$(dotcfg-client get theme_no_prefix.base01)" || return 1
+    c_input="0x$(dotcfg-client get theme_no_prefix.base03)" || return 1
+    c_fail="0x$(dotcfg-client get theme_no_prefix.base0F)" || return 1
+  }
+
+  if isXorg && exists bslock; then
     _lock() { bslock; }
-  elif exists betterlockscreen; then
+  elif isXorg && exists betterlockscreen; then
     _lock() { betterlockscreen -l; }
+  elif isWayland && exists waylock; then
+    if _getWaylockColors; then
+      waylock_args=(-init-color "$c_init" -input-color "$c_input" -fail-color "$c_fail")
+    else
+      waylock_args=()
+    fi
+
+    _lock() { waylock "${waylock_args[@]}"; }
   else
     printf >&2 "No lockscreen program found.\n"
     return 1
@@ -72,7 +89,8 @@ action_lock() {
 
   # if it's been more than 5 seconds since the lockscreen spawned and it died from an error, then shut down the system for security reasons
   elif [ $(($end_time - $start_time)) -gt 5 ]; then
-    systemctl poweroff
+    notify-send "SHOULD POWEROFF"
+    # systemctl poweroff
   fi
 }
 

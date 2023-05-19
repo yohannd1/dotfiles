@@ -8,6 +8,7 @@ if m.is_android:
 else:
     apps += [
         "sxhkd",
+        "river",
         "picom",
         "xorg",
         "awesome",
@@ -20,7 +21,7 @@ else:
         # "rofi",
         # "bspwm",
         # "polybar",
-        "alacritty",
+        # "alacritty",
     ]
 
     for i in {2, 4}:

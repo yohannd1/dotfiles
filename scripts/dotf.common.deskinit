@@ -1,0 +1,75 @@
+#!/usr/bin/env sh
+#
+# Common configuration across all desktops I use (X WMs or Wayland compositors).
+
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
+stype="unknown"
+if [ "$WAYLAND_DISPLAY" ]; then
+  stype="wayland"
+elif [ "$DISPLAY" ]; then
+  stype="xorg"
+fi
+
+isWayland() { test "$stype" = wayland; }
+isXorg() { test "$stype" = xorg; }
+
+if [ "$stype" = unknown ]; then
+  printf >&2 "Not on wayland or xorg; aborting"
+  exit 1
+fi
+
+# config daemons
+if isXorg; then
+  gen-res xresources | xrdb
+fi
+gen-res dotcfg | dotcfg-client read-and-set
+# isXorg && { xsettingsd &; }
+
+# set background
+setbg &
+
+# screenshot app
+# flameshot &
+ksnip &
+
+# notification daemon
+dunst -config "$XDG_CACHE_HOME/gen/dunstrc" &
+
+# network applet
+# nm-applet &
+
+# bluetooth applet
+# blueman-applet &
+
+# battery status monitor (using notify-send)
+monitor-battery &
+
+# input method
+if isXorg; then
+  fcitx5 -d
+fi
+# TODO: how to provide this for wayland
+
+# pulse-autoconf
+if exists pulse-autoconf; then
+  pulse-autoconf &
+fi
+
+# disable power key turnoff
+systemd-inhibit --what=handle-power-key sleep infinity &
+
+# input mess
+if isXorg; then
+  xinput set-prop "Synaptics TM3096-006" "libinput Tapping Enabled" 1 # Touchpad: tap to click (not working)
+  xinput set-prop "Synaptics TM3096-006" "libinput Natural Scrolling Enabled" 1 # Touchpad: natural scrolling
+elif isWayland; then
+  # TODO: enable natural scrolling as well
+  # TODO: fix touchpad scrolling in reverse direction
+  :
+fi
+
+# yambar
+if isWayland; then
+  yambar &
+fi

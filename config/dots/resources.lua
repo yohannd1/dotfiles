@@ -42,6 +42,20 @@ decl {
     targets = T_ALL,
 }
 
+-- foot (wayland terminal)
+decl {
+    {"foot.font", xft_font},
+
+    targets = T_ALL,
+}
+
+-- yambar
+decl {
+    {"yambar.font", xft_font},
+
+    targets = T_ALL,
+}
+
 -- tym (terminal?)
 decl {
     {"tym.font", font_config.name .. " " .. font_config.terminal_pixelsize},
@@ -68,6 +82,15 @@ decl {
     {"awesome.border-normal", theme["base00"]},
     {"awesome.border-focus", theme["base03"]},
     {"awesome.border-marked", theme["base0A"]},
+
+    targets = T_ALL,
+}
+
+-- riverwm
+decl {
+    {"river.border-normal", "0x" .. theme["base00"]:sub(2)},
+    {"river.border-focus", "0x" .. theme["base03"]:sub(2)},
+    {"river.background", "0x" .. theme["base00"]:sub(2)},
 
     targets = T_ALL,
 }
@@ -190,6 +213,7 @@ for i = 0, 15 do
 
     decl {
         {"theme." .. hex_id, theme[hex_id]},
+        {"theme_no_prefix." .. hex_id, theme[hex_id]:sub(2)},
 
         targets = T_ALL,
     }

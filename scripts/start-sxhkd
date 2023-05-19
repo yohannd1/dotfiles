@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # A script to load sxhkd based off the gen-sxhkd script.
 
@@ -23,7 +23,7 @@ if [ -d "$dataFolder" ]; then
 elif [ -f "$dataFolder" ]; then
   rm "$dataFolder"
 fi
-mkdir "$dataFolder"
+mkdir -p "$dataFolder"
 
 # generate sxhkd config with gen-sxhkd
 gen-sxhkd "$@" > "$tempConf" || {
@@ -32,9 +32,11 @@ gen-sxhkd "$@" > "$tempConf" || {
   exit 1
 }
 
-# start sxhkd and get its pid
-sxhkd -c "$tempConf" -r "$tempLog" &
-pid="$!"
-echo "$pid" > "$dataFolder/pid"
+log="$dataFolder/log"
 
-wait "$pid" # wait for sxhkd to close
+pgrep swhks >/dev/null || { swhks & }
+pkexec swhkd -c "$tempConf" 2>"$log" &
+pid="$!"
+
+echo "$pid" > "$dataFolder/pid"
+wait "$pid" # wait for it to close

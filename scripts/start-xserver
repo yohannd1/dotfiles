@@ -53,8 +53,8 @@ printf >&2 "Using display ID %s\n" ":$tty"
 
 if [ -z "$USE_XEPHYR" ]; then
   startx "$initrc" -- :"$tty" \
-         -ardelay "${XORG_KBRATE_DELAY:-175}" \
-         -arinterval "${XORG_KBRATE_INTERVAL:-37}" \
+         -ardelay "${KBRATE_DELAY:-175}" \
+         -arinterval "${KBRATE_INTERVAL:-37}" \
          2>&1 | tee "$XSESSIONDIR/xlog"
   exitCode="$?"
 else

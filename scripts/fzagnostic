@@ -16,7 +16,12 @@ while getopts "p:h:" o; do
   esac
 done
 
-if [ ! -t 2 ] && exists dmenu; then
+if [ ! -t 2 ] && [ "$WAYLAND_DISPLAY" ] && exists bemenu; then
+  args=()
+  [ "$hasPrompt" ] && args+=(-p "$prompt")
+  [ "$hasHeight" ] && args+=(-l "$height") || args+=(-l 10)
+  bemenu "${args[@]}"
+elif [ ! -t 2 ] && [ "$DISPLAY" ] && exists dmenu; then
   args=()
   [ "$hasPrompt" ] && args+=(-p "$prompt")
   [ "$hasHeight" ] && args+=(-l "$height")

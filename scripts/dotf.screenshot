@@ -1,0 +1,52 @@
+#!/usr/bin/env sh
+#
+# Screenshot util.
+# Currently only supports wayland (because of dependency on slurp & grim)
+
+exists() { command -v "$1" >/dev/null; }
+
+scrDir="$HOME/storage/pictures/screenshots/$(date +%Y-%m)"
+
+rectangle=$(slurp -b '#FFFFFF20' 2>/dev/null) || exit 1
+
+tmp=$(mktemp) || exit 1
+rmtemp() {
+  [ -f "$tmp" ] && rm "$tmp"
+}
+trap 'rmtemp' EXIT
+
+grim -g "$rectangle" "$tmp" -t png 2>/dev/null
+
+out_dir="$scrDir/$(date +%Y-%m-%d_%H%M%S).png"
+while true; do
+  choice=$(printf "edit\nsave\ncopy\nexit" | fzagnostic -p "Do what:") || exit 1
+
+  case "$choice" in
+    edit)
+      pinta_o=$(pinta "$tmp" 2>&1)
+      pinta_ec=$?
+
+      if [ "$pinta_ec" != 0 ]; then
+        printf >&2 "pinta exited not-very-gracefully:\n"
+        pritnf >&2 "$pinta_o"
+        exit 1
+      fi
+      ;;
+    save)
+      mkdir -p "$scrDir" || exit 1
+      mv "$tmp" "$out_dir" || exit 1
+      printf >&2 "Screenshot saved to %s\n" "$out_dir"
+      exit
+      ;;
+    copy)
+      cat "$tmp" | wl-copy -t image/png
+      ;;
+    exit)
+      exit 1
+      ;;
+    *)
+      printf >&2 "Invalid option: %s\n" "$choice"
+      exit 1
+      ;;
+  esac
+done

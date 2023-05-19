@@ -3,26 +3,29 @@
 . "$DOTFILES/config/dots/env.sh"
 eval "$(load-base16-theme --export)"
 
-doTheThing() {
+gen() {
+  printf >&2 "Generating target: %s\n" "$2"
   mkdir -p "$(dirname "$2")"
   pp "$1" > "$2"
 }
 
 mkdir -p "$XDG_CACHE_HOME/gen"
-doTheThing "$DOTFILES/config/gen/stalonetrayrc" "$XDG_CACHE_HOME/gen/stalonetrayrc"
-doTheThing "$DOTFILES/config/gen/dunstrc" "$XDG_CACHE_HOME/gen/dunstrc"
-doTheThing "$DOTFILES/config/gen/gtk3rc" "$XDG_CONFIG_HOME/gtk-3.0/settings.ini"
+gen "$DOTFILES/config/gen/stalonetrayrc" "$XDG_CACHE_HOME/gen/stalonetrayrc"
+gen "$DOTFILES/config/gen/dunstrc" "$XDG_CACHE_HOME/gen/dunstrc"
+gen "$DOTFILES/config/gen/gtk3rc" "$XDG_CONFIG_HOME/gtk-3.0/settings.ini"
+gen "$DOTFILES/config/gen/foot.ini" "$XDG_CONFIG_HOME/foot/foot.ini"
+gen "$DOTFILES/config/gen/yambar.yml" "$XDG_CONFIG_HOME/yambar/config.yml"
 
 for i in 2 3; do
   _ln_dir="$HOME/.themes/dummy"
   _flatcolor_dir="$HOME/.themes/FlatColor"
 
-  doTheThing "$DOTFILES/config/gen/gtk-flatcolor-${i}.0" "$_flatcolor_dir/colors${i}"
+  gen "$DOTFILES/config/gen/gtk-flatcolor-${i}.0" "$_flatcolor_dir/colors${i}"
   [ ! -d "$_ln_dir" ] && ln -s "$_flatcolor_dir" "$_ln_dir"
 done
 
 [ "$WGETRC" ] && printf "hsts-file = %s" "$XDG_CACHE_HOME/wget-hsts" >"$WGETRC"
 
 if [ -d ~/.termux ]; then
-  doTheThing "$DOTFILES/config/gen/termux-colors" ~/.termux/colors.properties
+  gen "$DOTFILES/config/gen/termux-colors" ~/.termux/colors.properties
 fi

@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+stalonetray -c "$XDG_CACHE_HOME/gen/stalonetrayrc"

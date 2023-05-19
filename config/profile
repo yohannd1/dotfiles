@@ -53,11 +53,6 @@ if ! isTermux; then
   export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
   printf >&2 "OK!\n"
 
-  # generate configs
-  # too disk-intensive to do every time it boots up on Termux
-  printf >&2 "Generating config (sysm)...\n"
-  sysm
-
   # set up dotcfg-daemon and load config
   # i haven't figured out how to install the "http" lua rock on Termux yet
   {
@@ -71,6 +66,11 @@ if ! isTermux; then
 
     gen-res dotcfg | dotcfg-client read-and-set
   }
+
+  # generate configs
+  # too disk-intensive to do every time it boots up on Termux
+  printf >&2 "Generating config (sysm)...\n"
+  sysm
 
   # set up SSH keychaing
   # if [ -x /usr/bin/keychain ]; then
