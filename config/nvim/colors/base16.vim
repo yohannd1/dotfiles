@@ -455,8 +455,8 @@ call s:hl("ClapNoMatchesFound",   "08",   "NONE", "NONE", "")
 hi link VimwikiXDone Dimmed
 " call s:hl("VimwikiXDone",         "03", "NONE",   "", "")
 
-" acw
-hi link acwTaskDone Dimmed
+" Acrylic
+hi link acrTaskDone Dimmed
 
 " Illuminate
 call s:hl("illuminatedWord",      "NONE", "02",   "", "")

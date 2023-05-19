@@ -14,6 +14,6 @@ return function()
         vim.o.guifont = "Cascadia Code:h9"
 
         vim.g.neovide_transparency = 0.8
-        vim.g.neovide_cursor_vfx_mode = "rippe"
+        vim.g.neovide_cursor_vfx_mode = "ripple"
     end
 end

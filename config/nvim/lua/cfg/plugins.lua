@@ -105,7 +105,7 @@ local plugins = function()
 
             highlight = {
                 enable = true,
-                disable = { "gitcommit" },
+                disable = { "gitcommit", "bash" },
                 additional_vim_regex_highlighting = false,
             },
         }
@@ -228,7 +228,7 @@ local plugins = function()
     --             --     }
     --             -- },
     --             ["core.promo"] = {}, -- Semantic indentation
-    --             ["core.export"] = {}, -- export to markdonw
+    --             ["core.export"] = {}, -- export to markdown
     --         },
     --     }
     -- end})
