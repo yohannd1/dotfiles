@@ -110,7 +110,8 @@ pat_ft["*.scrbl"] = "scribble"
 pat_ft["*.h"] = "c"
 pat_ft["*.mpp"] = "cpp"
 pat_ft["*.PKGBUILD"] = "PKGBUILD"
-pat_ft["*.asm"] = "PKGBUILD"
+pat_ft["*.asm"] = "nasm"
+pat_ft["*.acr"] = "acrylic"
 
 pat_ft["*.tsx"] = function()
     if vim.fn.getline(1):find("<?xml") == 1 then

@@ -29,7 +29,7 @@ end
 
 local firstAvailableDir = function(arg)
     for _, dir in ipairs(arg) do
-        if vim.fn.isdirectory(dir) then
+        if vim.fn.isdirectory(dir) ~= 0 then
             return dir
         end
     end
