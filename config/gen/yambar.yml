@@ -69,6 +69,7 @@ bar:
                     ~muted: {string: {text: "vol {percent}% |", font: *font, foreground: *base04}}
 
     - clock:
+        date-format: "%Y-%m-%d"
         time-format: "%H:%M"
         content:
-          - string: {text: " {date} {time} "}
+          - string: {text: "{date} {time} "}

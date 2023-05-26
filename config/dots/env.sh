@@ -89,8 +89,6 @@ export LUAROCKS_HOME="$HOME/.luarocks"
 # export ANDROID_SDK_HOME="$XDG_CACHE_HOME/packs/android-sdk"
 
 export CARP_DIR="$HOME/pj/clone/Carp"
-export NPM_DIR="$XDG_DATA_DIR/npm"
-
 # xorg & wayland
 export KBRATE_DELAY="250"
 export KBRATE_INTERVAL="45"
@@ -105,6 +103,11 @@ export FZF_DEFAULT_OPTS='--layout=reverse --border
                          --color prompt:8,marker:5,pointer:8
                          --color spinner:3,gutter:1,info:3'
 export GREP_COLORS='ms=01;34:mc=01;34:sl=:cx=:fn=35:ln=32:bn=32:se=36'
+
+# GUI program options
+if [ "$DISPLAY" ] || [ "$WAYLAND_DISPLAY" ]; then
+  export BEMENU_OPTS="--fn '$(dotcfg-client get bemenu.font)'"
+fi
 
 # nnn config
 {

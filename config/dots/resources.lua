@@ -1,3 +1,5 @@
+-- vim: fdm=marker foldenable
+-- PREPARATIONS {{{
 local meta = _G._meta
 local theme = meta.theme
 local decl = meta.decl
@@ -15,7 +17,7 @@ local this_basename = basename(this_path)
 local extra_defs = loadfile(this_basename .. "/" .. "res_extra_defs.lua")()
 local longFontFormat = extra_defs.longFontFormat
 
-local chosen_name = "Unifont"
+local chosen_name = "Mononoki"
 if chosen_name == nil then -- if there's no selected font in the line above, just pick a random one.
     local t = {}
     for name, _ in pairs(extra_defs.font_presets) do
@@ -31,6 +33,7 @@ local xft_font = longFontFormat(font_config.name, font_config.terminal_pixelsize
 local enable_ligatures = false
 
 local T_ALL = {t_xres, t_dots}
+-- }}}
 
 -- st (terminal)
 decl {
@@ -89,7 +92,7 @@ decl {
 -- riverwm
 decl {
     {"river.border-normal", "0x" .. theme["base00"]:sub(2)},
-    {"river.border-focus", "0x" .. theme["base03"]:sub(2)},
+    {"river.border-focus", "0x" .. theme["base05"]:sub(2)},
     {"river.background", "0x" .. theme["base00"]:sub(2)},
 
     targets = T_ALL,
@@ -104,6 +107,16 @@ decl {
     {"dwm.sel.fg", theme["base05"]},
     {"dwm.sel.border", theme["base03"]},
     {"dwm.font", xft_font},
+
+    targets = T_ALL,
+}
+
+-- bemenu
+decl {
+    {
+        "bemenu.font",
+        font_config.name .. " " .. (font_config.terminal_pixelsize * 0.8)
+    },
 
     targets = T_ALL,
 }

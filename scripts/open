@@ -182,7 +182,11 @@ if match ext 'torrent'; then
   try pop runpage transmission-show -- "$FILE"
 fi
 
-match ext 'mmpz' && try gui lmms "$FILE"
+if match ext 'mmpz'; then
+  try gui @lmms "$FILE" # a wrapper I have on my PC
+  try gui lmms "$FILE"
+fi
+
 match ext 'odt|rtf|docx|doc' && try gui libreoffice "$FILE"
 match ext 'ppt|pptx' && try gui libreoffice "$FILE"
 match ext 'odg' && try gui libreoffice "$FILE"

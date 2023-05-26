@@ -4,19 +4,21 @@
 
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
-stype="unknown"
 if [ "$WAYLAND_DISPLAY" ]; then
-  stype="wayland"
+  isWayland() { return 0; }
+  isXorg() { return 1; }
 elif [ "$DISPLAY" ]; then
-  stype="xorg"
-fi
-
-isWayland() { test "$stype" = wayland; }
-isXorg() { test "$stype" = xorg; }
-
-if [ "$stype" = unknown ]; then
+  isWayland() { return 1; }
+  isXorg() { return 0; }
+else
   printf >&2 "Not on wayland or xorg; aborting"
   exit 1
+fi
+
+if pactl info | grep -q '^Server Name:.*PipeWire.*'; then
+  isPipewire() { return 0; }
+else
+  isPipewire() { return 1; }
 fi
 
 # config daemons
@@ -52,7 +54,7 @@ fi
 # TODO: how to provide this for wayland
 
 # pulse-autoconf
-if exists pulse-autoconf; then
+if ! isPipewire && exists pulse-autoconf; then
   pulse-autoconf &
 fi
 

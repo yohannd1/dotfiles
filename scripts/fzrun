@@ -40,6 +40,7 @@ def main() -> int:
             lambda action: "{} || {}".format(*action.repr()),
             actions,
         ),
+        prompt="Run:",
         max_choice_number=(actions.__len__() - 1),
     )
     if output is not None:

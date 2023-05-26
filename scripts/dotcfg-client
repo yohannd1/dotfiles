@@ -62,4 +62,8 @@ case "$1" in
       printf >&2 "Error (%s): %s\n" "$_ccurl_code" "$_ccurl_output"
     fi
     ;;
+
+  *)
+    showHelp
+    ;;
 esac

@@ -206,7 +206,7 @@ ft.nim = function()
     }
 
     local this_folder = vim.fn.expand("%:p:h")
-    local found = vim.fn.ReverseRSearch(this_folder, "*.nimble")
+    local found = vim.fn.ReverseRSearch(this_folder, "*.nimble") ~= 0
     vim.b.rifle_ft = found and "@nimble" or "nim"
 end
 ft.nims = ft.nim
@@ -231,7 +231,7 @@ ft.rust = function()
     }
 
     local this_folder = vim.fn.expand("%:p:h")
-    local found = vim.fn.ReverseRSearch(this_folder, "Cargo.toml")
+    local found = vim.fn.ReverseRSearch(this_folder, "Cargo.toml") ~= 0
     vim.b.rifle_ft = found and "@cargo" or "rust"
 
     addSnippets {
@@ -241,7 +241,7 @@ end
 
 ft.java = function()
     local this_folder = vim.fn.expand("%:p:h")
-    local found = vim.fn.ReverseRSearch(this_folder, "gradlew")
+    local found = vim.fn.ReverseRSearch(this_folder, "gradlew") ~= 0
     vim.b.rifle_ft = found and "@gradlew" or "java"
 
     vim.b.format_command = "google-java-format --aosp - 2>/dev/null"
@@ -264,7 +264,7 @@ ft.plaintex = ft.tex
 
 ft.zig = function()
     local this_folder = vim.fn.expand("%:p:h")
-    local found = vim.fn.ReverseRSearch(this_folder, "build.zig")
+    local found = vim.fn.ReverseRSearch(this_folder, "build.zig") ~= 0
     vim.b.rifle_ft = found and "@zig-build" or "zig"
 
     vim.b.format_command = "zig fmt --stdin"

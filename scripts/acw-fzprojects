@@ -2,4 +2,4 @@
 
 [ $# = 0 ] || exit 2
 choice=$(acw-get-projects | fzagnostic | awk '{ print $1 }') || exit 1
-edit "$ACW_WIKI_DIR/$choice.wiki"
+"$EDITOR" "$ACW_WIKI_DIR/$choice.wiki"

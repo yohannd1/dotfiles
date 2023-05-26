@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+set -e
+
 PROGNAME=$(basename "$0")
 
 usage() {

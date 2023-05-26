@@ -305,6 +305,14 @@ tmux-nest() {
   TMUX= tmux "$@"
 }
 
+# poor man's clifm
+# cd() {
+#   builtin cd "$@" \
+#     && printf "\n" \
+#     && ls -F \
+#     && printf "------------------------------\n"
+# }
+
 # A wrapper for the `info` command
 info() {
   printf "\033[2 q"
