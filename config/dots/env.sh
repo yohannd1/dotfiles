@@ -19,6 +19,7 @@ if [ "$WAYLAND_DISPLAY" ]; then
   export SDL_VIDEODRIVER=wayland
   export _JAVA_AWT_WM_NONREPARENTING=1
   export QT_QPA_PLATFORM=wayland
+  export GDK_BACKEND=wayland
   # export XDG_CURRENT_DESKTOP=sway
   # export XDG_SESSION_DESKTOP=sway
 fi
@@ -116,11 +117,11 @@ export GREP_COLORS='ms=01;34:mc=01;34:sl=:cx=:fn=35:ln=32:bn=32:se=36'
   export NNN_FCOLORS="$_BLK$_CHR$_DIR$_EXE$_REG$_HARDLINK$_SYMLINK$_MISSING$_ORPHAN$_FIFO$_SOCK$_OTHER"
 }
 
-if [ "$DISPLAY" ]; then
-  export PINENTRY_USER_DATA="DISPLAY=1"
-else
-  export PINENTRY_USER_DATA="DISPLAY=0"
-fi
+_pue="tty"
+[ "$DISPLAY" ] && _pue="xorg"
+[ "$WAYLAND_DISPLAY" ] && _pue="wayland"
+export PINENTRY_USER_DATA="is=${_pue}"
+unset _pue
 
 export GPG_TTY=$(tty)
 

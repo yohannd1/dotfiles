@@ -1,10 +1,21 @@
 #!/usr/bin/env sh
 
 matches() { printf "%s" "$1" | grep -q "$2"; }
+exists() { command -v "$1" >/dev/null; }
 
-if matches "$PINENTRY_USER_DATA" 'DISPLAY=1'; then
-  exec pinentry-qt "$@"
-else
+if matches "$PINENTRY_USER_DATA" 'is=tty'; then
   exec pinentry-curses "$@"
-fi
+else
+  if exists pinentry-bemenu; then
+    export BEMENU_OPTS="-l 20"
+    exec pinentry-bemenu "$@"
+  fi
 
+  for backend in qt gtk-2; do
+    prg="pinentry-$backend"
+    exists "$prg" && exec "$prg" "$@"
+  done
+
+  printf >&2 "COULD NOT FIND SUITABLE PINENTRY\n"
+  exit 1
+fi

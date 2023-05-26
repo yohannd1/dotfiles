@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+#
+# A replacement for passmenu that works with fzagnostic
+
+shopt -s nullglob globstar
+
+showHelp() {
+  printf >&2 "Usage: %s { show | otp }\n" "$(basename "$0")";
+  exit 1;
+}
+[ $# != 1 ] && showHelp
+
+case "$1" in
+  show|otp) action="$1" ;;
+  *) showHelp ;;
+esac
+
+prefix=${PASSWORD_STORE_DIR-~/.password-store}
+files=("$prefix"/**/*.gpg)
+files=("${files[@]#"$prefix"/}")
+files=("${files[@]%.gpg}")
+
+choice=$(printf "%s\n" "${files[@]}" | fzagnostic) || exit 1
+[ "$choice" ] || exit 1
+
+pass "$action" -c "$choice" 2>/dev/null

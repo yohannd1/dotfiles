@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # A wrapper for reading user input, without choices.
+# Uses bash's readline on terminals, and fzagnostic elsewhere.
 
 . "$(uselib std)"
 
@@ -14,10 +15,10 @@ while getopts "p:" o; do
   esac
 done
 
-if [ ! -t 2 ] && exists dmenu; then
+if [ ! -t 2 ] && exists fzagnostic; then
   args=()
   [ "$hasPrompt" ] && args+=(-p "$prompt")
-  dmenu "${args[@]}"
+  true | fzagnostic "${args[@]}"
 elif [ -t 2 ]; then
   [ "$hasPrompt" ] && printf >&2 "%s" "$prompt"
   read var
