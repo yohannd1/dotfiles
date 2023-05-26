@@ -97,8 +97,8 @@ export KBRATE_INTERVAL="45"
 export GIT_EDITOR="$EDITOR"
 export LESS="-RC"
 export KEYTIMEOUT=1
-export FZF_DEFAULT_OPTS='--layout=reverse --border
-                         --color fg:5,fg+:2
+export FZF_DEFAULT_OPTS='--layout=reverse --no-border
+                         --color fg:5,fg+:7
                          --color hl:6,hl+:4
                          --color prompt:8,marker:5,pointer:8
                          --color spinner:3,gutter:1,info:3'
