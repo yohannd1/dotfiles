@@ -1,32 +1,41 @@
 #!/usr/bin/env sh
 
-# TODO: limit volume (you can do more than 100%! That's torture for the speakers)
+# Useful source: https://customlinux.blogspot.com/2013/02/pavolumesh-control-active-sink-volume.html
 
+max_limit=${VOLUMECTL_MAX_LIMIT:-100}
 increment=${VOLUMECTL_INCREMENT:-5}
+
+exists() { command -v "$1" >/dev/null; }
 
 showHelp() {
   printf >&2 "Usage: %s\n" "$(basename $0) { inc | dec | mute }"
   exit 1
 }
-
 [ $# != 1 ] && showHelp
 
-getActiveSink() {
-  pacmd list-sinks | awk '/* index:/ {print $3}'
-}
+if exists wpctl; then
+  _das='@DEFAULT_AUDIO_SINK@'
+  _decrease() { wpctl set-volume "$_das" "$increment"%-; }
+  _increase() {
+    _limit=$(echo "scale=2; $max_limit/100" | bc)
+    wpctl set-volume -l "$_limit" "$_das" "$increment"%+
+  }
+  _togglemute() { wpctl set-mute "$_das" toggle; }
 
-case "$1" in
-  dec|decrease)
+elif exists pactl; then
+  getActiveSink() {
+    pacmd list-sinks | awk '/* index:/ {print $3}'
+  }
+  _decrease() {
     activeSink=$(getActiveSink) || exit 1
     pactl set-sink-volume "$activeSink" -"$increment"%
-    # amixer set Master "$increment"%-
-    ;;
-  inc|increase)
+  }
+  _increase() {
+    # TODO: limit max volume
     activeSink=$(getActiveSink) || exit 1
     pactl set-sink-volume "$activeSink" +"$increment"%
-    # amixer set Master "$increment"%+
-    ;;
-  mute|togglemute)
+  }
+  _togglemute() {
     activeSink=$(getActiveSink) || exit 1
     isMuted=$(pacmd list-sinks \
       | grep -A 15 "index: ${activeSink}" \
@@ -43,13 +52,22 @@ case "$1" in
         printf >&2 "Unknown mute status: %s\n" "$isMuted"
         ;;
     esac
-
+  }
+else
+  printf >&2 "Could not figure out which command to use.\n"
+  # FIXME: there's amixer as well tho.
     # amixer -D pulse set Master 1+ toggle
-    ;;
+    # amixer set Master "$increment"%+
+    # amixer set Master "$increment"%-
+  exit 1
+fi
+
+case "$1" in
+  dec|decrease) _decrease ;;
+  inc|increase) _increase ;;
+  mute|togglemute) _togglemute ;;
   *)
     printf >&2 "Invalid option: %s\n" "$1"
     showHelp
     ;;
 esac
-
-# Useful source: https://customlinux.blogspot.com/2013/02/pavolumesh-control-active-sink-volume.html
