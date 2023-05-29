@@ -212,13 +212,27 @@ findFile() {
   esac
 }
 
-dupTerm() {
-  case $# in
-    0) "$TERMINAL" &>/dev/null ;;
-    1) (cd "$1" && "$TERMINAL" &>/dev/null) ;;
-    *) exit 1 ;;
-  esac & disown
+dup-term-gui() {
+  [ "$WAYLAND_DISPLAY" ] || [ "$DISPLAY" ] || exit 2
+  "$TERMINAL" &>/dev/null & disown
 }
+dup-term-tmux() {
+  [ "$TMUX" ] || exit 2
+  tmux new-window -c "$PWD"
+}
+dup-term-auto() {
+  if [ "$WAYLAND_DISPLAY" ] || [ "$DISPLAY" ]; then
+    dup-term-gui
+  elif [ "$TMUX" ]; then
+    dup-term-tmux
+  else
+    exit 2
+  fi
+}
+
+Dgui() { dup-term-gui; }
+Dtmux() { dup-term-tmux; }
+D() { dup-term-auto; }
 
 cdNearFile() {
   [ $# = 1 ] || exit 1
