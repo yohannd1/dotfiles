@@ -155,8 +155,9 @@ https://wiki.archlinux.org/title/backlight
 # Set keyboard repeat rate
 riverctl set-repeat "$KBRATE_INTERVAL" "$KBRATE_DELAY"
 
-# Make all views with an app-id that starts with "float" start floating.
-riverctl rule-add float -app-id 'float*'
+# Floating views
+riverctl rule-add float -app-id '*float*' # anything that has float in the id
+riverctl rule-add float -title 'Task Manager' # lxtask
 
 # Make all views with app-id "bar" and any title use client-side decorations
 riverctl rule-add csd -app-id "bar"

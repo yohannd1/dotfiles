@@ -116,6 +116,7 @@ match url 'steam' && openXdg
 
 match ext 'drawio' && try gui drawio "$FILE"
 match ext 'godot' && try gui Godot "$FILE"
+match ext 'yyp' && try gui GameMaker "$FILE"
 
 # OpenMPT modules
 if match ext 'it|s3m|mptm'; then
