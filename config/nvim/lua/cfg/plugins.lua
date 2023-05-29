@@ -274,6 +274,54 @@ local plugins = function()
     --       \ "sink": "e",
     --       \ "description": "Load a file from the recent list",
     --       \ }
+
+    plug({"nathom/filetype.nvim", config = function()
+        -- Do not source the default filetype.vim
+        vim.g.did_load_filetypes = 1
+
+        require("filetype").setup({
+            -- help: https://github.com/nathom/filetype.nvim
+            overrides = {
+                extensions = {
+                    c = "c",
+                    rpy = "python",
+                    fx = "c",
+                    clj = "clojure",
+                    alg = "visualg",
+                    jl = "julia",
+                    scrbl = "scribble",
+                    h = "c",
+                    mpp = "cpp",
+                    PKGBUILD = "PKGBUILD",
+                    asm = "nasm",
+                    acr = "acrylic",
+                },
+                literal = {},
+                complex = {},
+
+                function_extensions = {
+                    gml = function()
+                        vim.bo.filetype = "gml"
+                        vim.bo.syntax = "javascript"
+                        vim.bo.expandtab = false
+                        vim.bo.tabstop = 4
+                        vim.wo.foldmethod = "marker"
+                        vim.wo.foldenable = true
+                        vim.wo.foldmarker = "#region,#endregion"
+                    end,
+                    tsx = function()
+                        if vim.fn.getline(1):find("<?xml") == 1 then
+                            vim.bo.filetype = "xml"
+                        end
+                    end,
+                },
+
+                shebang = {
+                    dash = "sh",
+                },
+            },
+        })
+    end})
 end
 
 function M.load()
