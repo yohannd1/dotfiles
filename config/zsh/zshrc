@@ -286,7 +286,8 @@ alias of='openfork'
 # startXServerOrLogout() { start-xserver || logout; }
 # alias sx='startXServerOrLogout'
 
-sg() { dbus-launch --exit-with-session river-start; }
+# sg() { dbus-launch --exit-with-session river-start; }
+sg() { river-start; }
 
 editRecentf() { filehist select "$EDITOR"; }
 alias er='editRecentf'
