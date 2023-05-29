@@ -9,7 +9,7 @@ XDG_DATA_DIR="${XDG_DATA_DIR:-$HOME/.local/share}"
 PROGNAME=$(basename $0)
 
 usage() {
-  printf >&2 "Usage: %s\n" "$PROGNAME { open <BIN> [ARGS...] | cmd | cfg | add-recent <BIN> | tricks <ARGS...> | server [ARGS...] }"
+  printf >&2 "Usage: %s\n" "$PROGNAME { open <BIN> [ARGS...] | cmd | cfg | add-recent <BIN> | tricks <ARGS...> | server [ARGS...] | fwd [ARGS...] | desktop [ARGS...] }"
   printf >&2 "Environment variables:\n"
   printf >&2 "  WINEW_ARCH := { 32 | 64 }\n"
   printf >&2 "                (Default: 32)\n"
@@ -65,11 +65,30 @@ case "$WINEW_ARCH" in
     ;;
 esac
 
+# handle loose commands
+case "$1" in
+  fwd)
+    shift; launch_wine "$@"
+    exit
+    ;;
+  server)
+    shift; launch_shell wineserver "$@"
+    exit
+    ;;
+  desktop)
+    resolution=$(xrandr | grep '*' | awk '{print $1}') || resolution=800x600
+    shift; launch_shell wine explorer /desktop=shell,"$resolution" "$@"
+    exit
+    ;;
+  *) ;; # continue onwards
+esac
+
 case $# in
   1) case "$1" in
        cmd) launch_wine "cmd" ;;
        cfg) launch_shell winecfg ;;
        server) shift; launch_shell wineserver "$@" ;;
+       fwd) shift; launch_wine "$@" ;;
        *) usage ;;
      esac
      ;;
@@ -78,6 +97,7 @@ case $# in
        add-recent) check_file_existence "$2" && register_recent "$2" ;;
        tricks) launch_shell winetricks "$2" ;;
        server) shift; launch_shell wineserver "$@" ;;
+       fwd) shift; launch_wine "$@" ;;
        *) usage ;;
      esac
      ;;
@@ -85,6 +105,7 @@ case $# in
        tricks) shift; launch_shell winetricks "$@" ;;
        open) check_file_existence "$2" && shift && launch_wine "$@" ;;
        server) shift; launch_shell wineserver "$@" ;;
+       fwd) shift; launch_wine "$@" ;;
        *) usage ;;
      esac
      ;;
