@@ -1,5 +1,5 @@
 _exists() { command -v "$1" >/dev/null 2>/dev/null; }
-_isAndroid() { test -d ~/.termux; } # bad way of detecting lol
+_isAndroid() { test -d ~/.termux; } # miserable way to detect termux
 
 # dotfiles dir
 _dotpath=~/.local/share/dots/dotpath
@@ -20,8 +20,6 @@ if [ "$WAYLAND_DISPLAY" ]; then
   export _JAVA_AWT_WM_NONREPARENTING=1
   export QT_QPA_PLATFORM=wayland
   export GDK_BACKEND=wayland
-  # export XDG_CURRENT_DESKTOP=sway
-  # export XDG_SESSION_DESKTOP=sway
 fi
 
 # the laziest way to force the locale I want
@@ -58,37 +56,41 @@ export OPENER=openfork
 export READER=zathura
 export FILEMAN=nnn
 
-# configuration files/folders
-export _ZL_DATA="$XDG_DATA_DIR/zlua"
-export _ZL_FZF_HEIGHT="15" # no height limit!
-export WINEPREFIX="$XDG_DATA_DIR/wine32"
-export WINEW_32_PREFIX="$XDG_DATA_DIR/wine32"
-export WINEW_64_PREFIX="$XDG_DATA_DIR/wine64"
+# theming
+export QT_STYLE_OVERRIDE="kvantum"
+
+# SDKs and programming tools
 export GOPATH="$XDG_CACHE_HOME/go"
 export CARGO_HOME="$XDG_CACHE_HOME/cargo"
 export RUSTUP_HOME="$XDG_CACHE_HOME/rustup"
 export GEM_HOME="$XDG_DATA_DIR/gem"
 export GEM_SPEC_CACHE="$XDG_CACHE_HOME/gem"
 export GRADLE_USER_HOME="$XDG_DATA_HOME/gradle"
+export ZIGUP_INSTALL_DIR="$XDG_CACHE_HOME/zigup"
+export ZIGUP_PATH_LINK="$HOME/.local/bin/zig"
+export LUAROCKS_HOME="$HOME/.luarocks"
+export CARP_DIR="$HOME/pj/clone/Carp"
+_exists sccache && export RUSTC_WRAPPER=sccache
+
+# configuration files/folders
+export _ZL_DATA="$XDG_DATA_DIR/zlua"
+export _ZL_FZF_HEIGHT="15" # no height limit!
+export WINEPREFIX="$XDG_DATA_DIR/wine32"
+export WINEW_32_PREFIX="$XDG_DATA_DIR/wine32"
+export WINEW_64_PREFIX="$XDG_DATA_DIR/wine64"
 export _JAVA_OPTIONS="-Djava.util.prefs.userRoot='$XDG_CONFIG_HOME/java' -Dawt.useSystemAAFontSettings=on"
 export JAVA_FONTS="/usr/share/fonts/TTF"
-export QT_STYLE_OVERRIDE="kvantum"
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export TASKRC="$XDG_CONFIG_HOME/taskwarrior/taskrc"
 export TIMEWARRIORDB="$WIKI/data/timewarrior"
 export INPUTRC="$XDG_CONFIG_HOME/inputrc"
-export XAUTHORITY="$XDG_DATA_DIR/Xauthority" # might break some display managers, but I don't use them.
+export XAUTHORITY="$XDG_DATA_DIR/Xauthority" # might break some display managers
 export LESSKEY="$XDG_CONFIG_HOME/less/lesskey"
 export LESSHISTFILE="$XDG_CACHE_HOME/less/history"
 export WGETRC="$XDG_CONFIG_HOME/wgetrc"
 export IRBRC="$XDG_CONFIG_HOME/irb/irbrc"
 export FZRUN_PACKAGES_FOLDER="$HOME/storage/software/packages"
-export LUAROCKS_HOME="$HOME/.luarocks"
 
-# Instead of this, install 'android-sdk' on the AUR and re-log
-# export ANDROID_SDK_HOME="$XDG_CACHE_HOME/packs/android-sdk"
-
-export CARP_DIR="$HOME/pj/clone/Carp"
 # xorg & wayland
 export KBRATE_DELAY="250"
 export KBRATE_INTERVAL="45"
@@ -120,6 +122,7 @@ fi
   export NNN_FCOLORS="$_BLK$_CHR$_DIR$_EXE$_REG$_HARDLINK$_SYMLINK$_MISSING$_ORPHAN$_FIFO$_SOCK$_OTHER"
 }
 
+# Pinentry User Data
 _pue="tty"
 [ "$DISPLAY" ] && _pue="xorg"
 [ "$WAYLAND_DISPLAY" ] && _pue="wayland"
@@ -135,8 +138,6 @@ _gcc_colors='error    = 01;38;5;8
              :locus   = 01;38;5;4
              :quote   = 03'
 export GCC_COLORS=$(printf "%s" "$_gcc_colors" | tr -d ' ' | tr -d '\n')
-
-_exists sccache && export RUSTC_WRAPPER=sccache
 
 # dotfiles program options
 export DIR_BOOKMARKS=~/storage/share/bookmarks.sh
@@ -155,8 +156,9 @@ export FILEHIST_NO_TIDY=1
 # prevent annoying timeouts on some GTK applications.
 # FIXME: is there any downside to this?
 # FIXME: IS THIS EVEN WORKING????????????
-export GTK_USE_PORTAL=0
+# export GTK_USE_PORTAL=0
 
+# Input Method
 export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx
 export SDL_IM_MODULE=fcitx

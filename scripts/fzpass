@@ -20,7 +20,7 @@ files=("$prefix"/**/*.gpg)
 files=("${files[@]#"$prefix"/}")
 files=("${files[@]%.gpg}")
 
-choice=$(printf "%s\n" "${files[@]}" | fzagnostic) || exit 1
+choice=$(printf "%s\n" "${files[@]}" | fzagnostic -p "Entry:") || exit 1
 [ "$choice" ] || exit 1
 
 pass "$action" -c "$choice" 2>/dev/null

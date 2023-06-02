@@ -9,7 +9,7 @@ scrDir="$HOME/storage/pictures/screenshots/$(date +%Y-%m)"
 
 rectangle=$(slurp -b '#FFFFFF20' 2>/dev/null) || exit 1
 
-tmp=$(mktemp) || exit 1
+tmp=$(mktemp XXXXXX.png) || exit 1
 rmtemp() {
   [ -f "$tmp" ] && rm "$tmp"
 }

@@ -3,6 +3,7 @@
 
 import operator as op
 from math import *
+from random import *
 from pathlib import Path
 
 dcos = lambda x: cos(radians(x))
