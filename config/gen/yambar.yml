@@ -55,18 +55,37 @@ bar:
                   deco: {underline: {size: 1, color: *base03}}
 
   right:
-    - alsa:
-        card: hw:PCH
-        mixer: Master
+    # - alsa:
+    #     card: hw:PCH
+    #     mixer: Master
+    #     content:
+    #       map:
+    #         conditions:
+    #           ~online: {string: {text: "vol !!! |", font: *font, foreground: *base04}}
+    #           online:
+    #             map:
+    #               conditions:
+    #                 muted: {string: {text: "vol OFF |", font: *font, foreground: *base03}}
+    #                 ~muted: {string: {text: "vol {percent}% |", font: *font, foreground: *base04}}
+    #
+    - pipewire:
         content:
           map:
             conditions:
-              ~online: {string: {text: "vol !!! |", font: *font, foreground: *base04}}
-              online:
-                map:
-                  conditions:
-                    muted: {string: {text: "vol OFF |", font: *font, foreground: *base03}}
-                    ~muted: {string: {text: "vol {percent}% |", font: *font, foreground: *base04}}
+              type == "sink":
+                - string: {text: "vol"}
+                - map:
+                    conditions:
+                      muted: {string: {text: "OFF"}}
+                      ~muted: {string: {text: "{cubic_volume}%"}}
+                - string: {text: " "}
+              type == "source":
+                - string: {text: "🎙"}
+                - map:
+                    conditions:
+                      muted: {string: {text: "OFF"}}
+                      ~muted: {string: {text: ""}}
+                - string: {text: " "}
 
     - clock:
         date-format: "%Y-%m-%d"
