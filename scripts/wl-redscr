@@ -1,0 +1,36 @@
+#!/usr/bin/env sh
+
+exists() { command -v "$1" >/dev/null; }
+prog=$(basename "$0")
+
+exists wl-gammarelay || exit 1
+
+showHelp() {
+  printf >&2 "Usage: %s { toggle }\n" "$prog"
+}
+
+[ $# = 1 ] || [ "$1" == toggle ] || {
+  showHelp
+  exit 2
+}
+
+[ "$WAYLAND_DISPLAY" ] || {
+  printf >&2 "Whoops! Wayland display not detected\n"
+  exit 1
+}
+
+if ! pgrep wl-gammarelay >/dev/null; then
+  wl-gammarelay & disown
+fi
+
+newTemperature=4000
+
+value=$(busctl --user introspect rs.wl-gammarelay / rs.wl.gammarelay \
+  | grep '\.Temperature' | awk '{print $4}') || exit 1
+
+if [ "$value" = 4000 ]; then
+  newTemperature=6500
+fi
+
+busctl --user -- set-property rs.wl-gammarelay / rs.wl.gammarelay \
+  Temperature q "$newTemperature"
