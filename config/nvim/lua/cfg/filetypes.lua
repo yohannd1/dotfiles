@@ -392,6 +392,13 @@ ft.acrylic = function()
 
     setSpaceIndent(2)
     setLocals { foldenable = true }
+
+    -- Custom syntax
+    nvim_exec([[
+        syn match acrXDatetime /\v\d{1,2}(:\d{2}){1,2}(AM|PM)?/
+        syn match acrXDatetime /\v\d{4}\/\d{2}\/\d{2}/
+        hi link acrXDatetime Special
+    ]], false)
 end
 
 -- function! ft.vimwiki() " {{{

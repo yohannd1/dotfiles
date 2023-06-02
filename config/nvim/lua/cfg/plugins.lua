@@ -283,7 +283,6 @@ local plugins = function()
             -- help: https://github.com/nathom/filetype.nvim
             overrides = {
                 extensions = {
-                    c = "c",
                     rpy = "python",
                     fx = "c",
                     clj = "clojure",
@@ -295,6 +294,10 @@ local plugins = function()
                     PKGBUILD = "PKGBUILD",
                     asm = "nasm",
                     acr = "acrylic",
+
+                    -- filetype.nvim is glitching these
+                    c = "c",
+                    sh = "sh",
                 },
                 literal = {},
                 complex = {},
