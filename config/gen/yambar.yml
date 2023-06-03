@@ -17,41 +17,39 @@ bar:
   left:
     - river:
         anchors:
-          - base: &river_base
+          - base: &river_workspace
               left-margin: 9
               right-margin: 9
               default: {string: {text: "{id}"}}
               conditions: {}
 
+        title:
+          string: { text: " (M:{mode}) {title}" }
         content:
           map:
-            on-click:
-              left: sh c "riverctl set-focused-tags $((1 << ({id} - 1)))"
-              right: sh -c "riverctl toggle-focused-tags $((1 << ({id} -1)))"
-              middle: sh -c "riverctl toggle-view-tags $((1 << ({id} -1)))"
             conditions:
               state == urgent:
                 map:
-                  <<: *river_base
+                  <<: *river_workspace
                   deco: {background: {color: *base08}}
               state == focused:
                 map:
-                  <<: *river_base
+                  <<: *river_workspace
                   deco: *bg_default
               state == visible && ~occupied:
                 map:
-                  <<: *river_base
+                  <<: *river_workspace
               state == visible && occupied:
                 map:
-                  <<: *river_base
+                  <<: *river_workspace
                   deco: *bg_default
               state == unfocused:
                 map:
-                  <<: *river_base
+                  <<: *river_workspace
               state == invisible && ~occupied: {empty: {}}
               state == invisible && occupied:
                 map:
-                  <<: *river_base
+                  <<: *river_workspace
                   deco: {underline: {size: 1, color: *base03}}
 
   right:
