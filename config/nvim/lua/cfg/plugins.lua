@@ -153,6 +153,7 @@ local plugins = function()
     plug("jdonaldson/vaxe")
     plug("daveyarwood/vim-alda")
     plug("bellinitte/uxntal.vim")
+    plug("jakwings/vim-terra")
 
     -- plug("tbastos/vim-lua")
     -- plug("hylang/vim-hy")
@@ -244,7 +245,9 @@ local plugins = function()
         fallback = "YohananDiamond/vim-hydra-fork",
     })
 
-    plug("nvim-telescope/telescope.nvim")
+    plug({"nvim-telescope/telescope.nvim", config = function()
+
+    end})
     plug("nvim-lua/popup.nvim")
     plug("nvim-lua/plenary.nvim")
 

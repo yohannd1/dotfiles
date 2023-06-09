@@ -33,7 +33,7 @@ lua require("cfg.plugins").load()
 
 function! _InsertWikiFileRef(input, after_cursor)
   normal! m`
-  exec 'normal! ' .. (a:after_cursor ? 'a' : 'i') .. '[[' .. split(a:input)[0] .. ']]'
+  exec 'normal! ' .. (a:after_cursor ? 'a' : 'i') .. '@ref(' .. split(a:input)[0] .. ')'
   normal! ``
   if a:after_cursor
     normal! l

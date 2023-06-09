@@ -40,7 +40,6 @@ local ft = {}
 -- local pat_ft = {}
 
 local func = function()
-    -- TODO: start using this after I move the entire "augroup buffer_load" section into here
     augroup("buffer_load", {clear = true})
 
     -- for k, v in pairs(pat_ft) do
@@ -50,7 +49,6 @@ local func = function()
     --         pattern = k,
     --         group = "buffer_load",
     --         callback = is_func and v or function()
-    --             print("HELLO!", k, v)
     --             vim.opt_local["filetype"] = v
     --         end
     --     })

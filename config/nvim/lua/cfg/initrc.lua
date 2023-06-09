@@ -128,6 +128,7 @@ do
           ["<Esc>"] = actions.close,
           ["<C-j>"] = actions.move_selection_next,
           ["<C-k>"] = actions.move_selection_previous,
+          ["<C-m>"] = actions.select_default,
         },
         n = {}
       },
@@ -199,7 +200,7 @@ do
           actions.close(prompt_bufnr)
 
           if selection then
-            local link = "[[" .. vim.fn.split(selection[1])[1] .. "]]"
+            local link = "@ref(" .. vim.fn.split(selection[1])[1] .. ")"
             makeAddTxt(opts.after_cursor)(link)
             vim.cmd(string.format("normal! %dl", opts.after_cursor and 2 + link:len() or 1))
           end

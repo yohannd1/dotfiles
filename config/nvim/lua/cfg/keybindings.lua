@@ -81,12 +81,12 @@ return function()
         map("v", kb, once .. "gv", arg)
     end
 
-    -- Alt + o : toggle TODO-DONE in items
+    -- Alt + o : toggle todo<->done state in items
     -- TODO: implement for visual mode
     map("n", "<M-o>", ":call Item_ToggleTodo()<CR>", arg_nr)
     map("i", "<M-o>", "<Esc>:call Item_ToggleTodo()<CR>a", arg_nr)
 
-    -- TODO: Alt+i for toggling an item's prefix
+    -- TODO: toggling an item's prefix
 
     -- Use Tab to complete or insert indent
     map("i", "<Tab>", "<C-r>=TabOrComplete(1)<CR>", arg_nr_s)
