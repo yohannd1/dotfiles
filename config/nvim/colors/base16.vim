@@ -457,6 +457,9 @@ hi link VimwikiXDone Dimmed
 
 " Acrylic
 call s:hl("acrTaskTodo",          "0B",    "01",   "", "")
+call s:hl("acrUrl",               "0D",    "NONE",   "italic", "")
+call s:hl("acrRefInner",          "0C",    "NONE",   "bold", "")
+call s:hl("acrRefDelimiter",      "03",    "NONE",   "", "")
 hi link acrTaskDone Dimmed
 
 " Illuminate
