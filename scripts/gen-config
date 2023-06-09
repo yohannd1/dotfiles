@@ -42,14 +42,13 @@ _t_dunst() {
 _t_gtk3() {
   gen "$DOTFILES/config/gen/gtk3rc" "$XDG_CONFIG_HOME/gtk-3.0/settings.ini"
 
-  # TODO: not working i think
-  # for i in 2 3; do
-  #   _ln_dir="$HOME/.themes/dummy"
-  #   _flatcolor_dir="$HOME/.themes/FlatColor"
+  for i in 2 3; do
+    _ln_dir="$HOME/.themes/dummy"
+    _flatcolor_dir="$HOME/.themes/FlatColor"
 
-  #   gen "$DOTFILES/config/gen/gtk-flatcolor-${i}.0" "$_flatcolor_dir/colors${i}"
-  #   [ ! -d "$_ln_dir" ] && ln -s "$_flatcolor_dir" "$_ln_dir"
-  # done
+    gen "$DOTFILES/config/gen/gtk-flatcolor-${i}.0" "$_flatcolor_dir/colors${i}"
+    [ ! -d "$_ln_dir" ] && ln -s "$_flatcolor_dir" "$_ln_dir"
+  done
 }
 
 _t_foot() {

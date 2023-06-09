@@ -21,6 +21,7 @@ getBeforeSlash() { sed 's|^\([^/]\+/\).*$|\1|g'; }
 shouldExtractHere() {
   read firstLine;
 
+  # TODO: handle ./ (should be equivalent to no prefix)
   # return false if there's at least one file on the root.
   printf "%s" "$firstLine" | grep -q '^[^/]\+/.*$' || return 1
 
@@ -121,6 +122,7 @@ if [ "$mode" = auto ]; then
   esac)
 fi
 
+printf >&2 "%s: current mode: %s\n" "$PROGNAME" "$mode"
 printf >&2 "%s: commencing extraction...\n" "$PROGNAME"
 
 case "$mode" in

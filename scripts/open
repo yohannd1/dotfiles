@@ -4,6 +4,10 @@
 . "$(uselib filematch)" || exit 127
 depCheck termup runpage
 
+if [ -z "$OPEN_GUI" ] && [ "$WAYLAND_DISPLAY" ]; then
+  OPEN_GUI=1
+fi
+
 warn() {
   local out=$(printf "$@")
   if [ "$OPEN_GUI" ]; then
