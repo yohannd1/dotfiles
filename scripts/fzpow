@@ -54,9 +54,9 @@ isXorg() { ! isWayland && [ "$DISPLAY" ]; }
 
 action_lock() {
   _getWaylockColors() {
-    c_init="0x$(dotcfg-client get theme_no_prefix.base01)" || return 1
-    c_input="0x$(dotcfg-client get theme_no_prefix.base03)" || return 1
-    c_fail="0x$(dotcfg-client get theme_no_prefix.base0F)" || return 1
+    c_init="0x$(dotcfg send get:theme_no_prefix.base01)" || return 1
+    c_input="0x$(dotcfg send get:theme_no_prefix.base03)" || return 1
+    c_fail="0x$(dotcfg send get:theme_no_prefix.base0F)" || return 1
   }
 
   if isXorg && exists bslock; then

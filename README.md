@@ -3,6 +3,10 @@
 This repository contains most of my config files and scripts (not all,
 though).
 
+## Dependencies
+
+- https://github.com/YohananDiamond/dotcfg
+
 ## Installation
 
 This repo is very unstable. I really recommend taking a look only at

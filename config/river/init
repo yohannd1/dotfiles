@@ -10,9 +10,9 @@ export XDG_CURRENT_DESKTOP=river
 # wl-clipboard swaybg yambar dunst foot light wl-gammarelay
 
 # Set background and border color
-riverctl background-color "$(dotcfg-client get river.background)"
-riverctl border-color-focused "$(dotcfg-client get river.border-focus)"
-riverctl border-color-unfocused "$(dotcfg-client get river.border-normal)"
+riverctl background-color "$(dotcfg send get:river.background)"
+riverctl border-color-focused "$(dotcfg send get:river.border-focus)"
+riverctl border-color-unfocused "$(dotcfg send get:river.border-normal)"
 riverctl border-width 1
 
 # FIXME: is this really working?

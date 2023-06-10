@@ -108,7 +108,7 @@ export GREP_COLORS='ms=01;34:mc=01;34:sl=:cx=:fn=35:ln=32:bn=32:se=36'
 
 # GUI program options
 if [ "$DISPLAY" ] || [ "$WAYLAND_DISPLAY" ]; then
-  export BEMENU_OPTS="--fn '$(dotcfg-client get bemenu.font)'"
+  export BEMENU_OPTS="--fn '$(dotcfg send 'get:bemenu.font')'"
 fi
 
 # nnn config

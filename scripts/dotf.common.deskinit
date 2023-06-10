@@ -25,7 +25,7 @@ fi
 if isXorg; then
   gen-res xresources | xrdb
 fi
-gen-res dotcfg | dotcfg-client read-and-set
+gen-res dotcfg | dotcfg stdin-send
 # isXorg && { xsettingsd &; }
 
 # set background

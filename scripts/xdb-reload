@@ -12,7 +12,7 @@ usage() {
 main() {
   [ $# != 0 ] && usage
   [ "$DISPLAY" ] && { gen-res xresources | xrdb; }
-  gen-res dotcfg | dotcfg-client read-and-set
+  gen-res dotcfg | dotcfg stdin-send >/dev/null
   gen-config
 }
 

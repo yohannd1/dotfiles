@@ -50,7 +50,7 @@ case "$SETBG_WALLPAPER_TYPE" in
     setImg "$image" || exit 1
     ;;
   color)
-    color=$(dotcfg-client get theme.base01) || {
+    color=$(dotcfg send get:theme.base01) || {
       printf >&2 "Could not get X resource '%s'\n" "$xresource"
       exit 1
     }

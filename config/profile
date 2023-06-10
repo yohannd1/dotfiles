@@ -53,18 +53,13 @@ if ! isTermux; then
   export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
   printf >&2 "OK!\n"
 
-  # set up dotcfg-daemon and load config
-  # i haven't figured out how to install the "http" lua rock on Termux yet
+  # set up dotcfg daemon and load config
+  # TODO: make this work on Termux (compile dotcfg over there as well)
   {
-    while true; do
-      _fifo=$(mktemp -u)
-      mkfifo "$_fifo" && break
-    done
-
-    DOTCFG_FIFO="$_fifo" dotcfg-daemon >/dev/null 2>/dev/null & disown
-    export DOTCFG_PORT=$(cat "$_fifo")
-
-    gen-res dotcfg | dotcfg-client read-and-set
+    _socket=$(mktemp /tmp/dotcfg.XXXXXX.sock)
+    export DOTCFG_SOCKET="$_socket"
+    dotcfg daemon >/dev/null 2>/dev/null & disown
+    gen-res dotcfg | dotcfg stdin-send >/dev/null
   }
 
   # generate configs

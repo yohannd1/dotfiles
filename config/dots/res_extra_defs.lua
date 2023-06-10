@@ -38,7 +38,7 @@ M.font_presets = {
     },
     ["UbuntuMono"] = {
         name = "Ubuntu Mono",
-        terminal_pixelsize = "15",
+        terminal_pixelsize = "16",
         awesome_size = "10",
         qutebrowser_size = "10pt",
         supports_ligatures = false,

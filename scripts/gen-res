@@ -100,7 +100,7 @@ _meta.targets.xresources = function(stream, key, val)
   stream:write(key, ": ", val, "\n")
 end
 _meta.targets.dotcfg = function(stream, key, val)
-  stream:write(key, ":", val, "\n")
+  stream:write("set:", key, ":", val, "\n")
 end
 
 local current_target = nil
