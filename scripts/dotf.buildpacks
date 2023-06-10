@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+pkgbuilds="$DOTFILES/pkgbuilds"
+builds="$XDG_CACHE_HOME/dotf.buildpacks"
+
+cd "$pkgbuilds" || exit 1
+
+fd -a -d1 | while read pb; do
+  bs=$(basename "$pb")
+
+  mkdir -p "$builds/$bs"
+  cd "$builds/$bs"
+
+  [ -e "$bs" ] || ln -s "$pb" "$bs"
+  makepkg -p "$bs" -si # stdin being blocked bruh
+done
