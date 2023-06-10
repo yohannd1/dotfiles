@@ -1,16 +1,20 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 pkgbuilds="$DOTFILES/pkgbuilds"
 builds="$XDG_CACHE_HOME/dotf.buildpacks"
 
-cd "$pkgbuilds" || exit 1
+if [ $# = 0 ]; then
+  pushd "$pkgbuilds" || exit 1
+  targets=$(*.PKGBUILD)
+  popd
+else
+  targets=("$@")
+fi
 
-fd -a -d1 | while read pb; do
-  bs=$(basename "$pb")
+for tname in "${targets[@]}"; do
+  mkdir -p "$builds/$tname"
+  cd "$builds/$tname"
 
-  mkdir -p "$builds/$bs"
-  cd "$builds/$bs"
-
-  [ -e "$bs" ] || ln -s "$pb" "$bs"
-  makepkg -p "$bs" -si # stdin being blocked bruh
+  [ -e "$tname" ] || ln -s "$pkgbuilds/$tname"
+  makepkg -p "$tname" -si
 done

@@ -399,6 +399,10 @@ ft.acrylic = function()
     ]], false)
 end
 
+ft.PKGBUILD = function()
+    setSpaceIndent(2)
+end
+
 -- function! ft.vimwiki() " {{{
 --   setlocal sw=2
 
