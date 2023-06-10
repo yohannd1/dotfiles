@@ -17,7 +17,7 @@ while getopts "p:h:" o; do
 done
 
 if [ ! -t 2 ] && [ "$WAYLAND_DISPLAY" ] && exists bemenu; then
-  args=(-i)
+  args=(-i -n)
   [ "$hasPrompt" ] && args+=(-p "$prompt")
   [ "$hasHeight" ] && args+=(-l "$height") || args+=(-l 10)
   bemenu "${args[@]}"
