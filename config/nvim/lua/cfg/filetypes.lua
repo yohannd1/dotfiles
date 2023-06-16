@@ -335,8 +335,6 @@ ft.markdown = function()
     }
 end
 
--- TODO: setSpaceIndent(2), setSpaceIndent(4), setTabIndent(4), setTabIndent(8)
-
 ft.vlang = function()
     setTabIndent(4)
     vim.b.format_command = "fmt-wrapper-v"
