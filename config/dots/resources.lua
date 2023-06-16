@@ -17,30 +17,49 @@ local this_basename = basename(this_path)
 local extra_defs = loadfile(this_basename .. "/" .. "res_extra_defs.lua")()
 local longFontFormat = extra_defs.longFontFormat
 
-local chosen_name = "UbuntuMono"
-if chosen_name == nil then -- if there's no selected font in the line above, just pick a random one.
-    local t = {}
-    for name, _ in pairs(extra_defs.font_presets) do
-        table.insert(t, name)
+local _randomFont = {}
+
+local getFontInfo = function(name)
+    if name == _randomFont then
+        local t = {}
+        for k, _ in pairs(extra_defs.font_presets) do
+            table.insert(t, k)
+        end
+        name = t[math.random(1, #t)]
     end
 
-    chosen_name = t[math.random(1, #t)]
+    local val = assert(
+        extra_defs.font_presets[name],
+        string.format("no such font name: %q", name)
+    )
+
+    local supports_ligatures = val.supports_ligatures
+    if supports_ligatures == nil then
+        supports_ligatures = true
+    end
+
+    return {
+        name = assert(val.name, "missing font name"),
+        base_size = assert(val.base_size, "missing base_size"),
+        supports_ligatures = supports_ligatures,
+    }
 end
-
-local font_config = assert(extra_defs.font_presets[chosen_name], "no such font name \"" .. chosen_name .. "\"")
-local xft_font = longFontFormat(font_config.name, font_config.terminal_pixelsize)
-
-local enable_ligatures = false
 
 local T_ALL = {t_xres, t_dots}
 -- }}}
+
+local enable_ligatures = false
+local font = getFontInfo("UbuntuMono")
+
+local fsize_term = font.base_size
+local xft_font = longFontFormat(font.name, fsize_term)
 
 -- st (terminal)
 decl {
     {"st.alpha", "0.7"},
     {"st.cursor", theme["base0D"]},
     {"st.font", xft_font},
-    {"st.enableligatures", (enable_ligatures and font_config.supports_ligatures) and 1 or 0},
+    {"st.enableligatures", (enable_ligatures and font.supports_ligatures) and 1 or 0},
 
     targets = T_ALL,
 }
@@ -48,20 +67,21 @@ decl {
 -- foot (wayland terminal)
 decl {
     {"foot.font", xft_font},
+    {"foot.alpha", "0.95"},
 
     targets = T_ALL,
 }
 
 -- yambar
 decl {
-    {"yambar.font", xft_font},
+    {"yambar.font", longFontFormat(font.name, font.base_size * 0.95)},
 
     targets = T_ALL,
 }
 
 -- tym (terminal?)
 decl {
-    {"tym.font", font_config.name .. " " .. font_config.terminal_pixelsize},
+    {"tym.font", font.name .. " " .. font.base_size},
 
     targets = T_ALL,
 }
@@ -81,7 +101,7 @@ decl {
 
 -- awesomewm
 decl {
-    {"awesome.font", font_config.name .. " " .. font_config.awesome_size},
+    {"awesome.font", string.format("%s %spx", font.name, font.base_size * 0.8)},
     {"awesome.border-normal", theme["base00"]},
     {"awesome.border-focus", theme["base03"]},
     {"awesome.border-marked", theme["base0A"]},
@@ -115,7 +135,7 @@ decl {
 decl {
     {
         "bemenu.font",
-        font_config.name .. " " .. (font_config.terminal_pixelsize * 0.8)
+        font.name .. " " .. (font.base_size * 0.75)
     },
 
     targets = T_ALL,
@@ -154,8 +174,8 @@ decl {
 
 -- qtile
 decl {
-    {"qtile.font-family", font_config.name},
-    {"qtile.font-size", font_config.terminal_pixelsize},
+    {"qtile.font-family", font.name},
+    {"qtile.font-size", font.base_size},
     {"qtile.border-focus", theme["base03"]},
     {"qtile.border-normal", theme["base00"]},
     {"qtile.bar.bg", theme["base00"]},
@@ -167,11 +187,11 @@ decl {
 
 -- qutebrowser
 decl {
-    {"qutebrowser.font_size", font_config.qutebrowser_size},
-    {"qutebrowser.fonts.monospace", font_config.name},
-    {"qutebrowser.fonts.standard", font_config.name},
+    {"qutebrowser.font_size", "10pt"}, -- placeholder for when I use qutebrowser again someday
+    {"qutebrowser.fonts.monospace", font.name},
+    {"qutebrowser.fonts.standard", font.name},
     {"qutebrowser.fonts.sans-serif", "NotoSansMedium"},
-    {"qutebrowser.fonts.serif", font_config.name},
+    {"qutebrowser.fonts.serif", font.name},
     {"qutebrowser.bg", theme["base00"]},
     {"qutebrowser.fg", theme["base05"]},
     {"qutebrowser.bg-alt", theme["base01"]},
@@ -191,11 +211,11 @@ decl {
 
 -- others
 decl {
-    {"Emacs.font", font_config.name},
+    {"Emacs.font", font.name},
     {"pencilwm.highlight", theme["base03"]},
-    {"polybar.fontname", font_config.name},
+    {"polybar.fontname", font.name},
     {"polybar.fontsize", "9.0"},
-    {"gtk3.font", font_config.name},
+    {"gtk3.font", font.name},
 
     targets = T_ALL,
 }

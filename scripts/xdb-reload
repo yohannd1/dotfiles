@@ -1,6 +1,9 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
+#
+# TODO: rename this to... idk, dotf.res.reload?
 
 set -e
+set -o pipefail
 
 PROGNAME=$(basename "$0")
 
