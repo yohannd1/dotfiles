@@ -434,7 +434,8 @@ if g:is_first
   set backspace=indent,eol,start
   set laststatus=2
   set number relativenumber
-  set wildmode=longest,list
+  set wildmenu
+  set wildmode=longest:full,full
   set autoindent
   set hlsearch incsearch
   set linebreak wrap

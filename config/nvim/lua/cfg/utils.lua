@@ -50,6 +50,11 @@ M.enumerateIter = function(iter)
     error("unimplemented") -- TODO
 end
 
+M.string = {}
+M.string.endsWith = function(haystack, suffix)
+    return string.sub(haystack, -#suffix) == suffix
+end
+
 -- TODO: "inspect" function
 
 return M
