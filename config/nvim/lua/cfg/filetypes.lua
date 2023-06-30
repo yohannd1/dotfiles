@@ -30,6 +30,12 @@ local setSpaceIndent = function(indent)
     }
 end
 
+local setLispJoin = function()
+    local bjopt = vim.b.better_join_opts or {}
+    bjopt.add_whitespace_match = "[(%[{]"
+    vim.b.better_join_opts = bjopt
+end
+
 local addSnippets = function(snips)
     for k, v in pairs(snips) do
         vim.fn["AddSnippet"](k, v)
@@ -365,6 +371,7 @@ ft.vlang = function()
 end
 
 ft.fennel = function()
+    setLispJoin()
     nvim_exec([[ hi link FennelKeyword String ]], false)
 end
 
@@ -423,6 +430,10 @@ end
 
 ft.PKGBUILD = function()
     setSpaceIndent(2)
+end
+
+ft.lisp = function()
+    setLispJoin()
 end
 
 -- function! ft.vimwiki() " {{{

@@ -63,7 +63,13 @@ local plugins = function()
     plug("tpope/vim-rsi")
 
     -- Electric pairs
-    plug("windwp/nvim-autopairs")
+    plug({"windwp/nvim-autopairs", config = function()
+        -- local npairs = require("nvim-autopairs")
+        -- local q1_rule = npairs.get_rules("'")[1]
+        -- q1_rule.not_filetypes = { "scheme", "lisp" }
+        -- q1_rule:with_pair(cond.not_after_text("["))
+    end})
+
     -- plug("tmsvg/pear-tree")
     -- plug("vim-scripts/AutoClose")
     -- plug("jiangmiao/auto-pairs")

@@ -1,5 +1,8 @@
 local dummy = _G.dummy
 local utils = require("cfg.utils")
+local getLineToEnd = vim.fn.GetLineToEnd
+
+local nvim_exec = vim.api.nvim_exec
 
 local map = function(m, lhs, rhs, args)
     local args = args or {}
@@ -137,6 +140,47 @@ return function()
     -- Buffer navigation
     map("n", "<C-j>", ":call NextBuffer()<CR>", arg_nr_s)
     map("n", "<C-k>", ":call PrevBuffer()<CR>", arg_nr_s)
+
+    -- A join command similar to the one in emacs (or evil-mode, idk)
+    dummy.betterJoin = function()
+        local normal = function(s) nvim_exec("normal! " .. s, false) end
+        local rmTrailWhs = function() normal("V:s/\\s\\+$//e\\<CR>") end
+
+        local opts = vim.b.better_join_opts or {}
+        local add_whitespace_match = opts.add_whitespace_match or -1
+        vim.b._foo = add_whitespace_match
+
+        normal("$m`") -- go to the end of the line and set a mark there
+        rmTrailWhs() -- remove trailing whitespace
+        normal("J") -- actually join lines
+        rmTrailWhs() -- remove trailing whitespace again
+        normal("``l") -- go to the mark we had set and move 1 to the right
+
+        -- At this point, we're at the start of what was previously the line
+        -- below. Let's remove the potential whitespace just in case.
+        if getLineToEnd():match("^%s+") then
+            normal("dw")
+        end
+
+        -- Add whitespace if a specific match is wanted
+        if add_whitespace_match ~= -1
+            and getLineToEnd():match("^" .. add_whitespace_match) then
+            normal("i ")
+        end
+    end
+
+    dummy.betterJoinVisual = function()
+        local line_start = getpos("'<")[1]
+        local line_end = getpos("'>")[1]
+        local line_diff = line_end - line_start
+
+        nvim_exec("normal \\<Esc>" .. line_start .. "G", false)
+        for _ = 1,line_diff do dummy.betterJoin() end
+        nvim_exec("normal " .. line_start .. "G", false)
+    end
+
+    map("n", "J", ":lua dummy.betterJoin()<CR>", arg_nr_s)
+    map("v", "J", ":lua dummy.betterJoinVisual()<CR>", arg_nr_s)
 
     -- Terminal escaping
     map("t", "<C-w><Esc>", "<Esc>", arg_nr_s) -- TODO: this one is not working
