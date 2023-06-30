@@ -12,7 +12,7 @@ bar:
   margin: 0
   layer: bottom
   foreground: *base04
-  background: *base02
+  background: *base00
 
   left:
     - river:

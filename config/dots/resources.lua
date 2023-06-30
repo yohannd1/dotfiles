@@ -49,7 +49,7 @@ local T_ALL = {t_xres, t_dots}
 -- }}}
 
 local enable_ligatures = false
-local font = getFontInfo("Agave")
+local font = getFontInfo("RobotoMono")
 
 local fsize_term = font.base_size
 local xft_font = longFontFormat(font.name, fsize_term)

@@ -55,7 +55,7 @@ M.font_presets = {
     },
     ["IbmPlex"] = {
         name = "Ibm Plex Mono",
-        base_size = 14,
+        base_size = 13,
     },
     ["ShareTech"] = {
         name = "Share Tech Mono",
