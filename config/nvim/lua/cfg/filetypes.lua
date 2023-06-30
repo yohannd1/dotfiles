@@ -54,7 +54,7 @@ local func = function()
         callback = function()
             local filename = vim.fn.expand("%f")
             for ext, v in pairs(ext_ft) do
-                if utils.string.endsWith(filename, ext) then
+                if utils.string.endsWith(filename, "." .. ext) then
                     if type(v) == "function" then
                         v()
                     else
