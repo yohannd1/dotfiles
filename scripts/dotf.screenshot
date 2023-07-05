@@ -19,7 +19,7 @@ if [ "$1" == --full ]; then
   grim "$tmp" -t png 2>/dev/null
 else
   rectangle=$(slurp -b '#FFFFFF20' 2>/dev/null) || exit 1
-  grim -g "$rectangle" "$tmp" -t png 2>/dev/null
+  grim -g "$rectangle" -t png "$tmp" 2>/dev/null
 fi
 
 out_dir="$scrDir/$(date +%Y-%m-%d_%H%M%S).png"

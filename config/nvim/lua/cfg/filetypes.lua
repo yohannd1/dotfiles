@@ -425,6 +425,9 @@ ft.acrylic = function()
         syn match acrXDatetime /\v\d{1,2}(:\d{2}){1,2}(AM|PM)?/
         syn match acrXDatetime /\v\d{4}\/\d{2}\/\d{2}/
         hi link acrXDatetime Special
+
+        syn match acrXTodo /\v<(TODO|FIXME|XXX)>/
+        hi link acrXTodo Todo
     ]], false)
 end
 

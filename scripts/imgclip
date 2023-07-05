@@ -1,18 +1,43 @@
 #!/usr/bin/env sh
 
-. "$(uselib std)"
-depCheck xclip
-
-if [ $# != 1 ]; then
-  printf >&2 "%s: %s\n" "$(basename $0)" "a tool to copy images to clipboard"
-  printf >&2 "Usage: %s\n" "$(basename $0) <FILE>"
-  exit 1
+if [ "$WAYLAND_DISPLAY" ]; then
+  clipCopy() { wl-copy -t "$1" "$2"; }
+else
+  clipCopy() { xclip -sel clipboard -t "$1" "$2"; }
 fi
 
-if [ ! -f "$1" ]; then
-  printf >&2 "%s: %s\n" "$(basename $0)" "file does not exist: $1"
-  exit 1
-fi
+main() {
+  if [ $# != 1 ]; then
+    printf >&2 "%s: %s\n" "$(basename $0)" "a tool to copy images to clipboard"
+    printf >&2 "Usage: %s\n" "$(basename $0) <FILE>"
+    exit 1
+  fi
+
+  if [ ! -f "$1" ]; then
+    printf >&2 "%s: %s\n" "$(basename $0)" "file does not exist: $1"
+    exit 1
+  fi
+
+  type=$(file -b --mime-type "$1") || exit 1
+
+  case "$type" in
+    image/png)
+      clipCopy "$type" "$1"
+      ;;
+
+    image/jpeg)
+      newImg=$(mktemp '/tmp/XXXXXXXX.png') || exit 1
+      mogrify -format 'png' -write "$newImg" "$1"
+      main "$newImg"
+      rm -f "$newImg"
+      ;;
+
+    *)
+      msg "Unknown type: $type"
+      exit 1
+      ;;
+  esac
+}
 
 msg() {
   _msg=$(echo "$@")
@@ -24,21 +49,4 @@ msg() {
   fi
 }
 
-type=$(file -b --mime-type "$1") || exit 1
-
-case "$type" in
-  image/png) xclip -sel clipboard -t "$type" "$1"
-             ;;
-
-  image/jpeg) depCheck mogrify mktemp
-              newImg=$(mktemp 'XXXXXXXX.png') || exit 1
-              mogrify -format 'png' -write "$newImg" "$1"
-              "$0" "$newImg" # :o recursive
-              rm -f "$newImg"
-              ;;
-
-  *) msg "Unknown type: $type"
-     exit 1
-     ;;
-esac
-
+main "$@"

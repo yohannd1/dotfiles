@@ -106,22 +106,6 @@ export FZF_DEFAULT_OPTS='--layout=reverse --no-border
                          --color spinner:3,gutter:1,info:3'
 export GREP_COLORS='ms=01;34:mc=01;34:sl=:cx=:fn=35:ln=32:bn=32:se=36'
 
-if [ "$DOTCFG_SOCKET" ]; then
-  # this adds a 20ms overhead :((
-  _bg=$(dotcfg send get:theme.base01)
-  _bgs=$(dotcfg send get:theme.base03)
-  _fg=$(dotcfg send get:theme.base05)
-  _fgs=$(dotcfg send get:theme.base05)
-  export BEMENU_OPTS="--fn '$(dotcfg send get:bemenu.font)'
-                      --tb '$_bg' --fb '$_bg' --nb '$_bg'
-                      --hb '$_bgs' --fbb '$_bg' --sb '$_bg'
-                      --ab '$_bg' --scb '$_bg'
-                      --tf '$_fg' --ff '$_fg' --nf '$_fg'
-                      --hf '$_fgs' --fbf '$_fg' --sf '$_fg'
-                      --af '$_fg' --scf '$_fg'
-  "
-fi
-
 # nnn config
 {
   export NNN_OPENER="$OPENER"

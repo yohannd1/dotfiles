@@ -2,7 +2,7 @@
 
 pkgname=furnace-git
 _truepkg=furnace
-pkgver=dev152.r316.g2441270e
+pkgver=dev152.r423.g16a7b6e6
 pkgrel=1
 epoch=1
 pkgdesc="A multi-system chiptune tracker compatible with DefleMask modules"
@@ -26,6 +26,7 @@ _dlog() {
 
 pkgver() {
   cd "$dir"
+  git co yohanan >/dev/null
   git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
