@@ -339,7 +339,9 @@ if ! isAndroid; then
 fi
 
 # FIXME: I'm not exactly sure how to do this, specially because it messes up if I'm trying to use more than one X server.
-gpg-connect-agent updatestartuptty /bye >/dev/null
+if ! isAndroid; then
+  gpg-connect-agent updatestartuptty /bye >/dev/null
+fi
 
 if [ "$_STARTUP_DEBUG_TIME" ] && [ -z "$_startup_time_shown" ]; then
   local current_time=$(date +"%s%3N")
