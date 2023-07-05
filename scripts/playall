@@ -111,7 +111,7 @@ def main():
             print(f"File {file} has unknown extension", file=sys.stderr)
             continue
 
-        os.system("clear")
+        os.system("tput reset")
 
         print(f"Playing file {i + 1} of {len(slice)}: {file}", file=sys.stderr)
 

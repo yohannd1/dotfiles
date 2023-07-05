@@ -63,7 +63,13 @@ local plugins = function()
     plug("tpope/vim-rsi")
 
     -- Electric pairs
-    plug("windwp/nvim-autopairs")
+    plug({"windwp/nvim-autopairs", config = function()
+        -- local npairs = require("nvim-autopairs")
+        -- local q1_rule = npairs.get_rules("'")[1]
+        -- q1_rule.not_filetypes = { "scheme", "lisp" }
+        -- q1_rule:with_pair(cond.not_after_text("["))
+    end})
+
     -- plug("tmsvg/pear-tree")
     -- plug("vim-scripts/AutoClose")
     -- plug("jiangmiao/auto-pairs")
@@ -277,57 +283,6 @@ local plugins = function()
     --       \ "sink": "e",
     --       \ "description": "Load a file from the recent list",
     --       \ }
-
-    plug({"nathom/filetype.nvim", config = function()
-        -- Do not source the default filetype.vim
-        vim.g.did_load_filetypes = 1
-
-        require("filetype").setup({
-            -- help: https://github.com/nathom/filetype.nvim
-            overrides = {
-                extensions = {
-                    rpy = "python",
-                    fx = "c",
-                    clj = "clojure",
-                    alg = "visualg",
-                    jl = "julia",
-                    scrbl = "scribble",
-                    h = "c",
-                    mpp = "cpp",
-                    PKGBUILD = "PKGBUILD",
-                    asm = "nasm",
-                    acr = "acrylic",
-
-                    -- filetype.nvim is glitching these
-                    c = "c",
-                    sh = "sh",
-                },
-                literal = {},
-                complex = {},
-
-                function_extensions = {
-                    gml = function()
-                        vim.bo.filetype = "gml"
-                        vim.bo.syntax = "javascript"
-                        vim.bo.expandtab = false
-                        vim.bo.tabstop = 4
-                        vim.wo.foldmethod = "marker"
-                        vim.wo.foldenable = true
-                        vim.wo.foldmarker = "#region,#endregion"
-                    end,
-                    tsx = function()
-                        if vim.fn.getline(1):find("<?xml") == 1 then
-                            vim.bo.filetype = "xml"
-                        end
-                    end,
-                },
-
-                shebang = {
-                    dash = "sh",
-                },
-            },
-        })
-    end})
 end
 
 function M.load()

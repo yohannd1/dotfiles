@@ -98,6 +98,7 @@ fparent_pattern() {
 case "$1" in
   run)
     case "$2" in
+      lisp) sbcl --script "$file" ;;
       @make) fparent-run "Makefile" run-command file-dir make run ;;
       @zig-build) fparent-run "build.zig" run-command file-dir zig build run --color off ;;
       @cargo) fparent-run "Cargo.toml" run-command file-dir cargo run ;;
@@ -151,7 +152,21 @@ case "$1" in
       zsh) if [ -x "$file" ]; then "$file"; else zsh "$file"; fi ;;
       julia) julia "$file" ;;
       vim) nvim -u "$file" ;;
-      scheme) guile "$file" ;;
+      scheme)
+        if [ -x "$file" ]; then
+          "$file"
+        else
+          command=$(getModelineCommand < "$file")
+          if printf "%s" "$command" | grep -q 'chicken-csi'; then
+            chicken-csi -s "$file"
+          elif printf "%s" "$command" | grep -q 'guile'; then
+            guile "$file"
+          else
+            printf >&2 "What interpreter do I use here!!!??\n"
+            exit 1
+          fi
+        fi
+        ;;
       latex|tex)
         name=$(basename "${file%.*}")
         # pdflatex -output-directory "$tmp" "$file" </dev/null

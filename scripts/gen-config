@@ -24,7 +24,7 @@ main() {
 
 gen() {
   mkdir -p "$(dirname "$2")"
-  pp "$1" > "$2"
+  pp <"$1" >"$2"
 }
 
 _t__init() {
@@ -56,7 +56,8 @@ _t_foot() {
 }
 
 _t_yambar() {
-  gen "$DOTFILES/config/gen/yambar.yml" "$XDG_CONFIG_HOME/yambar/config.yml"
+  PP_PREFIX="#!!" gen "$DOTFILES/config/gen/yambar.yml" \
+    "$XDG_CONFIG_HOME/yambar/config.yml"
 }
 
 _t_wget() {

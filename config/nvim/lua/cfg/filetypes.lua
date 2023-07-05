@@ -1,8 +1,8 @@
 -- vim: fdm=marker foldenable
-
--- Preparing for the settings {{{
+-- Preparation {{{
 
 local vim = _G.vim
+local utils = require("cfg.utils")
 
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
@@ -30,6 +30,12 @@ local setSpaceIndent = function(indent)
     }
 end
 
+local setLispJoin = function()
+    local bjopt = vim.b.better_join_opts or {}
+    bjopt.add_whitespace_match = "[(%[{]"
+    vim.b.better_join_opts = bjopt
+end
+
 local addSnippets = function(snips)
     for k, v in pairs(snips) do
         vim.fn["AddSnippet"](k, v)
@@ -37,24 +43,30 @@ local addSnippets = function(snips)
 end
 
 local ft = {}
--- local pat_ft = {}
+local ext_ft = {}
 
 local func = function()
     augroup("buffer_load", {clear = true})
 
-    -- for k, v in pairs(pat_ft) do
-    --     local is_func = type(v) == "function"
+    autocmd({"BufNewFile", "BufReadPost"}, {
+        pattern = "*",
+        group = "buffer_load",
+        callback = function()
+            local filename = vim.fn.expand("%f")
+            for ext, v in pairs(ext_ft) do
+                if utils.string.endsWith(filename, "." .. ext) then
+                    if type(v) == "function" then
+                        v()
+                    else
+                        vim.opt_local.filetype = v
+                    end
+                    break
+                end
+            end
+        end
+    })
 
-    --     autocmd("BufNewFile,BufEnter,BufRead", {
-    --         pattern = k,
-    --         group = "buffer_load",
-    --         callback = is_func and v or function()
-    --             vim.opt_local["filetype"] = v
-    --         end
-    --     })
-    -- end
-
-    autocmd("BufNewFile,BufRead", {
+    autocmd({"BufNewFile", "BufRead"}, {
         pattern = "*",
         group = "buffer_load",
         callback = "AddToRecFile",
@@ -99,25 +111,43 @@ end
 
 -- }}}
 
--- pat_ft["*.rpy"] = "python"
--- pat_ft["*.wk"] = "wk"
--- pat_ft["*.fx"] = "c"
--- pat_ft["*.clj"] = "clojure"
--- pat_ft["*.alg"] = "visualg"
--- pat_ft["*.jl"] = "julia"
--- pat_ft["*.scrbl"] = "scribble"
--- pat_ft["*.h"] = "c"
--- pat_ft["*.mpp"] = "cpp"
--- pat_ft["*.PKGBUILD"] = "PKGBUILD"
--- pat_ft["*.asm"] = "nasm"
--- pat_ft["*.acr"] = "acrylic"
--- pat_ft["*.gml"] = "c" -- i dont wanna install gamemaker filetype
+-- Extension -> filetype
+ext_ft.rpy = "python"
+ext_ft.terra = "terra"
+ext_ft.as = "actionscript"
+ext_ft.fx = "c"
+ext_ft.h = "c"
+ext_ft.clj = "clojure"
+ext_ft.alg = "visualg"
+ext_ft.jl = "julia"
+ext_ft.scrbl = "scribble"
+ext_ft.mpp = "cpp"
+ext_ft.PKGBUILD = "PKGBUILD"
+ext_ft.asm = "nasm"
+ext_ft.acr = "acrylic"
+ext_ft.gml = "gml"
+ext_ft.tsx = function()
+    if vim.fn.getline(1):find("<?xml") == 1 then
+        setLocals { filetype = "xml" }
+    end
+end
 
--- pat_ft["*.tsx"] = function()
---     if vim.fn.getline(1):find("<?xml") == 1 then
---         setLocals { filetype = "xml" }
---     end
--- end
+ft.actionscript = function()
+    setLocals {
+        syntax = "javascript",
+    }
+    setTabIndent(4)
+end
+
+ft.gml = function()
+    setLocals {
+        syntax = "javascript",
+        foldmethod = "marker",
+        foldenable = true,
+        foldmarker = "#region,#endregion",
+    }
+    setTabIndent(4)
+end
 
 ft.asm = function()
     setTabIndent(8)
@@ -335,14 +365,13 @@ ft.markdown = function()
     }
 end
 
--- TODO: setSpaceIndent(2), setSpaceIndent(4), setTabIndent(4), setTabIndent(8)
-
 ft.vlang = function()
     setTabIndent(4)
     vim.b.format_command = "fmt-wrapper-v"
 end
 
 ft.fennel = function()
+    setLispJoin()
     nvim_exec([[ hi link FennelKeyword String ]], false)
 end
 
@@ -401,6 +430,10 @@ end
 
 ft.PKGBUILD = function()
     setSpaceIndent(2)
+end
+
+ft.lisp = function()
+    setLispJoin()
 end
 
 -- function! ft.vimwiki() " {{{

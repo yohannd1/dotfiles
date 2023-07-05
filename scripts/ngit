@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+set -e
+
+here=$(dirname "$0")
+
+export PACK_DIR="$XDG_CACHE_HOME/nvim/apps/git"
+plugDir="$PACK_DIR/pack/vendor/opt/vim-fugitive"
+mkdir -p "$(dirname "$plugDir")"
+
+if [ ! -d "$plugDir" ]; then
+  git clone --depth 1 "https://github.com/tpope/vim-fugitive" "$plugDir"
+fi
+
+isGit() {
+  git rev-parse --git-dir >/dev/null 2>/dev/null
+}
+
+if ! isGit; then
+  printf >&2 "error: not in a git repo\n"
+  exit 1
+fi
+
+nvim --noplugin -u "$DOTFILES/config/nvim/apps/git.lua"

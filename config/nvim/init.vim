@@ -434,7 +434,8 @@ if g:is_first
   set backspace=indent,eol,start
   set laststatus=2
   set number relativenumber
-  set wildmode=longest,list
+  set wildmenu
+  set wildmode=longest:full,full
   set autoindent
   set hlsearch incsearch
   set linebreak wrap
@@ -620,59 +621,6 @@ silent call hydra#hydras#register({
       \   },
       \ ]
       \ })
-" }}}
-
-" A join command similar to the one in emacs (or evil-mode, idk)
-" {{{
-function! TheBetterJoin()
-  " Go to the end of the current line and set a mark there
-  normal! $
-  normal! m`
-
-  " Remove trailing whitespace on the current line
-  normal! V:s/\s\+$//e\<CR>
-
-  " Actually join the lines
-  normal! J
-
-  " Remove trailing whitespace, again...
-  normal! V:s/\s\+$//e\<CR>
-
-  " Go to that mark we just set, and move one character to the right, if
-  " possible
-  normal! ``
-  normal! l
-
-  " Remove extra whitespace that gets generated for some reason, but
-  " only if what's after the whitespace is a delimiter or the end of the
-  " line.
-  call SpecialRemoveWhitespace()
-endfunction
-
-function! SpecialRemoveWhitespace()
-  if (GetLineToEnd() =~ '\v^\s+[()\[\]{}]') || (GetLineToEnd() =~ '\v^\s+$') || (GetCharAt('.', col('.') - 1) =~ '\v[(\[{<]')
-    normal dw
-  elseif (GetLineToEnd() =~ '\v\s{2,}')
-    exec 'normal dwi '
-  endif
-endfunction
-
-function! TheBetterVisualJoin()
-  let line_start = getpos("'<")[1]
-  let line_end = getpos("'>")[1]
-  let line_diff = line_end - line_start
-
-  exec 'normal ' .. "\<Esc>" .. line_start .. 'G'
-
-  for _ in range(line_diff)
-    call TheBetterJoin()
-  endfor
-
-  exec 'normal ' .. line_start .. 'G'
-endfunction
-
-nnoremap <silent> J :call TheBetterJoin()<CR>
-vnoremap <silent> J :call TheBetterVisualJoin()<CR>
 " }}}
 
 " Vimwiki hydra

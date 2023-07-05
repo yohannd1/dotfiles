@@ -1,6 +1,8 @@
 This is mostly a process of what I need to do when preparing a system.
 Honestly I think I'll leave this as Arch-only forever, except for a more watered-down version for Ubuntu & Termux because I sometimes use that.
 
+also i have to adjust this to wayland now
+
 pre-install:
     curl
     realpath
@@ -16,8 +18,6 @@ post-install:
             TODO: it's still a struggle to install on the right lua version. To solve this I just copied it from share/5.1 to share/5.3 (awesome uses lua 5.3)
         lfs (luarocks install luafilesystem)
             for acw tools
-        https(luarocks install http)
-            for dotscfg-daemon
     bc
     fd
     fzf
