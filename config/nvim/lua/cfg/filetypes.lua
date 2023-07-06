@@ -439,6 +439,10 @@ ft.lisp = function()
     setLispJoin()
 end
 
+ft.haxe = function()
+    setTabIndent(4)
+end
+
 -- function! ft.vimwiki() " {{{
 --   setlocal sw=2
 
