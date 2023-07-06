@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -e
+
+tmp=$(mktemp -d /tmp/concat_XXXXXX) || exit 1
+cleanup() { [ -d "$tmp" ] && rm -r "$tmp"; }
+trap 'cleanup' EXIT
+
+die() {
+  printf >&2 "error: %s\n" "$1"
+  if [ "$_help" ]; then
+    printf >&2 "Usage: %s <OUT> -- [FILES...]\n" "$(basename "$0")"
+    printf >&2 "  OUT needs to be a wav file.\n"
+    printf >&2 "  The -- needs to be after the out file for readability.\n"
+    printf >&2 "  FILES can be of any type supported by ffmpeg.\n"
+  fi
+  exit 1
+}
+
+out="$1"; shift
+(printf "%s" "$out" | grep '\.wav$') || die "OUT needs to be a .wav file"
+
+[ "$1" = "--" ] || die "second arg must be --"
+shift
+
+files=()
+i=0
+for file in "$@"; do
+  printf "%s" "$file" | grep "'" && \
+    die "error: $file: contains single quotes in name!\n"
+
+  newpath="$tmp/file$i.wav"
+  if printf "%s" "$file" | grep '\.wav$'; then
+    ln -s "$file" "$newpath"
+  else
+    ffmpeg -i "$file" "$newpath"
+  fi
+  files+=("$newpath")
+
+  i=$((i+1))
+done
+
+for file in "${files[@]}"; do
+  printf "file '%s'\n" "$file"
+done > "$tmp/files.txt"
+
+ffmpeg -f concat -safe 0 -i "$tmp/files.txt" -c copy "$out"
