@@ -16,5 +16,5 @@ for tname in "${targets[@]}"; do
   cd "$builds/$tname"
 
   [ -e "$tname" ] || ln -s "$pkgbuilds/$tname"
-  makepkg -p "$tname" -si
+  makepkg -p "$tname" -si --force
 done
