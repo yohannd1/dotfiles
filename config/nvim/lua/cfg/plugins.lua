@@ -264,7 +264,7 @@ local plugins = function()
 
     -- plug("slakkenhuis/vim-margin")
 
-    plug("airblade/vim-gitgutter")
+    -- plug("airblade/vim-gitgutter")
 
     -- Loose config
     plug {config = function()

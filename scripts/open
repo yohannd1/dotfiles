@@ -154,10 +154,12 @@ if match ext 'mid|midi'; then
   try gui termup -f mpv --no-video "$FILE"
 fi
 
+# trackers & VGM
 match ext 'fur|dmf' && try gui furnace "$FILE"
 match ext 'btm' && try gui BambooTracker "$FILE"
+match ext 'vgm' && try pop vgmplay "$FILE"
 
-if match mime 'audio/*' || match ext 'aac|flac|m4a|mpa|mp2|mp3|ogg|wav|wma'; then
+if match mime 'audio/*' || match ext 'aac|flac|m4a|mpa|mp2|mp3|ogg|wav|wma|webm'; then
   try tty mpv --no-video "$FILE"
   try gui termup -f mpv --no-video "$FILE"
   try pop mocplay "$FILE" "opener"
@@ -220,17 +222,9 @@ if match ext 'json'; then
   try pop runpage python -m json.tool -- "$FILE"
 fi
 
-if match ext 'kdenlive'; then
-  try gui kdenlive "$FILE"
-fi
-
-if match ext 'sunvox'; then
-  try gui sunvox "$FILE"
-fi
-
-if match ext 'ardour'; then
-  try gui ardour7 "$FILE"
-fi
+match ext 'kdenlive' && try gui kdenlive "$FILE"
+match ext 'sunvox' && try gui sunvox "$FILE"
+match ext 'ardour' && try gui ardour7 "$FILE"
 
 if match mime 'image/vnd.djvu'; then
   try tty runpage djvutxt "$FILE"

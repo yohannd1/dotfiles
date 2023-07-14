@@ -1,6 +1,10 @@
 local M = {}
 
 M.font_presets = {
+    ["SourceCodePro"] = {
+        name = "Source Code Pro",
+        base_size = 14,
+    },
     ["Iosevka"] = {
         name = "Iosevka Medium",
         base_size = 15,

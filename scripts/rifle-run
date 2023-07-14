@@ -131,6 +131,7 @@ case "$1" in
       clojure) clojure "$file" ;;
       markdown) md-preview "$file" ;;
       php) php "$file" ;;
+      odin) odin run "$file" -file ;;
       sh)
         if [ -x "$file" ]; then
           # execute file if it is executable

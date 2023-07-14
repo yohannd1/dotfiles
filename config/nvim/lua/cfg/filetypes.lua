@@ -443,6 +443,10 @@ ft.haxe = function()
     setTabIndent(4)
 end
 
+ft.odin = function()
+    setTabIndent(4)
+end
+
 -- function! ft.vimwiki() " {{{
 --   setlocal sw=2
 
