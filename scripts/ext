@@ -113,6 +113,7 @@ if [ "$mode" = auto ]; then
            printf "new"
            ;;
 
+     # FIXME: there apparently is a considerable slowdown on listing tar files... i think it reads the entire file. so I might abandon this for them and just assume the safest.
     *.tar|*.tar.bz2|*.tbz2|*.tar.gz|*.tgz|*.tar.xz|*.txz) tar -tf "$archive" | setModeFromInput ;;
     *.zip|*.7z) bsdtar --list --file "$archive" | setModeFromInput ;;
 

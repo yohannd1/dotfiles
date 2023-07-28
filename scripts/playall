@@ -7,7 +7,7 @@ import argparse as ap
 from pathlib import Path
 
 IGNORE_EXTENSIONS = {"png", "jpg", "jpeg", "txt", "gif"}
-VALID_EXTENSIONS = {"mp3", "wav", "ogg", "flac", "opus", "m4a", "mp", "mp4"}
+VALID_EXTENSIONS = {"mp3", "wav", "ogg", "flac", "opus", "m4a", "mp", "mp4", "mid", "midi"}
 
 
 def main():
@@ -115,11 +115,13 @@ def main():
 
         print(f"Playing file {i + 1} of {len(slice)}: {file}", file=sys.stderr)
 
+        if name.endswith("mid") or name.endswith("midi"):
+            proc_call = ["play-midi", str(file)]
+        else:
+            proc_call = ["mpv", "--no-video", str(file)]
+
         inc_limitc = True
-        with sp.Popen(
-            ["mpv", "--no-video", str(file)],
-            encoding="UTF-8",
-        ) as proc:
+        with sp.Popen(proc_call, encoding="UTF-8") as proc:
             try:
                 errored = proc.wait() != 0
             except KeyboardInterrupt:

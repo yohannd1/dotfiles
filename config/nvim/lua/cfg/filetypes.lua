@@ -441,6 +441,9 @@ end
 
 ft.haxe = function()
     setTabIndent(4)
+
+    -- FIXME: this might error out if the buffer file changes
+    vim.b.format_command = "haxelib run formatter --stdin -s " .. vim.fn.expand("%p")
 end
 
 ft.odin = function()

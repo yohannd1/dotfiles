@@ -1,5 +1,6 @@
 -- vim: fdm=marker foldenable foldmarker={{{,}}}
 
+-- Preparations {{{
 local vim = _G.vim
 local _configs = {}
 local M = {}
@@ -40,6 +41,7 @@ local firstAvailableDir = function(arg)
         error("Could not find plugin + no fallback specified")
     end
 end
+-- }}}
 
 local plugins = function()
     local HOME = assert(os.getenv("HOME"), "could not get home directory")
@@ -126,6 +128,7 @@ local plugins = function()
     plug("cespare/vim-toml")
     plug("neoclide/jsonc.vim")
     plug("HerringtonDarkholme/yats.vim")
+    plug("vala-lang/vala.vim")
 
     plug({"plasticboy/vim-markdown", config = function()
         -- markdown

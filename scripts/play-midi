@@ -10,7 +10,7 @@ if [ $# = 2 ]; then
   sf_args=("$2")
 fi
 
-printf >&2 "Tip: press Ctrl-C to stop playing\n"
+printf >&2 "Press Ctrl-C to stop playing\n\n"
 
 fluidsynth -a pulseaudio -m alsa_seq -l -i "${sf_args[@]}" "$1" </dev/null &
 fluidsynth_pid="$!"
