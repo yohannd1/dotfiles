@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+printf >&2 "note: using wrapper script\n"
+zigup "$@" \
+  --install-dir ~/.cache/zigup \
+  --path-link ~/.local/bin/zig
