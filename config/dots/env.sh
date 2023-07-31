@@ -121,7 +121,7 @@ export GREP_COLORS='ms=01;34:mc=01;34:sl=:cx=:fn=35:ln=32:bn=32:se=36'
 _pue="tty"
 [ "$DISPLAY" ] && _pue="xorg"
 [ "$WAYLAND_DISPLAY" ] && _pue="wayland"
-export PINENTRY_USER_DATA="is=${_pue}"
+export PINENTRY_USER_DATA=$(printf '{"context":"%s","dotcfg_socket":"%s"}' "$_pue" "$DOTCFG_SOCKET")
 unset _pue
 
 export GPG_TTY=$(tty)

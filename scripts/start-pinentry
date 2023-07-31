@@ -3,11 +3,20 @@
 matches() { printf "%s" "$1" | grep -q "$2"; }
 exists() { command -v "$1" >/dev/null; }
 
-if matches "$PINENTRY_USER_DATA" 'is=tty'; then
+if ! exists jq; then
+  printf >&2 "JQ NOT AVAILABLE - CAN'T PARSE PINENTRY_USER_DATA\n"
+  exit 1
+fi
+
+context=$(echo "$PINENTRY_USER_DATA" | jq -r '.context')
+
+export DOTCFG_SOCKET=$(echo "$PINENTRY_USER_DATA" | jq -r '.dotcfg_socket')
+
+if [ "$context" = tty ]; then
   exec pinentry-curses "$@"
 else
   if exists pinentry-bemenu; then
-    export BEMENU_OPTS="-l 20"
+    export BEMENU_OPTS="-l 20 $(bemenu-load-colorscheme)"
     exec pinentry-bemenu "$@"
   fi
 

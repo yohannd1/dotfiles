@@ -21,21 +21,7 @@ if [ ! -t 2 ] && [ "$WAYLAND_DISPLAY" ] && exists bemenu; then
   [ "$hasPrompt" ] && args+=(-p "$prompt")
   [ "$hasHeight" ] && args+=(-l "$height") || args+=(-l 10)
 
-  if [ "$DOTCFG_SOCKET" ]; then
-    # this adds a 20ms overhead :((
-    _bg=$(dotcfg send get:theme.base00)
-    _bgs=$(dotcfg send get:theme.base02)
-    _fg=$(dotcfg send get:theme.base05)
-    _fgs=$(dotcfg send get:theme.base05)
-
-    args+=(--fn "$(dotcfg send get:bemenu.font)" \
-      --tb "$_bg" --fb "$_bg" --nb "$_bg" \
-      --hb "$_bgs" --fbb "$_bg" --sb "$_bg" \
-      --ab "$_bg" --scb "$_bg" \
-      --tf "$_fg" --ff "$_fg" --nf "$_fg" \
-      --hf "$_fgs" --fbf "$_fg" --sf "$_fg" \
-      --af "$_fg" --scf "$_fg")
-  fi
+  export BEMENU_OPTS=$(bemenu-load-colorscheme)
 
   bemenu "${args[@]}"
 elif [ ! -t 2 ] && [ "$DISPLAY" ] && exists dmenu; then
