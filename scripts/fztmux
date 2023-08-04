@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+[ $# != 0 ] && { printf >&2 "Usage: %s\n" "$(basename "$0")"; exit 1; }
+
+choice=$(tmux ls | fzagnostic) || exit 1
+session=$(echo "$choice" | awk '{ gsub(":$","",$1); print $1 }') || exit 1
+tmux attach -t "$session"
