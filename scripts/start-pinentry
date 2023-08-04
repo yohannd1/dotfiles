@@ -16,7 +16,7 @@ if [ "$context" = tty ]; then
   exec pinentry-curses "$@"
 else
   if exists pinentry-bemenu; then
-    export BEMENU_OPTS="-l 20 $(bemenu-load-colorscheme)"
+    export BEMENU_OPTS="$(bemenu-load-colorscheme)"
     exec pinentry-bemenu "$@"
   fi
 

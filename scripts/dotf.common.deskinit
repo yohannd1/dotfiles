@@ -33,7 +33,7 @@ setbg &
 
 # screenshot app
 # flameshot &
-ksnip &
+# ksnip &
 
 # notification daemon
 dunst -config "$XDG_CACHE_HOME/gen/dunstrc" &

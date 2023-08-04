@@ -158,7 +158,7 @@ ft.xdefaults = function()
 end
 
 ft.c = function()
-    setTabIndent(8)
+    setTabIndent(4)
     setLocals {
         foldmethod = "syntax",
         commentstring = "/* %s */",

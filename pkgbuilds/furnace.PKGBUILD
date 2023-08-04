@@ -2,7 +2,7 @@
 
 pkgname=furnace-git
 _truepkg=furnace
-pkgver=dev152.r503.g2f1ffa9e
+pkgver=dev152.r843.g0e1b1b59
 pkgrel=1
 epoch=1
 pkgdesc="A multi-system chiptune tracker compatible with DefleMask modules"
@@ -26,7 +26,7 @@ _dlog() {
 
 pkgver() {
   cd "$dir"
-  git co yohanan >/dev/null
+  # git co yohanan >/dev/null
   git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
@@ -41,12 +41,12 @@ build() {
   cd build
   if [ ! -f Makefile ]; then
     _dlog "Makefile not found - running cmake..."
-    cmake -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_GUI=ON -DSYSTEM_FFTW=ON -DSYSTEM_FMT=ON -DSYSTEM_ZLIB=ON -DSYSTEM_LIBSNDFILE=ON -DSYSTEM_SDL2=ON -DSYSTEM_RTMIDI=ON -DWITH_JACK=ON "$dir"
+    cmake -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_GUI=ON -DSYSTEM_FFTW=ON -DSYSTEM_FMT=OFF -DSYSTEM_ZLIB=ON -DSYSTEM_LIBSNDFILE=ON -DSYSTEM_SDL2=ON -DSYSTEM_RTMIDI=ON -DWITH_JACK=ON "$dir"
   else
     _dlog "Makefile found! Skipping to build"
   fi
 
-  cmake --build . -j $(nproc)
+  cmake --build . -j$(nproc)
 }
 
 package() {
