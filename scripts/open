@@ -133,6 +133,7 @@ if match url 'http|https'; then
 fi
 
 if match ext 'swf'; then
+  # try gui ruffle "$FILE"
   try gui flashplayer "$FILE"
 fi
 
@@ -189,9 +190,13 @@ if match ext 'torrent'; then
   try pop runpage transmission-show -- "$FILE"
 fi
 
-if match ext 'mmpz'; then
+if match ext 'mmp|mmpz'; then
   try gui @lmms "$FILE" # a wrapper I have on my PC
   try gui lmms "$FILE"
+fi
+
+if match ext 'rad'; then
+  try gui radium "$FILE"
 fi
 
 match ext 'odt|rtf|docx|doc' && try gui libreoffice "$FILE"
