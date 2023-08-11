@@ -85,6 +85,14 @@ M.font_presets = {
         name = "Agave",
         base_size = 15,
     },
+    ["EnvyCodeR"] = {
+        name = "Envy Code R",
+        base_size = 15,
+    },
+    ["DinaRemasterII"] = {
+        name = "DinaRemasterII",
+        base_size = 16,
+    },
 }
 
 M.longFontFormat = function(font_name, pixel_size)
