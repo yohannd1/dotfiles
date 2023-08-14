@@ -105,6 +105,8 @@ export FZF_DEFAULT_OPTS='--layout=reverse --no-border
                          --color prompt:8,marker:5,pointer:8
                          --color spinner:3,gutter:1,info:3'
 export GREP_COLORS='ms=01;34:mc=01;34:sl=:cx=:fn=35:ln=32:bn=32:se=36'
+export OPEN_ALT=dotf.unknown-filetype
+export OPEN_FALLBACK_SILENT=1
 
 # nnn config
 {

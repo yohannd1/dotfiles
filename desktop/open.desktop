@@ -1,0 +1,4 @@
+[Desktop Entry]
+Name=Dotfiles Default Opener
+Exec=openfork %u
+Type=Application

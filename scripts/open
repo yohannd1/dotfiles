@@ -27,7 +27,7 @@ try() {
   # gui <prog...>: block stdout and stderr; see 'openfork' script for automatic dettachment
   # tty <prog...>: don't block anything: open the program in the current terminal
   # pop <prog...>: pop up a new terminal using the 'termup' script
-  # fallback: starts the alt program specified in $ALT_OPENER
+  # fallback: starts the alt program specified in $OPEN_ALT
   case "$action" in
     gui) [ "$OPEN_GUI" ] && openGui "$@" ;;
     tty) [ -z "$OPEN_GUI" ] && openTty "$@" ;;
@@ -70,15 +70,13 @@ openPop() {
 }
 
 openXdg() {
-  VIA_OPEN=1 "$ALT_OPENER" "$FILE"
+  VIA_OPEN=1 xdg-open "$FILE"
   exit
 }
 
 openFallback() {
-  [ -z "$FALLBACK_SILENT" ] && {
-    warn "Falling back to %s (%s)\n" "$ALT_OPENER" "$FILE"
-  }
-  exit 2
+  [ -z "$OPEN_FALLBACK_SILENT" ] && warn "open (%s): fallback to %s\n" "$FILE" "$OPEN_ALT"
+  "$OPEN_ALT" "$FILE"
 }
 
 checkExists() {
@@ -89,14 +87,14 @@ checkExists() {
 }
 
 set -f -o noclobber -o noglob
-ALT_OPENER=${ALT_OPENER:-"xdg-open"}
+OPEN_ALT=${OPEN_ALT:-"xdg-open"}
 
 if [ $# != 1 ]; then
   cat >&2 <<EOF
 Usage: $(basename $0) { <FILE> | <URL> }
 Environment variables:
   OPEN_GUI: forces to open only apps in GUI mode.
-  ALT_OPENER: a fallback opener; default is xdg-open
+  OPEN_ALT: a fallback opener; default is xdg-open
 EOF
   exit 1
 fi
@@ -246,7 +244,7 @@ fi
 match mime 'inode/directory' && try pop "$FILEMAN" "$FILE"
 match mime 'inode/x-empty' && try pop runpage cat "$FILE"
 match mime 'text/troff' && try pop runpage man -l "$FILE"
-match mime 'text/*' && try pop runpage cat "$FILE"
+# match mime 'text/*' && try pop runpage cat "$FILE"
 match mime '*/xml' && try pop runpage cat "$FILE"
 
 openFallback

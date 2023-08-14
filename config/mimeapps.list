@@ -1,7 +1,11 @@
 # vim: ft=desktop
 [Default Applications]
-image/jpeg=sxiv.desktop
-image/png=sxiv.desktop
+image/jpeg=open.desktop
+image/png=open.desktop
+audio/x-wav=open.desktop
+audio/x-vgm=open.desktop
+audio/x-mpeg=open.desktop
+audio/ogg=open.desktop
 text/html=browser.desktop
 inode/directory=filemanager.desktop
 
