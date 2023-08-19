@@ -1,250 +1,267 @@
-#!/usr/bin/env sh
+#!/usr/bin/env janet
+# vim: foldmethod=marker foldenable foldmarker=<<<,>>>
 
-. "$(uselib std)" || exit 127
-. "$(uselib filematch)" || exit 127
-depCheck termup runpage
+# Preparations <<<
 
-if [ -z "$OPEN_GUI" ] && [ "$WAYLAND_DISPLAY" ]; then
-  OPEN_GUI=1
-fi
+(defn dev-null []
+  (assert (file/open "/dev/null" :r)))
 
-warn() {
-  local out=$(printf "$@")
-  if [ "$OPEN_GUI" ]; then
-    notify-send "$out"
-  else
-    printf >&2 "%s\n" "$out"
-  fi
-}
+(def open-gui (-> (os/getenv "OPEN_GUI" "") (length) (> 0)))
 
-try() {
-  local action="$1"
-  shift
+(defn get-prog-output [-args]
+  (def (pipe-r pipe-w) (os/pipe))
+  (def code (os/execute -args :p {:in (dev-null) :out pipe-w}))
+  (when (= code 0)
+    (-> pipe-r (:read math/int32-max) (string/trim))))
 
-  # special cases for first arg
-  checkExists "$@" || return
+(defn state/init []
+  (def peg-url-protocol
+    '{:a-z (choice (range "az") (range "AZ"))
+      :main (sequence (capture (some :a-z)) "://")})
+  (def peg-file-ext
+    '{:main (sequence (some (if-not "." 1))
+              (some (sequence "." (capture (some (if-not "." 1))))))})
 
-  # gui <prog...>: block stdout and stderr; see 'openfork' script for automatic dettachment
-  # tty <prog...>: don't block anything: open the program in the current terminal
-  # pop <prog...>: pop up a new terminal using the 'termup' script
-  # fallback: starts the alt program specified in $OPEN_ALT
-  case "$action" in
-    gui) [ "$OPEN_GUI" ] && openGui "$@" ;;
-    tty) [ -z "$OPEN_GUI" ] && openTty "$@" ;;
-    pop) openPop "$@" ;;
-    fallback) openFallback ;;
-    *)
-      printf >&2 "Invalid action: %s\n" "$action"
-      printf >&2 "Args: "
-      printf >&2 '"%s" ' "$action" "$@"
-      printf >&2 "\n"
-      exit 1
-      ;;
-  esac
-}
+  (let [open-alt (os/getenv "OPEN_ALT" "xdg-open")
+        file (-> (dyn :args) (1))
+        mime (assert (get-prog-output ["file" "--dereference" "--brief" "--mime-type" "--" file]))
+        protocol (let [r (peg/match peg-url-protocol file)]
+                   (unless (nil? r) (r 0)))
+        ext (let [r (peg/match peg-file-ext file)]
+              (unless (nil? r) (-> r (length) (- 1) (r))))]
+    @{:open-alt open-alt
+      :file file
+      :mime mime
+      :ext ext
+      :protocol protocol}))
 
-block() {
-  if match "$@"; then
-    warn "Attempted to open blocked file/url %s (%s)\n" "$FILE" "$_filematch_mimetype"
-    exit 1
-  fi
-}
+(defn state/try
+  "Try to open.
+  `-type` can be
+    :gui to block stdin and redirect stderr, useful for GUI apps;
+    :tty to directly open the program in the TTY;
+    :pop to run as TTY if possible, but opening it via `termup` if not;
+    :fallback to open the alt program specified by OPEN_ALT;
+    :block to not run the file and exit immediately"
+  [self -type &opt -args]
 
-openGui() {
-  "$@" >/dev/null 2>&1
-  exit
-}
+  (def {:open-alt open-alt
+        :file file
+        :mime mime
+        :protocol protocol
+        :ext ext} self)
 
-openTty() {
-  "$@"
-  exit
-}
+  (defn prog-exists [progn]
+    (= 0 (os/execute ["sh" "-c" (string "command -v " progn)] :p {:out (dev-null) :err (dev-null)})))
 
-openPop() {
-  if [ "$OPEN_GUI" ]; then
-    openGui termup "$@"
-  else
-    openTty "$@"
-  fi
-  exit
-}
+  (defn condit-open [prog]
+    (:write stderr (string/format "::: %q\n" -args))
+    (when (prog-exists (-args 0))
+      (if open-gui
+        (do
+          (os/exit (os/execute (array/concat @[] prog -args)
+                               :p {:in (dev-null) :err stdout})))
+        (os/exit (os/execute -args :p)))))
 
-openXdg() {
-  VIA_OPEN=1 xdg-open "$FILE"
-  exit
-}
+  (match -type
+    :gui (when (and open-gui (prog-exists (-args 0)))
+           (os/exit (os/execute -args :p {:in (dev-null) :err stdout})))
+    :tty (when (and (not open-gui) (prog-exists (-args 0)))
+           (os/exit (os/execute -args :p)))
+    :pop (condit-open ["termup" "-f"])
+    :runpage (condit-open ["termup" "-f" "runpage"])
+    :fallback (os/exit (os/execute [open-alt file] :p))
+    :xdg (do
+           (os/setenv "VIA_OPEN" "1")
+           (os/exit (os/execute ["xdg-open" file])))
+    :block (let [msg "Attempted to open blocked file (%s)\nMIME: %s; EXT: %s\n"]
+             (:write stderr (string/format
+                              msg file
+                              (if (nil? mime) "nil" mime)
+                              (if (nil? ext) "nil" ext)))
+             (os/exit 1))
+    _ (error (string/format "Unknown action for symbol %s" -type))))
 
-openFallback() {
-  [ -z "$OPEN_FALLBACK_SILENT" ] && warn "open (%s): fallback to %s\n" "$FILE" "$OPEN_ALT"
-  "$OPEN_ALT" "$FILE"
-}
+(defn warn [msg]
+  (if open-gui
+    (os/execute ["notify-send" "--" msg] :px)
+    (do
+      (:write stderr msg)
+      (:write stderr "\n"))))
 
-checkExists() {
-  case "$1" in
-    runpage) exists "$2" ;;
-    *) exists "$1" ;;
-  esac
-}
+(defn state/match
+  "TODO: doc"
+  [self mtype marg]
 
-set -f -o noclobber -o noglob
-OPEN_ALT=${OPEN_ALT:-"xdg-open"}
+  (def {:mime mime
+        :ext ext
+        :protocol protocol} self)
 
-if [ $# != 1 ]; then
-  cat >&2 <<EOF
-Usage: $(basename $0) { <FILE> | <URL> }
-Environment variables:
-  OPEN_GUI: forces to open only apps in GUI mode.
-  OPEN_ALT: a fallback opener; default is xdg-open
-EOF
-  exit 1
-fi
+  (defn go-through [list src-str]
+    (unless (nil? src-str)
+      (var ret false)
+      (each elem list
+        (:write stderr (string/format "%q\n" elem))
+        (cond
+          (string? elem) (when (= src-str elem)
+                           (set ret true)
+                           (break))
+          (tuple? elem) (match elem
+                          [:begins str] (when (string/has-prefix? str src-str)
+                                          (set ret true)
+                                          (break))
+                          [:ends str] (when (string/has-suffix? str src-str)
+                                        (set ret true)
+                                        (break))
+                          _ (error (string "uhhhhhhhh")))
+          (error (string "Expected either tuple or string, got " elem))))
+      ret))
 
-FILE="$1"
-if printf "%s" "$FILE" | grep -q '^file://'; then
-  FILE=$(printf "%s" "$1" | sed 's|^file://||g; s|%20| |g')
-fi
-filematch_initialize "$FILE"
+  (match mtype
+    :mime (go-through marg mime)
+    :ext (go-through marg ext)
+    :protocol (= protocol marg)
+    _ (error (string/format "Unknown action for symbol %s" mtype))))
+# >>>
 
-# special urls in:this+format:idk
-[ "$_filematch_is_special" ] && openXdg
+(defn main [&]
+  (when (nil? (os/getenv "WAYLAND_DISPLAY"))
+    (os/setenv "OPEN_GUI" "1"))
 
-block mime 'application/x-sharedlib'
-block mime 'application/x-shared-library-la'
-block mime 'application/x-executable'
-block mime 'application/x-shellscript'
+  (def help-str
+    (string
+      "Usage: $(basename $0) { <FILE> | <URL> }\n"
+      "Environment variables:\n"
+      "  OPEN_GUI: forces to open only apps in GUI mode.\n"
+      "  OPEN_ALT: a fallback opener; default is xdg-open\n"))
 
-match url 'vscode' && openXdg
-match url 'steam' && openXdg
+  (when (not= 2 (length (dyn :args)))
+    (:write stderr help-str)
+    (os/exit 1))
 
-match ext 'drawio' && try gui drawio "$FILE"
-match ext 'godot' && try gui Godot "$FILE"
-match ext 'yyp' && try gui GameMaker "$FILE"
+  (def s (state/init))
+  (def {:file file} s)
 
-# OpenMPT modules
-if match ext 'it|s3m|mptm'; then
-  try pop openmpt123 "$FILE"
-fi
+  (defn t [-type &opt -arg] (state/try s -type -arg))
+  (defn m [-type -arg] (state/match s -type -arg))
+  (defn mt [mtype marg ttype &opt targ]
+    (when (m mtype marg) (t ttype targ)))
 
-if match url 'http|https'; then
-  try gui "$BROWSER" "$FILE"
-  try tty "$TERMBROWSER" "$FILE"
-fi
+  (def FILEMAN (os/getenv "FILEMAN"))
+  (def BROWSER (os/getenv "BROWSER"))
+  (def TERMBROWSER (os/getenv "TERMBROWSER"))
+  (def EDITOR (os/getenv "EDITOR"))
 
-if match ext 'swf'; then
-  # try gui ruffle "$FILE"
-  try gui flashplayer "$FILE"
-fi
+  # (mt :mime [[:begins "application/"]] :block)
 
-match ext 'djvu' && try gui zathura "$FILE"
-match ext 'ps' && try gui zathura "$FILE"
-match ext 'epub' && try gui zathura "$FILE"
+  (mt :mime ["inode/directory"] :pop [FILEMAN file])
+  (mt :mime ["text/troff"] :runpage ["man" "-l" file])
+  (when (or (m :mime ["inode/x-empty" [:ends "/xml"]])
+            (m :ext ["txt" "log"]))
+    (t :runpage ["cat" file]))
 
-if match ext 'pdf' || match mime 'application/pdf'; then
-  try gui zathura "$FILE"
-  try pop runpage pdftotext -l 10 -nopgbrk -q -- "$FILE" -
-  try pop runpage mutool draw -F txt -i -- "$FILE" 1-10
-  try pop runpage exiftool "$FILE"
-fi
+  # urls
+  (mt :protocol ["vscode" "steam"] :xdg)
+  (when (m :protocol ["http" "https"])
+    (t :gui [BROWSER file])
+    (t :tty [TERMBROWSER file]))
 
-if match ext 'mid|midi'; then
-  try tty play-midi "$FILE"
-  try gui termup -f play-midi "$FILE"
-  try tty mpv --no-video "$FILE"
-  try gui termup -f mpv --no-video "$FILE"
-fi
+  # midi
+  (when (m :ext ["mid" "midi"])
+    (t :pop ["play-midi" file])
+    (t :pop ["mpv" "--no-video" file]))
 
-# trackers & VGM
-match ext 'fur|dmf' && try gui furnace "$FILE"
-match ext 'btm' && try gui BambooTracker "$FILE"
-match ext 'vgm' && try pop vgmplay "$FILE"
+  # audio files
+  (when (or (m :mime [[:begins "audio/"]])
+            (m :ext ["aac" "flac" "m4a" "mpa" "mp2" "mp3"
+                     "ogg" "wav" "wma" "webm"]))
+    (t :pop ["mpv" "--no-video" file])
+    (t :pop ["mocplay" file "opener"])
+    (t :tty ["exiftool" file])
+    (t :runpage ["mediainfo" file]))
 
-if match mime 'audio/*' || match ext 'aac|flac|m4a|mpa|mp2|mp3|ogg|wav|wma|webm'; then
-  try tty mpv --no-video "$FILE"
-  try gui termup -f mpv --no-video "$FILE"
-  try pop mocplay "$FILE" "opener"
-  try tty exiftool "$FILE"
-  try pop runpage mediainfo "$FILE"
-fi
+  # image
+  (when (m :mime ["image/vnd.djvu"])
+    (t :runpage ["djvutxt" file])
+    (t :runpage ["exiftool" file]))
+  (when (or (m :mime [[:begins "image/vnd.djvu"]])
+            (m :ext ["gif" "jpg" "png"]))
+    (t :gui ["sxiv" "-p" file])
+    (t :runpage ["viu" "-n" file])
+    (t :runpage ["img2txt" "--gamma=0.6" "--" file])
+    (t :runpage ["exiftool" file]))
 
-if match mime 'video/*' ||
-  match ext 'avi|mkv|mp4'; then
-  try gui smplayer "$FILE"
-  try gui mpv "$FILE"
-  try tty mpv --no-video "$FILE"
-  try pop runpage mediainfo "$FILE"
-fi
+  (mt :ext ["drawio"] :gui ["drawio" file])
+  (mt :ext ["godot"] :gui ["Godot" file])
+  (mt :ext ["yyp"] :gui ["GameMaker" file])
 
-if match ext 'a|ace|alz|arc|arj|bz|bz2|cab|cpio|deb|gz|jar|lha|lz|lzh|lzma' \
-|| match ext '|lzo|rpm|rz|t7z|tar|tbz|tbz2|tgz|tlz|txz|tZ|tzo|war|xpi|xz|Z|zip'; then
-  try pop runpage atool --list -- "$FILE"
-  try pop runpage bsdtar --list --file "$FILE"
-fi
+  # music modules
+  (mt :ext ["mod" "it" "s3m" "mptm"] :pop ["openmpt123" file])
+  (mt :ext ["nsf"] :pop ["nosefart" file])
+  (mt :ext ["fur" "dmf"] :gui ["furnace" file])
+  (mt :ext ["btm"] :gui ["BambooTracker" file])
+  (mt :ext ["vgm"] :pop ["vgmplay" file])
 
-match ext 'rar' && try pop runpage unrar l -p- -- "$FILE"
-match ext '7z' && try pop runpage 7z l -p -- "$FILE"
+  # music projects
+  (mt :ext ["kdenlive"] :gui ["kdenlive" file])
+  (mt :ext ["sunvox"] :gui ["sunvox" file])
+  (mt :ext ["ardour"] :gui ["ardour7" file])
+  (when (m :ext ["mmp" "mmpz"])
+    (t :gui ["@lmms" file]) # a wrapper i have on my pc
+    (t :gui ["lmms" file]))
+  (mt :ext ["rad"] :gui ["radium" file])
 
-if match ext 'torrent'; then
-  try pop rtorrent "$FILE"
-  try pop runpage transmission-show -- "$FILE"
-fi
+  (mt :ext ["swf"] :gui ["flashplayer" file])
 
-if match ext 'mmp|mmpz'; then
-  try gui @lmms "$FILE" # a wrapper I have on my PC
-  try gui lmms "$FILE"
-fi
+  (mt :ext ["djvu" "ps" "epub"] :gui ["zathura" file])
+  (when (m :ext ["pdf"])
+    (t :gui ["zathura" file])
+    (t :runpage ["pdftotext" "-l" "10" "-nopgbrk" "-q" "--" file "-"])
+    (t :runpage ["mutool" "draw" "-F" "txt" "-i" "--" file "1-10"])
+    (t :runpage ["exiftool" file]))
 
-if match ext 'rad'; then
-  try gui radium "$FILE"
-fi
+  (when (or (m :mime [[:begins "video/"]])
+            (m :ext ["avi" "mkv" "mp4"]))
+    (t :gui ["smplayer" file])
+    (t :gui ["mpv" file])
+    (t :tty ["mpv" "--no-video" file])
+    (t :runpage ["mediainfo" file]))
 
-match ext 'odt|rtf|docx|doc' && try gui libreoffice "$FILE"
-match ext 'ppt|pptx' && try gui libreoffice "$FILE"
-match ext 'odg' && try gui libreoffice "$FILE"
-match ext 'odt|ods|odp|sxw' && try pop runpage odt2txt "$FILE"
-match ext 'txt|log' && try pop runpage cat "$FILE"
-match ext 'kra' && try gui krita "$FILE"
+  (mt :ext ["rar"] :runpage ["unrar" "l" "-p-" "--" file])
+  (mt :ext ["7z"] :runpage ["7z" "l" "-p" "--" file])
 
-match ext 'tic' && try gui tic80 "$FILE"
+  (when (m :ext ["a" "ace" "alz" "arc" "arj" "bz" "bz2" "cab" "cpio" "deb" "gz" "jar"
+                 "lha" "lz" "lzh" "lzma" "lzo" "rpm" "rz" "t7z" "tar" "tbz2" "tgz"
+                 "tlz" "txz" "tZ" "tzo" "war" "xpi" "xz" "Z" "zip"])
+    (t :runpage ["atool" "--list" "--" file])
+    (t :runpage ["bsdtar" "--list" "--file" file]))
 
-if match ext 'md'; then
-  try tty runpage glowrapper "$FILE"
-  try gui md-preview "$FILE"
-fi
+  (when (m :ext ["torrent"])
+    (t :pop ["rtorrent" file])
+    (t :runpage ["transmission-show" "--" file]))
 
-if match ext 'htm|html|xhtml'; then
-  try tty runpage w3m -dump "$FILE"
-  try tty runpage lynx -dump -- "$FILE"
-  try tty runpage elinks -dump "$FILE"
-  try gui "$BROWSER" "$FILE"
-fi
 
-match ext 'rpy' && try pop "$EDITOR" "$FILE"
+  (mt :ext ["odt" "rtf" "docx" "doc" "odg"
+            "ppt" "pptx"]
+      :gui ["libreoffice" file])
+  (mt :ext ["odt" "ods" "odp" "sxw"] :runpage ["odt2txt" file])
 
-if match ext 'json'; then
-  try pop runpage jq --color-output . "$FILE"
-  try pop runpage python -m json.tool -- "$FILE"
-fi
+  (mt :ext ["kra"] :gui ["krita" file])
+  (mt :ext ["tic"] :gui ["tic80" file])
+  (mt :ext ["rpy"] :pop [EDITOR file])
 
-match ext 'kdenlive' && try gui kdenlive "$FILE"
-match ext 'sunvox' && try gui sunvox "$FILE"
-match ext 'ardour' && try gui ardour7 "$FILE"
+  (when (m :ext ["md"])
+    (t :runpage ["glowrapper" file])
+    (t :gui ["md-preview" file]))
 
-if match mime 'image/vnd.djvu'; then
-  try tty runpage djvutxt "$FILE"
-  try tty runpage exiftool "$FILE"
-fi
+  (when (m :ext ["htm" "html" "xhtml"])
+    (t :runpage ["w3m" "-dump" file])
+    (t :runpage ["lynx" "-dump" "--" file])
+    (t :runpage ["elinks" "-dump" file])
+    (t :gui [BROWSER file]))
 
-if match mime 'image/*' || match ext 'gif|jpg|png'; then
-  try gui sxiv -p "$FILE"
-  try tty runpage viu -n "$FILE"
-  try tty runpage img2txt --gamma=0.6 -- "$FILE"
-  try tty runpage exiftool "$FILE"
-fi
+  (when (m :ext ["json"])
+    (t :runpage ["jq" "--color-output" "." file])
+    (t :runpage ["python3" "-m" "json.tool" "--" file]))
 
-match mime 'inode/directory' && try pop "$FILEMAN" "$FILE"
-match mime 'inode/x-empty' && try pop runpage cat "$FILE"
-match mime 'text/troff' && try pop runpage man -l "$FILE"
-# match mime 'text/*' && try pop runpage cat "$FILE"
-match mime '*/xml' && try pop runpage cat "$FILE"
-
-openFallback
+  (t :fallback))
