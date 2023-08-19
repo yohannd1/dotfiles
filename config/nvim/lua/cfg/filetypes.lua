@@ -439,6 +439,10 @@ ft.lisp = function()
     setLispJoin()
 end
 
+ft.janet = function()
+    setLispJoin()
+end
+
 ft.haxe = function()
     setTabIndent(4)
 

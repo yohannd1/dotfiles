@@ -3,9 +3,9 @@
 
 printf >&2 "Failed to open the following file:\n"
 printf >&2 "  %s\n" "$1"
+printf >&2 "What do you want to do about it?\n"
 
 while true; do
-  printf >&2 "What do you want to do about it?\n"
   printf >&2 "Use (n)nn on the folder; (e)dit; (q)uit: "
 
   read -n1 ch
@@ -23,7 +23,7 @@ while true; do
       ;;
   esac
 
-  printf >&2 "Unknown choice: '%q'\n" "$ch"
+  printf >&2 "\nUnknown choice: '%q'\n" "$ch"
 done
 
 # choices=$(cat <<EOF

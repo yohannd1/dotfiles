@@ -161,13 +161,14 @@ do
   end
 
   -- Search and open on wiki
-  dummy.open_wiki_file = function(opts)
+  dummy.open_wiki_file = function(opts, command)
     opts = opts or {}
     utils.overrideTableWith(opts, main_theme)
+    command = command or {"acw-list-titles"}
 
     pickers.new(opts, {
       prompt_title = "Search on wiki",
-      finder = finders.new_oneshot_job({"acw-list-titles"}, opts),
+      finder = finders.new_oneshot_job(command, opts),
       sorter = conf.generic_sorter(opts),
       attach_mappings = function()
         actions.select_default:replace(function(prompt_bufnr)

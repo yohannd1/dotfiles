@@ -16,6 +16,10 @@ while getopts "p:h:" o; do
   esac
 done
 
+if [ "$hasPrompt" ] && printf "%s" "$prompt" | grep -v ' $' >/dev/null; then
+  prompt="$prompt "
+fi
+
 if [ ! -t 2 ] && [ "$WAYLAND_DISPLAY" ] && exists bemenu; then
   args=(-i -n)
   [ "$hasPrompt" ] && args+=(-p "$prompt")
