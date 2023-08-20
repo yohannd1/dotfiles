@@ -16,12 +16,29 @@ while getopts "p:h:" o; do
   esac
 done
 
-if [ "$hasPrompt" ] && printf "%s" "$prompt" | grep -v ' $' >/dev/null; then
-  prompt="$prompt "
-fi
+tidyPrompt() {
+  [ "$prompt" ] || return 1
+  printf "%s" "$prompt" | grep -v ' $' >/dev/null && hasNoSpace=1
+
+  case "$1" in
+    space)
+      [ "$hasNoSpace" ] && prompt="$prompt "
+      ;;
+
+    nospace)
+      [ "$hasNoSpace" ] || prompt=$(printf "%s" "$prompt" | sed 's| \+$||')
+      ;;
+
+    *)
+      printf >&2 "Unexpected...\n"
+      exit 1
+      ;;
+  esac
+}
 
 if [ ! -t 2 ] && [ "$WAYLAND_DISPLAY" ] && exists bemenu; then
   args=(-i -n)
+  tidyPrompt nospace
   [ "$hasPrompt" ] && args+=(-p "$prompt")
   [ "$hasHeight" ] && args+=(-l "$height") || args+=(-l 10)
 
@@ -30,11 +47,13 @@ if [ ! -t 2 ] && [ "$WAYLAND_DISPLAY" ] && exists bemenu; then
   bemenu "${args[@]}"
 elif [ ! -t 2 ] && [ "$DISPLAY" ] && exists dmenu; then
   args=()
+  tidyPrompt space
   [ "$hasPrompt" ] && args+=(-p "$prompt")
   [ "$hasHeight" ] && args+=(-l "$height")
   dmenu "${args[@]}"
 elif [ -t 2 ] && exists fzf; then
   args=()
+  tidyPrompt space
   [ "$hasPrompt" ] && args+=(--prompt "$prompt")
   [ "$hasHeight" ] && args+=(--height "$height")
   printf >&2 '\033[2 q' # change cursor to block

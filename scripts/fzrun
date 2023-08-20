@@ -1,487 +1,172 @@
-#!/usr/bin/env python3
-#
-# type: ignore[union-attr]
-
-from __future__ import annotations
-from typing import List, Iterable, Optional, Tuple, Sized, Protocol
-from dataclasses import dataclass
-from pathlib import Path
-
-import os, sys
-import subprocess as sp
-import enum
-import toml
-import abc
-
-HOME = os.environ["HOME"]
-XDG_CACHE_HOME = os.getenv("XDG_CACHE_HOME") or (HOME + "/.cache")
-TERMINAL = os.getenv("TERMINAL") or "xterm"
-SHELL = os.getenv("SHELL") or "/bin/sh"
-FZRUN_PACKAGES_FOLDER = os.getenv("FZRUN_PACKAGES_FOLDER")
-FZRUN_RECENT_CMDS = os.getenv("FZRUN_RECENT_CMDS") or (
-    XDG_CACHE_HOME + "/fzrun-recent-cmds"
-)
-PATHBIN_EXCLUDE = {"ctags.emacs"}
-
-
-def main() -> int:
-    actions: List[Action] = [
-        CustomCommand(add_to_recent=True),
-        CustomCommand(add_to_recent=False),
-        SelectBinary(add_to_recent=True),
-        SelectBinary(add_to_recent=False),
-        *(SelectGame() for _ in range(1) if FZRUN_PACKAGES_FOLDER is not None),
-        EditRecent(),
-        *get_fzrun_recent(),
-    ]
-
-    output = fzagnostic(
-        map(
-            lambda action: "{} || {}".format(*action.repr()),
-            actions,
-        ),
-        prompt="Run:",
-        max_choice_number=(actions.__len__() - 1),
-    )
-    if output is not None:
-        idx = output[0]
-
-        try:
-            a = actions[idx]
-        except ValueError as e:
-            print(f"Invalid command: {repr(output)}", file=sys.stderr)
-            print(f"Error code: {e}", file=sys.stderr)
-            return 1
-
-        a.run()
-    else:
-        return 1
-
-    return 0
-
-
-def get_fzrun_recent() -> List[ShellAction]:
-    if (path := Path(FZRUN_RECENT_CMDS)).is_file():
-        with path.open("r") as file:
-            return [
-                ShellAction(name=f"(recnt) {line.strip()}", command=str(line))
-                for line in file.readlines()
-                if (len(line.strip()) > 0 and line.strip()[0] != '#')
-            ]
-
-    return []
-
-
-@dataclass
-class ActionRepr:
-    type_name: str
-    description: str
-
-    def __iter__(self):
-        return [self.type_name, self.description].__iter__()
-
-
-@enum.unique
-class Arch(enum.Enum):
-    x32 = 0
-    x64 = 1
-
-    def to_winew_arch(self) -> str:
-        if self == Arch.x32:
-            return "32"
-        if self == Arch.x64:
-            return "64"
-        raise Exception(f"Invalid arch: {self}")
-
-    @staticmethod
-    def from_str(s: str) -> Arch:
-        if s in {"32", "win32", "x32"}:
-            return Arch.x32
-        if s in {"64", "win64", "x64"}:
-            return Arch.x64
-        raise Exception(f"Invalid arch string: {repr(s)}")
-
-
-class Action():
-    @abc.abstractmethod
-    def run(self): ...
-
-    @abc.abstractmethod
-    def repr(self) -> ActionRepr: ...
-
-
-@dataclass
-class EditRecent(Action):
-    def run(self):
-        if (path := Path(FZRUN_RECENT_CMDS)).is_file():
-            os.execvp("graphedit", ["graphedit", str(path)])
-        else:
-            print(
-                f"Recent commands file (a.k.a FZRUN_RECENT_CMDS a.k.a {path}) does not exist.",
-                file=sys.stderr,
-            )
-            sys.exit(1)
-
-    def repr(self) -> ActionRepr:
-        return ActionRepr(
-            "ext",
-            "Edit the recent commands file",
-        )
-
-
-@dataclass
-class SelectBinary(Action):
-    shell: str = SHELL
-    add_to_recent: bool = True
-
-    def run(self):
-        with sp.Popen("gen-pathbin", stdout=sp.PIPE, encoding="UTF-8") as proc:
-            binaries = list(filter(
-                lambda line: len(line) > 0,
-                [line.rstrip() for line in proc.stdout.readlines()],
-            ))
-
-        if not (choice := fzagnostic(binaries)):
-            sys.exit(1)
-
-        _, command = choice
-
-        if self.add_to_recent:
-            add_line_to_file(Path(FZRUN_RECENT_CMDS), command)
-
-        args = [self.shell, "-c", command]
-
-        os.execvp(args[0], args)
-
-    def repr(self) -> ActionRepr:
-        return ActionRepr(
-            "ext",
-            f"Run a binary from the binary list (add-recent:{yes_or_no(self.add_to_recent)}) [...]",
-        )
-
-
-@dataclass
-class CustomCommand(Action):
-    shell: str = SHELL
-    add_to_recent: bool = True
-
-    def run(self):
-        command = readline_agnostic(prompt="Type the desired command: ")
-
-        if command == "" or command is None:
-            return
-
-        if self.add_to_recent:
-            add_line_to_file(Path(FZRUN_RECENT_CMDS), command)
-
-        args = [self.shell, "-c", command]
-
-        os.execvp(args[0], args)
-
-    def repr(self) -> ActionRepr:
-        return ActionRepr(
-            "ext",
-            f"Run a custom command (add-recent:{yes_or_no(self.add_to_recent)}) [...]",
-        )
-
-
-@dataclass
-class WineAction(Action):
-    name: str
-    bin_path: str
-    arch: Arch = Arch.x32
-
-    def run(self):
-        os.environ["WINEW_ARCH"] = self.arch.to_winew_arch()
-
-        args = ["winew", "open", self.bin_path]
-
-        os.execvp(args[0], args)
-
-    def repr(self) -> ActionRepr:
-        return ActionRepr("win", self.name)
-
-
-@dataclass
-class ShellAction(Action):
-    name: str
-    command: str
-    shell: str = SHELL
-
-    def run(self):
-        os.environ["SHELL"] = self.shell
-        run = lambda args: os.execvp(args[0], args)
-
-        if os.getenv("DISPLAY") is None:
-            run([self.shell, "-c", self.command])
-        else:
-            print(self.command, file=sys.stderr)
-            # FIXME: this WILL pile up. how to improve it?
-            run(["tmux-bg-run", self.command])
-
-    def repr(self) -> ActionRepr:
-        return ActionRepr("cmd", self.name)
-
-
-@dataclass
-class BinAction(Action):
-    binary: str
-
-    def run(self):
-        args = [self.binary]
-
-        os.execvp(args[0], args)
-
-    def repr(self) -> ActionRepr:
-        return ActionRepr("bin", self.binary)
-
-
-def readline_agnostic(
-    prompt: Optional[str] = None,
-) -> Optional[str]:
-    with sp.Popen(
-        ["readline-agnostic", *(["-p", prompt] if prompt else [])],
-        stdout=sp.PIPE,
-        encoding="UTF-8",
-    ) as proc:
-        if proc is None:
-            raise Exception("Failed to start process")
-
-        if proc.wait() == 0:
-            return proc.stdout.readline().strip()
-        else:
-            return None
-
-
-def fzagnostic(
-    choices: Iterable[str],
-    height: Optional[int] = None,
-    prompt: Optional[str] = None,
-    max_choice_number: Optional[int] = None,
-    starting_number: int = 0,
-) -> Optional[Tuple[int, str]]:
-    # set the default max number width
-    if max_choice_number is None:
-        max_choice_number = (
-            (choices.__len__() - 1) if isinstance(choices, Sized) else 1000
-        )
-
-    # minimum length: 2 chars wide
-    max_choice_number += starting_number
-    max_choice_number = max(10, max_choice_number)
-
-    prompt_list: List[str] = ["-p", prompt] if prompt is not None else []
-    height_list: List[str] = ["-h", str(height)] if height is not None else []
-
-    with sp.Popen(
-        ["fzagnostic"] + prompt_list + height_list,
-        stdin=sp.PIPE,
-        stdout=sp.PIPE,
-        encoding="UTF-8",
-    ) as proc:
-        if proc is None:
-            raise Exception("Failed to start process")
-
-        choice_number_size = str(max_choice_number).__len__()
-        number_format = f"{{:0{choice_number_size}d}}"
-
-        # feed choices to the stdin
-        for i, line in enumerate(choices):
-            print(
-                f"#{number_format.format(i + starting_number)} {line}",
-                file=proc.stdin,
-            )
-
-        # close the stdin
-        proc.stdin.close()
-
-        # wait for the process to finish and act according to the exit code
-        if proc.wait() == 0:
-            splits = proc.stdout.readline().strip().split(" ", maxsplit=1)
-
-            if len(splits) != 2:
-                print(f"Invalid input: {splits}", file=sys.stderr)
-                sys.exit(1)
-
-            idx, line = splits
-            try:
-                idx = int(idx[1:])
-            except ValueError:
-                print(f"Invalid index specifier: {repr(idx)}", file=sys.stderr)
-                sys.exit(1)
-
-            return (idx, line)
-        else:
-            return None
-
-
-def add_line_to_file(
-    path: Path,
-    line: str,
-    add_newline_on_end: bool = True,
-    add_if_repeated: bool = False,
-):
-    if path.is_dir():
-        raise Exception("Path should be a file or not exist (found directory)")
-
-    if not path.exists():
-        if path.is_symlink():
-            raise Exception("Path should be a file or not exist (found broken symlink)")
-
-        path.touch()
-
-    if not add_if_repeated:
-        with path.open("r") as file:
-            if line in file.read().split("\n"):
-                return
-
-    with path.open("r") as file:
-        file.seek(0, os.SEEK_END)
-        file_end_pos = file.tell()
-        file.seek(max(file_end_pos - 1, 0), os.SEEK_SET)
-
-        last_char = file.read(1)
-        add_newline_on_start = last_char not in {"", "\n"}
-
-    with path.open("a") as file:
-        if add_newline_on_start:
-            file.write("\n")
-
-        file.write(line)
-
-        if add_newline_on_end:
-            file.write("\n")
-
-
-def yes_or_no(val: bool) -> str:
-    return "yes" if val else "no"
-
-
-def flatten(ls: list) -> list:
-    return [element for sublist in ls for element in sublist]
-
-
-@dataclass
-class SelectGame:
-    shell: str = SHELL
-
-    def run(self):
-        games = GameData.get_games(Path(FZRUN_PACKAGES_FOLDER))
-        games.sort(key=lambda game: game.name, reverse=True)
-
-        starting_number = 50 # so I can select touhou games in peace
-        choice = fzagnostic([game.name for game in games], height=30, starting_number=starting_number)
-        if choice is None:
-            sys.exit(1)
-
-        choice = games[choice[0] - starting_number]
-
-        for k, v in choice.env.items():
-            os.environ[k] = v
-
-        os.chdir(choice.exec_dir)
-        args = [self.shell, "-c", choice.command]
-        os.execvp(args[0], args)
-
-    def repr(self) -> ActionRepr:
-        return ActionRepr("ext", "Select from the packages directory (apps/games)")
-
-
-@dataclass
-class GameData:
-    name: str
-    command: str
-    toml_path: Path
-    exec_dir: Path
-    env: dict[str, str]
-
-    @staticmethod
-    def _parse_toml(tobj, exec_dir: Path, toml_path: Path, env: dict[str, str]) -> GameData:
-        exec_dir = tobj.get("exec-dir") or exec_dir
-
-        o_env = tobj.get("env")
-        if o_env is None:
-            o_env = env
-        else:
-            o_env = env | o_env
-
-        return GameData(
-            name=str(tobj["name"]),
-            command=str(tobj["command"]),
-            exec_dir=exec_dir,
-            toml_path=toml_path,
-            env=o_env,
-        )
-
-    @staticmethod
-    def from_toml(tstr: str, exec_dir: Path, toml_path: Path) -> List[GameData]:
-        tobj = toml.loads(tstr)
-        config = tobj.get("config") or {}
-        env = config.get("env") or {}
-
-        entry_obj = tobj["entry"]
-
-        ls = []
-        if isinstance(entry_obj, list):
-            ls.extend(
-                [GameData._parse_toml(obj, exec_dir, toml_path, env) for obj in entry_obj]
-            )
-        else:
-            ls.append(
-                GameData._parse_toml(entry_obj, exec_dir, toml_path, env)
-            )
-
-        if settings := tobj.get("global-settings"):
-            if include_files := settings.get("include-files"):
-                for filename in include_files:
-                    filename = Path(filename)
-                    if not filename.is_absolute():
-                        filename = exec_dir / filename
-
-                    with filename.open("r") as istream:
-                        ls.extend(
-                            GameData.from_toml(
-                                istream.read(),
-                                exec_dir=(filename / "..").resolve(),
-                                toml_path=filename,
-                            )
-                        )
-
-        return ls
-
-    @staticmethod
-    def get_games(games_folder: Path) -> List[GameData]:
-        if not games_folder.is_dir():
-            raise Exception(f"Invalid games folder: {games_folder}")
-
-        return flatten(
-            [
-                GameData.get_games_in_folder(subfolder)
-                for subfolder in games_folder.glob("*")
-            ]
-        )
-
-    @staticmethod
-    def get_games_in_folder(folder: Path) -> List[GameData]:
-        if not folder.is_dir():
-            return []
-
-        for possible_name in {"Pkg.toml", "App.toml", "Game.toml"}:
-            toml_file = folder / possible_name
-
-            if not toml_file.is_file():
-                continue
-
-            with toml_file.open("r") as istream:
-                contents = istream.read()
-                return GameData.from_toml(
-                    contents,
-                    exec_dir=folder,
-                    toml_path=toml_file,
-                )
-
-        return []
-
-
-if __name__ == "__main__":
-    sys.exit(main())
+#!/usr/bin/env janet
+
+(use tomlin)
+
+(defn fzagnostic
+  ```
+  Invokes fzagnostic with the provided arguments.
+
+  On success, returns a tuple [n, s] where n is the index of the choice and s is the text string.
+
+  On failure/cancellation, returns nil.
+  ```
+  [choices &named prompt starting-number]
+
+  (def [stdin-r stdin-w] (os/pipe))
+  (def [stdout-r stdout-w] (os/pipe))
+
+  (def starting-number (or starting-number 0))
+  (def fmt (let [max-n-len (-> starting-number (+ (length choices)) (- 1) (string) (length))]
+             (string "%0" max-n-len "d || %s\n")))
+
+  # write choices to stdin (separate fiber)
+  (ev/spawn
+    (for i 0 (length choices)
+      (def str (string/format fmt (+ i starting-number) (in choices i)))
+      (:write stdin-w str))
+    (:close stdin-w))
+
+  (def arglist @["fzagnostic"])
+  (unless (nil? prompt)
+    (array/push arglist "-p")
+    (array/push arglist prompt))
+
+  (def code (os/execute arglist :p {:in stdin-r :out stdout-w}))
+  (when (= code 0)
+    (def choice-s (-> stdout-r (:read math/int32-max) (string/trim)))
+    (def [num s] (string/split " " choice-s 0 2))
+    [(-> num (scan-number) (assert) (- starting-number)) s]))
+
+(defn readline-agnostic
+  ```
+  Invokes readline-agnostic with the provided arguments.
+
+  On success, returns the input as a string.
+
+  On failure/cancellation, returns nil.
+  ```
+  [&named prompt]
+
+  (def args ["readline-agnostic" ;(if (nil? prompt) [] ["-p" prompt])])
+  (def [stdout-r stdout-w] (os/pipe))
+  (def code (os/execute args :p {:out stdout-w}))
+  (when (= code 0)
+    (-> stdout-r (:read math/int32-max))))
+
+(def HOME (assert (os/getenv "HOME") "HOME env var unset"))
+(def SHELL (os/getenv "SHELL" "/bin/sh"))
+(def EDITOR (os/getenv "EDITOR" "vi"))
+
+(def XDG-CACHE-HOME (or (os/getenv "XDG_CACHE_HOME")
+                        (string HOME "/.cache")))
+(def FZRUN-PACKAGES-FOLDER (os/getenv "FZRUN_PACKAGES_FOLDER"))
+(def FZRUN-RECENT-CMDS (or (os/getenv "FZRUN_RECENT_CMDS")
+                           (string XDG-CACHE-HOME "/fzrun-recent-cmds")))
+
+(def DISPLAY (os/getenv "DISPLAY"))
+(def WAYLAND-DISPLAY (os/getenv "WAYLAND-DISPLAY"))
+(def is-graphical (-> DISPLAY (or WAYLAND-DISPLAY) (truthy?)))
+
+(defn add-line-to-file [path line]
+  (def f (file/open path :an))
+  (:write f line)
+  (:write f "\n")
+  (:close f))
+
+(defn run-shell [cmd add-to-recent]
+  (when add-to-recent
+    (add-line-to-file FZRUN-RECENT-CMDS cmd))
+
+  (def isatty (= 0 (os/execute [SHELL "-c" "[ -t 2 ]"] :px)))
+  (def args (if isatty
+             [SHELL "-c" cmd]
+             ["tmux-bg-run" cmd]))
+  (os/exit (os/execute args :p)))
+
+(defn cmd-menu [add-to-recent]
+  (match (readline-agnostic :prompt "Type the desired command: ")
+    nil (os/exit 1)
+    out (run-shell (string out) add-to-recent)))
+
+(defn bin-menu [add-to-recent]
+  (def [pipe-r pipe-w] (os/pipe))
+  (ev/spawn
+    (os/execute ["gen-pathbin"] :px {:out pipe-w})) # TODO: error handling
+  (def bins (->> (:read pipe-r math/int32-max)
+                 (string/split "\n")))
+  (match (fzagnostic bins :prompt "Binary:")
+    nil (os/exit 1)
+    [n _] (run-shell (in bins n) add-to-recent)))
+
+(defn edit-recent []
+  (os/exit (os/execute ["maybe-graphedit" FZRUN-RECENT-CMDS] :p)))
+
+(defn package-menu []
+  (def entries @[])
+  (each pkg (os/dir FZRUN-PACKAGES-FOLDER)
+    (def pkg-f (string FZRUN-PACKAGES-FOLDER "/" pkg))
+    (when (= :directory (os/stat pkg-f :mode))
+      (-?>> ["Pkg.toml" "App.toml" "Game.toml"]
+           (map |(string pkg-f "/" $))
+           (find |(-> $ (os/stat :mode) (truthy?)))
+           (|(-?>
+               (file/open $ :rn)
+               (:read :all)
+               (toml->janet) # TODO: start using either (parse-all) for janet-style files or just do a basic config format. i don't want to use a separate library just for this
+               (|(let [config (or ($ :config) {})
+                       exec-dir (or ($ :exec-dir) pkg-f)]
+                   (match ($ :entry)
+                     nil nil
+                     [& ls] (each entry ls
+                              (put entry :config config)
+                              (put entry :exec-dir exec-dir)
+                              (array/push entries entry))
+                     _ (error "Unexpected")))))))))
+
+  (match (fzagnostic (->> entries (map |($ :name)))
+                     :prompt "Select a package: "
+                     :starting-number 50)
+    nil (os/exit 1)
+    [n _] (let [entry (in entries n)]
+            (each [k v] (-> (in entry :config) (in :env {}) (pairs))
+              (os/setenv (string k) v))
+            (os/cd (entry :exec-dir))
+            (-> entry (in :command) (run-shell false)))
+    _ (error "Unexpected"))
+  )
+
+(defn main [&]
+  (def actions
+    [
+     ["Run a custom command (add-recent:yes)"
+      (fn [] (cmd-menu true))]
+     ["Run a custom command (add-recent:no)"
+      (fn [] (cmd-menu false))]
+     ["Run a binary from the binary list (add-recent:yes)"
+      (fn [] (bin-menu true))]
+     ["Run a binary from the binary list (add-recent:no)"
+      (fn [] (bin-menu false))]
+
+     ;(if FZRUN-PACKAGES-FOLDER
+        [["Select from the packages directory (apps/games)"
+          package-menu]]
+        [])
+
+     ["Edit the recent commands file"
+      (fn [] (edit-recent))]
+
+     ;(match (file/open FZRUN-RECENT-CMDS :r)
+        nil nil
+        f (->> (:read f :all)
+               (string/split "\n")
+               (map |(string/trim $))
+               (filter |(not (or (= (length $) 0)
+                                 (string/has-prefix? "#" $))))
+               (map |[(string "(recnt) " $)
+                      (fn [] (os/exit (os/execute [SHELL "-c" $])))])
+               ))
+     ])
+
+  (match (fzagnostic (map (fn [[a b]] a) actions) :prompt "Run: ")
+    nil (os/exit 1)
+    [n _] (-> actions (in n) (in 1) (apply))))
