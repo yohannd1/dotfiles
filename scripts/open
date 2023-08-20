@@ -24,7 +24,9 @@
 
   (let [open-alt (os/getenv "OPEN_ALT" "xdg-open")
         file (-> (dyn :args) (1))
-        mime (assert (get-prog-output ["file" "--dereference" "--brief" "--mime-type" "--" file]))
+        mime (let [out (get-prog-output ["file" "--dereference" "--brief" "--mime-type" "--" file])]
+               (unless (or (nil? out) (string/has-prefix? "cannot" out))
+                 out))
         protocol (let [r (peg/match peg-url-protocol file)]
                    (unless (nil? r) (r 0)))
         ext (let [r (peg/match peg-file-ext file)]
@@ -101,7 +103,6 @@
     (unless (nil? src-str)
       (var ret false)
       (each elem list
-        (:write stderr (string/format "%q\n" elem))
         (cond
           (string? elem) (when (= src-str elem)
                            (set ret true)
@@ -120,7 +121,7 @@
   (match mtype
     :mime (go-through marg mime)
     :ext (go-through marg ext)
-    :protocol (= protocol marg)
+    :protocol (go-through marg protocol)
     _ (error (string/format "Unknown action for symbol %s" mtype))))
 # >>>
 
