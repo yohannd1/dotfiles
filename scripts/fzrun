@@ -77,7 +77,7 @@
   (when add-to-recent
     (add-line-to-file FZRUN-RECENT-CMDS cmd))
 
-  (def isatty (= 0 (os/execute [SHELL "-c" "[ -t 2 ]"] :px)))
+  (def isatty (= 0 (os/execute [SHELL "-c" "[ -t 2 ]"] :p)))
   (def args (if isatty
              [SHELL "-c" cmd]
              ["tmux-bg-run" cmd]))
@@ -124,7 +124,7 @@
                      _ (error "Unexpected")))))))))
 
   (match (fzagnostic (->> entries (map |($ :name)))
-                     :prompt "Select a package: "
+                     :prompt "Package: "
                      :starting-number 50)
     nil (os/exit 1)
     [n _] (let [entry (in entries n)]
@@ -163,7 +163,7 @@
                (filter |(not (or (= (length $) 0)
                                  (string/has-prefix? "#" $))))
                (map |[(string "(recnt) " $)
-                      (fn [] (os/exit (os/execute [SHELL "-c" $])))])
+                      (fn [] (run-shell $ false))])
                ))
      ])
 

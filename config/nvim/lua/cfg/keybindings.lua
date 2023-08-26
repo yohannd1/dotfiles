@@ -131,10 +131,16 @@ return function()
     -- Buffer formatting
     map("n", "<Leader>bf", ":FormatBuffer<CR>", arg_nr)
 
-    -- Insert date
     map("i", "<C-u>", "<Nop>", arg_s)
+
+    -- Insert date
     vim.keymap.set("i", "<C-u>d", function()
         return vim.fn.strftime("%Y/%m/%d")
+    end, {expr = true})
+
+    -- Insert the shits
+    vim.keymap.set("i", "<C-u>'", function()
+        return "``````" .. "<Left>" .. "<Left>" .. "<Left>"
     end, {expr = true})
 
     -- Buffer navigation

@@ -185,8 +185,8 @@
   (when (m :mime ["image/vnd.djvu"])
     (t :runpage ["djvutxt" file])
     (t :runpage ["exiftool" file]))
-  (when (or (m :mime [[:begins "image/vnd.djvu"]])
-            (m :ext ["gif" "jpg" "png"]))
+  (when (or (m :mime [[:begins "image/"]])
+            (m :ext ["gif" "jpg" "png" "webp"]))
     (t :gui ["sxiv" "-p" file])
     (t :runpage ["viu" "-n" file])
     (t :runpage ["img2txt" "--gamma=0.6" "--" file])
@@ -201,7 +201,7 @@
   (mt :ext ["nsf"] :pop ["nosefart" file])
   (mt :ext ["fur" "dmf"] :gui ["furnace" file])
   (mt :ext ["btm"] :gui ["BambooTracker" file])
-  (mt :ext ["vgm"] :pop ["vgmplay" file])
+  (mt :ext ["vgm" "vgz"] :pop ["vgmplay" file])
 
   # music projects
   (mt :ext ["kdenlive"] :gui ["kdenlive" file])
