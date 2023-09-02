@@ -5,8 +5,8 @@
 shopt -s nullglob globstar
 
 showHelp() {
-  printf >&2 "Usage: %s { show | otp }\n" "$(basename "$0")";
-  exit 1;
+  printf >&2 "Usage: %s { show | otp }\n" "$(basename "$0")"
+  exit 1
 }
 [ $# != 1 ] && showHelp
 
@@ -24,3 +24,5 @@ choice=$(printf "%s\n" "${files[@]}" | fzagnostic -p "Entry:") || exit 1
 [ "$choice" ] || exit 1
 
 pass "$action" -c "$choice" 2>/dev/null
+
+printf >&2 "Success!\n"

@@ -8,12 +8,10 @@ fi
 soundfont=/usr/share/soundfonts/default.sf2
 [ $# = 2 ] && soundfont="$2"
 
-printf >&2 "* play-midi ---------------*\n"
 printf >&2 "Press Ctrl-C to stop playing\n"
-printf >&2 "Using soundfont: %s\n" "$soundfont"
-printf >&2 "*--------------------------*\n\n"
+printf >&2 "Using soundfont: %s\n\n" "$soundfont"
 
-fluidsynth -a pulseaudio -m alsa_seq -l -i "$soundfont" "$1" </dev/null &
+fluidsynth -a pulseaudio -m alsa_seq -l -g 0.5 -C 0 -i "$soundfont" "$1" </dev/null &
 fluidsynth_pid="$!"
 
 trap 'kill -9 "$fluidsynth_pid"' INT

@@ -34,7 +34,7 @@
     @{:open-alt open-alt
       :file file
       :mime mime
-      :ext ext
+      :ext (string/ascii-lower ext)
       :protocol protocol}))
 
 (defn state/try
