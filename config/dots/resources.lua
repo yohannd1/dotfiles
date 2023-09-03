@@ -1,4 +1,104 @@
 -- vim: fdm=marker foldenable
+-- FONT DEFS {{{
+local font_presets = {
+    ["SourceCodePro"] = {
+        name = "Source Code Pro",
+        base_size = 14,
+    },
+    ["Iosevka"] = {
+        name = "Iosevka Medium",
+        base_size = 15,
+        supports_ligatures = true, -- FIXME: I don't think so?
+    },
+    ["FiraCode"] = {
+        name = "Fira Code",
+        base_size = 13,
+    },
+    ["CascadiaCode"] = {
+        name = "Cascadia Code",
+        base_size = 13,
+    },
+    ["JetbrainsMono"] = {
+        name = "JetBrains Mono",
+        base_size = 13,
+    },
+    ["Fixedsys"] = {
+        name = "Fixedsys Excelsior",
+        base_size = 16,
+        supports_ligatures = false, -- because of glitches
+    },
+    ["UbuntuMono"] = {
+        name = "Ubuntu Mono",
+        base_size = 15,
+        supports_ligatures = false,
+    },
+    ["RobotoMono"] = {
+        name = "Roboto Mono Medium",
+        base_size = 13,
+    },
+    ["SpaceMono"] = {
+        name = "Space Mono",
+        base_size = 13,
+        supports_ligatures = false, -- because of glitches (FIXME: confirm)
+    },
+    ["FantasqueSans"] = {
+        name = "Fantasque Sans Mono",
+        base_size = 16,
+    },
+    ["Sudo"] = {
+        name = "Sudo",
+        base_size = 17,
+    },
+    ["Mononoki"] = {
+        name = "Mononoki",
+        base_size = 14,
+    },
+    ["Hack"] = {
+        name = "Hack",
+        base_size = 13,
+    },
+    ["IbmPlex"] = {
+        name = "Ibm Plex Mono",
+        base_size = 13,
+    },
+    ["ShareTech"] = {
+        name = "Share Tech Mono",
+        base_size = 15,
+    },
+    ["Unifont"] = {
+        name = "Unifont",
+        base_size = 16,
+    },
+    ["ProggyVector"] = {
+        name = "ProggyVector",
+        base_size = 13,
+    },
+    ["PtMono"] = {
+        name = "PTMono",
+        base_size = 14,
+    },
+    ["Hermit"] = {
+        name = "Hermit",
+        base_size = 13,
+    },
+    ["Agave"] = {
+        name = "Agave",
+        base_size = 15,
+    },
+    ["EnvyCodeR"] = {
+        name = "Envy Code R",
+        base_size = 15,
+    },
+    ["DinaRemasterII"] = {
+        name = "DinaRemasterII",
+        base_size = 16,
+    },
+    ["Bedstead"] = {
+        name = "Bedstead Semi Condensed",
+        base_size = 16,
+    },
+}
+-- }}}
 -- PREPARATIONS {{{
 local meta = _G._meta
 local theme = meta.theme
@@ -7,29 +107,27 @@ local decl = meta.decl
 local t_xres = meta.targets.xresources
 local t_dots = meta.targets.dotcfg
 
-local function basename(path)
-    return path:match("(.*/)")
-end
-
-local this_path = debug.getinfo(1, 'S').source:gsub("^@", "")
-local this_basename = basename(this_path)
-
-local extra_defs = loadfile(this_basename .. "/" .. "res_extra_defs.lua")()
-local longFontFormat = extra_defs.longFontFormat
-
 local _randomFont = {}
+
+local longFontFormat = function(font_name, pixel_size)
+    return string.format(
+        "%s:pixelsize=%s:antialias=true:autohint=true;",
+        font_name,
+        pixel_size
+    )
+end
 
 local getFontInfo = function(name)
     if name == _randomFont then
         local t = {}
-        for k, _ in pairs(extra_defs.font_presets) do
+        for k, _ in pairs(font_presets) do
             table.insert(t, k)
         end
         name = t[math.random(1, #t)]
     end
 
     local val = assert(
-        extra_defs.font_presets[name],
+        font_presets[name],
         string.format("no such font name: %q", name)
     )
 
@@ -49,7 +147,7 @@ local T_ALL = {t_xres, t_dots}
 -- }}}
 
 local enable_ligatures = false
-local font = getFontInfo("IbmPlex")
+local font = getFontInfo("CascadiaCode")
 
 local fsize_term = font.base_size
 local xft_font = longFontFormat(font.name, fsize_term)
