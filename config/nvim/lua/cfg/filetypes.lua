@@ -319,7 +319,7 @@ ft.javascript = function()
 end
 
 ft.python = function()
-    vim.b.format_command = "python3 -m black - 2>/dev/null"
+    vim.b.format_command = "black - -q"
 
     nvim_exec([[
         syn keyword Boolean True

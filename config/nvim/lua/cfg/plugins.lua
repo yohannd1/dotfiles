@@ -99,25 +99,27 @@ local plugins = function()
     -- }}}
 
     -- Treesitter
-    plug({"nvim-treesitter/nvim-treesitter", config = function()
-        require('nvim-treesitter.configs').setup {
-            ensure_installed = { "c", "lua", "vim", "vimdoc", "query" },
+    if not is_android then
+        plug({"nvim-treesitter/nvim-treesitter", config = function()
+            require('nvim-treesitter.configs').setup {
+                ensure_installed = { "c", "lua", "vim", "vimdoc", "query" },
 
-            -- Install parsers synchronously (only applied to `ensure_installed`)
-            sync_install = false,
+                -- Install parsers synchronously (only applied to `ensure_installed`)
+                sync_install = false,
 
-            -- Automatically install missing parsers when entering buffer
-            auto_install = true,
+                -- Automatically install missing parsers when entering buffer
+                auto_install = true,
 
-            ignore_install = {},
+                ignore_install = {},
 
-            highlight = {
-                enable = true,
-                disable = { "gitcommit", "bash" },
-                additional_vim_regex_highlighting = false,
-            },
-        }
-    end})
+                highlight = {
+                    enable = true,
+                    disable = { "gitcommit", "bash" },
+                    additional_vim_regex_highlighting = false,
+                },
+            }
+        end})
+    end
 
     -- Filetypes {{{
     plug("Clavelito/indent-sh.vim")
