@@ -105,20 +105,6 @@ endfunction " }}}
 function! AddSnippet(key, data) " {{{
   execute 'nnoremap <silent> <buffer> <Leader>i'.a:key.' i'.a:data.'<Esc>'
 endfunction " }}}
-function! TabOrComplete(mode) " {{{
-  """ Used when no completion plugin is available.
-  """ When pressing the tab key, decide if it's needed to complete the current word, or else simply insert the tab key.
-  """ There is a mapping in the Mappings section for this.
-  if (col(".") > 1) && !(strcharpart(getline("."), col(".") - 2, 1) =~ '\v[ \t]')
-    if (a:mode == 0)
-      return "\<C-P>"
-    elseif (a:mode == 1)
-      return "\<C-N>"
-    endif
-  else 
-    return "\<Tab>"
-  endif
-endfunction " }}}
 function! PagerMode(...) " {{{
   if len(a:000) >= 1
     let &ft = a:1
@@ -429,40 +415,7 @@ cnoreabbrev rl Reload
 if g:is_first
   call SourceIf($VIMRUNTIME."/delmenu.vim", $VIMRUNTIME."/menu.vim")
 
-  set hidden
-  set title
-  set backspace=indent,eol,start
-  set laststatus=2
-  set number relativenumber
-  set wildmenu
-  set wildmode=longest:full,full
-  set autoindent
-  set hlsearch incsearch
-  set linebreak wrap
-  set cursorline " line highlighting
-  set showcmd
-  set shortmess+=atcI
-  set belloff+=ctrlg
-  set mouse=a
-  set display+=lastline
-  set complete=.,w,b,u,k,kspell " 'i' was interesting too but it seems too expensive; 't' for no tags
-  set completeopt-=preview
-  set completeopt+=menuone,noselect
-  set noshowmode
-  set list
-  set nofoldenable
-  set cinoptions+=g0
-  set cinoptions+=:0
-  set scrolloff=3 " scroll ahead :)
-
-  " That's how the italics work (or not)
-  let &t_ZH = "\<Esc>[3m"
-  let &t_ZR = "\<Esc>[23m"
-
-  let &autochdir = !g:is_win
-
-  syntax on
-
+  " TODO: actually do this on the apps/windows.lua or something
   if g:is_win
     set background=light
     colorscheme gruvbox
@@ -472,14 +425,6 @@ if g:is_first
 
   filetype plugin indent on
   set foldtext=MyFoldText()
-
-  " Indentation
-  set tabstop=8 " For tab characters, I guess
-  set shiftwidth=4 softtabstop=4
-  set expandtab smarttab
-
-  " set listchars=tab:»\ ,trail:¬
-  set listchars=tab:\ \ ,trail:¬
 
   " TO-DO Highlighting (and more)
   " Partially stolen from https://github.com/sakshamgupta05/vim-todo-highlight
