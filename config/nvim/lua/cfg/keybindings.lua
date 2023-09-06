@@ -1,8 +1,8 @@
 local dummy = _G.dummy
 local utils = require("cfg.utils")
-local getLineToEnd = vim.fn.GetLineToEnd
+local getLineToEnd = function() return vim.fn.getline('.'):sub(vim.fn.col('.')) end
 
-local nvim_exec = vim.api.nvim_exec
+local exec = function(cmd) vim.api.nvim_exec(cmd, false) end
 
 local map = function(m, lhs, rhs, args)
     local args = args or {}
@@ -91,6 +91,23 @@ return function()
 
     -- TODO: toggling an item's prefix
 
+    exec([[
+    function! TabOrComplete(mode)
+      """ Used when no completion plugin is available.
+      """ When pressing the tab key, decide if it's needed to complete the current word, or else simply insert the tab key.
+      """ There is a mapping in the Mappings section for this.
+      if (col(".") > 1) && !(strcharpart(getline("."), col(".") - 2, 1) =~ '\v[ \t]')
+        if (a:mode == 0)
+          return "\<C-P>"
+        elseif (a:mode == 1)
+          return "\<C-N>"
+        endif
+      else
+        return "\<Tab>"
+      endif
+    endfunction
+    ]])
+
     -- Use Tab to complete or insert indent
     map("i", "<Tab>", "<C-r>=TabOrComplete(1)<CR>", arg_nr_s)
     map("i", "<S-Tab>", "<C-r>=TabOrComplete(0)<CR>", arg_nr_s)
@@ -149,7 +166,7 @@ return function()
 
     -- A join command similar to the one in emacs (or evil-mode, idk)
     dummy.betterJoin = function()
-        local normal = function(s) nvim_exec("normal! " .. s, false) end
+        local normal = function(s) exec("normal! " .. s) end
         local rmTrailWhs = function() normal("V:s/\\s\\+$//e\\<CR>") end
 
         local opts = vim.b.better_join_opts or {}
@@ -180,9 +197,9 @@ return function()
         local line_end = getpos("'>")[1]
         local line_diff = line_end - line_start
 
-        nvim_exec("normal \\<Esc>" .. line_start .. "G", false)
+        exec("normal \\<Esc>" .. line_start .. "G")
         for _ = 1,line_diff do dummy.betterJoin() end
-        nvim_exec("normal " .. line_start .. "G", false)
+        exec("normal " .. line_start .. "G")
     end
 
     map("n", "J", ":lua dummy.betterJoin()<CR>", arg_nr_s)

@@ -1,7 +1,8 @@
 local M = {}
 
 M.os = {}
-M.os.is_android = vim.fn.isdirectory("/sdcard")
+M.os.is_android = vim.fn.isdirectory("/sdcard") ~= 0
+M.os.is_windows = (vim.fn.has("win32") or vim.fn.has("win64")) ~= 0
 
 M.parseEscapeCode = function(str)
     return vim.api.nvim_replace_termcodes(str, true, true, true)
