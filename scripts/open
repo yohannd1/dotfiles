@@ -172,6 +172,13 @@
     (t :pop ["play-midi" file])
     (t :pop ["mpv" "--no-video" file]))
 
+  # music modules
+  (mt :ext ["mod" "it" "s3m" "mptm"] :pop ["openmpt123" file])
+  (mt :ext ["nsf"] :pop ["nosefart" file])
+  (mt :ext ["fur" "dmf"] :gui ["furnace" file])
+  (mt :ext ["btm"] :gui ["BambooTracker" file])
+  (mt :ext ["vgm" "vgz"] :pop ["vgmplay" file])
+
   # audio files
   (when (or (m :mime [[:begins "audio/"]])
             (m :ext ["aac" "flac" "m4a" "mpa" "mp2" "mp3"
@@ -195,13 +202,6 @@
   (mt :ext ["drawio"] :gui ["drawio" file])
   (mt :ext ["godot"] :gui ["Godot" file])
   (mt :ext ["yyp"] :gui ["GameMaker" file])
-
-  # music modules
-  (mt :ext ["mod" "it" "s3m" "mptm"] :pop ["openmpt123" file])
-  (mt :ext ["nsf"] :pop ["nosefart" file])
-  (mt :ext ["fur" "dmf"] :gui ["furnace" file])
-  (mt :ext ["btm"] :gui ["BambooTracker" file])
-  (mt :ext ["vgm" "vgz"] :pop ["vgmplay" file])
 
   # music projects
   (mt :ext ["kdenlive"] :gui ["kdenlive" file])
