@@ -1,0 +1,34 @@
+// vim: ft=jsonc
+{
+    "layer": "top",
+    "position": "bottom",
+    // "height": 24,
+    "spacing": 5,
+
+    "modules-left": ["hyprland/workspaces", "dwl/tags", "hyprland/window"],
+    "modules-right": ["pulseaudio", "clock", "tray"],
+
+    "hyprland/workspaces": {
+        "disable-scroll": true,
+        "all-outputs": false,
+        "warp-on-scroll": false,
+        "format": "{name}",
+    },
+
+    "tray": {
+        // "icon-size": 21,
+        "spacing": 5
+    },
+
+    "clock": {
+        "format": "{:%Y-%m-%d %H:%M}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+    },
+
+    "pulseaudio": {
+        // "scroll-step": 1, // %, can be a float
+        "format": "vol {volume}%",
+        "format-muted": "vol OFF",
+    },
+}
+

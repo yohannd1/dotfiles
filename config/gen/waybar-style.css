@@ -1,0 +1,81 @@
+/*!! getColor() { dotcfg send "get:theme_rgb_csv.$1"; }
+/*!! _font_family=$(dotcfg send 'get:waybar.font_family')
+/*!! _font_size=$(dotcfg send 'get:waybar.font_size')
+/*!! _base00=$(getColor base00)
+/*!! _base01=$(getColor base01)
+/*!! _base02=$(getColor base02)
+/*!! _base03=$(getColor base03)
+/*!! _base04=$(getColor base04)
+/* */
+
+* {
+/*!! printf "font-family: '%s', monospace;\n" "$_font_family"
+/* */
+/*!! printf "font-size: %spx;\n" "$_font_size"
+/* */
+}
+
+window#waybar {
+/*!! printf "background-color: rgba(%s,0.8);\n" "$_base00"
+/* */
+/*!! printf "color: rgb(%s);\n" "$_base04"
+/* */
+}
+
+#workspaces button, #tags button {
+    padding: 0 4px;
+    background-color: transparent;
+/*!! printf "color: rgba(%s,0.1);\n" "$_base04"
+/* */
+}
+
+#tags button.occupied {
+/*!! printf "color: rgb(%s);\n" "$_base04"
+/* */
+}
+
+#workspaces button.active, #tags button.focused {
+/*!! printf "color: rgb(%s);\n" "$_base04"
+/* */
+/*!! printf "background-color: rgb(%s);\n" "$_base01"
+/* */
+}
+
+#window, #workspaces, #tags {
+    margin: 0 4px;
+}
+
+.modules-left {
+    margin-left: 0;
+}
+
+/* If workspaces is the leftmost module, omit left margin */
+.modules-left > widget:first-child > #workspaces,
+.modules-left > widget:first-child > #tags
+{
+    margin-left: 0;
+}
+
+/* If workspaces is the rightmost module, omit right margin */
+.modules-right > widget:last-child > #workspaces,
+.modules-right > widget:last-child > #tags
+{
+    margin-right: 0;
+}
+
+#clock, #pulseaudio, #tray {
+    padding: 0 10px;
+    color: #ffffff;
+
+/*!! printf "background-color: rgb(%s);\n" "$_base01"
+/* */
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: #eb4d4b;
+}

@@ -4,21 +4,28 @@
 
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
+isWayland() { test "$_uit" = wayland; }
+isXorg() { test "$_uit" = xorg; }
+isHyprland() { [ "$HYPRLAND_INSTANCE_SIGNATURE" ]; }
+isPipewire() { test "$_audiot" = pipewire; }
+
 if [ "$WAYLAND_DISPLAY" ]; then
-  isWayland() { return 0; }
-  isXorg() { return 1; }
+  _uit=wayland
 elif [ "$DISPLAY" ]; then
-  isWayland() { return 1; }
-  isXorg() { return 0; }
+  _uit=xorg
 else
   printf >&2 "Not on wayland or xorg; aborting"
   exit 1
 fi
 
 if pactl info | grep -q '^Server Name:.*PipeWire.*'; then
-  isPipewire() { return 0; }
-else
-  isPipewire() { return 1; }
+  _audiot=pipewire
+fi
+
+# wayland <-> dbus stuff
+if isWayland; then
+  systemctl --user import-environment DISPLAY WAYLAND_DISPLAY
+  dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
 fi
 
 # config daemons
@@ -66,12 +73,27 @@ if isXorg; then
   xinput set-prop "Synaptics TM3096-006" "libinput Tapping Enabled" 1 # Touchpad: tap to click (not working)
   xinput set-prop "Synaptics TM3096-006" "libinput Natural Scrolling Enabled" 1 # Touchpad: natural scrolling
 elif isWayland; then
-  # TODO: enable natural scrolling as well
-  # TODO: fix touchpad scrolling in reverse direction
+  # hyprland's input config is done on its own config file
+
+  # TODO(river): enable natural scrolling as well
+  # TODO(river): fix touchpad scrolling in reverse direction
   :
 fi
 
 # yambar
 if isWayland; then
-  yambar &
+  if isHyprland || pgrep dwl; then
+    waybar &
+  else
+    yambar &
+  fi
+fi
+
+# set colors for hyprland
+if [ "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
+  bf=$(dotcfg send get:hypr.border-focus)
+  bn=$(dotcfg send get:hypr.border-normal)
+
+  hyprctl keyword general:col.active_border "rgb($bf)"
+  hyprctl keyword general:col.inactive_border "rgb($ba)"
 fi
