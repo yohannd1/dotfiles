@@ -1,18 +1,23 @@
 #!/usr/bin/env sh
 
-if [ $# = 0 ] || [ $# -gt 2 ]; then
-  printf >&2 "Usage: %s <FILE> [SOUNDFONT]\n" "$(basename "$0")"
+if [ $# != 1 ]; then
+  printf >&2 "Usage: %s <FILE>\n" "$(basename "$0")"
   exit 1
 fi
 
-soundfont=/usr/share/soundfonts/default.sf2
-[ $# = 2 ] && soundfont="$2"
+MIDI_SOUNDFONT=${MIDI_SOUNDFONT:-/usr/share/soundfonts/default.sf2}
+
+synth_count=$(aconnect -o | grep -v '^ ' | wc -l)
 
 printf >&2 "Press Ctrl-C to stop playing\n"
-printf >&2 "Using soundfont: %s\n\n" "$soundfont"
-
-fluidsynth -a pulseaudio -m alsa_seq -l -g 0.5 -C 0 -i "$soundfont" "$1" </dev/null &
-fluidsynth_pid="$!"
-
-trap 'kill -9 "$fluidsynth_pid"' INT
-wait "$fluidsynth_pid"
+if [ "$synth_count" -gt 1 ]; then
+  # HELLA WONKY. Can fail easily I think
+  aplaymidi -p128:0 "$1"
+  # TODO: stop all notes
+else
+  printf >&2 "Using soundfont: %s\n\n" "$MIDI_SOUNDFONT"
+  fluidsynth -a pulseaudio -m alsa_seq -l -g 0.5 -C 0 -i "$MIDI_SOUNDFONT" "$1" </dev/null &
+  fluidsynth_pid="$!"
+  trap 'kill -9 "$fluidsynth_pid"' INT
+  wait "$fluidsynth_pid"
+fi
