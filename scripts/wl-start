@@ -20,6 +20,9 @@ case "$1" in
   Hyprland)
     Hyprland
     ;;
+  dwl)
+    (cd ~/pj/code/dwl-fork && make) && ~/pj/code/dwl-fork/dwl
+    ;;
   *)
     printf >&2 "???\n"
     exit 1

@@ -576,7 +576,7 @@ function! Vimwiki_NewFileAddRef(after_cursor)
   let i = 0
   while 1
     let title = WikiGenTitle()
-    let file_path = g:wiki_dir .. "/" .. title .. ".wiki"
+    let file_path = g:wiki_dir .. "/" .. title .. ".acr"
 
     if !filereadable(file_path)
       call _InsertWikiFileRef(title, a:after_cursor)
@@ -606,9 +606,9 @@ vim.fn["hydra#hydras#register"] {
     {
         name = "General",
         keys = {
-          {"w", "e ~/wiki/vimwiki/index.wiki", "open index"},
-          {"s", "e ~/wiki/vimwiki/202105021825-E80938.wiki", "open scratchpad"},
-          {"p", "e ~/wiki/vimwiki/202212311207-AFDA90.wiki", "open week plan (2023)"},
+          {"w", "e ~/wiki/vimwiki/index.acr", "open index"},
+          {"s", "e ~/wiki/vimwiki/202105021825-E80938.acr", "open scratchpad"},
+          {"p", "e ~/wiki/vimwiki/202212311207-AFDA90.acr", "open week plan (2023)"},
           {"o", "lua dummy.open_wiki_file({})", "select a wiki file"},
           {"O", "lua dummy.open_wiki_file({}, {'acw-get-projects'})", "select a project"},
           {"H", "Vimwiki2HTMLBrowse", "compile current & browse"},

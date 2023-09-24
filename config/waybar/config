@@ -1,11 +1,11 @@
 // vim: ft=jsonc
 {
-    "layer": "top",
-    "position": "bottom",
-    // "height": 24,
-    "spacing": 5,
+    "layer": "bottom",
+    "position": "top",
+    "height": 15,
+    "spacing": 0,
 
-    "modules-left": ["hyprland/workspaces", "dwl/tags", "hyprland/window"],
+    "modules-left": ["hyprland/workspaces", "dwl/tags", "hyprland/window", "dwl/window"],
     "modules-right": ["pulseaudio", "clock", "tray"],
 
     "hyprland/workspaces": {

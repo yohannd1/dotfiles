@@ -6,6 +6,7 @@
 /*!! _base02=$(getColor base02)
 /*!! _base03=$(getColor base03)
 /*!! _base04=$(getColor base04)
+/*!! _base06=$(getColor base06)
 /* */
 
 * {
@@ -35,9 +36,9 @@ window#waybar {
 }
 
 #workspaces button.active, #tags button.focused {
-/*!! printf "color: rgb(%s);\n" "$_base04"
+/*!! printf "color: rgb(%s);\n" "$_base06"
 /* */
-/*!! printf "background-color: rgb(%s);\n" "$_base01"
+/*!! printf "background-color: rgb(%s);\n" "$_base02"
 /* */
 }
 

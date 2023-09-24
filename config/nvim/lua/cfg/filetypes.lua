@@ -401,7 +401,7 @@ ft.alda = function()
 end
 
 ft.uxntal = function()
-    setTabIndent(8)
+    setTabIndent(4)
 
     vim.opt_local.iskeyword = vim.opt_local.iskeyword + "-"
 end

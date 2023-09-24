@@ -67,7 +67,7 @@ local font_presets = {
     },
     ["Unifont"] = {
         name = "Unifont",
-        base_size = 16,
+        base_size = 15,
     },
     ["ProggyVector"] = {
         name = "ProggyVector",
@@ -94,8 +94,8 @@ local font_presets = {
         base_size = 16,
     },
     ["Bedstead"] = {
-        name = "Bedstead Semi Condensed",
-        base_size = 16,
+        name = "Bedstead",
+        base_size = 14,
     },
 }
 -- }}}
@@ -177,6 +177,13 @@ decl {
     targets = T_ALL,
 }
 
+-- waybar
+decl {
+    {"waybar.font_family", font.name},
+    {"waybar.font_size", font.base_size * 0.9},
+
+    targets = T_ALL,
+}
 -- tym (terminal?)
 decl {
     {"tym.font", font.name .. " " .. font.base_size},
@@ -203,6 +210,14 @@ decl {
     {"awesome.border-normal", theme["base00"]},
     {"awesome.border-focus", theme["base03"]},
     {"awesome.border-marked", theme["base0A"]},
+
+    targets = T_ALL,
+}
+
+-- hyprland
+decl {
+    {"hypr.border-normal", theme["base00"]:sub(2)},
+    {"hypr.border-focus", theme["base05"]:sub(2)},
 
     targets = T_ALL,
 }
@@ -333,18 +348,24 @@ decl {
 for i = 0, 15 do
     local hex = string.format("%02X", i)
     local hex_id = "base" .. hex
+    local color = theme[hex_id]
+
+    local r = tonumber("0x" .. color:sub(2,3))
+    local g = tonumber("0x" .. color:sub(4,5))
+    local b = tonumber("0x" .. color:sub(6,7))
 
     decl {
-        {string.format("*.color%02d", i), theme[hex_id]},
-        {string.format("*.color%d", i), theme[hex_id]},
-        {"*." .. hex_id, theme[hex_id]},
+        {string.format("*.color%02d", i), color},
+        {string.format("*.color%d", i), color},
+        {"*." .. hex_id, color},
 
         targets = {t_xres},
     }
 
     decl {
-        {"theme." .. hex_id, theme[hex_id]},
-        {"theme_no_prefix." .. hex_id, theme[hex_id]:sub(2)},
+        {"theme." .. hex_id, color},
+        {"theme_no_prefix." .. hex_id, color:sub(2)},
+        {"theme_rgb_csv." .. hex_id, r..","..g..","..b},
 
         targets = T_ALL,
     }

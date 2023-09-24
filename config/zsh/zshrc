@@ -301,7 +301,7 @@ alias of='openfork'
 # alias sx='startXServerOrLogout'
 
 # sg() { dbus-launch --exit-with-session river-start; }
-sg() { wl-start Hyprland; }
+sg() { wl-start dwl; }
 
 editRecentf() { filehist select "$EDITOR"; }
 alias er='editRecentf'

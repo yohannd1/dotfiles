@@ -252,14 +252,14 @@
   (mt :ext ["rpy"] :pop [EDITOR file])
 
   (when (m :ext ["md"])
-    (t :runpage ["glowrapper" file])
+    # (t :runpage ["glowrapper" file])
     (t :gui ["md-preview" file]))
 
   (when (m :ext ["htm" "html" "xhtml"])
+    (t :gui [BROWSER file])
     (t :runpage ["w3m" "-dump" file])
     (t :runpage ["lynx" "-dump" "--" file])
-    (t :runpage ["elinks" "-dump" file])
-    (t :gui [BROWSER file]))
+    (t :runpage ["elinks" "-dump" file]))
 
   (when (m :ext ["json"])
     (t :runpage ["jq" "--color-output" "." file])
