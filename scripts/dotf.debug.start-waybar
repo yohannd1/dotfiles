@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+pkill waybar
+gen-config waybar
+waybar & disown

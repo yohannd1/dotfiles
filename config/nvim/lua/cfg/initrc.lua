@@ -176,7 +176,7 @@ do
           actions.close(prompt_bufnr)
 
           if selection then
-            vim.cmd("e " .. vim.g.wiki_dir .. "/" .. vim.fn.split(selection[1])[1] .. ".wiki")
+            vim.cmd("e " .. vim.g.wiki_dir .. "/" .. vim.fn.split(selection[1])[1] .. ".acr")
           end
         end)
 

@@ -73,6 +73,9 @@
   (:write f "\n")
   (:close f))
 
+(defn log [msg]
+  (os/execute ["notify-send" "--" (string msg)] :px))
+
 (defn run-shell [cmd add-to-recent]
   (when add-to-recent
     (add-line-to-file FZRUN-RECENT-CMDS cmd))

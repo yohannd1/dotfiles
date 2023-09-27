@@ -129,9 +129,9 @@ elseif fileExists(DATA_PATH) then
 
   -- Then go through the list of files, update the ones that need it and print them to the screen.
   for file in fileIter(ACW_WIKI_DIR) do
-    if file:match("%.wiki$") then
+    if file:match("%.acr$") then
       local file_path = ACW_WIKI_DIR .. "/" .. file
-      local id = file:gsub("%.wiki$", "")
+      local id = file:gsub("%.acr$", "")
 
       local mod_time = assert(lfs.attributes(file_path, "modification"))
       local entry_at = entries[id]
@@ -164,9 +164,9 @@ else
 
   local out_fd = assert(io.open(DATA_PATH, "w"))
   for file in fileIter(ACW_WIKI_DIR) do
-    if file:match("%.wiki$") then
+    if file:match("%.acr$") then
       local file_path = ACW_WIKI_DIR .. "/" .. file
-      local id = file:gsub("%.wiki$", "")
+      local id = file:gsub("%.acr$", "")
       local title = getNoteTitle(assert(io.open(file_path))) or "<No Title>"
       local mod_time = assert(lfs.attributes(file_path, "modification"))
 

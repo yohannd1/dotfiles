@@ -2,4 +2,5 @@
 
 pkill yambar
 eval $(load-base16-theme --export)
+gen-config yambar
 yambar

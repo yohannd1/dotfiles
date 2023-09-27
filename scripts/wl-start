@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 
+
 tty=$(tty)
 if printf "%s" "$tty" | grep -q '^/dev/tty'; then
   tty=${tty#/dev/tty}
@@ -12,4 +13,18 @@ fi
 
 export XSESSIONDIR="/tmp/xsessions/wayland-$tty"
 
-XKB_DEFAULT_LAYOUT="br" river
+case "$1" in
+  river)
+    XKB_DEFAULT_LAYOUT="br" river
+    ;;
+  Hyprland)
+    Hyprland
+    ;;
+  dwl)
+    (cd ~/pj/code/dwl-fork && make) && ~/pj/code/dwl-fork/dwl
+    ;;
+  *)
+    printf >&2 "???\n"
+    exit 1
+    ;;
+esac

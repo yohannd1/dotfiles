@@ -6,7 +6,7 @@ eval "$(load-base16-theme --export)"
 pname=$(basename "$0")
 
 main() {
-  ALL=(_init stalonetray dunst gtk3 foot yambar wget termux)
+  ALL=(_init stalonetray dunst gtk3 foot yambar waybar wget termux)
   [ $# = 0 ] && targets=("${ALL[@]}")
   [ $# -gt 0 ] && targets=(_init "$@")
   [ $# = 1 ] && [ "$1" = all ] && targets=("${ALL[@]}")
@@ -58,6 +58,11 @@ _t_foot() {
 _t_yambar() {
   PP_PREFIX="#!!" gen "$DOTFILES/config/gen/yambar.yml" \
     "$XDG_CONFIG_HOME/yambar/config.yml"
+}
+
+_t_waybar() {
+  PP_PREFIX="/*!!" gen "$DOTFILES/config/gen/waybar-style.css" \
+    "$XDG_CONFIG_HOME/waybar/style.css"
 }
 
 _t_wget() {

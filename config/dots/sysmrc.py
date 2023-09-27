@@ -7,12 +7,14 @@ if m.is_android:
     m.link_glob(DOTFILES/"config/termux", "~/.termux")
 else:
     apps += [
-        "sxhkd",
-        "river",
-        "picom",
         "xorg",
+        "river",
+        "hypr",
         "awesome",
         "qtile",
+
+        "sxhkd",
+        "picom",
         "zathura",
         "taskwarrior",
         "sxiv",
@@ -59,6 +61,7 @@ m.link_conf("pylintrc", "~/.pylintrc")
 m.link_conf("tmux.conf", "~/.tmux.conf")
 m.link_conf("icons_default.theme", "~/.icons/default/index.theme")
 m.link_conf("radium/keybindings.conf", "~/.radium/keybindings.conf")
+m.link_conf("waybar/config", "~/.config/waybar/config")
 
 m.link_glob(DOTFILES / "config/qutebrowser", "~/.config/qutebrowser")
 # m.link_glob(DOTFILES / "config/furnace", "~/.config/furnace") # new backup system is incompatible with this
