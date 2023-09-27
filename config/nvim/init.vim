@@ -268,14 +268,6 @@ function! ApcReenable() " {{{
     ApcEnable
   endif
 endfunction " }}}
-function! NextBuffer() " {{{
-  bnext
-  silent doautocmd User BufSwitch
-endfunction " }}}
-function! PrevBuffer() " {{{
-  bprevious
-  silent doautocmd User BufSwitch
-endfunction " }}}
 function! GetCurrentChar() " {{{
   " TODO: refactor into a char utilities file
   return strcharpart(getline('.')[col('.') - 1:], 0, 1)

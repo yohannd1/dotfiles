@@ -61,4 +61,16 @@ return function()
         vim.g.neovide_transparency = 0.8
         vim.g.neovide_cursor_vfx_mode = "ripple"
     end
+
+    -- me when i copy paste functions into an exec block
+    exec([[
+    function! NextBuffer() " {{{
+      bnext
+      silent doautocmd User BufSwitch
+    endfunction " }}}
+    function! PrevBuffer() " {{{
+      bprevious
+      silent doautocmd User BufSwitch
+    endfunction " }}}
+    ]])
 end
