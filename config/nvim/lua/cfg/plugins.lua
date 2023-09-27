@@ -4,6 +4,7 @@
 local vim = _G.vim
 local _configs = {}
 local M = {}
+local utils = require("cfg.utils")
 
 local function plug(arg)
     local plugin = nil
@@ -42,6 +43,10 @@ local firstAvailableDir = function(arg)
     end
 end
 -- }}}
+
+local hasExecutable = function(name)
+    return vim.fn.executable(name) ~= 0
+end
 
 local plugins = function()
     local HOME = assert(os.getenv("HOME"), "could not get home directory")
@@ -99,7 +104,7 @@ local plugins = function()
     -- }}}
 
     -- Treesitter
-    if not is_android then
+    if not vim.g.is_android then
         plug({"nvim-treesitter/nvim-treesitter", config = function()
             require('nvim-treesitter.configs').setup {
                 ensure_installed = { "c", "lua", "vim", "vimdoc", "query" },
@@ -176,7 +181,7 @@ local plugins = function()
     -- plug("JuliaEditorSupport/julia-vim")
 
     -- nim
-    if vim.fn.executable("nim") and vim.fn.executable("nimsuggest") then
+    if hasExecutable("nim") and hasExecutable("nimsuggest") then
         plug("YohananDiamond/nvim-nim")
     end
     -- }}}
@@ -184,7 +189,7 @@ local plugins = function()
     plug("junegunn/goyo.vim")
 
     -- Themes
-    if vim.g.is_win > 0 then
+    if utils.os.is_windows then
         -- use gruvbox as the default theme for windows
         plug {"morhetz/gruvbox", config = function()
             vim.g.gruvbox_bold = 1
@@ -208,8 +213,11 @@ local plugins = function()
     plug("tpope/vim-vinegar")
 
     -- acrylic
-    -- FIXME: change path lol
-    vim.g.wiki_dir = os.getenv("WIKI") .. "/vimwiki"
+    -- FIXME: change path lol (probably a $ACR_MAIN_WIKI var)
+    local WIKI = os.getenv("WIKI")
+    if WIKI then
+        vim.g.wiki_dir = WIKI .. "/vimwiki"
+    end
 
     -- plug({"vimwiki/vimwiki", config = function()
     --     -- FIXME: Slowdown candidate
@@ -293,7 +301,7 @@ local plugins = function()
 end
 
 function M.load()
-    local is_first = vim.g.is_first > 0
+    local is_first = (vim.g.is_first or 1) ~= 0
 
     if is_first then
         vim.fn["plug#begin"](vim.g.config_root .. "/plugged")

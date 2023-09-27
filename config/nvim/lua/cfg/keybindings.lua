@@ -206,10 +206,15 @@ return function()
     map("v", "J", ":lua dummy.betterJoinVisual()<CR>", arg_nr_s)
 
     -- Terminal escaping
-    map("t", "<C-w><Esc>", "<Esc>", arg_nr_s) -- TODO: this one is not working
+    map("t", "<C-w>[", "<C-\\><C-n>", arg_nr_s)
     forChars("hjkl", function(l)
         map("t", "<C-w>" .. l, "<C-\\><C-n><C-w>" .. l, arg_nr_s)
     end)
+
+    -- Tab navigation
+    map("n", "<C-x>j", ":tabn<CR>", arg_nr_s)
+    map("n", "<C-x>k", ":tabp<CR>", arg_nr_s)
+    map("n", "<C-x>n", ":tabnew<CR>", arg_nr_s)
 
     -- Navigate the completion menu with <C-k>, <C-j> and <C-m>
     do
