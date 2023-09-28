@@ -207,6 +207,10 @@ return function()
 
     -- Terminal escaping
     map("t", "<C-w>[", "<C-\\><C-n>", arg_nr_s)
+    map("t", "<C-w><C-j>", "<C-j>", arg_nr_s)
+    map("t", "<C-w><C-k>", "<C-k>", arg_nr_s)
+    map("t", "<C-j>", "<C-\\><C-n>:call NextBuffer()<CR>", arg_nr_s)
+    map("t", "<C-k>", "<C-\\><C-n>:call PrevBuffer()<CR>", arg_nr_s)
     forChars("hjkl", function(l)
         map("t", "<C-w>" .. l, "<C-\\><C-n><C-w>" .. l, arg_nr_s)
     end)
