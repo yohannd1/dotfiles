@@ -316,6 +316,13 @@ alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
+alias ..='go-up'
+go-up() {
+  for i in {1.."${1:-1}"}; do
+    cd ..
+  done
+}
+
 tmux-nest() {
   TMUX= tmux "$@"
 }
