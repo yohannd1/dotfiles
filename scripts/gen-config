@@ -6,7 +6,13 @@ eval "$(load-base16-theme --export)"
 pname=$(basename "$0")
 
 main() {
-  ALL=(_init stalonetray dunst gtk3 foot yambar waybar wget termux)
+  ALL=(_init wget)
+  if _isAndroid; then
+    ALL+=(termux)
+  else
+    ALL+=(stalonetray waybar foot dunst gtk3) # off: yambar
+  fi
+
   [ $# = 0 ] && targets=("${ALL[@]}")
   [ $# -gt 0 ] && targets=(_init "$@")
   [ $# = 1 ] && [ "$1" = all ] && targets=("${ALL[@]}")
