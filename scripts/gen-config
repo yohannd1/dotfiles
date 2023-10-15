@@ -26,6 +26,8 @@ main() {
       printf >&2 "%s: could not find target %s; skipping\n" "$pname" "$t"
     fi
   done
+
+  return 0
 }
 
 gen() {

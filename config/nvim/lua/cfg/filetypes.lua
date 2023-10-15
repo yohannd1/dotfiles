@@ -454,6 +454,10 @@ ft.odin = function()
     setTabIndent(4)
 end
 
+ft.forth = function()
+    setSpaceIndent(2)
+end
+
 -- function! ft.vimwiki() " {{{
 --   setlocal sw=2
 

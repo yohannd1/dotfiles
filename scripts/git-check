@@ -42,7 +42,7 @@ while [ ! "$exit" ]; do
 
   # parse option
   case "$option" in
-    b) git branch ;;
+    b) git branch -a | cat ;;
     c) git commit ;;
     C) gitAddAll && git commit ;;
     d) git diff HEAD ;;

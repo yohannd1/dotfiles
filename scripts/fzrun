@@ -80,7 +80,8 @@
   (when add-to-recent
     (add-line-to-file FZRUN-RECENT-CMDS cmd))
 
-  (def isatty (= 0 (os/execute [SHELL "-c" "[ -t 2 ]"] :p)))
+  # (def isatty (= 0 (os/execute [SHELL "-c" "[ -t 2 ]"] :p)))
+  (def isatty true)
   (def args (if isatty
              [SHELL "-c" cmd]
              ["tmux-bg-run" cmd]))
@@ -133,7 +134,8 @@
     [n _] (let [entry (in entries n)]
             (each [k v] (-> (in entry :config) (in :env {}) (pairs))
               (os/setenv (string k) v))
-            (os/cd (entry :exec-dir))
+            (def exec-dir (entry :exec-dir))
+            (os/cd exec-dir)
             (-> entry (in :command) (run-shell false)))
     _ (error "Unexpected"))
   )
