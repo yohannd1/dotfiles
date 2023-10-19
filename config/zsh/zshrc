@@ -86,6 +86,13 @@ bindkey -M menuselect 'l' vi-forward-char
 bindkey -M menuselect 'j' vi-down-line-or-history
 bindkey -v '^?' backward-delete-char
 
+function -update-mode-prompt {
+  RPS1="${${KEYMAP/vicmd/[:N]}/(main|viins)}"
+  RPS2=$RPS1
+  zle reset-prompt
+}
+
+
 # change cursor shape for different vi modes
 function zle-keymap-select {
   if [ "$KEYMAP" = vicmd ] || [ "$1" = "block" ]; then
@@ -94,10 +101,12 @@ function zle-keymap-select {
          || [ "$KEYMAP" = '' ] || [ "$1" = 'beam' ]; then
     printf '\033[5 q'
   fi
+  -update-mode-prompt
 }
 
 function zle-line-init {
   zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
+  -update-mode-prompt
 }
 
 zle -N zle-keymap-select

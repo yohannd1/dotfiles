@@ -156,10 +156,10 @@ export FILEHIST_NO_TIDY=1
 # export GTK_USE_PORTAL=0
 
 # Input Method
-export GTK_IM_MODULE=fcitx
-export QT_IM_MODULE=fcitx
-export SDL_IM_MODULE=fcitx
-export XMODIFIERS='@im=fcitx'
+# export GTK_IM_MODULE=fcitx
+# export QT_IM_MODULE=fcitx
+# export SDL_IM_MODULE=fcitx
+# export XMODIFIERS='@im=fcitx'
 
 # because for some reason carla didn't add the /etc/ld.so.conf entry on my system
 export LD_LIBRARY_PATH='/usr/lib/carla'

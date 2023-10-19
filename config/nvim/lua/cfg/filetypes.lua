@@ -163,6 +163,7 @@ ft.c = function()
         foldmethod = "syntax",
         commentstring = "/* %s */",
         textwidth = 80,
+        cinoptions = "g0,:0,l1,(1s"
     }
 
     vim.b.format_command = "clang-multicfg-format c"

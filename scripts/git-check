@@ -42,7 +42,10 @@ while [ ! "$exit" ]; do
 
   # parse option
   case "$option" in
-    b) git branch -a | cat ;;
+    b)
+      git branch -a | cat
+      printf "Current branch: %s\n" "$(git rev-parse --abbrev-ref HEAD)"
+      ;;
     c) git commit ;;
     C) gitAddAll && git commit ;;
     d) git diff HEAD ;;
