@@ -147,7 +147,7 @@ local T_ALL = {t_xres, t_dots}
 -- }}}
 
 local enable_ligatures = false
-local font = getFontInfo("Hermit")
+local font = getFontInfo("Fixedsys")
 
 local fsize_term = font.base_size
 local xft_font = longFontFormat(font.name, fsize_term)
@@ -165,7 +165,7 @@ decl {
 -- foot (wayland terminal)
 decl {
     {"foot.font", xft_font},
-    {"foot.alpha", "0.95"},
+    {"foot.alpha", "0.8"},
 
     targets = T_ALL,
 }

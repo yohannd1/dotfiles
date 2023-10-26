@@ -9,14 +9,18 @@ if [ $# = 0 ]; then
   exit 1
 fi
 
+warnSigint() { printf >&2 "\n#[Got SIGINT]"; }
+
 while true; do
   printf "@[COMMAND]: %s\n" "$*"
+  trap 'warnSigint' SIGINT
   if [ "$RUNREAD_PIPE" ]; then
     "$@" </dev/null 2>&1 | cat
   else
     "$@"
   fi
   exitCode="$?"
+  trap SIGINT
   printf '\033[2 q'
   printf '\n#[ec: %d]# (q)uit (R)eload (s)hell: ' "$exitCode"
   while read -sn1 ch; do
