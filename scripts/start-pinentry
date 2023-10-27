@@ -3,6 +3,8 @@
 matches() { printf "%s" "$1" | grep -q "$2"; }
 exists() { command -v "$1" >/dev/null; }
 
+parent="$(dirname $0)"
+
 if ! exists jq; then
   printf >&2 "JQ NOT AVAILABLE - CAN'T PARSE PINENTRY_USER_DATA\n"
   exit 1
@@ -16,7 +18,7 @@ if [ "$context" = tty ]; then
   exec pinentry-curses "$@"
 else
   if exists pinentry-bemenu; then
-    export BEMENU_OPTS="$(bemenu-load-colorscheme)"
+    export BEMENU_OPTS=$("$parent/bemenu-load-colorscheme")
     exec pinentry-bemenu "$@"
   fi
 
