@@ -4,7 +4,9 @@
 local vim = _G.vim
 local _configs = {}
 local M = {}
-local utils = require("cfg.utils")
+
+local ucm = _G.useConfModule
+local utils = ucm("utils")
 
 local function plug(arg)
     local plugin = nil
@@ -214,6 +216,7 @@ local plugins = function()
             }
         end
     })
+    utils._features["plugin.vim-auto-popmenu"] = true
 
     -- Misc.
     plug("tpope/vim-vinegar")

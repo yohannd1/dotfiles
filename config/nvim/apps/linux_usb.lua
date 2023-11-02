@@ -1,7 +1,8 @@
 _G.dummy = {}
 local vim = _G.vim
 local exec = function(cmd) vim.api.nvim_exec(cmd, false) end
-local forceLoad = function(path) return assert(loadfile(path))() end
+
+exec("colorscheme retrobox")
 
 vim.g.is_first = (vim.g.is_first == nil) and 1 or 0
 
@@ -11,12 +12,11 @@ package.path = string.format("%s;%s/lua/?.lua", package.path, CONF_DIR)
 vim.opt.runtimepath:append { CONF_DIR }
 vim.g.config_root = CONF_DIR
 
--- load config modules
-local files = {"keybindings.lua", "general.lua"}
-for _, file in ipairs(files) do
-    forceLoad(CONF_DIR .. "/lua/cfg/" .. file)()
-end
+-- bootstrap module system
+assert(loadfile(CONF_DIR .. "/lua/prepare.lua"))()
+local ucm = _G.useConfModule
 
--- forceLoad(CONF_DIR .. "/lua/cfg/plugins.lua").load()
-
-exec("colorscheme retrobox")
+-- load modules
+ucm("general")()
+ucm("keybindings")()
+ucm("filetypes")()

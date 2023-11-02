@@ -102,9 +102,6 @@ endfunction " }}}
 function! AddBookmark(letter, path) " {{{
   execute 'nnoremap <silent> <Leader>e'.a:letter.' :e '.a:path.'<CR>'
 endfunction " }}}
-function! AddSnippet(key, data) " {{{
-  execute 'nnoremap <silent> <buffer> <Leader>i'.a:key.' i'.a:data.'<Esc>'
-endfunction " }}}
 function! PagerMode(...) " {{{
   if len(a:000) >= 1
     let &ft = a:1

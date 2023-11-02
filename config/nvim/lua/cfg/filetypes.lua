@@ -2,7 +2,8 @@
 -- Preparation {{{
 
 local vim = _G.vim
-local utils = require("cfg.utils")
+local ucm = _G.useConfModule
+local utils = ucm("utils")
 
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
@@ -66,11 +67,13 @@ local func = function()
         end
     })
 
-    autocmd({"BufNewFile", "BufRead"}, {
-        pattern = "*",
-        group = "buffer_load",
-        callback = "AddToRecFile",
-    })
+    if vim.fn.exists("*AddToRecFile") ~= 0 then
+        autocmd({"BufNewFile", "BufRead"}, {
+            pattern = "*",
+            group = "buffer_load",
+            callback = "AddToRecFile",
+        })
+    end
 
     autocmd("FileType", {
         pattern = "*",
@@ -90,15 +93,19 @@ local func = function()
                 nvim_exec(cmd, false)
             end
 
-            vim.fn["SetupMakefileRifle"]()
+            if vim.fn.exists("*SetupMakefileRifle") ~= 0 then
+                vim.fn["SetupMakefileRifle"]()
+            end
         end
     })
 
-    autocmd("BufEnter", {
-        pattern = "*",
-        group = "buffer_load",
-        callback = "ApcReenable",
-    })
+    if utils._features["plugin.vim-auto-popmenu"] then
+        autocmd("BufEnter", {
+            pattern = "*",
+            group = "buffer_load",
+            callback = "ApcReenable",
+        })
+    end
 
     autocmd("TermOpen", {
         pattern = "*",

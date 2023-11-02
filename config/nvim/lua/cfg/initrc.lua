@@ -1,8 +1,12 @@
 local dummy = {}
 _G.dummy = dummy
 
+-- bootstrap module system
+assert(loadfile(CONF_DIR .. "/lua/prepare.lua"))()
+local ucm = _G.useConfModule
+
 local vim = _G.vim
-local utils = require("cfg.utils")
+local utils = ucm("utils")
 _G._utils = utils
 
 local autopairs = require("nvim-autopairs")
@@ -237,9 +241,9 @@ do
 end
 
 -- Load configuration from other files
-require("cfg.general")()
-require("cfg.statusline")()
-require("cfg.keybindings")()
-require("cfg.filetypes")()
+ucm("general")()
+ucm("statusline")()
+ucm("keybindings")()
+ucm("filetypes")()
 
 -- vim: sw=2 et
