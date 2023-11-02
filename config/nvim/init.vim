@@ -26,6 +26,12 @@ if g:is_first
   let g:is_embedded = $NVIM_EMBEDDED_MODE == "1"
 endif
 
+lua <<EOF
+-- bootstrap module system
+local config_root = assert(vim.g.config_root, "config root not defined")
+assert(loadfile(config_root .. "/lua/prepare.lua"))()
+EOF
+
 " }}}
 " Plugins {{{
 "

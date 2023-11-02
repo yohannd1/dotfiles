@@ -1,11 +1,8 @@
 local dummy = {}
 _G.dummy = dummy
 
--- bootstrap module system
-assert(loadfile(CONF_DIR .. "/lua/prepare.lua"))()
-local ucm = _G.useConfModule
-
 local vim = _G.vim
+local ucm = _G.useConfModule
 local utils = ucm("utils")
 _G._utils = utils
 

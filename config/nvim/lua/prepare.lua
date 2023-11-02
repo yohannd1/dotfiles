@@ -11,7 +11,6 @@ _G.useConfModule = function(module_name, options)
     local path = config_root .. "/lua/cfg/" .. module_name .. ".lua"
     local module_data = assert(loadfile(path))()
     module_cache[module_name] = module_data
-    print("LOADED", module_name, "::", module_data)
     return module_data
 end
 
