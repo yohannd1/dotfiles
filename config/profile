@@ -6,7 +6,7 @@
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
 loggedSource() {
   [ $# = 1 ] || return 1
-  printf >&2 "Sourcing %s...\n" "$1"
+  printf >&2 "Sourcing %s...\n" "$(basename "$1")"
   . "$1"
 }
 isTermux() {

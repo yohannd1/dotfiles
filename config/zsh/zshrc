@@ -87,11 +87,11 @@ bindkey -M menuselect 'j' vi-down-line-or-history
 bindkey -v '^?' backward-delete-char
 
 function -update-mode-prompt {
+  isAndroid && return
   RPS1="${${KEYMAP/vicmd/[:N]}/(main|viins)}"
   RPS2=$RPS1
   zle reset-prompt
 }
-
 
 # change cursor shape for different vi modes
 function zle-keymap-select {
