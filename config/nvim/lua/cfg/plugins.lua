@@ -206,7 +206,7 @@ local plugins = function()
     plug({
         firstAvailableDir {
             pj_code .. "/vim-auto-popmenu",
-            -- fallback = "YohananDiamond/vim-auto-popmenu",
+            fallback = "YohananDiamond/vim-auto-popmenu",
         },
         config = function()
             vim.g.apc_default_state = 1
