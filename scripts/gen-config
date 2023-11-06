@@ -10,7 +10,7 @@ main() {
   if _isAndroid; then
     ALL+=(termux)
   else
-    ALL+=(stalonetray waybar foot dunst gtk3) # off: yambar
+    ALL+=(stalonetray yambar waybar foot dunst gtk3)
   fi
 
   [ $# = 0 ] && targets=("${ALL[@]}")
@@ -60,7 +60,7 @@ _t_gtk3() {
 }
 
 _t_foot() {
-  gen "$DOTFILES/config/gen/foot.ini" "$XDG_CONFIG_HOME/foot/foot.ini"
+  PP_PREFIX="#!!" gen "$DOTFILES/config/gen/foot.ini" "$XDG_CONFIG_HOME/foot/foot.ini"
 }
 
 _t_yambar() {

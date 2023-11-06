@@ -26,6 +26,12 @@ if g:is_first
   let g:is_embedded = $NVIM_EMBEDDED_MODE == "1"
 endif
 
+lua <<EOF
+-- bootstrap module system
+local config_root = assert(vim.g.config_root, "config root not defined")
+assert(loadfile(config_root .. "/lua/prepare.lua"))()
+EOF
+
 " }}}
 " Plugins {{{
 "
@@ -101,9 +107,6 @@ function! MyFoldText() " {{{
 endfunction " }}}
 function! AddBookmark(letter, path) " {{{
   execute 'nnoremap <silent> <Leader>e'.a:letter.' :e '.a:path.'<CR>'
-endfunction " }}}
-function! AddSnippet(key, data) " {{{
-  execute 'nnoremap <silent> <buffer> <Leader>i'.a:key.' i'.a:data.'<Esc>'
 endfunction " }}}
 function! PagerMode(...) " {{{
   if len(a:000) >= 1

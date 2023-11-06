@@ -16,7 +16,7 @@ if [ "$WAYLAND_DISPLAY" ]; then
   killOld() { pkill swaybg; }
   setImg() {
     killOld
-    swaybg -i "$1" & disown
+    swaybg --mode fill -i "$1" & disown
   }
   setColor() {
     killOld

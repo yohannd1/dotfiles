@@ -4,7 +4,9 @@
 local vim = _G.vim
 local _configs = {}
 local M = {}
-local utils = require("cfg.utils")
+
+local ucm = _G.useConfModule
+local utils = ucm("utils")
 
 local function plug(arg)
     local plugin = nil
@@ -201,13 +203,20 @@ local plugins = function()
     plug("https://gitlab.redox-os.org/YohananDiamond/ion-vim")
 
     -- fork of skywind3000/vim-auto-popmenu
-    plug({"YohananDiamond/vim-auto-popmenu", config = function()
-        vim.g.apc_default_state = 1
-        vim.g.apc_map_enter_backspace = 0
-        vim.g.apc_custom_states = {
-            clap_input = 0, -- prevent conflicts with vim-clap
-        }
-    end})
+    plug({
+        firstAvailableDir {
+            pj_code .. "/vim-auto-popmenu",
+            -- fallback = "YohananDiamond/vim-auto-popmenu",
+        },
+        config = function()
+            vim.g.apc_default_state = 1
+            vim.g.apc_map_enter_backspace = 0
+            vim.g.apc_custom_states = {
+                clap_input = 0, -- prevent conflicts with vim-clap
+            }
+        end
+    })
+    utils._features["plugin.vim-auto-popmenu"] = true
 
     -- Misc.
     plug("tpope/vim-vinegar")

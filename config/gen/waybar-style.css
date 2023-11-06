@@ -6,6 +6,7 @@
 /*!! _base02=$(getColor base02)
 /*!! _base03=$(getColor base03)
 /*!! _base04=$(getColor base04)
+/*!! _base05=$(getColor base05)
 /*!! _base06=$(getColor base06)
 /* */
 
@@ -19,19 +20,19 @@
 window#waybar {
 /*!! printf "background-color: rgba(%s,0.8);\n" "$_base00"
 /* */
-/*!! printf "color: rgb(%s);\n" "$_base04"
+/*!! printf "color: rgb(%s);\n" "$_base05"
 /* */
 }
 
 #workspaces button, #tags button {
     padding: 0 4px;
     background-color: transparent;
-/*!! printf "color: rgba(%s,0.1);\n" "$_base04"
+/*!! printf "color: rgba(%s,1.0);\n" "$_base04"
 /* */
 }
 
 #tags button.occupied {
-/*!! printf "color: rgb(%s);\n" "$_base04"
+/*!! printf "color: rgb(%s);\n" "$_base05"
 /* */
 }
 

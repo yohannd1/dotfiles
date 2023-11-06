@@ -1,4 +1,6 @@
-local utils = require("cfg.utils")
+local ucm = _G.useConfModule
+
+local utils = ucm("utils")
 
 local exec = function(s) vim.api.nvim_exec(s, false) end
 
@@ -71,6 +73,10 @@ return function()
     function! PrevBuffer() " {{{
       bprevious
       silent doautocmd User BufSwitch
+    endfunction " }}}
+
+    function! AddSnippet(key, data) " {{{
+      execute 'nnoremap <silent> <buffer> <Leader>i'.a:key.' i'.a:data.'<Esc>'
     endfunction " }}}
     ]])
 end

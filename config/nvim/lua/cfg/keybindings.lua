@@ -1,7 +1,8 @@
 local dummy = _G.dummy
-local utils = require("cfg.utils")
-local getLineToEnd = function() return vim.fn.getline('.'):sub(vim.fn.col('.')) end
+local ucm = _G.useConfModule
+local utils = ucm("utils")
 
+local getLineToEnd = function() return vim.fn.getline('.'):sub(vim.fn.col('.')) end
 local exec = function(cmd) vim.api.nvim_exec(cmd, false) end
 
 local map = function(m, lhs, rhs, args)

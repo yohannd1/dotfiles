@@ -1,3 +1,4 @@
+local vim = _G.vim
 local M = {}
 
 M.os = {}
@@ -55,6 +56,8 @@ M.string = {}
 M.string.endsWith = function(haystack, suffix)
     return string.sub(haystack, -#suffix) == suffix
 end
+
+M._features = {}
 
 -- TODO: "inspect" function
 

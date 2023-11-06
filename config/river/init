@@ -13,7 +13,7 @@ export XDG_CURRENT_DESKTOP=river
 riverctl background-color "$(dotcfg send get:river.background)"
 riverctl border-color-focused "$(dotcfg send get:river.border-focus)"
 riverctl border-color-unfocused "$(dotcfg send get:river.border-normal)"
-riverctl border-width 1
+riverctl border-width 2
 
 # FIXME: is this really working?
 systemctl --user import-environment DISPLAY WAYLAND_DISPLAY
@@ -132,8 +132,8 @@ riverctl map normal Super F12 spawn "wl-redscr toggle"
 riverctl set-repeat "$KBRATE_INTERVAL" "$KBRATE_DELAY"
 
 # Floating views
-riverctl rule-add float -app-id '*float*' # anything that has float in the id
-riverctl rule-add float -title 'Task Manager' # lxtask
+riverctl rule-add -app-id '*float*' float  # anything that has float in the id
+riverctl rule-add -title 'Task Manager' float # lxtask
 
 # Make all views with app-id "bar" and any title use client-side decorations
 riverctl rule-add csd -app-id "bar"
