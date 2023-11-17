@@ -117,7 +117,7 @@ local longFontFormat = function(font_name, pixel_size)
     )
 end
 
-local getFontInfo = function(name, size_override)
+local getFontInfo = function(name, size_multiplier)
     if name == _randomFont then
         local t = {}
         for k, _ in pairs(font_presets) do
@@ -138,7 +138,7 @@ local getFontInfo = function(name, size_override)
 
     return {
         name = assert(val.name, "missing font name"),
-        base_size = assert(size_override or val.base_size, "missing base_size"),
+        base_size = (size_multiplier or 1.0) * assert(val.base_size, "missing base_size"),
         supports_ligatures = supports_ligatures,
     }
 end
@@ -147,7 +147,7 @@ local T_ALL = {t_xres, t_dots}
 -- }}}
 
 local enable_ligatures = false
-local font = getFontInfo("Agave", 17)
+local font = getFontInfo("DinaRemasterII", 1.2)
 
 local fsize_term = font.base_size
 local xft_font = longFontFormat(font.name, fsize_term)
@@ -165,7 +165,7 @@ decl {
 -- foot (wayland terminal)
 decl {
     {"foot.font", xft_font},
-    {"foot.alpha", "0.85"},
+    {"foot.alpha", "0.95"},
 
     targets = T_ALL,
 }
