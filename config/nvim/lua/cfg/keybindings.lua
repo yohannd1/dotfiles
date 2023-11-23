@@ -89,6 +89,7 @@ return function()
     -- TODO: implement for visual mode
     map("n", "<M-o>", ":call Item_ToggleTodo()<CR>", arg_nr)
     map("i", "<M-o>", "<Esc>:call Item_ToggleTodo()<CR>a", arg_nr)
+    map("v", "<M-o>", "<Esc>:call Item_ToggleTodoVisual()<CR>", arg_nr)
 
     -- TODO: toggling an item's prefix
 

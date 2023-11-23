@@ -324,6 +324,25 @@ function! Item_ToggleTodo() " {{{
   let l:Func = exists("b:item_toggletodo_func") ? b:item_toggletodo_func : funcref("Item_Default_ToggleTodo")
   call l:Func()
 endfunction " }}}
+function! Item_ToggleTodoVisual() " {{{
+  normal mz
+
+  normal '<
+  let l1 = line(".")
+  normal '>
+  let l2 = line(".")
+  let count = l2 - l1 + 1
+
+  let i = 0
+  normal '<
+  while i < count
+    call Item_ToggleTodo()
+    normal j
+    let i = i + 1
+  endwhile
+
+  normal `z
+endfunction " }}}
 function! Item_Default_ToggleTodo() " {{{
   let current_line = getline('.')
 
@@ -667,6 +686,8 @@ nnoremap <Leader>C <cmd>set cursorcolumn!<CR>
 
 nnoremap n /<Up><CR>
 nnoremap N ?<Up><CR>
+
+command! Fgitmerge /\v^(\<{4,}|\={4,}|\>{4,})
 
 " }}}
 " Lua Tunnel {{{
