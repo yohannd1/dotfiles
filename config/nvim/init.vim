@@ -123,16 +123,6 @@ function! PagerMode(...) " {{{
   nnoremap <buffer> <silent> k <C-y>
   normal M
 endfunction " }}}
-function! PathAppend(...) " {{{
-  " Appends to Vim's PATH.
-  " Good for subshells, specially on Windows.
-  for dir in a:000
-    if stridx($PATH, dir) == -1
-      let $PATH .= (g:is_win ? ";" : ":")
-      let $PATH .= dir
-    endif
-  endfor
-endfunction " }}}
 function! ReverseRSearch(basedir, query) " {{{
   let l:current_dir = a:basedir
   while 1
@@ -410,13 +400,7 @@ cnoreabbrev rl Reload
 if g:is_first
   call SourceIf($VIMRUNTIME."/delmenu.vim", $VIMRUNTIME."/menu.vim")
 
-  " TODO: actually do this on the apps/windows.lua or something
-  if g:is_win
-    set background=light
-    colorscheme gruvbox
-  else
-    colorscheme base16
-  endif
+  colorscheme base16
 
   filetype plugin indent on
   set foldtext=MyFoldText()
@@ -664,18 +648,6 @@ EOF
 nnoremap <silent> <Leader>w :Hydra vimwiki<CR>
 " }}}
 
-function! ToggleVirtualEdit()
-  if &virtualedit == ""
-    setlocal ve=all
-    echom "Virtual Edit ON"
-  else
-    setlocal ve=
-    echom "Virtual Edit OFF"
-  endif
-endfunction
-
-map <C-m> <CR>
-
 " }}}
 " Experimental Stuff {{{
 
@@ -683,7 +655,7 @@ au BufRead,BufNewFile *.wiki set ft=acrylic
 au BufRead,BufNewFile *.lang set ft=lang
 
 " Telescope builtins
-nnoremap <leader>. <cmd>lua require('telescope.builtin').fd()<CR>
+nnoremap <leader>. <cmd>lua require("telescope.builtin").fd()<CR>
 nnoremap <leader>o <cmd>lua dummy.open_recent()<CR>
 
 nnoremap <leader>g <cmd>Goyo 130<CR>

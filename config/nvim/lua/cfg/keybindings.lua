@@ -141,7 +141,7 @@ return function()
     end)
 
     -- Toggle virtualedit
-    map("n", "<Leader>tv", ":call ToggleVirtualEdit()<CR>", arg_nr)
+    map("n", "<Leader>tv", ":lua dummy.toggleVirtualEdit()<CR>", arg_nr)
 
     -- Improved file opener
     map("n", "gf", ":call OpenSelected()<CR>", arg_nr)
@@ -235,4 +235,6 @@ return function()
         vim.keymap.set("i", "<Up>", pv_check("<C-p>", "<Up>"), {expr = true})
         vim.keymap.set("i", "<C-m>", pv_check("<C-y>", "<C-m>"), {expr = true})
     end
+
+    exec("map <C-m> <CR>")
 end

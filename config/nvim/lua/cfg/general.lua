@@ -1,4 +1,5 @@
 local ucm = _G.useConfModule
+local dummy = _G.dummy
 
 local utils = ucm("utils")
 
@@ -62,6 +63,12 @@ return function()
 
         vim.g.neovide_transparency = 0.8
         vim.g.neovide_cursor_vfx_mode = "ripple"
+    end
+
+    dummy.toggleVirtualEdit = function()
+        local v = (vim.o.ve == "") and "all" or ""
+        vim.o.ve = v
+        exec(string.format([[echomsg "Virtual edit set to '%s'"]], v))
     end
 
     -- me when i copy paste functions into an exec block

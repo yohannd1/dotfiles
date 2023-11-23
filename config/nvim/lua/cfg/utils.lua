@@ -52,6 +52,13 @@ M.enumerateIter = function(iter)
     error("unimplemented") -- TODO
 end
 
+M.pathAppend = function(dir)
+    local p = vim.env.PATH
+    if not p:find(dir) then
+        vim.env.PATH = p .. (M.os.is_windows and ";" or ":") .. dir
+    end
+end
+
 M.string = {}
 M.string.endsWith = function(haystack, suffix)
     return string.sub(haystack, -#suffix) == suffix
