@@ -16,7 +16,7 @@ trap 'rmtemp' EXIT
 # TODO: take screenshot, then use slurp to trim
 
 if [ "$1" == --full ]; then
-  grim "$tmp" -t png 2>/dev/null
+  grim -t png "$tmp" 2>/dev/null
 else
   rectangle=$(slurp -b '#FFFFFF20' 2>/dev/null) || exit 1
   grim -g "$rectangle" -t png "$tmp" 2>/dev/null

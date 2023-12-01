@@ -8,8 +8,13 @@
 (local fennel/view (require :fennel.view))
 (local naughty (require :naughty))
 
+(set _G.spawn (fn [s] (awful.spawn.with_shell s)))
+
 (set export.mod-key "Mod4")
 (local {: mod-key} export)
+
+(set export.alt "Mod1")
+(local {: alt} export)
 
 (set export.shift "Shift")
 (local {: shift} export)
@@ -28,7 +33,7 @@
        (awful.key [mod-key ctrl shift] "r" awesome.restart
                   {:description "reload awesome"
                    :group "awesome"})
-       (awful.key [mod-key ctrl shift] "e" awesome.quit
+       (awful.key [mod-key ctrl alt] "e" awesome.quit
                   {:description "quit awesome"
                    :group "awesome"})
 
@@ -82,6 +87,10 @@
 
        (awful.key [mod-key ctrl shift] "s" #(awful.spawn.with_shell "start-sxhkd standard & notify-send 'sxhkd restarted!'")
                   {:description "restart sxhkd"
+                   :group "layout"})
+
+       (awful.key [mod-key ctrl shift] "Return" #(awful.spawn.with_shell "st")
+                  {:description "spawn terminal"
                    :group "layout"})
 
        (awful.key [mod-key] "f"

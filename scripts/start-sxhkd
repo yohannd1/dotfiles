@@ -34,8 +34,7 @@ gen-sxhkd "$@" > "$tempConf" || {
 
 log="$dataFolder/log"
 
-pgrep swhks >/dev/null || { swhks & }
-pkexec swhkd -c "$tempConf" 2>"$log" &
+sxhkd -c "$tempConf" 2>"$log" &
 pid="$!"
 
 echo "$pid" > "$dataFolder/pid"

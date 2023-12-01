@@ -8,8 +8,8 @@ super + control + shift + c
     start-compositor
 
 # terminal
-# super + Return
-#     notify-send dotf.wrap.terminal
+super + Return
+    dotf.wrap.terminal
 
 # super + shift + Return
 #     termup zsh
@@ -115,30 +115,22 @@ super + {Up,Down,Left,Right}
 super + ctrl + {Up,Down,Left,Right}
     xdotool keydown ctrl click {4,5,6,7}
 
-# open mode
-super + o
-    @enter open && notify-send "ENTER OPEN"
-
-mode open
-a
-    dotf.wrap.terminal -c float -g 130x35 -e sh -c "acw-today-report 2>&1 | vimpager" && @escape
-c
-    dotf.wrap.terminal -c float -g 65x10 -e runread cal -3 && @escape
-super + c
-    dotf.wrap.terminal -c float -g 66x25 -e runread cal -y && @escape
-m
-    dotf.wrap.terminal -c float -e pulsemixer && @escape
-y
-    dotf.wrap.terminal -c float -g 90x25 -e ytop && @escape
-shift + c
-    dotf.wrap.terminal -c float -g 100x35 -e calc && @escape
-t
-    dotf.wrap.terminal -e tmux-tray && @escape
-shift + t
-    dotf.wrap.terminal -c float -g 100x35 -e tmux-tray && @escape
-b
-    runnsend error-and-output bkmk menu && @escape
-endmode
+super + alt + a
+    dotf.wrap.terminal -c float -g 130x35 -e sh -c "acw-today-report 2>&1 | vimpager"
+super + alt + c
+    dotf.wrap.terminal -c float -g 65x10 -e runread cal -3
+super + alt + m
+    dotf.wrap.terminal -c float -e pulsemixer
+super + alt + y
+    dotf.wrap.terminal -c float -g 90x25 -e ytop
+super + alt + p
+    dotf.wrap.terminal -c float -g 100x35 -e calc
+super + alt + t
+    dotf.wrap.terminal -e tmux-tray
+super + alt + shift + t
+    dotf.wrap.terminal -c float -g 100x35 -e tmux-tray
+super + alt + b
+    runnsend error-and-output bkmk menu
 
 # Mouse middle button paste prevention
 # I don't know why but this disables middle-mouse-paste without preventing the middle button from working

@@ -14,8 +14,10 @@ fi
 # wayland stuff
 if [ "$WAYLAND_DISPLAY" ]; then
   # https://mastransky.wordpress.com/2020/03/16/wayland-x11-how-to-run-firefox-in-mixed-environment/
+  # https://wiki.archlinux.org/title/Firefox#Wayland
 
   export MOZ_DBUS_REMOTE=1
+  export MOZ_ENABLE_WAYLAND=1
   export SDL_VIDEODRIVER=wayland
   export _JAVA_AWT_WM_NONREPARENTING=1
   export QT_QPA_PLATFORM=wayland

@@ -6,7 +6,7 @@ import subprocess as sp
 import argparse as ap
 from pathlib import Path
 
-IGNORE_EXTENSIONS = {"png", "jpg", "jpeg", "txt", "gif"}
+IGNORE_EXTENSIONS = {"png", "jpg", "jpeg", "txt", "gif", "zip", "tar"}
 VALID_EXTENSIONS = {"mp3", "wav", "ogg", "flac", "opus", "m4a", "mp", "mp4", "mid", "midi"}
 
 

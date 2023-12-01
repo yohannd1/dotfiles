@@ -6,12 +6,17 @@ printf >&2 "  %s\n" "$1"
 printf >&2 "What do you want to do about it?\n"
 
 while true; do
-  printf >&2 "Use (n)nn on the folder; (e)dit; (q)uit: "
+  printf >&2 "(n)nn or (s)hell on the folder; (e)dit; (q)uit: "
 
   read -n1 ch
   case "$ch" in
     n)
       nnn "$(dirname "$1")"
+      exit $?
+      ;;
+    s)
+      printf >&2 "\n"
+      cd "$(dirname "$1")" && "${SHELL:-sh}"
       exit $?
       ;;
     e)
@@ -25,31 +30,3 @@ while true; do
 
   printf >&2 "\nUnknown choice: '%q'\n" "$ch"
 done
-
-# choices=$(cat <<EOF
-# custom_command
-# open_contained_folder
-# abort
-# EOF
-# )
-
-# choice=$(echo "$choices" | fzagnostic -p "How to open $(basename "$1")? ")
-
-# echo "choice=[$choice]"
-
-# case "$choice" in
-#   custom_command)
-#     printf >&2 "I dunno if this is eval-safe. Probably not.\n"
-#     printf >&2 "Type in the command: "
-#     read cmd
-#     eval "$(printf "%s %q" "$cmd" "$1")" & disown
-#     ;;
-#   open_contained_folder)
-#     dir=$(dirname "$1")
-#     nnn "$dir"
-#     exit
-#     ;;
-#   abort)
-#     exit 1
-#     ;;
-# esac
