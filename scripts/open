@@ -176,6 +176,7 @@
   (mt :ext ["mod" "it" "s3m" "mptm"] :pop ["openmpt123" file])
   (mt :ext ["nsf"] :pop ["nosefart" file])
   (mt :ext ["fur" "dmf"] :gui ["furnace" file])
+  (mt :ext ["ptcop"] :gui ["@ptcollab" file])
   (mt :ext ["btm"] :gui ["BambooTracker" file])
   (mt :ext ["vgm" "vgz"] :pop ["vgmplay" file])
 
