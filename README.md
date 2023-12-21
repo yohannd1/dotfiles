@@ -15,9 +15,10 @@ not only it is very unsafe due to most scripts here being pretty
 buggy, but also because I believe it's better to only add to your
 system things that you understand, instead of making it confusing with
 the imense amount of bloat that would come with getting all scripts
-from a repository.
+from here.
 
-But if you want to do it anyway, you can do:
+But if you want to do it anyway (or if you're me! I also do this, to install the
+dotfiles on a new system), you can do:
 
 ```bash
 curl https://raw.githubusercontent.com/yohanandiamond/dotfiles/master/install > install
@@ -25,8 +26,8 @@ chmod +x install
 ./install https path-to-dotfiles
 ```
 
-It's still pretty buggy so remember to make your backups (and
-possibly, run this in a VM) before doing anything.
+It's still pretty buggy so remember to make your backups before doing
+anything, and it's probably a good idea to run this in a VM anyway.
 
 ## Folder structure
 
@@ -34,7 +35,7 @@ possibly, run this in a VM) before doing anything.
 
 * `scripts`: executable files, added to PATH via `env.sh`.
 
-* `lib`: some personal libraries for bash, python and other languages.
+* `lib`: personal libraries for use with some scripting languages.
 
 * `patches`: some patches I usually would like to apply on a system. I
   currently have no way to automate this.
@@ -43,13 +44,13 @@ possibly, run this in a VM) before doing anything.
   being used in the repo. Might be unavailable if empty (due to how
   git works).
 
-## Inspirations and "Steals"
+## Inspiration / stuff I "stole"
 
-The repos below are the ones from where I remember ~~stealing code~~
-taking inspiration to make my dotfiles. There are lots of more people
-from where I took inspiration - specially from r/unixporn and r/vim -
-and I can't possibly remember them all, but I'd like to thank them. It
-has been a pretty cool experience to make, well, pretty much my own
+The repos below are the ones I remember ~~stealing code~~ taking
+inspiration from to build my dotfiles. There are lots of more places
+that inspired me, though - specially from r/unixporn and r/vim - and
+even though I can't possibly remember them all, I'd like to thank them.
+It has been a pretty cool experience to make, well, pretty much my own
 operating system, even though I didn't code the Linux kernel or
 something.
 
