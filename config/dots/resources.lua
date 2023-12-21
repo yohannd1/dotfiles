@@ -20,7 +20,7 @@ local font_presets = {
     },
     ["JetbrainsMono"] = {
         name = "JetBrains Mono",
-        base_size = 13,
+        base_size = 13.5,
     },
     ["Fixedsys"] = {
         name = "Fixedsys Excelsior",

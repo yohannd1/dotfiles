@@ -15,7 +15,6 @@ riverctl border-color-focused "$(dotcfg send get:river.border-focus)"
 riverctl border-color-unfocused "$(dotcfg send get:river.border-normal)"
 riverctl border-width 2
 
-# FIXME: is this really working?
 systemctl --user import-environment DISPLAY WAYLAND_DISPLAY
 dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
 

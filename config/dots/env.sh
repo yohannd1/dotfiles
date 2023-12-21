@@ -35,7 +35,7 @@ export XDG_DOWNLOAD_DIR="$HOME/inbox"
 export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_DATA_DIR="$HOME/.local/share"
 export XDG_DATA_HOME="$XDG_DATA_DIR"
-export XDG_CURRENT_DESKTOP="none"
+# export XDG_CURRENT_DESKTOP="river"
 
 # personal dirs
 export WIKI=~/wiki
