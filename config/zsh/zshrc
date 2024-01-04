@@ -354,6 +354,31 @@ if ! isAndroid; then
   sourceIf /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 fi
 
+# Translation aliases
+epic-translate() {
+  local src dest text
+
+  if test $# -lt 3; then
+    printf >&2 "Usage: %s <SOURCE-LANG> <TARGET-LANG> <TEXT...>\n" "$(basename "$0")"
+    return 1
+  fi
+
+  src=$(_ept_canonicalize_str "$1") || return $?
+  shift
+
+  dest=$(_ept_canonicalize_str "$1") || return $?
+  shift
+
+  args=()
+  [ "$src" != "." ] && args+=("-s" "$src")
+  [ "$dest" != "." ] && args+=("-t" "$dest")
+
+  trans "${args[@]}" "$*"
+}
+
+T() { epic-translate "$@" 2>&1 | less; }
+Td() { epic-translate "$1" "$1" "$2" 2>&1 | less; }
+
 # FIXME: I'm not exactly sure how to do this, specially because it messes up if I'm trying to use more than one X server.
 if ! isAndroid; then
   gpg-connect-agent updatestartuptty /bye >/dev/null
