@@ -52,6 +52,8 @@ export XORG_TERMINAL=st
 export TERMINAL=dotf.wrap.terminal
 
 export BROWSER=librewolf
+_isAndroid && export BROWSER=termux-open-url
+
 export TERMBROWSER=w3m
 export PAGER=less
 export OPENER=openfork
