@@ -10,9 +10,8 @@ super + control + shift + c
 # terminal
 super + Return
     dotf.wrap.terminal
-
-# super + shift + Return
-#     termup zsh
+super + shift + Return
+    termup zsh
 
 # program launcher
 super + space

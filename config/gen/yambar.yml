@@ -5,7 +5,7 @@
 bg_default: &bg_default {stack: [{background: {color: *base02}}, {underline: {size: 2, color: *base04}}]}
 bar:
   height: 25
-  location: bottom
+  location: top
   font: *font
   spacing: 2
   margin: 0

@@ -16,11 +16,11 @@ local font_presets = {
     },
     ["CascadiaCode"] = {
         name = "Cascadia Code",
-        base_size = 13,
+        base_size = 15,
     },
     ["JetbrainsMono"] = {
         name = "JetBrains Mono",
-        base_size = 13,
+        base_size = 13.5,
     },
     ["Fixedsys"] = {
         name = "Fixedsys Excelsior",
@@ -147,7 +147,7 @@ local T_ALL = {t_xres, t_dots}
 -- }}}
 
 local enable_ligatures = false
-local font = getFontInfo("Iosevka", 1.15)
+local font = getFontInfo("JetbrainsMono", 1.15)
 
 local fsize_term = font.base_size
 local xft_font = longFontFormat(font.name, fsize_term)

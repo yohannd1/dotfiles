@@ -176,13 +176,14 @@
   (mt :ext ["mod" "it" "s3m" "mptm"] :pop ["openmpt123" file])
   (mt :ext ["nsf"] :pop ["nosefart" file])
   (mt :ext ["fur" "dmf"] :gui ["furnace" file])
+  (mt :ext ["ptcop"] :gui ["@ptcollab" file])
   (mt :ext ["btm"] :gui ["BambooTracker" file])
   (mt :ext ["vgm" "vgz"] :pop ["vgmplay" file])
 
   # audio files
   (when (or (m :mime [[:begins "audio/"]])
             (m :ext ["aac" "flac" "m4a" "mpa" "mp2" "mp3"
-                     "ogg" "wav" "wma" "webm"]))
+                     "ogg" "wav" "wma"]))
     (t :pop ["mpv" "--no-video" file])
     (t :pop ["mocplay" file "opener"])
     (t :tty ["exiftool" file])
@@ -222,7 +223,7 @@
     (t :runpage ["exiftool" file]))
 
   (when (or (m :mime [[:begins "video/"]])
-            (m :ext ["avi" "mkv" "mp4"]))
+            (m :ext ["avi" "mkv" "mp4" "webm"]))
     (t :gui ["smplayer" file])
     (t :gui ["mpv" file])
     (t :tty ["mpv" "--no-video" file])

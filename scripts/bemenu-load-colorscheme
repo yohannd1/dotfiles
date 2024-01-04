@@ -4,7 +4,7 @@
 # this adds a 20ms overhead :((
 #
 _bg=$(dotcfg send get:theme.base00)
-_bgs=$(dotcfg send get:theme.base02)
+_bgs=$(dotcfg send get:theme.base01)
 _fg=$(dotcfg send get:theme.base05)
 _fgs=$(dotcfg send get:theme.base05)
 

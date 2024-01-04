@@ -25,7 +25,7 @@ ext=${filename##*.}
 new_filename="$dirname/$no_ext.$2"
 
 if [ -e "$new_filename" ]; then
-  printf >&2 "Path to new filename already exists! (%s)" "$new_filename"
+  printf >&2 "Path to new filename already exists! (%s)\n" "$new_filename"
   exit 1
 fi
 
