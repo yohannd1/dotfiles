@@ -172,6 +172,11 @@
     (t :pop ["play-midi" file])
     (t :pop ["mpv" "--no-video" file]))
 
+  # project files
+  (mt :ext ["drawio"] :gui ["drawio" file])
+  # (mt :ext ["godot"] :gui ["godot" "-e" file]) # FIXME: not working bruh
+  (mt :ext ["yyp"] :gui ["GameMaker" file])
+
   # music modules
   (mt :ext ["mod" "it" "s3m" "mptm"] :pop ["openmpt123" file])
   (mt :ext ["nsf"] :pop ["nosefart" file])
@@ -199,10 +204,6 @@
     (t :runpage ["viu" "-n" file])
     (t :runpage ["img2txt" "--gamma=0.6" "--" file])
     (t :runpage ["exiftool" file]))
-
-  (mt :ext ["drawio"] :gui ["drawio" file])
-  (mt :ext ["godot"] :gui ["Godot" file])
-  (mt :ext ["yyp"] :gui ["GameMaker" file])
 
   # music projects
   (mt :ext ["kdenlive"] :gui ["kdenlive" file])
