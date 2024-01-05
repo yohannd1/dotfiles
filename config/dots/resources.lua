@@ -97,6 +97,10 @@ local font_presets = {
         name = "Bedstead",
         base_size = 14,
     },
+    ["ModernDOS"] = {
+        name = "Modern DOS 9x16",
+        base_size = 15,
+    },
 }
 -- }}}
 -- PREPARATIONS {{{
@@ -147,7 +151,7 @@ local T_ALL = {t_xres, t_dots}
 -- }}}
 
 local enable_ligatures = false
-local font = getFontInfo("JetbrainsMono", 1.15)
+local font = getFontInfo("ModernDOS", 1.15)
 
 local fsize_term = font.base_size
 local xft_font = longFontFormat(font.name, fsize_term)
@@ -165,7 +169,7 @@ decl {
 -- foot (wayland terminal)
 decl {
     {"foot.font", xft_font},
-    {"foot.alpha", "0.95"},
+    {"foot.alpha", "0.99"},
 
     targets = T_ALL,
 }
