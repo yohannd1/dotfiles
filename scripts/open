@@ -245,7 +245,7 @@
 
 
   (mt :ext ["odt" "rtf" "docx" "doc" "odg"
-            "ppt" "pptx"]
+            "ppt" "pptx" "csv"]
       :gui ["libreoffice" file])
   (mt :ext ["odt" "ods" "odp" "sxw"] :runpage ["odt2txt" file])
 

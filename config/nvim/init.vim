@@ -606,7 +606,7 @@ vim.fn["hydra#hydras#register"] {
         keys = {
           {"w", "e ~/wiki/vimwiki/index.acr", "open index"},
           {"s", "e ~/wiki/vimwiki/202105021825-E80938.acr", "open scratchpad"},
-          {"p", "e ~/wiki/vimwiki/202212311207-AFDA90.acr", "open week plan (2023)"},
+          {"p", "e ~/wiki/vimwiki/202401151901-42E4FA.acr", "open week plan (2024)"},
           {"o", "lua dummy.open_wiki_file({})", "select a wiki file"},
           {"O", "lua dummy.open_wiki_file({}, {'acw-get-projects'})", "select a project"},
           {"H", "Vimwiki2HTMLBrowse", "compile current & browse"},
@@ -688,6 +688,8 @@ nnoremap n /<Up><CR>
 nnoremap N ?<Up><CR>
 
 command! Fgitmerge /\v^(\<{4,}|\={4,}|\>{4,})
+command! FoldNone set nofoldenable
+command! FoldBracket set foldenable foldmethod=marker foldmarker={,}
 
 " }}}
 " Lua Tunnel {{{
