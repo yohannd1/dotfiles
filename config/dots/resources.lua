@@ -16,7 +16,7 @@ local font_presets = {
     },
     ["CascadiaCode"] = {
         name = "Cascadia Code",
-        base_size = 15,
+        base_size = 13,
     },
     ["JetbrainsMono"] = {
         name = "JetBrains Mono",
@@ -101,6 +101,10 @@ local font_presets = {
         name = "Modern DOS 9x16",
         base_size = 15,
     },
+    ["GoMono"] = {
+        name = "Go Mono",
+        base_size = 13,
+    },
 }
 -- }}}
 -- PREPARATIONS {{{
@@ -151,7 +155,7 @@ local T_ALL = {t_xres, t_dots}
 -- }}}
 
 local enable_ligatures = false
-local font = getFontInfo("ModernDOS", 1.15)
+local font = getFontInfo("UbuntuMono", 1.2)
 
 local fsize_term = font.base_size
 local xft_font = longFontFormat(font.name, fsize_term)
@@ -169,7 +173,7 @@ decl {
 -- foot (wayland terminal)
 decl {
     {"foot.font", xft_font},
-    {"foot.alpha", "0.99"},
+    {"foot.alpha", "0.95"},
 
     targets = T_ALL,
 }

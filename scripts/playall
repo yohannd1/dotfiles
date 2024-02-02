@@ -5,12 +5,155 @@ import os, sys
 import subprocess as sp
 import argparse as ap
 from pathlib import Path
+from enum import Enum
 
 IGNORE_EXTENSIONS = {"png", "jpg", "jpeg", "txt", "gif", "zip", "tar"}
 VALID_EXTENSIONS = {"mp3", "wav", "ogg", "flac", "opus", "m4a", "mp", "mp4", "mid", "midi"}
 
+class PlayResult(Enum):
+    OK = 0
+    SKIP = 1
+    REPEAT = 2
+    QUIT = 3
+    UNKNOWN_EXTENSION = 4
 
 def main():
+    parser = init_parser()
+    opts = parser.parse_args(sys.argv[1:])
+    folder = Path(opts.folder) if opts.folder else Path.cwd()
+
+    if opts.recursive:
+        recursive = True
+    elif opts.not_recursive:
+        recursive = False
+    else:
+        recursive = True
+
+    def has_ignorable_extension(file):
+        for extension in IGNORE_EXTENSIONS:
+            if file.name.endswith(extension):
+                return True
+        return False
+
+    eprint("Getting file list...")
+    files = [file for file in
+             get_files(folder, recursive=recursive)
+             if not has_ignorable_extension(file)]
+
+    if opts.shuffle:
+        eprint("Shuffling songs list...")
+        random.shuffle(files)
+    else:
+        eprint("Sorting songs list...")
+        files.sort()
+
+    eprint("Ready to play!")
+
+    starting_offset = opts.starting_offset[0] if opts.starting_offset else 0
+    limit = opts.limit[0] if opts.limit else None
+
+    limit_count = 0
+    slice = files[starting_offset:]
+
+    i = 0
+    while i < len(slice):
+        file = slice[i]
+        name = file.name
+
+        match play_song(file, i, len(slice)):
+            case PlayResult.OK:
+                limit_count += 1
+                i += 1
+            case PlayResult.UNKNOWN_EXTENSION:
+                eprint(f"File {file} has unknown extension")
+                limit_count += 1
+                i += 1
+            case PlayResult.SKIP:
+                i += 1
+            case PlayResult.REPEAT:
+                pass
+            case PlayResult.QUIT:
+                break
+
+        limit_count += 1
+        if limit:
+            if limit_count >= limit:
+                eprint("limit exceeded; finishing...")
+                break
+            else:
+                eprint(f"{limit - limit_count} songs left...")
+
+def eprint(*args, **kwargs):
+    print(*args, **kwargs, file=sys.stderr)
+
+def play_song(file: Path, i: int, length: int) -> PlayResult:
+    name = file.name
+
+    # check extension validity
+    for extension in VALID_EXTENSIONS:
+        if name.endswith(extension):
+            break
+    else:
+        return PlayResult.UNKNOWN_EXTENSION
+
+    # show header
+    os.system("tput reset")
+    eprint(f"Playing file {i + 1} of {length}: {file}")
+
+    # build command
+    if name.endswith("mid") or name.endswith("midi"):
+        proc_call = ["play-midi", str(file)]
+    else:
+        proc_call = ["mpv", "--no-video", str(file)]
+
+    with sp.Popen(proc_call, encoding="UTF-8") as proc:
+        try:
+            errored = (proc.wait() != 0)
+        except KeyboardInterrupt:
+            errored = True
+
+        if not errored:
+            return PlayResult.OK
+
+        try:
+            inc_limitc = False # so the count doesn't go up, necessarily.
+            eprint(
+                "Playback seems to have failed. What do you want to do now?\n"
+                + "(R)etry, (S)kip to next, (Q)uit\n"
+                + "[r/S/q] ",
+                end=""
+            )
+
+            match input().lower():
+                case "r":
+                    return PlayResult.REPEAT
+                case "s":
+                    return PlayResult.SKIP
+                case "q":
+                    return PlayResult.QUIT
+                case o:
+                    eprint(f"Unknown option {o}. Defaulting to retry...")
+                    return PlayResult.SKIP
+        except KeyboardInterrupt:
+            eprint("\n^C received. Aborting...")
+            return PlayResult.QUIT
+        except EOFError:
+            eprint("\nEOF error received. Aborting...")
+            return PlayResult.QUIT
+
+def get_files(folder: Path, recursive=True):
+    listing = []
+
+    for f in folder.iterdir():
+        if f.is_file():
+            listing.append(f)
+        elif f.is_dir():
+            if recursive:
+                listing.extend(get_files(f, recursive=True))
+
+    return listing
+
+def init_parser() -> ap.ArgumentParser:
     parser = ap.ArgumentParser(
         prog=Path(sys.argv[0]).name,
         description="play a folder of songs",
@@ -66,114 +209,7 @@ def main():
         version=f"{parser.prog} v. VOID",
     )
 
-    opts = parser.parse_args(sys.argv[1:])
-    folder = Path(opts.folder) if opts.folder else Path.cwd()
-
-    if opts.recursive:
-        recursive = True
-    elif opts.not_recursive:
-        recursive = False
-    else:
-        recursive = True
-
-    def has_ignorable_extension(file):
-        for extension in IGNORE_EXTENSIONS:
-            if file.name.endswith(extension):
-                return True
-        return False
-
-    print("Getting file list...", file=sys.stderr)
-    files = [file for file in
-             get_files(folder, recursive=recursive)
-             if not has_ignorable_extension(file)]
-
-    if opts.shuffle:
-        print("Shuffling songs list...", file=sys.stderr)
-        random.shuffle(files)
-    else:
-        print("Sorting songs list...", file=sys.stderr)
-        files.sort()
-
-    print("Ready to play!", file=sys.stderr)
-
-    starting_offset = opts.starting_offset[0] if opts.starting_offset else 0
-    limit = opts.limit[0] if opts.limit else None
-
-    limit_count = 0
-    slice = files[starting_offset:]
-    for i, file in enumerate(slice):
-        name = file.name
-
-        for extension in VALID_EXTENSIONS:
-            if name.endswith(extension):
-                break
-        else:
-            print(f"File {file} has unknown extension", file=sys.stderr)
-            continue
-
-        os.system("tput reset")
-
-        print(f"Playing file {i + 1} of {len(slice)}: {file}", file=sys.stderr)
-
-        if name.endswith("mid") or name.endswith("midi"):
-            proc_call = ["play-midi", str(file)]
-        else:
-            proc_call = ["mpv", "--no-video", str(file)]
-
-        inc_limitc = True
-        with sp.Popen(proc_call, encoding="UTF-8") as proc:
-            try:
-                errored = proc.wait() != 0
-            except KeyboardInterrupt:
-                errored = True
-
-            if errored:
-                try:
-                    inc_limitc = False # so the count doesn't go up, necessarily.
-                    print(
-                        f"mpv seems to have errored. Do you want to continue playing?",
-                        file=sys.stderr,
-                    )
-
-                    print(
-                        f"[Y/n] ",
-                        end="",
-                        file=sys.stderr,
-                    )
-
-                    i = input()
-
-                    if i.lower() != "y" and len(i) > 0:
-                        break
-                except KeyboardInterrupt:
-                    print("\n^C received. Aborting...")
-                    break
-                except EOFError:
-                    print("\nEOF error received. Aborting...")
-                    break
-
-
-        limit_count += 1
-        if limit:
-            if limit_count >= limit:
-                print("limit exceeded; finishing...", file=sys.stderr)
-                break
-            else:
-                print(f"{limit - limit_count} songs left...", file=sys.stderr)
-
-
-def get_files(folder: Path, recursive=True):
-    listing = []
-
-    for f in folder.iterdir():
-        if f.is_file():
-            listing.append(f)
-        elif f.is_dir():
-            if recursive:
-                listing.extend(get_files(f, recursive=True))
-
-    return listing
-
+    return parser
 
 if __name__ == "__main__":
     main()

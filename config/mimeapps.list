@@ -19,3 +19,4 @@ x-scheme-handler/roblox-player=roblox-player.desktop
 application/x-roblox-rbxl=roblox-studio.desktop
 application/x-roblox-rbxlx=roblox-studio.desktop
 x-scheme-handler/msteams=teams.desktop
+x-scheme-handler/ror2mm=r2modman.desktop

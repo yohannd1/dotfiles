@@ -1,4 +1,4 @@
 [Desktop Entry]
 Name=File manager
-Exec=termup ${FILEMAN} %u
+Exec=termup -f nnn %u
 Type=Application

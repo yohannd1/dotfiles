@@ -106,10 +106,12 @@ local plugins = function()
     -- }}}
 
     -- Treesitter
-    if not vim.g.is_android then
+    if not utils.os.is_android then
         plug({"nvim-treesitter/nvim-treesitter", config = function()
-            require('nvim-treesitter.configs').setup {
-                ensure_installed = { "c", "lua", "vim", "vimdoc", "query" },
+            require("nvim-treesitter.configs").setup {
+                ensure_installed = {
+                    "c", "lua", "vim", "vimdoc", "query", "python",
+                },
 
                 -- Install parsers synchronously (only applied to `ensure_installed`)
                 sync_install = false,
@@ -121,7 +123,7 @@ local plugins = function()
 
                 highlight = {
                     enable = true,
-                    disable = { "gitcommit", "bash" },
+                    disable = { "gitcommit", "bash", "PKGBUILD" },
                     additional_vim_regex_highlighting = false,
                 },
             }
@@ -196,7 +198,7 @@ local plugins = function()
         plug {"morhetz/gruvbox", config = function()
             vim.g.gruvbox_bold = 1
             vim.g.gruvbox_italics = 1
-        end}
+        end }
     end
 
     -- fork of redox-os/ion-vim
