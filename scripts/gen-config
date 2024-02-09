@@ -48,7 +48,7 @@ _t_dunst() {
 }
 
 _t_gtk3() {
-  gen "$DOTFILES/config/gen/gtk3rc" "$XDG_CONFIG_HOME/gtk-3.0/settings.ini"
+  PP_PREFIX="#!!" gen "$DOTFILES/config/gen/gtk3rc" "$XDG_CONFIG_HOME/gtk-3.0/settings.ini"
 
   for i in 2 3; do
     _ln_dir="$HOME/.themes/dummy"

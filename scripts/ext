@@ -4,6 +4,7 @@
 # Based off Luke Smith's one on https://github.com/lukesmithxyz/voidrice
 
 PROGNAME=$(basename "$0")
+EXT_DEFAULT_MODE=${EXT_DEFAULT_MODE:-auto}
 
 shelp() {
   printf >&2 "Usage: %s\n\n" "$PROGNAME ARCHIVE [MODE]"
@@ -69,7 +70,7 @@ case $# in
   0) shelp ;;
   1)
     archive="$1"
-    mode=auto
+    mode=${EXT_DEFAULT_MODE}
     ;;
   2)
     archive="$1"

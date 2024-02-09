@@ -5,15 +5,18 @@
 shopt -s nullglob globstar
 
 showHelp() {
-  printf >&2 "Usage: %s { show | otp }\n" "$(basename "$0")"
+  printf >&2 "Usage: %s { copy | otp }\n" "$(basename "$0")"
   exit 1
 }
 [ $# != 1 ] && showHelp
 
 case "$1" in
-  show|otp) action="$1" ;;
+  copy|otp) action="$1" ;;
   *) showHelp ;;
 esac
+
+# force gpg to connect because issues
+gpg-connect-agent updatestartuptty /bye >/dev/null
 
 prefix=${PASSWORD_STORE_DIR-~/.password-store}
 files=("$prefix"/**/*.gpg)
@@ -23,6 +26,8 @@ files=("${files[@]%.gpg}")
 choice=$(printf "%s\n" "${files[@]}" | fzagnostic -p "Entry:") || exit 1
 [ "$choice" ] || exit 1
 
-pass "$action" -c "$choice" 2>/dev/null
+args=()
+[ "$1" = copy ] && args=(show -c)
+[ "$1" = otp ] && args=(otp -c)
 
-printf >&2 "Success!\n"
+pass "${args[@]}" "$choice" || exit 1
