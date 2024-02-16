@@ -17,7 +17,7 @@ class Namespace:
 
 def hex2rgba(hexcode, alpha=255):
     return "rgba({})".format(
-        str.join(", ", [str(int(hexcode[i:i+2], 16)) for i in {1, 3, 5}] + [str(alpha)])
+        str.join(", ", [str(int(hexcode[i:i+2], 16)) for i in (1, 3, 5)] + [str(alpha)])
     )
 
 class ThemeConfig:
@@ -105,7 +105,7 @@ class ThemeConfig:
         # Hints
         c.colors.hints.fg = p.fg_alt
         c.colors.hints.bg = p.bg_alt
-        c.hints.border = "1px solid " + p.bg
+        c.hints.border = f"1px solid {p.bg}"
         c.colors.hints.match.fg = p.match_fg
 
         # Keyhint widget
@@ -160,15 +160,26 @@ class ThemeConfig:
         c.colors.statusbar.url.success.https.fg = p.success
         c.colors.statusbar.url.warn.fg = p.warning
 
+        def conf_tab(tab, palette="normal"):
+            match palette:
+                case "normal":
+                    tab.bg = p.bg
+                    tab.fg = p.sel_fg
+                case "sel":
+                    tab.bg = p.sel_bg
+                    tab.fg = p.fg
+                case _:
+                    raise NotImplementedError()
+
         c.colors.tabs.bar.bg = p.bg
-        c.colors.tabs.even.bg = p.bg
-        c.colors.tabs.even.fg = p.sel_fg
-        c.colors.tabs.odd.bg = p.bg
-        c.colors.tabs.odd.fg = p.sel_fg
-        c.colors.tabs.selected.even.bg = p.sel_bg
-        c.colors.tabs.selected.even.fg = p.fg
-        c.colors.tabs.selected.odd.bg = p.sel_bg
-        c.colors.tabs.selected.odd.fg = p.fg
+        conf_tab(c.colors.tabs.even)
+        conf_tab(c.colors.tabs.odd)
+        conf_tab(c.colors.tabs.pinned.even)
+        conf_tab(c.colors.tabs.pinned.odd)
+        conf_tab(c.colors.tabs.pinned.selected.even, palette="sel")
+        conf_tab(c.colors.tabs.pinned.selected.odd, palette="sel")
+        conf_tab(c.colors.tabs.selected.even, palette="sel")
+        conf_tab(c.colors.tabs.selected.odd, palette="sel")
 
         # Tab bar - indicator (for page loading)
         c.colors.tabs.indicator.error = p.error

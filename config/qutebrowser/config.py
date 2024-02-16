@@ -19,8 +19,8 @@ def main():
     bind("<Ctrl-Alt-I>", "mode-enter passthrough")
 
     for (key, dir) in [
-            ("j", "down"), ("k", "up"),
-            ("h", "left"), ("l", "right"),
+        ("j", "down"), ("k", "up"),
+        ("h", "left"), ("l", "right"),
     ]:
         bind(key, f"cmd-run-with-count 2 scroll {dir}")
 
@@ -34,7 +34,7 @@ def main():
                                   "Source Code Pro"))
 
     ThemeConfig(
-        palette = Namespace(
+        palette=Namespace(
             bg=get_res("qutebrowser.bg"),
             fg=get_res("qutebrowser.fg"),
             bg_alt=get_res("qutebrowser.bg-alt"),
@@ -49,11 +49,11 @@ def main():
             info=get_res("qutebrowser.info"),
             success=get_res("qutebrowser.success"),
         ),
-        spacing = Namespace(
+        spacing=Namespace(
             vertical=2,
             horizontal=2,
         ),
-        fonts = {
+        fonts={
             "main": monospace_font,
             "monospace": monospace_font,
             "standard": Font(get_res("qutebrowser.fonts.standard",
