@@ -10,7 +10,7 @@ bar:
   spacing: 2
   margin: 0
   layer: bottom
-  foreground: *base04
+  foreground: *base05
   background: *base00
 
   left:

@@ -51,7 +51,7 @@ export WAYLAND_TERMINAL=foot
 export XORG_TERMINAL=st
 export TERMINAL=dotf.wrap.terminal
 
-export BROWSER=librewolf
+export BROWSER=qutebrowser
 _isAndroid && export BROWSER=termux-open-url
 
 export TERMBROWSER=w3m

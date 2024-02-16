@@ -440,6 +440,7 @@ ft.acrylic = function()
 end
 
 ft.PKGBUILD = function()
+    vim.o.syntax = "bash" -- because treesitter is breaking the PKGBUILD syntax for some reason
     setSpaceIndent(2)
 end
 
