@@ -2,6 +2,8 @@
 "
 " Setup {{{
 
+lua _G.dummy = {}
+
 " Check if this is the first time sourcing the file
 let g:is_first = exists("g:is_first") ? 0 : 1
 
@@ -519,51 +521,32 @@ cnoreabbrev sbt SWBindToggle
 
 " Find TO-DO's
 " {{{
-function! FindTodos()
-  let l:queries = ['<TODO>', '<FIXME>', '<XXX>']
-  if exists("b:todo_queries")
-    let l:queries += b:todo_queries
-  endif
-
-  let l:query = '\v(' . l:queries->join("|") . ')'
-  let g:_foo = l:query
-  exec 'normal! /' . l:query . 'nN'
-  call histadd("/", l:query)
-endfunction
-
-function! FindSections()
-  let l:query = '\v(\[SECTION\])'
-  exec 'normal! /' . l:query . 'nN'
-  call histadd("/", l:query)
-endfunction
-
-nnoremap <silent> <Leader>f :Hydra extrafind<CR>
-silent call hydra#hydras#register({
-      \ "name":           "extrafind",
-      \ "title":          "Extra Find",
-      \ "show":           "popup",
-      \ "exit_key":       "q",
-      \ "feed_key":       v:false,
-      \ "foreign_key":    v:true,
-      \ "position":       "s:bottom_right",
-      \ "single_command": v:true,
-      \ "keymap": [
-      \   {
-      \     "name": "In buffer",
-      \     "keys": [
-      \       ["t", 'call FindTodos()', "TODOs (universal)"],
-      \       ["s", 'call FindSections()', "find [SECTION]s"],
-      \     ],
-      \   },
-      \   {
-      \     "name": "Others",
-      \     "keys": [
-      \       ["b", "lua require('telescope.builtin').buffers()", "buffers"],
-      \       ["h", "lua require('telescope.builtin').help_tags()", "help tags"],
-      \     ],
-      \   },
-      \ ]
-      \ })
+" nnoremap <silent> <Leader>f :Hydra extrafind<CR>
+" silent call hydra#hydras#register({
+"       \ "name":           "extrafind",
+"       \ "title":          "Extra Find",
+"       \ "show":           "popup",
+"       \ "exit_key":       "q",
+"       \ "feed_key":       v:false,
+"       \ "foreign_key":    v:true,
+"       \ "position":       "s:bottom_right",
+"       \ "single_command": v:true,
+"       \ "keymap": [
+"       \   {
+"       \     "name": "In buffer",
+"       \     "keys": [
+"       \       ["t", 'lua dummy.findTodos()', "TODOs"],
+"       \     ],
+"       \   },
+"       \   {
+"       \     "name": "Others",
+"       \     "keys": [
+"       \       ["b", "lua require('telescope.builtin').buffers()", "buffers"],
+"       \       ["h", "lua require('telescope.builtin').help_tags()", "help tags"],
+"       \     ],
+"       \   },
+"       \ ]
+"       \ })
 " }}}
 
 " Vimwiki hydra
@@ -628,42 +611,6 @@ vim.fn["hydra#hydras#register"] {
 }
 EOF
 
-" silent call hydra#hydras#register({
-"       \ "name":           "vimwiki",
-"       \ "title":          "Vimwiki",
-"       \ "show":           "popup",
-"       \ "exit_key":       "q",
-"       \ "feed_key":       v:false,
-"       \ "foreign_key":    v:true,
-"       \ "single_command": v:true,
-"       \ "position":       "s:bottom_right",
-"       \ "keymap": [
-"       \   {
-"       \     "name": "General",
-"       \     "keys": [
-"       \       ["w", "e ~/wiki/vimwiki/index.wiki", "open index"],
-"       \       ["s", "e ~/wiki/vimwiki/202105021825-E80938.wiki", "open scratchpad"],
-"       \       ["p", "e ~/wiki/vimwiki/202212311207-AFDA90.wiki", "open week plan (2023)"],
-"       \       ["j", "lua dummy.open_today_journal()", "open today's journal"],
-"       \       ["o", "lua dummy.open_wiki_file({})", "select a wiki file"],
-"       \       ["H", "Vimwiki2HTMLBrowse", "compile current & browse"],
-"       \       ["h", "Vimwiki2HTML", "compile current"],
-"       \       ["A", "VimwikiAll2HTML", "compile all"],
-"       \     ]
-"       \   },
-"       \   {
-"       \     "name": "References",
-"       \     "keys": [
-"       \       ["R", "lua dummy.insert_wiki_file{after_cursor = false}", "add reference ←"],
-"       \       ["r", "lua dummy.insert_wiki_file{after_cursor = true}", "add reference →"],
-"       \       ["N", "call Vimwiki_NewFileAddRef(v:false)", "new note + add reference ←"],
-"       \       ["n", "call Vimwiki_NewFileAddRef(v:true)", "new note + add reference →"],
-"       \     ]
-"       \   },
-"       \ ]
-"       \ }
-"       \ )
-
 nnoremap <silent> <Leader>w :Hydra vimwiki<CR>
 " }}}
 
@@ -684,8 +631,8 @@ nnoremap <leader>W <cmd>MatchupWhereAmI?<CR>
 nnoremap <Leader>L <cmd>set cursorline!<CR>
 nnoremap <Leader>C <cmd>set cursorcolumn!<CR>
 
-nnoremap n /<Up><CR>
-nnoremap N ?<Up><CR>
+nnoremap <silent> n /<Up><CR>
+nnoremap <silent> N ?<Up><CR>
 
 command! Fgitmerge /\v^(\<{4,}|\={4,}|\>{4,})
 command! FoldNone set nofoldenable

@@ -15,12 +15,14 @@ return function()
     vim.o.langmenu = "en_US"
     vim.env.LANG = "en_US"
 
+    vim.o.hidden = true
+    vim.o.title = true
+    vim.o.number = true
+    vim.o.relativenumber = true
+
     exec([[
-    set hidden
-    set title
     set backspace=indent,eol,start
     set laststatus=2
-    set number relativenumber
     set wildmenu
     set wildmode=longest:full,full
     set autoindent
@@ -86,4 +88,36 @@ return function()
       execute 'nnoremap <silent> <buffer> <Leader>i'.a:key.' i'.a:data.'<Esc>'
     endfunction " }}}
     ]])
+
+    exec("nnoremap <silent> <Leader>f :Hydra extrafind<CR>")
+    vim.fn["hydra#hydras#register"] {
+        name = "extrafind",
+        title = "Extra find",
+        show = "popup",
+        exit_key = "q",
+        feed_key = false,
+        foreign_key = true,
+        single_command = true,
+        position = "s:bottom_right",
+        keymap = {{
+            name = "In buffer",
+            keys = {
+                {"t", "lua dummy.findTodos()", "TODOs (in buffer)"},
+                {"b", "lua require('telescope.builtin').buffers()", "buffers"},
+                {"h", "lua require('telescope.builtin').help_tags()", "help tags"},
+            }
+        }},
+    }
+
+    dummy.findTodos = function()
+        local queries = {'<TODO>', '<FIXME>', '<XXX>'}
+        for _, q in ipairs(vim.b.todo_queries or {}) do
+            table.insert(queries, q)
+        end
+
+        local query = string.format("\\v(%s)", table.concat(queries, "|"))
+
+        vim.fn.search(query)
+        vim.fn.histadd("/", query)
+    end
 end

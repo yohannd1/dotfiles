@@ -119,20 +119,21 @@ end
 -- }}}
 
 -- Extension -> filetype
-ext_ft.rpy = "python"
-ext_ft.terra = "terra"
-ext_ft.as = "actionscript"
-ext_ft.fx = "c"
-ext_ft.h = "c"
-ext_ft.clj = "clojure"
 ext_ft.alg = "visualg"
-ext_ft.jl = "julia"
-ext_ft.scrbl = "scribble"
-ext_ft.mpp = "cpp"
-ext_ft.PKGBUILD = "PKGBUILD"
+ext_ft.as = "actionscript"
 ext_ft.asm = "nasm"
 ext_ft.acr = "acrylic"
+ext_ft.buzz = "buzz"
+ext_ft.clj = "clojure"
+ext_ft.fx = "c"
 ext_ft.gml = "gml"
+ext_ft.h = "c"
+ext_ft.jl = "julia"
+ext_ft.mpp = "cpp"
+ext_ft.PKGBUILD = "PKGBUILD"
+ext_ft.rpy = "python"
+ext_ft.scrbl = "scribble"
+ext_ft.terra = "terra"
 ext_ft.tsx = function()
     if vim.fn.getline(1):find("<?xml") == 1 then
         setLocals { filetype = "xml" }
@@ -440,6 +441,7 @@ ft.acrylic = function()
 end
 
 ft.PKGBUILD = function()
+    vim.o.syntax = "bash" -- because treesitter is breaking the PKGBUILD syntax for some reason
     setSpaceIndent(2)
 end
 
@@ -469,6 +471,11 @@ end
 ft.go = function()
     setTabIndent(4)
 end
+
+ft.buzz = function()
+    vim.o.syntax = "cpp"
+end
+
 
 -- function! ft.vimwiki() " {{{
 --   setlocal sw=2

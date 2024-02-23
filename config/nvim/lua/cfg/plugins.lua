@@ -2,6 +2,7 @@
 
 -- Preparations {{{
 local vim = _G.vim
+local dummy = _G.dummy
 local _configs = {}
 local M = {}
 
@@ -73,10 +74,40 @@ local plugins = function()
 
     -- Electric pairs
     plug({"windwp/nvim-autopairs", config = function()
-        -- local npairs = require("nvim-autopairs")
-        -- local q1_rule = npairs.get_rules("'")[1]
-        -- q1_rule.not_filetypes = { "scheme", "lisp" }
-        -- q1_rule:with_pair(cond.not_after_text("["))
+        -- set up autopairs
+        local autopairs = require("nvim-autopairs")
+        local conds = require("nvim-autopairs.conds")
+        autopairs.setup({
+            check_ts = true,
+            ignored_next_char = "[^%]%. });`]",
+            enable_check_bracket_line = false,
+        })
+        autopairs.enable()
+
+        -- don't allow single quotes pairing on lisp-types
+        local sq_rule = autopairs.get_rules("'")[1]
+        sq_rule.not_filetypes = {"scheme", "lisp", "fennel", "janet", "clojure"}
+        sq_rule:with_pair(conds.not_after_text("["))
+
+        -- escape codes
+        local bs_code = autopairs.esc("<BS>")
+        local autopairs_cr = autopairs.autopairs_cr
+        local autopairs_bs = autopairs.autopairs_bs
+
+        dummy.imap_enter_handle = function()
+            if vim.fn.pumvisible() ~= 0 then
+                return (
+                    " " .. bs_code -- ignore the completion menu
+                    .. autopairs_cr() -- process autopairs
+                )
+            else
+                return autopairs_cr()
+            end
+        end
+
+        dummy.imap_bs_handle = function()
+            return autopairs_bs()
+        end
     end})
 
     -- plug("tmsvg/pear-tree")

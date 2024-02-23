@@ -51,7 +51,7 @@ export WAYLAND_TERMINAL=foot
 export XORG_TERMINAL=st
 export TERMINAL=dotf.wrap.terminal
 
-export BROWSER=librewolf
+export BROWSER=qutebrowser
 _isAndroid && export BROWSER=termux-open-url
 
 export TERMBROWSER=w3m
@@ -111,7 +111,7 @@ export FZF_DEFAULT_OPTS='--layout=reverse --no-border
 export GREP_COLORS='ms=01;34:mc=01;34:sl=:cx=:fn=35:ln=32:bn=32:se=36'
 export OPEN_ALT=dotf.unknown-filetype
 export OPEN_FALLBACK_SILENT=1
-_isAndroid || export GTK_THEME=Chicago95
+_isAndroid || export GTK_THEME="Adwaita-dark"
 
 # nnn config
 {
@@ -154,6 +154,7 @@ export CLANG_FORMAT_CPP_CONFIG="$DOTFILES/config/clang-format-cpp.yaml"
 export X_COMPOSITOR="picom"
 export FILEHIST_MAX_LIMIT=500
 export FILEHIST_NO_TIDY=1
+export EXT_DEFAULT_MODE="new"
 
 # prevent annoying timeouts on some GTK applications.
 # FIXME: is there any downside to this?

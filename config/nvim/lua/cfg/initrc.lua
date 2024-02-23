@@ -1,24 +1,12 @@
-local dummy = {}
-_G.dummy = dummy
+_G.dummy = _G.dummy or {}
+local dummy = _G.dummy
 
 local vim = _G.vim
 local ucm = _G.useConfModule
 local utils = ucm("utils")
 _G._utils = utils
 
-local autopairs = require("nvim-autopairs")
 local mapKey = vim.api.nvim_set_keymap
-
-autopairs.setup({
-  ignored_next_char = "[^%]%. });`]",
-  enable_check_bracket_line = false,
-})
-autopairs.enable()
-
--- Pre-calculate as much as possible to avoid overhead
-local bs_code = autopairs.esc("<BS>")
-local autopairs_cr = autopairs.autopairs_cr
-local autopairs_bs = autopairs.autopairs_bs
 
 local log_list = {}
 function dummy.log(msg)
@@ -28,21 +16,6 @@ function dummy.showLogs()
   for _, log in ipairs(log_list) do
     print(log)
   end
-end
-
-function dummy.imap_enter_handle()
-  if vim.fn.pumvisible() ~= 0 then
-    return (
-      " " .. bs_code -- ignore the completion menu
-      .. autopairs_cr() -- process autopairs
-    )
-  else
-    return autopairs_cr()
-  end
-end
-
-function dummy.imap_bs_handle()
-  return autopairs_bs()
 end
 
 mapKey("i", "<CR>", "v:lua.dummy.imap_enter_handle()", {expr = true, noremap = true})

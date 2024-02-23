@@ -25,8 +25,6 @@ for _, p in ipairs(paths_to_add) do
     end
 end
 
-
-
 -- load modules
 ucm("general")()
 ucm("keybindings")()

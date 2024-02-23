@@ -46,9 +46,10 @@ if [ "$LUAROCKS_HOME" ]; then
   for luaVer in 2 3 4; do
     shareDir="$LUAROCKS_HOME/share/lua/5.${luaVer}"
     libDir="$LUAROCKS_HOME/lib/lua/5.${luaVer}"
+    lrDir="$LUAROCKS_HOME/lib/luarocks/5.${luaVer}"
     dotfLibDir="$DOTFILES/lib"
 
-    eval "export LUA_PATH_5_${luaVer}='$(_luaPkgsAt "$shareDir");$(_luaPkgsAt "$libDir");$(_luaPkgsAt "$dotfLibDir");;'"
+    eval "export LUA_PATH_5_${luaVer}='$(_luaPkgsAt "$shareDir");$(_luaPkgsAt "$libDir");$(_luaPkgsAt "$dotfLibDir");$(_luaPkgsAt "$lrDir");;'"
     eval "export LUA_CPATH_5_${luaVer}='$libDir/loadall.so;$libDir/?.so;;'"
   done
 

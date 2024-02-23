@@ -3,52 +3,65 @@ import subprocess as sp
 import theme
 from theme import ThemeConfig, Namespace, Font
 
-bindings = [
-    ("D", "tab-close"),
-    ("U", "undo"),
-    ("d", "scroll-page 0 0.5"),
-    ("u", "scroll-page 0 -0.5"),
-    ("ç", "set-cmd-text :"),
-    ("E", "devtools bottom"),
-]
-
 def main():
     c.downloads.location.directory = os.getenv("XDG_DOWNLOAD_DIR") or "~/inbox"
-    for (k, cmd) in bindings:
-        config.bind(k, cmd)
 
-    monospace_font = Font(xgetres("qutebrowser.fonts.monospace",
+    bind = config.bind
+    unbind = config.unbind
+
+    bind("D", "tab-close")
+    bind("U", "undo")
+    bind("d", "scroll-page 0 0.5")
+    bind("u", "scroll-page 0 -0.5")
+    bind("ç", "set-cmd-text :")
+    bind("E", "devtools right")
+    unbind("<Ctrl-V>")
+    bind("<Ctrl-Alt-I>", "mode-enter passthrough")
+
+    for (key, dir) in [
+        ("j", "down"), ("k", "up"),
+        ("h", "left"), ("l", "right"),
+    ]:
+        bind(key, f"cmd-run-with-count 2 scroll {dir}")
+
+    unbind("<Shift-Escape>", mode="passthrough")
+    bind("<Ctrl-Alt-I>", "mode-leave", mode="passthrough")
+
+    bind("<Ctrl-J>", "prompt-item-focus next", mode="prompt")
+    bind("<Ctrl-K>", "prompt-item-focus prev", mode="prompt")
+
+    monospace_font = Font(get_res("qutebrowser.fonts.monospace",
                                   "Source Code Pro"))
 
     ThemeConfig(
-        palette = Namespace(
-            bg=xgetres("qutebrowser.bg"),
-            fg=xgetres("qutebrowser.fg"),
-            bg_alt=xgetres("qutebrowser.bg-alt"),
-            fg_alt=xgetres("qutebrowser.fg-alt"),
-            bg_attention=xgetres("qutebrowser.bg-attention"),
-            fg_attention=xgetres("qutebrowser.fg-attention"),
-            sel_fg=xgetres("qutebrowser.sel.fg"),
-            sel_bg=xgetres("qutebrowser.sel.bg"),
-            match_fg=xgetres("qutebrowser.match.fg"),
-            error=xgetres("qutebrowser.error"),
-            warning=xgetres("qutebrowser.warning"),
-            info=xgetres("qutebrowser.info"),
-            success=xgetres("qutebrowser.success"),
+        palette=Namespace(
+            bg=get_res("qutebrowser.bg"),
+            fg=get_res("qutebrowser.fg"),
+            bg_alt=get_res("qutebrowser.bg-alt"),
+            fg_alt=get_res("qutebrowser.fg-alt"),
+            bg_attention=get_res("qutebrowser.bg-attention"),
+            fg_attention=get_res("qutebrowser.fg-attention"),
+            sel_fg=get_res("qutebrowser.sel.fg"),
+            sel_bg=get_res("qutebrowser.sel.bg"),
+            match_fg=get_res("qutebrowser.match.fg"),
+            error=get_res("qutebrowser.error"),
+            warning=get_res("qutebrowser.warning"),
+            info=get_res("qutebrowser.info"),
+            success=get_res("qutebrowser.success"),
         ),
-        spacing = Namespace(
+        spacing=Namespace(
             vertical=2,
             horizontal=2,
         ),
-        fonts = {
+        fonts={
             "main": monospace_font,
             "monospace": monospace_font,
-            "standard": Font(xgetres("qutebrowser.fonts.standard",
+            "standard": Font(get_res("qutebrowser.fonts.standard",
                                      "NotoSansMedium")),
-            "sans_serif": Font(xgetres("qutebrowser.fonts.sans-serif",
+            "sans_serif": Font(get_res("qutebrowser.fonts.sans-serif",
                                        "NotoSansMedium")),
         },
-        font_size = xgetres("qutebrowser.font_size", "10pt"),
+        font_size = get_res("qutebrowser.font_size", "10pt"),
     ).apply_to(c)
 
     c.zoom.default = "90%"
@@ -66,8 +79,8 @@ def main():
     }
     config.load_autoconfig()
 
-def xgetres(resource, fallback=None):
-    command = sp.run(["xgetres", resource], stdout=sp.PIPE, encoding="UTF-8").stdout.strip()
+def get_res(resource, fallback=None):
+    command = sp.run(["dotcfg", "send", f"get:{resource}"], stdout=sp.PIPE, encoding="UTF-8").stdout.strip()
     if command == "":
         if fallback is not None:
             return fallback
