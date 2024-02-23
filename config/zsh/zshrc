@@ -282,14 +282,30 @@ alias f='findFile'
 alias fof='findFile openfork'
 alias fcd='FINDFILE_DIRONLY=1 findFile cd-to-file'
 
+## a crappy version of make that tries to find the file on parent directories
+## if it's not on the current one.
 make() {
-  # a *very* crappy workaround for using `make -f`.
-  # FIXME: make this less painful somehow
-  if [ $# -gt 0 ] && [ "$1" = "-f" ]; then
-    printf >&2 '[Warning] `-f` argument detected, abandoning use of `fparent-run`\n'
+  local dir
+
+  if [ "$1" = "-f" ]; then
+    # a *very* crappy workaround for using `make -f`.
+    printf >&2 '[Warning] `-f` argument detected, running normal make\n'
     command make "$@"
   else
-    fparent-run Makefile run-command file-dir make "$@"
+    dir="$PWD"
+    while true; do
+      if [ "$dir" = "/" ]; then
+        printf >&2 '[Error] Could not find any valid Makefile.\n'
+        return 1
+      fi
+
+      if [ -f "$dir/Makefile" ] || [ -f "$dir/makefile" ] || [ -f "$dir/GNUmakefile" ]; then
+        (cd "$dir" && command make "$@")
+        return $?
+      fi
+
+      dir=$(realpath -m "$dir/..")
+    done
   fi
 }
 
