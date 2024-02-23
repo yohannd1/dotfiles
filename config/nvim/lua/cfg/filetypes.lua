@@ -67,7 +67,7 @@ local func = function()
         end
     })
 
-    if vim.fn.exists("*AddToRecFile") ~= 0 then
+    if not utils.os.is_android then
         autocmd({"BufNewFile", "BufRead"}, {
             pattern = "*",
             group = "buffer_load",
