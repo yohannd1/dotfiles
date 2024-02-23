@@ -63,7 +63,7 @@ local font_presets = {
     },
     ["ShareTech"] = {
         name = "Share Tech Mono",
-        base_size = 15,
+        base_size = 14,
     },
     ["Unifont"] = {
         name = "Unifont",
@@ -79,7 +79,7 @@ local font_presets = {
     },
     ["Hermit"] = {
         name = "Hermit",
-        base_size = 13,
+        base_size = 13.5,
     },
     ["Agave"] = {
         name = "Agave",
@@ -155,7 +155,7 @@ local T_ALL = {t_xres, t_dots}
 -- }}}
 
 local enable_ligatures = false
-local font = getFontInfo("Mononoki", 1.15)
+local font = getFontInfo("Hermit", 1.15)
 
 local fsize_term = font.base_size
 local xft_font = longFontFormat(font.name, fsize_term)

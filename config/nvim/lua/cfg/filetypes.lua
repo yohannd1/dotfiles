@@ -473,7 +473,7 @@ ft.go = function()
 end
 
 ft.buzz = function()
-    vim.o.syntax = "cpp"
+    vim.o.syntax = "rust"
 end
 
 

@@ -64,6 +64,8 @@ def main():
         font_size = get_res("qutebrowser.font_size", "10pt"),
     ).apply_to(c)
 
+    c.editor.command = ["graphedit", "{file}"]
+
     c.zoom.default = "90%"
     c.downloads.open_dispatcher = os.environ.get("OPENER") or "xdg-open"
     c.colors.webpage.darkmode.enabled = False

@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # a script that runs debug actions based on the specified filetype
 # intented for editors like vim and emacs
@@ -124,6 +124,7 @@ case "$1" in
 
         "$tmp/exe"
         ;;
+      buzz) buzz "$file" ;;
       c) gcc "$file" -o "$tmp/exe" -Wpedantic -Wall && "$tmp/exe" ;;
       d) dmd -run "$file" ;;
       cpp|c++|cc) g++ "$file" -o "$tmp/exe" -std=c++20 -Wpedantic -Wall && "$tmp/exe" ;;
@@ -158,14 +159,16 @@ case "$1" in
           "$file"
         else
           command=$(getModelineCommand < "$file")
-          if printf "%s" "$command" | grep -q 'chicken-csi'; then
-            chicken-csi -s "$file"
-          elif printf "%s" "$command" | grep -q 'guile'; then
-            guile "$file"
-          else
-            printf >&2 "What interpreter do I use here!!!??\n"
-            exit 1
-          fi
+
+          possibleInterpreters=(chicken-csi csi guile)
+          for i in "${possibleInterpreters[@]}"; do
+            if printf "%s" "$command" | grep -q "$i"; then
+              exec $command "$i"
+            fi
+          done
+
+          printf >&2 "What interpreter do I use here???"
+          exit 1
         fi
         ;;
       latex|tex)

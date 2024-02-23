@@ -57,7 +57,6 @@
     (= 0 (os/execute ["sh" "-c" (string "command -v " progn)] :p {:out (dev-null) :err (dev-null)})))
 
   (defn condit-open [prog]
-    (:write stderr (string/format "::: %q\n" -args))
     (when (prog-exists (-args 0))
       (if open-gui
         (do
@@ -257,7 +256,7 @@
     # (t :runpage ["glowrapper" file])
     (t :gui ["md-preview" file]))
 
-  (when (m :ext ["htm" "html" "xhtml"])
+  (when (m :ext ["htm" "html" "xhtml" "mhtml"])
     (t :gui [BROWSER file])
     (t :runpage ["w3m" "-dump" file])
     (t :runpage ["lynx" "-dump" "--" file])
