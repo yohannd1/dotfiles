@@ -14,10 +14,9 @@ HEADER = """# vim: ft=conf fdm=marker
 
 """
 
-CONFIG_HOME = pathlib.Path(
-    os.environ["XDG_CONFIG_HOME"] if "XDG_CONFIG_HOME" in os.environ
-    else "~/.config"
-).expanduser()
+HOME = os.environ["HOME"]
+XDG_CONFIG_HOME = os.getenv("XDG_CONFIG_HOME") or f"{HOME}/.config"
+CONFIG_HOME = pathlib.Path(XDG_CONFIG_HOME)
 
 # }}}
 

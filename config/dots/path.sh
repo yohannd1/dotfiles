@@ -24,6 +24,7 @@ globpathadd() {
 }
 
 pathadd ~/.local/bin
+pathadd ~/.nix-profile/bin
 [ "$DOTFILES" ] && pathadd "$DOTFILES/scripts"
 pathadd ~/storage/scripts
 [ "$GOPATH" ] && pathadd "$GOPATH"
