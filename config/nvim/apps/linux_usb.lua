@@ -12,7 +12,7 @@ package.path = string.format("%s;%s/lua/?.lua", package.path, CONF_DIR)
 vim.opt.runtimepath:append { CONF_DIR }
 vim.g.config_root = CONF_DIR
 
-exec("command! Notes e " .. CONF_DIR .. "/../../../PhoneDocs/Pocket/Main.acr")
+exec(string.format("command! ENotes e %s/../../../PhoneDocs/Pocket/Main.acr", CONF_DIR))
 
 -- bootstrap module system
 assert(loadfile(CONF_DIR .. "/lua/prepare.lua"))()
@@ -29,3 +29,6 @@ end
 ucm("general")()
 ucm("keybindings")()
 ucm("filetypes")()
+ucm("statusline")()
+
+-- ucm("plugins").loadPlugins({"acrylic.vim"}) -- TODO: do this!!!
