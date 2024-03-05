@@ -306,6 +306,27 @@ local plugins = function()
     plug(firstAvailableDir {
         pj_code .. "/vim-hydra-fork",
         fallback = "YohananDiamond/vim-hydra-fork",
+        config = function()
+            exec("nnoremap <silent> <Leader>f :Hydra extrafind<CR>")
+            vim.fn["hydra#hydras#register"] {
+                name = "extrafind",
+                title = "Extra find",
+                show = "popup",
+                exit_key = "q",
+                feed_key = false,
+                foreign_key = true,
+                single_command = true,
+                position = "s:bottom_right",
+                keymap = {{
+                    name = "In buffer",
+                    keys = {
+                        {"t", "lua dummy.findTodos()", "TODOs (in buffer)"},
+                        {"b", "lua require('telescope.builtin').buffers()", "buffers"},
+                        {"h", "lua require('telescope.builtin').help_tags()", "help tags"},
+                    }
+                }},
+            }
+        end
     })
 
     plug({"nvim-telescope/telescope.nvim", config = function()

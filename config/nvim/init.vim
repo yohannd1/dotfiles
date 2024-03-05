@@ -244,20 +244,6 @@ function! ShowFormatErr() " {{{
     echo line
   endfor
 endfunction " }}}
-function! AddToRecFile() " {{{
-  let l:path = expand("%:p")
-
-  if l:path == ""
-    return
-  else
-    let l:pid = jobstart(["filehist", "add", l:path])
-
-    if l:pid == -1
-      " `filehist` probably doesn't exist - let's ignore this then
-      return
-    endif
-  endif
-endfunction " }}}
 function! ApcReenable() " {{{
   if get(b:, "apc_enable", 0) == 1
     ApcEnable

@@ -7,7 +7,7 @@ local utils = ucm("utils")
 
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
-local nvim_exec = vim.api.nvim_exec
+local exec = function(x) vim.api.nvim_exec(x, false) end
 
 local setLocals = function(locals)
     for k, v in pairs(locals) do
@@ -67,7 +67,22 @@ local func = function()
         end
     })
 
-    if not utils.os.is_android then
+    if not utils.os.is_android and vim.fn.executable("filehist") ~= 0 then
+        -- TODO: port this to lua
+        exec([[
+        function! AddToRecFile()
+          let l:path = expand("%:p")
+          if l:path == ""
+            return
+          else
+            let l:pid = jobstart(["filehist", "add", l:path])
+            if l:pid == -1
+              " `filehist` probably doesn't exist - let's ignore this then
+              return
+            endif
+          endif
+        endfunction
+        ]])
         autocmd({"BufNewFile", "BufRead"}, {
             pattern = "*",
             group = "buffer_load",
@@ -90,7 +105,7 @@ local func = function()
                     endif
                 ]]
 
-                nvim_exec(cmd, false)
+                exec(cmd)
             end
 
             if vim.fn.exists("*SetupMakefileRifle") ~= 0 then
@@ -330,11 +345,11 @@ end
 ft.python = function()
     vim.b.format_command = "black - -q"
 
-    nvim_exec([[
+    exec([[
         syn keyword Boolean True
         syn keyword Boolean False
         syn keyword Boolean None
-    ]], false)
+    ]])
 
     addSnippets {
         m = [[def main():<CR>pass<CR><CR>if __name__ == "__main__":<CR>main()]],
@@ -381,7 +396,7 @@ end
 
 ft.fennel = function()
     setLispJoin()
-    nvim_exec([[ hi link FennelKeyword String ]], false)
+    exec([[ hi link FennelKeyword String ]])
 end
 
 ft.gdscript = function()
@@ -422,22 +437,22 @@ ft.acrylic = function()
 
     vim.b.item_toggletodo_preferred_done = "x"
 
-    nvim_exec([[
+    exec([[
         let b:todo_queries = ['^(\s*)([-*]\s+)?\( \)', '^(\s*)([-*]\s+)?\[ \]']
-    ]], false)
+    ]])
 
     setSpaceIndent(2)
     setLocals { foldenable = true }
 
     -- Custom syntax
-    nvim_exec([[
+    exec([[
         syn match acrXDatetime /\v\d{1,2}(:\d{2}){1,2}(AM|PM)?/
         syn match acrXDatetime /\v\d{4}\/\d{2}\/\d{2}/
         hi link acrXDatetime Special
 
         syn match acrXTodo /\v<(TODO|FIXME|XXX)>/
         hi link acrXTodo Todo
-    ]], false)
+    ]])
 end
 
 ft.PKGBUILD = function()
