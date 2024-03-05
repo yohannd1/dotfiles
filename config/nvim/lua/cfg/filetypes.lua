@@ -476,7 +476,6 @@ ft.buzz = function()
     vim.o.syntax = "rust"
 end
 
-
 -- function! ft.vimwiki() " {{{
 --   setlocal sw=2
 
