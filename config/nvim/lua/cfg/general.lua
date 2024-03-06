@@ -5,22 +5,21 @@ local utils = ucm("utils")
 
 local exec = function(s) vim.api.nvim_exec(s, false) end
 
-return function()
-    local vim_runtime_dir = vim.env.VIMRUNTIME
+local vim_runtime_dir = vim.env.VIMRUNTIME
 
-    -- FIXME: am I doing this right
-    -- utils.source_if_present(vim_runtime_dir .. "/delmenu.vim") or utils.source_if_present(vim_runtime_dir .. "/menu.vim")
+-- FIXME: am I doing this right
+-- utils.source_if_present(vim_runtime_dir .. "/delmenu.vim") or utils.source_if_present(vim_runtime_dir .. "/menu.vim")
 
-    vim.o.encoding = "utf-8"
-    vim.o.langmenu = "en_US"
-    vim.env.LANG = "en_US"
+vim.o.encoding = "utf-8"
+vim.o.langmenu = "en_US"
+vim.env.LANG = "en_US"
 
-    vim.o.hidden = true
-    vim.o.title = true
-    vim.o.number = true
-    vim.o.relativenumber = true
+vim.o.hidden = true
+vim.o.title = true
+vim.o.number = true
+vim.o.relativenumber = true
 
-    exec([[
+exec([[
     set backspace=indent,eol,start
     set laststatus=2
     set wildmenu
@@ -56,48 +55,47 @@ return function()
     " That's how the italics work (or not)
     let &t_ZH = "\<Esc>[3m"
     let &t_ZR = "\<Esc>[23m"
-    ]])
+]])
 
-    vim.o.autochdir = not utils.os.is_windows
+vim.o.autochdir = not utils.os.is_windows
 
-    if vim.g.neovide then
-        vim.o.guifont = "Cascadia Code:h9"
+if vim.g.neovide then
+    vim.o.guifont = "Cascadia Code:h9"
 
-        vim.g.neovide_transparency = 0.8
-        vim.g.neovide_cursor_vfx_mode = "ripple"
-    end
+    vim.g.neovide_transparency = 0.8
+    vim.g.neovide_cursor_vfx_mode = "ripple"
+end
 
-    dummy.toggleVirtualEdit = function()
-        local v = (vim.o.ve == "") and "all" or ""
-        vim.o.ve = v
-        exec(string.format([[echomsg "Virtual edit set to '%s'"]], v))
-    end
+dummy.toggleVirtualEdit = function()
+    local v = (vim.o.ve == "") and "all" or ""
+    vim.o.ve = v
+    exec(string.format([[echomsg "Virtual edit set to '%s'"]], v))
+end
 
-    -- me when i copy paste functions into an exec block
-    exec([[
+-- me when i copy paste functions into an exec block
+exec([[
     function! NextBuffer() " {{{
-      bnext
-      silent doautocmd User BufSwitch
+        bnext
+        silent doautocmd User BufSwitch
     endfunction " }}}
     function! PrevBuffer() " {{{
-      bprevious
-      silent doautocmd User BufSwitch
+        bprevious
+        silent doautocmd User BufSwitch
     endfunction " }}}
 
     function! AddSnippet(key, data) " {{{
-      execute 'nnoremap <silent> <buffer> <Leader>i'.a:key.' i'.a:data.'<Esc>'
+        execute 'nnoremap <silent> <buffer> <Leader>i'.a:key.' i'.a:data.'<Esc>'
     endfunction " }}}
-    ]])
+]])
 
-    dummy.findTodos = function()
-        local queries = {'<TODO>', '<FIXME>', '<XXX>'}
-        for _, q in ipairs(vim.b.todo_queries or {}) do
-            table.insert(queries, q)
-        end
-
-        local query = string.format("\\v(%s)", table.concat(queries, "|"))
-
-        vim.fn.search(query)
-        vim.fn.histadd("/", query)
+dummy.findTodos = function()
+    local queries = {'<TODO>', '<FIXME>', '<XXX>'}
+    for _, q in ipairs(vim.b.todo_queries or {}) do
+        table.insert(queries, q)
     end
+
+    local query = string.format("\\v(%s)", table.concat(queries, "|"))
+
+    vim.fn.search(query)
+    vim.fn.histadd("/", query)
 end

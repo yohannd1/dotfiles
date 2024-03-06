@@ -18,6 +18,6 @@ assert(loadfile(CONF_DIR .. "/lua/prepare.lua"))()
 local ucm = _G.useConfModule
 
 -- load modules
-ucm("general")()
-ucm("keybindings")()
-ucm("filetypes")()
+ucm("general")
+ucm("keybindings")
+ucm("filetypes")

@@ -8,6 +8,7 @@ local M = {}
 
 local ucm = _G.useConfModule
 local utils = ucm("utils")
+local exec = function(cmd) vim.api.nvim_exec(cmd, false) end
 
 local function plug(arg)
     local plugin = nil
@@ -39,22 +40,121 @@ local firstAvailableDir = function(arg)
         end
     end
 
-    if arg.fallback then
-        return arg.fallback
-    else
-        error("Could not find plugin + no fallback specified")
+    return arg.fallback or error("Could not find plugin + no fallback specified")
+end
+
+local plugins_old
+
+do
+    local plugins = {}
+    local plugin_names = {}
+
+    M.add = function(opts)
+        local source = assert(opts.source, ".source entry missing")
+        local name = opts.name or source
+        local condition = (function(x)
+            if x == nil then return true
+            else return x end
+        end)(opts.condition)
+        local before = opts.before or function() end
+        local after = opts.after or function() end
+
+        plugins[name] = { name = name, source = source, condition = condition, before = before, after = after }
+        table.insert(plugin_names, name)
+    end
+
+    M.init = function(opts)
+        local is_first = (vim.g.is_first or 1) ~= 0
+        if not is_first then
+            return
+        end
+
+        local plugins_to_load = assert(opts.plugins, ".plugins not specified")
+        local all_was_specified = (plugins_to_load == "all")
+        plugins_to_load = (plugins_to_load == "all") and plugin_names or plugins_to_load
+
+        local root_path = assert(opts.root_path, ".root_path not specified")
+
+        local to_call = {}
+
+        vim.fn["plug#begin"](root_path)
+
+        for _, pname in ipairs(plugins_to_load) do
+            local info = assert(plugins[pname], "plugin of name " .. pname .. " is not defined")
+
+            local cresult
+            if type(info.condition) == "function" then cresult = info.condition()
+            else cresult = info.condition
+            end
+
+            if cresult then
+                info.before()
+                plug(info.source)
+                table.insert(to_call, info.after)
+            end
+        end
+
+        if all_was_specified then
+            plugins_old() -- FIXME: legacy code (only when "all" was specified. or something.)
+        end
+
+        vim.fn["plug#end"]()
+
+        for _, f in ipairs(_configs) do f() end -- FIXME: legacy code
+        for _, f in ipairs(to_call) do f() end
     end
 end
--- }}}
 
 local hasExecutable = function(name)
     return vim.fn.executable(name) ~= 0
 end
 
-local plugins = function()
-    local HOME = assert(os.getenv("HOME"), "could not get home directory")
-    local pj_code = HOME .. "/pj/code"
+-- }}}
 
+local HOME = assert(os.getenv("HOME"), "could not get home directory")
+local pj_code = HOME .. "/pj/code"
+
+M.add({
+    name = "nvim-treesitter",
+    source = "nvim-treesitter/nvim-treesitter",
+    condition = not utils.os.is_android,
+    after = function()
+        require("nvim-treesitter.configs").setup {
+            ensure_installed = {
+                "c", "lua", "vim", "vimdoc", "query", "python",
+            },
+
+            -- Install parsers synchronously (only applied to `ensure_installed`)
+            sync_install = false,
+
+            -- Automatically install missing parsers when entering buffer
+            auto_install = true,
+
+            ignore_install = {},
+
+            highlight = {
+                enable = true,
+                disable = { "gitcommit", "bash", "PKGBUILD" },
+                additional_vim_regex_highlighting = true,
+            },
+        }
+    end,
+})
+
+M.add({
+    name = "acrylic.vim",
+    source = firstAvailableDir({ pj_code .. "/acrylic.vim", fallback = "YohananDiamond/acrylic.vim" }),
+})
+
+M.add({
+    name = "vim-buftabline",
+    source = "ap/vim-buftabline",
+    after = function()
+        vim.g.buftabline_indicators = 1
+    end,
+})
+
+plugins_old = function()
     -- Editing enhancements {{{
     plug("tpope/vim-surround")
     plug("tpope/vim-repeat")
@@ -65,10 +165,6 @@ local plugins = function()
     end})
 
     plug("godlygeek/tabular")
-
-    plug({"ap/vim-buftabline", config = function()
-        vim.g.buftabline_indicators = 1
-    end})
 
     plug("tpope/vim-rsi")
 
@@ -135,31 +231,6 @@ local plugins = function()
     -- end})
 
     -- }}}
-
-    -- Treesitter
-    if not utils.os.is_android then
-        plug({"nvim-treesitter/nvim-treesitter", config = function()
-            require("nvim-treesitter.configs").setup {
-                ensure_installed = {
-                    "c", "lua", "vim", "vimdoc", "query", "python",
-                },
-
-                -- Install parsers synchronously (only applied to `ensure_installed`)
-                sync_install = false,
-
-                -- Automatically install missing parsers when entering buffer
-                auto_install = true,
-
-                ignore_install = {},
-
-                highlight = {
-                    enable = true,
-                    disable = { "gitcommit", "bash", "PKGBUILD" },
-                    additional_vim_regex_highlighting = false,
-                },
-            }
-        end})
-    end
 
     -- Filetypes {{{
     plug("Clavelito/indent-sh.vim")
@@ -297,15 +368,8 @@ local plugins = function()
     --     }
     -- end})
 
-    -- Acrylic
-    plug(firstAvailableDir {
-        pj_code .. "/acrylic.vim",
-        fallback = "YohananDiamond/acrylic.vim",
-    })
-
-    plug(firstAvailableDir {
-        pj_code .. "/vim-hydra-fork",
-        fallback = "YohananDiamond/vim-hydra-fork",
+    plug({
+        firstAvailableDir { pj_code .. "/vim-hydra-fork", fallback = "YohananDiamond/vim-hydra-fork" },
         config = function()
             exec("nnoremap <silent> <Leader>f :Hydra extrafind<CR>")
             vim.fn["hydra#hydras#register"] {
@@ -329,9 +393,7 @@ local plugins = function()
         end
     })
 
-    plug({"nvim-telescope/telescope.nvim", config = function()
-
-    end})
+    plug({"nvim-telescope/telescope.nvim"})
     plug("nvim-lua/popup.nvim")
     plug("nvim-lua/plenary.nvim")
 
@@ -361,18 +423,6 @@ local plugins = function()
     --       \ "sink": "e",
     --       \ "description": "Load a file from the recent list",
     --       \ }
-end
-
-function M.load()
-    local is_first = (vim.g.is_first or 1) ~= 0
-
-    if is_first then
-        vim.fn["plug#begin"](vim.g.config_root .. "/plugged")
-        plugins()
-        vim.fn["plug#end"]()
-    end
-
-    for _, f in ipairs(_configs) do f() end
 end
 
 return M

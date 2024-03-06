@@ -46,7 +46,7 @@ end
 local ft = {}
 local ext_ft = {}
 
-local func = function()
+local initialize = function()
     augroup("buffer_load", {clear = true})
 
     autocmd({"BufNewFile", "BufReadPost"}, {
@@ -532,4 +532,4 @@ end
 --   let b:item_toggletodo_preferred_done = "X"
 -- endfunction " }}}
 
-return func
+initialize()

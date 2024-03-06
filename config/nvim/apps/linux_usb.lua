@@ -12,13 +12,15 @@ package.path = string.format("%s;%s/lua/?.lua", package.path, CONF_DIR)
 vim.opt.runtimepath:append { CONF_DIR }
 vim.g.config_root = CONF_DIR
 
-exec(string.format("command! ENotes e %s/../../../PhoneDocs/Pocket/Main.acr", CONF_DIR))
+local fs_root = CONF_DIR .. "/../../../.."
+
+exec(string.format("command! ENotes e %s/Repos/PhoneDocs/Pocket/Main.acr", fs_root))
 
 -- bootstrap module system
 assert(loadfile(CONF_DIR .. "/lua/prepare.lua"))()
 local ucm = _G.useConfModule
 
-local paths_to_add = {CONF_DIR .. "/../../../../Software/Janet/"}
+local paths_to_add = {fs_root .. "/Software/Janet/"}
 for _, p in ipairs(paths_to_add) do
     if vim.fn.isdirectory(p) ~= 0 then
         vim.env.PATH = vim.env.PATH .. ":" .. p
@@ -26,9 +28,12 @@ for _, p in ipairs(paths_to_add) do
 end
 
 -- load modules
-ucm("general")()
-ucm("keybindings")()
-ucm("filetypes")()
-ucm("statusline")()
+ucm("general")
+ucm("keybindings")
+ucm("filetypes")
+ucm("statusline")
 
--- ucm("plugins").loadPlugins({"acrylic.vim"}) -- TODO: do this!!!
+ucm("plugins").init({
+    plugins = { "acrylic.vim" },
+    root_path = fs_root .. "/cache/nvim",
+})

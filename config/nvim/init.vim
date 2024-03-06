@@ -37,7 +37,13 @@ EOF
 " }}}
 " Plugins {{{
 "
-lua require("cfg.plugins").load()
+lua <<EOF
+local plugins = require("cfg.plugins")
+plugins.init({
+    plugins = "all",
+    root_path = vim.g.config_root .. "/plugged",
+})
+EOF
 
 function! _InsertWikiFileRef(input, after_cursor)
   normal! m`
