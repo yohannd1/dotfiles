@@ -149,7 +149,7 @@ M.add({
 M.add({
     name = "vim-buftabline",
     source = "ap/vim-buftabline",
-    after = function()
+    before = function()
         vim.g.buftabline_indicators = 1
     end,
 })

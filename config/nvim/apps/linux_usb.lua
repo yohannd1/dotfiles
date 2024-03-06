@@ -33,7 +33,17 @@ ucm("keybindings")
 ucm("filetypes")
 ucm("statusline")
 
+local plugged_path = fs_root .. "/Cache/nvim_plugged"
+
 ucm("plugins").init({
-    plugins = { "acrylic.vim" },
-    root_path = fs_root .. "/cache/nvim",
+    plugins = { "acrylic.vim", "vim-buftabline" },
+    root_path = plugged_path,
 })
+
+-- buftabline isn't loading by itself... why???
+if vim.fn.isdirectory(plugged_path .. "/vim-buftabline") then
+    vim.api.nvim_exec(
+        string.format([[source %s/vim-buftabline/plugin/buftabline.vim]], plugged_path),
+        false
+    )
+end
