@@ -12,13 +12,15 @@ package.path = string.format("%s;%s/lua/?.lua", package.path, CONF_DIR)
 vim.opt.runtimepath:append { CONF_DIR }
 vim.g.config_root = CONF_DIR
 
-exec("command! Notes e " .. CONF_DIR .. "/../../../PhoneDocs/Pocket/Main.acr")
+local fs_root = CONF_DIR .. "/../../../.."
+
+exec(string.format("command! ENotes e %s/Repos/PhoneDocs/Pocket/Main.acr", fs_root))
 
 -- bootstrap module system
 assert(loadfile(CONF_DIR .. "/lua/prepare.lua"))()
 local ucm = _G.useConfModule
 
-local paths_to_add = {CONF_DIR .. "/../../../../Software/Janet/"}
+local paths_to_add = {fs_root .. "/Software/Janet/"}
 for _, p in ipairs(paths_to_add) do
     if vim.fn.isdirectory(p) ~= 0 then
         vim.env.PATH = vim.env.PATH .. ":" .. p
@@ -26,6 +28,22 @@ for _, p in ipairs(paths_to_add) do
 end
 
 -- load modules
-ucm("general")()
-ucm("keybindings")()
-ucm("filetypes")()
+ucm("general")
+ucm("keybindings")
+ucm("filetypes")
+ucm("statusline")
+
+local plugged_path = fs_root .. "/Cache/nvim_plugged"
+
+ucm("plugins").init({
+    plugins = { "acrylic.vim", "vim-buftabline" },
+    root_path = plugged_path,
+})
+
+-- buftabline isn't loading by itself... why???
+if vim.fn.isdirectory(plugged_path .. "/vim-buftabline") then
+    vim.api.nvim_exec(
+        string.format([[source %s/vim-buftabline/plugin/buftabline.vim]], plugged_path),
+        false
+    )
+end

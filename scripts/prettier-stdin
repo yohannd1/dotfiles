@@ -10,4 +10,4 @@ cleanup() {
 }
 trap 'cleanup' EXIT
 
-prettier "$tmp"
+prettier "$tmp" --config "$DOTFILES/config/prettierrc.json"

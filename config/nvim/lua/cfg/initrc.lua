@@ -136,7 +136,7 @@ do
     if entry == nil or entry == "" then
       print("Failed to open today's journal")
     else
-      vim.cmd("e" .. vim.g.wiki_dir .. "/" .. entry:gsub("^%s*", ""):gsub("%s*$", "") .. ".wiki")
+      vim.cmd("e " .. vim.g.wiki_dir .. "/" .. entry:gsub("^%s*", ""):gsub("%s*$", "") .. ".wiki")
     end
   end
 
@@ -217,9 +217,9 @@ do
 end
 
 -- Load configuration from other files
-ucm("general")()
-ucm("statusline")()
-ucm("keybindings")()
-ucm("filetypes")()
+ucm("general")
+ucm("statusline")
+ucm("keybindings")
+ucm("filetypes")
 
 -- vim: sw=2 et

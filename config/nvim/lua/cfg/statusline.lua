@@ -25,22 +25,20 @@ local mode_map = {
     [utils.parseEscapeCode "<C-S>"] = "SELECTION BLOCK",
 }
 
-function dummy.statusLineGetFiletype()
+dummy.statusLineGetFiletype = function()
     return (vim.bo.filetype == "") and "no ft" or vim.bo.filetype
 end
 
-function dummy.statusLineGetMode()
+dummy.statusLineGetMode = function()
     local mode = vim.fn.mode()
     return mode_map[mode] or ("{" .. mode .. "}")
 end
 
-return function()
-    vim.o.statusline = (
-        "%#TabLineSel# %{v:lua.dummy.statusLineGetMode()} " ..
-        "%#Normal# %r " ..
-        "%#Normal# %= " ..
-        "%#Normal# %{v:lua.dummy.statusLineGetFiletype()} (%{&fileformat}) " ..
-        "%#TabLine# %p%% " ..
-        "%#TabLineSel# %3l:%-3c "
-    )
-end
+vim.o.statusline = (
+    "%#TabLineSel# %{v:lua.dummy.statusLineGetMode()} " ..
+    "%#Normal# %r " ..
+    "%#Normal# %= " ..
+    "%#Normal# %{v:lua.dummy.statusLineGetFiletype()} (%{&fileformat}) " ..
+    "%#TabLine# %p%% " ..
+    "%#TabLineSel# %3l:%-3c "
+)

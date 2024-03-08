@@ -37,7 +37,13 @@ EOF
 " }}}
 " Plugins {{{
 "
-lua require("cfg.plugins").load()
+lua <<EOF
+local plugins = require("cfg.plugins")
+plugins.init({
+    plugins = "all",
+    root_path = vim.g.config_root .. "/plugged",
+})
+EOF
 
 function! _InsertWikiFileRef(input, after_cursor)
   normal! m`
@@ -243,20 +249,6 @@ function! ShowFormatErr() " {{{
   for line in g:last_format_err
     echo line
   endfor
-endfunction " }}}
-function! AddToRecFile() " {{{
-  let l:path = expand("%:p")
-
-  if l:path == ""
-    return
-  else
-    let l:pid = jobstart(["filehist", "add", l:path])
-
-    if l:pid == -1
-      " `filehist` probably doesn't exist - let's ignore this then
-      return
-    endif
-  endif
 endfunction " }}}
 function! ApcReenable() " {{{
   if get(b:, "apc_enable", 0) == 1

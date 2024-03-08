@@ -23,7 +23,8 @@ bar:
               conditions: {}
 
         title:
-          string: { text: " [{mode}] {title}" }
+          # there was a {mode} in there but it's kinda useless tbh
+          string: { text: " {title}" }
         content:
           map:
             conditions:
