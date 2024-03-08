@@ -97,6 +97,12 @@ do
 
   telescope.setup {
     defaults = {
+      layout_strategy = "bottom_pane",
+      layout_config = {
+          bottom_pane = {
+            prompt_position = "bottom",
+          },
+      },
       mappings = {
         i = {
           ["<Esc>"] = actions.close,
