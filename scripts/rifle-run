@@ -310,6 +310,9 @@ case "$1" in
         wait "$proc1"
         wait "$proc2"
         ;;
+      php)
+        php-cs-fixer check "$file"
+        ;;
       *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
     esac ;;
   *) die "Invalid action: %s\n" "$1" ;;

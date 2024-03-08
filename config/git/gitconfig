@@ -1,82 +1,84 @@
-# vim: ft=cfg
+# vim: ft=cfg noet tabstop=4
+
 [color]
-    ui = true
+	ui = true
 
 [color "branch"]
-    current = 10
-    local = 10
-    remote = 10
+	current = 10
+	local = 10
+	remote = 10
 
 [color "status"]
-    localBranch = 4
-    remoteBranch = 4
-    unmerged = 4
-    header = 5
-    nobranch = 8
-    added = 11
-    changed = 10
-    untracked = 4
+	localBranch = 4
+	remoteBranch = 4
+	unmerged = 4
+	header = 5
+	nobranch = 8
+	added = 11
+	changed = 10
+	untracked = 4
 
 [color "diff"]
-    meta = 4
-    frag = 9 bold
-    old = 8
-    new = 11
+	meta = 4
+	frag = 9 bold
+	old = 8
+	new = 11
 
 [core]
-    excludesfile = ~/.gitignore
-    # attributesfile = ~/.gitattributes
-    ignorecase = false
+	excludesfile = ~/.gitignore
+	# attributesfile = ~/.gitattributes
+	ignorecase = false
 
 [alias]
-    a = add
-    c = commit
-    ac = add-commit
-    cm = commit -m
-    sy = sync
-    l = log-compact
-    s = status -sb
-    b = branch
-    co = checkout
+	a = add
+	c = commit
+	ac = add-commit
+	cm = commit -m
+	sy = sync
+	l = log-compact
+	s = status -sb
+	b = branch
+	co = checkout
 
-    sync = !git pull && git push
-    add-commit = !git add . && git commit
-    log-compact = log --all --oneline
-    log-pretty = log --all --graph --decorate --oneline
-    log-statistic = log --stat --abbrev-commit
+	sync = !git pull && git push
+	add-commit = !git add . && git commit
+	log-compact = log --all --oneline
+	log-pretty = log --all --graph --decorate --oneline
+	log-statistic = log --stat --abbrev-commit
 
-    this = !git init && git add . && git commit -m 'Initial commit'
-    contrib = shortlog -sn
+	this = !git init && git add . && git commit -m 'Initial commit'
+	contrib = shortlog -sn
 
 [diff]
-    tool = nvim -d
+	tool = nvim -d
 
 [merge]
-    tool = nvim -d
+	tool = nvim -d
 
 [include]
-    path = ~/.gitconfig.local
+	path = ~/.gitconfig.local
 
 [pull]
-    rebase = false
+	rebase = false
 
 [url "https://github.com/"]
-    insteadOf = gh.https:
+	insteadOf = gh.https:
 
 [url "https://gist.github.com/"]
-    insteadOf = gist.https:
+	insteadOf = gist.https:
 
 [url "git@github.com:"]
-    insteadOf = gh.ssh:
+	insteadOf = gh.ssh:
 
 [filter "lfs"]
-    clean = git-lfs clean -- %f
-    smudge = git-lfs smudge -- %f
-    process = git-lfs filter-process
-    required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
 
 [init]
-    defaultBranch = master
+	defaultBranch = master
+
 [safe]
 	directory = /storage/emulated/0
 	directory = /storage/emulated/0/stuff/public-notes

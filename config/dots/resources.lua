@@ -2,8 +2,8 @@
 -- FONT DEFS {{{
 local font_presets = {
     ["SourceCodePro"] = {
-        name = "Source Code Pro",
-        base_size = 14,
+        name = "Source Code Pro Medium",
+        base_size = 13.5,
     },
     ["Iosevka"] = {
         name = "Iosevka Medium",
@@ -155,7 +155,7 @@ local T_ALL = {t_xres, t_dots}
 -- }}}
 
 local enable_ligatures = false
-local font = getFontInfo("EnvyCodeR", 1.15)
+local font = getFontInfo("SourceCodePro", 1.15)
 
 local fsize_term = font.base_size
 local xft_font = longFontFormat(font.name, fsize_term)
@@ -173,7 +173,7 @@ decl {
 -- foot (wayland terminal)
 decl {
     {"foot.font", xft_font},
-    {"foot.alpha", "0.99"},
+    {"foot.alpha", "0.95"},
 
     targets = T_ALL,
 }

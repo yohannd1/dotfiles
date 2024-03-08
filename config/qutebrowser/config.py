@@ -13,7 +13,7 @@ def main():
     bind("U", "undo")
     bind("d", "scroll-page 0 0.5")
     bind("u", "scroll-page 0 -0.5")
-    bind("ç", "set-cmd-text :")
+    bind("ç", "cmd-set-text :")
     bind("E", "devtools right")
     unbind("<Ctrl-V>")
     bind("<Ctrl-Alt-I>", "mode-enter passthrough")
@@ -69,7 +69,12 @@ def main():
     c.zoom.default = "90%"
     c.downloads.open_dispatcher = os.environ.get("OPENER") or "xdg-open"
     c.colors.webpage.darkmode.enabled = False
-    c.url.start_pages = ["qute://bookmarks/#bookmarks"]
+    c.url.start_pages = [
+        # "qute://bookmarks/#bookmarks",
+        "https://discord.com/channels/@me",
+        "https://web.whatsapp.com/",
+        "https://app.schildi.chat/",
+    ]
     c.url.searchengines = {
         "DEFAULT": "https://duckduckgo.com/?q={}",
         "dg": "https://duckduckgo.com/?q={}",
@@ -80,6 +85,10 @@ def main():
         "def": "https://duckduckgo.com/?q={}&ia=definition",
     }
     config.load_autoconfig()
+
+    with config.pattern("*://discord.com/*") as p:
+        p.content.media.audio_video_capture = True
+        p.content.autoplay = True
 
 def get_res(resource, fallback=None):
     command = sp.run(["dotcfg", "send", f"get:{resource}"], stdout=sp.PIPE, encoding="UTF-8").stdout.strip()
