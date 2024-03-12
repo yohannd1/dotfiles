@@ -275,9 +275,10 @@ plugins_old = function()
     plug({"jdonaldson/vaxe", config = function()
         vim.g.vaxe_lime_target = "flash"
     end})
-    plug("daveyarwood/vim-alda")
+    -- plug("daveyarwood/vim-alda")
     plug("bellinitte/uxntal.vim")
-    plug("jakwings/vim-terra")
+    -- plug("jakwings/vim-terra")
+    plug("imsnif/kdl.vim")
 
     -- plug("tbastos/vim-lua")
     -- plug("hylang/vim-hy")

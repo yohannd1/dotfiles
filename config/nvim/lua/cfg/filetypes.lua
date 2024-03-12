@@ -491,6 +491,10 @@ ft.buzz = function()
     vim.o.syntax = "rust"
 end
 
+ft.lua = function()
+    setSpaceIndent(2)
+end
+
 -- function! ft.vimwiki() " {{{
 --   setlocal sw=2
 
