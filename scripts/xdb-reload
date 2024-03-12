@@ -7,16 +7,12 @@ set -o pipefail
 
 PROGNAME=$(basename "$0")
 
-usage() {
-  printf >&2 "Usage: %s\n" "$PROGNAME"
-  exit 1
-}
+# usage() {
+#   printf >&2 "Usage: %s [ARGS...]\n" "$PROGNAME"
+#   printf >&2 "  ARGS are passed to gen-config.\n"
+#   exit 1
+# }
 
-main() {
-  [ $# != 0 ] && usage
-  [ "$DISPLAY" ] && { gen-res xresources | xrdb; }
-  gen-res dotcfg | dotcfg stdin-send >/dev/null
-  gen-config
-}
-
-main "$@"
+[ "$DISPLAY" ] && { gen-res xresources | xrdb; }
+gen-res dotcfg | dotcfg stdin-send >/dev/null
+gen-config "$@"

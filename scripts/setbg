@@ -1,7 +1,5 @@
 #!/usr/bin/env sh
 
-set -x
-
 if [ $# != 0 ]; then
   printf >&2 "Usage: %s\n" "$(basename $0)"
   printf >&2 "Control is done via the following environment variables:\n"

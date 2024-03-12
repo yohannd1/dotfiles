@@ -42,7 +42,7 @@ export WIKI=~/wiki
 export ACW_WIKI_DIR="$WIKI/vimwiki"
 
 # global options
-[ -z "$DISPLAY" ] && export WM=awesome # only export if it hasn't been set before
+# [ -z "$DISPLAY" ] && export WM=awesome # only export if it hasn't been set before
 export TERM=xterm-256color
 export EDITOR=nvim
 export MAYBE_GRAPHICAL_EDITOR=maybe-graphedit

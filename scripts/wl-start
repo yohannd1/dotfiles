@@ -23,8 +23,14 @@ case "$1" in
   dwl)
     (cd ~/pj/code/dwl-fork && make) && ~/pj/code/dwl-fork/dwl
     ;;
+  niri)
+    niri
+    ;;
+  qtile)
+    qtile start -b wayland
+    ;;
   *)
-    printf >&2 "???\n"
+    printf >&2 "Unknown Wayland compositor\n"
     exit 1
     ;;
 esac

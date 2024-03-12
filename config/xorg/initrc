@@ -1,24 +1,37 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # This is the first user file that runs on xinit, apparently.
+#
 # In a LARBS fashion, to be compatible with display managers, this file only
 # does what a display manager would do - source ~/.xprofile if it exists and
 # load the window manager.
 
-printf >&2 "Display: %s\n" "$DISPLAY"
-printf >&2 "Session folder: $XSESSION"
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
-# In this config, the WM env var has the basename of the window manager, for easy recognition.
-# Sometimes it's useful to specify which WM to run, and for that you can set it as an env var before running (even as a relative path)
+printf >&2 "Display: %s\n" "$DISPLAY"
+printf >&2 "Session folder: $XSESSIONDIR\n"
+
+# In this config, the WM env var has the basename of the window manager, for
+# easy recognition.
+#
+# Sometimes it's useful to specify which WM to run, and for that you can set it
+# as an env var before running (even as a relative path)
 #
 # example: WM=./dwm start-xserver
-wm_raw="$WM"
+#
+# FIXME: this is not being respected very well near the end... maybe make the
+# WM always the name and then specify the executable path in another env var? I
+# think that would be more reliable
+wm_cmd=("$WM")
 export WM=$(basename "$WM")
 
 # run system-specific startup scripts
-# some packages usually use this for X setup (e.g. GNOME desktop and systemd session config stuff)
+#
+# some packages usually use this for X setup (e.g. GNOME desktop and systemd
+# session config stuff)
 #
 # related GNOME dbus issue: https://bbs.archlinux.org/viewtopic.php?id=230036
+#
 # "solution": https://wiki.archlinux.org/title/Xinit
 if [ -d /etc/X11/xinit/xinitrc.d ]; then
   for f in /etc/X11/xinit/xinitrc.d/?*.sh; do
@@ -27,29 +40,35 @@ if [ -d /etc/X11/xinit/xinitrc.d ]; then
   unset f
 fi
 
-xprofile="$XDG_CONFIG_HOME/xorg/xprofile"
-if [ ! -f "$xprofile" ]; then
-  xprofile=~/.xprofile
-fi
-
 case "$WM" in
   pencil)
-    # do nothing, but pencil should run the profile when it decides to
+    # do nothing here, as pencil should run the profile when it decides to
     ;;
-  *) [ -f "$xprofile" ] && . "$xprofile" ;;
+  *)
+    xprofile="$XDG_CONFIG_HOME/xorg/xprofile"
+    [ ! -f "$xprofile" ] && xprofile=~/.xprofile
+    [ -f "$xprofile" ] && . "$xprofile"
+    ;;
 esac
 
 case "$WM" in
-  i3|bspwm|dwm|qtile|awesome|pencil) ;;
-  *) printf >&2 'WARNING: window manager "%s" is not yet supported - this might cause problems.\n' "$WM" ;;
+  i3|bspwm|dwm|awesome|pencil)
+    ;;
+  qtile)
+    wm_cmd=(qtile start -b x11)
+    ;;
+  budgie)
+    export XDG_CURRENT_DESKTOP="Budgie:GNOME"
+    wm_cmd=(budgie-desktop)
+    ;;
+  *)
+    printf >&2 'WARNING: window manager "%s" is not accounted for - this might cause problems.\n' "$WM"
+    ;;
 esac
 
-exists() { command -v "$1" >/dev/null 2>/dev/null; }
+# if exists dbus-launch; then
+#   # TODO: figure out how to make logs work here
+#   wm_cmd=(dbus-launch --exit-with-session "${wm_cmd[@]}")
+# fi
 
-if exists dbus-launch; then
-  # TODO: figure out how to make logs work here
-  dbus-launch --exit-with-session "$wm_raw"
-else
-  wmLog="$XSESSIONDIR/wm"
-  exec "$wm_raw" 2>&1 >"$wmLog"
-fi
+exec "${wm_cmd[@]}"

@@ -5,18 +5,22 @@ local font_presets = {
         name = "Source Code Pro Medium",
         base_size = 13.5,
     },
+    ["LiberationMono"] = {
+        name = "Liberation Mono",
+        base_size = 14,
+    },
     ["Iosevka"] = {
         name = "Iosevka Medium",
         base_size = 15,
         supports_ligatures = true, -- FIXME: I don't think so?
     },
     ["FiraCode"] = {
-        name = "Fira Code",
-        base_size = 13,
+        name = "Fira Code Medium",
+        base_size = 14.5,
     },
     ["CascadiaCode"] = {
         name = "Cascadia Code",
-        base_size = 13,
+        base_size = 15,
     },
     ["JetbrainsMono"] = {
         name = "JetBrains Mono",
@@ -155,7 +159,7 @@ local T_ALL = {t_xres, t_dots}
 -- }}}
 
 local enable_ligatures = false
-local font = getFontInfo("SourceCodePro", 1.15)
+local font = getFontInfo("FiraCode", 1.15)
 
 local fsize_term = font.base_size
 local xft_font = longFontFormat(font.name, fsize_term)
@@ -181,6 +185,7 @@ decl {
 -- yambar
 decl {
     {"yambar.font", longFontFormat(font.name, font.base_size * 0.95)},
+    {"yambar.background", theme["base00"]:sub(2) .. "aa"},
 
     targets = T_ALL,
 }
@@ -296,19 +301,19 @@ decl {
 -- qtile
 decl {
     {"qtile.font-family", font.name},
-    {"qtile.font-size", font.base_size},
+    {"qtile.font-size", (font.base_size * 0.8)},
     {"qtile.border-focus", theme["base03"]},
     {"qtile.border-normal", theme["base00"]},
     {"qtile.bar.bg", theme["base00"]},
-    {"qtile.bar.fg", theme["base00"]},
-    {"qtile.bar.fg.inactive", theme["base03"]},
+    {"qtile.bar.fg", theme["base05"]},
+    {"qtile.bar.fg.inactive", theme["base04"]},
 
     targets = T_ALL,
 }
 
 -- qutebrowser
 decl {
-    {"qutebrowser.font_size", "10pt"}, -- placeholder for when I use qutebrowser again someday
+    {"qutebrowser.font_size", "10.5pt"},
     {"qutebrowser.fonts.monospace", font.name},
     {"qutebrowser.fonts.standard", font.name},
     {"qutebrowser.fonts.sans-serif", "NotoSansMedium"},

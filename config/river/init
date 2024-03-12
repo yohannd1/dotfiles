@@ -142,7 +142,7 @@ riverctl rule-add csd -app-id "bar"
 # Set the default layout generator to be rivertile and start it.
 # River will send the process group of the init executable SIGTERM on exit.
 riverctl default-layout rivertile
-rivertile -view-padding 0 -outer-padding 0 &
+rivertile -view-padding 2 -outer-padding 2 &
 
 # dell i3567-a30c
 dell_touchpad="pointer-1739-30966-Synaptics_TM3096-006"
