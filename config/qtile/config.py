@@ -5,12 +5,11 @@ from libqtile import bar, layout, widget
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.lazy import lazy
 
-from qconfig.utils import xgetres
+from qconfig.utils import get_res
 from qconfig.keys import get_keys, mod
 
-terminal = os.getenv("TERMINAL") or "xterm"
-
-keys = get_keys()
+TERMINAL = os.getenv("TERMINAL") or "xterm"
+keys = get_keys(terminal=TERMINAL)
 
 groups = [Group(i) for i in "123456789"]
 
@@ -25,11 +24,19 @@ for i in groups:
             desc="Move focused window to group {}".format(i.name)),
     ]
 
+for vt in range(1, 8):
+    keys.append(Key(
+        ["control", "mod1"],
+        f"f{vt}",
+        lazy.core.change_vt(vt).when(func=lambda: qtile.core.name == "wayland"),
+        desc=f"Switch to VT{vt}",
+    ))
+
 layout_theme_cfg = dict(
     border_width=2,
     margin=5,
-    border_focus=xgetres("qtile.border-focus", "#e1acff"),
-    border_normal=xgetres("qtile.border-normal", "#1D2330"),
+    border_focus=get_res("qtile.border-focus", "#e1acff"),
+    border_normal=get_res("qtile.border-normal", "#1D2330"),
 )
 
 layouts = [
@@ -48,71 +55,69 @@ layouts = [
 ]
 
 widget_defaults = dict(
-    font=xgetres("qtile.font-family", fallback="sans"),
-    fontsize=int(float(xgetres("qtile.font-size", fallback="12"))),
-    foreground=xgetres("qtile.bar.fg", fallback="#000000"),
+    font=get_res("qtile.font-family", fallback="sans"),
+    fontsize=int(float(get_res("qtile.font-size", fallback="12"))),
+    foreground=get_res("qtile.bar.fg", fallback="#000000"),
     padding=3,
 )
 extension_defaults = widget_defaults.copy()
 
-def tasklist_window_select(tl):
-    if tl.clicked:
-        window = tl.clicked
-        window.group.focus(window, False)
+# def tasklist_window_select(tl):
+#     if tl.clicked:
+#         window = tl.clicked
+#         window.group.focus(window, False)
 
-        if window.floating:
-            window.cmd_bring_to_front()
+#         if window.floating:
+#             window.bring_to_front()
 
-task_list = widget.TaskList(
-    mouse_callbacks={"Button1": lambda: tasklist_window_select(task_list)},
+task_list: widget.TaskList = widget.TaskList(
+    # mouse_callbacks={"Button1": lambda: tasklist_window_select(task_list)},
     max_title_width=200,
 )
-
-vol_widget = None # TODO
-mem_widget = None # TODO
 
 standard_bar = bar.Bar(
     [
         widget.GroupBox(
-            active=xgetres("qtile.bar.fg"),
-            inactive=xgetres("qtile.bar.fg.inactive"),
+            active=get_res("qtile.bar.fg"),
+            inactive=get_res("qtile.bar.fg.inactive"),
         ),
         widget.TextBox("["),
         widget.CurrentLayout(),
         widget.TextBox("]"),
-        task_list,
-        # widget.WindowName(),
+
+
+        # task_list,
+        widget.WindowName(),
+
         # widget.Chord(
         #     chords_colors={
         #         "launch": ("#ff0000", "#ffffff"),
         #     },
         #     name_transform=lambda name: name.upper(),
         # ),
-        widget.TextBox("|"),
+        # widget.TextBox("|"),
         # vol_widget,
+        # widget.TextBox("|"),
+        # widget.CPU( # depends on psutil
+        #     update_interval=5.0,
+        #     format='CPU {freq_current}GHz {load_percent:02.0f}%',
+        # ),
+        # widget.TextBox("|"),
+        # widget.Battery(
+        #     format="BAT {percent:.0%}",
+        # ),
+
+        widget.Volume(fmt="Vol: {}"),
         widget.TextBox("|"),
-        # mem_widget,
-        widget.TextBox("|"),
-        widget.CPU( # depends on psutil
-            update_interval=5.0,
-            format='CPU {freq_current}GHz {load_percent:02.0f}%',
-        ),
-        widget.TextBox("|"),
-        widget.Battery(
-            format="BAT {percent:.0%}",
-        ),
-        widget.TextBox("|"),
-        widget.Clock(format="%Y-%m-%d %I:%M %p"),
-        widget.TextBox("|"),
-        widget.Systray(),
-        widget.TextBox(" "),
-        # widget.QuickExit(),
+        widget.Clock(format="%Y-%m-%d %H:%M"),
+        # widget.Systray(),
     ],
     size=24,
-    background=xgetres("qtile.bar.bg", fallback="#000000"),
+    foreground=get_res("qtile.bar.fg", fallback="#FFFFFF"),
+    background=get_res("qtile.bar.bg", fallback="#000000"),
 )
 
-screens = [Screen(bottom=standard_bar)]
+screens = [Screen(top=standard_bar)]
 
 # Drag floating layouts.
 mouse = [
