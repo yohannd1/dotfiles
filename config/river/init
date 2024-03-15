@@ -3,17 +3,23 @@
 
 . ~/.config/dots/env.sh
 
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
 # uhhhh....
 export XDG_CURRENT_DESKTOP=river
 
 # Recommended packages to go with:
 # wl-clipboard swaybg yambar dunst foot light wl-gammarelay
 
+cBorderNormal=$(dotcfg send get:river.border-normal)
+cBorderFocus=$(dotcfg send get:river.border-focus)
+borderWidth=2
+
 # Set background and border color
 riverctl background-color "$(dotcfg send get:river.background)"
-riverctl border-color-focused "$(dotcfg send get:river.border-focus)"
-riverctl border-color-unfocused "$(dotcfg send get:river.border-normal)"
-riverctl border-width 2
+riverctl border-color-unfocused "$cBorderNormal"
+riverctl border-color-focused "$cBorderFocus"
+riverctl border-width "$borderWidth"
 
 systemctl --user import-environment DISPLAY WAYLAND_DISPLAY
 dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
@@ -38,6 +44,10 @@ riverctl map normal Super+Shift K swap previous
 # focus the next/previous output
 riverctl map normal Super+Alt J focus-output next
 riverctl map normal Super+Alt K focus-output previous
+
+# send window to another output
+riverctl map normal Super+Shift+Alt J send-to-output -current-tags next
+riverctl map normal Super+Shift+Alt K send-to-output -current-tags previous
 
 # Super+Return to bump the focused view to the top of the layout stack
 # riverctl map normal Super+Shift Return zoom
@@ -81,13 +91,6 @@ riverctl map normal Super+Shift 0 set-view-tags $all_tags
 riverctl map normal Super+Shift Space toggle-float
 
 riverctl map normal Super+Shift F toggle-fullscreen
-
-# Super+{Up,Right,Down,Left} to change layout orientation
-# SO CONFUSING
-# riverctl map normal Super Up    send-layout-cmd rivertile "main-location top"
-# riverctl map normal Super Right send-layout-cmd rivertile "main-location right"
-# riverctl map normal Super Down  send-layout-cmd rivertile "main-location bottom"
-# riverctl map normal Super Left  send-layout-cmd rivertile "main-location left"
 
 # App keybindings
 riverctl map normal Super Return spawn "$TERMINAL"
@@ -139,13 +142,35 @@ riverctl rule-add -title '*Pinta' float # pinta
 # Make all views with app-id "bar" and any title use client-side decorations
 riverctl rule-add csd -app-id "bar"
 
-# Set the default layout generator to be rivertile and start it.
-# River will send the process group of the init executable SIGTERM on exit.
-riverctl default-layout rivertile
-rivertile -view-padding 2 -outer-padding 2 &
+# Set up layout generator
+if exists wideriver; then
+  riverctl default-layout wideriver
+  wideriver \
+    --layout 'left' --layout-alt 'monocle' \
+    --border-width "$borderWidth" \
+    --border-width-monocle "$borderWidth" \
+    --border-color-focused "$cBorderFocus" \
+    --border-color-focused-monocle "$cBorderFocus" \
+    --border-color-unfocused "$cBorderNormal" \
+    &
+
+  riverctl map normal Super Tab send-layout-cmd wideriver '--layout-toggle'
+else
+  riverctl default-layout rivertile
+  rivertile -view-padding 2 -outer-padding 2 &
+
+  # Super+{Up,Right,Down,Left} to change layout orientation
+  # SO CONFUSING
+  # riverctl map normal Super Up    send-layout-cmd rivertile "main-location top"
+  # riverctl map normal Super Right send-layout-cmd rivertile "main-location right"
+  # riverctl map normal Super Down  send-layout-cmd rivertile "main-location bottom"
+  # riverctl map normal Super Left  send-layout-cmd rivertile "main-location left"
+fi
 
 # dell i3567-a30c
 dell_touchpad="pointer-1739-30966-Synaptics_TM3096-006"
 riverctl input "$dell_touchpad" natural-scroll enabled
 riverctl input "$dell_touchpad" tap enabled
 riverctl input "$dell_touchpad" scroll-method two-finger
+
+# River will send the process group of the init executable SIGTERM on exit.

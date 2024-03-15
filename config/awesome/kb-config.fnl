@@ -30,7 +30,7 @@
 (->> [(awful.key [mod-key] "s" hotkeys-popup.show_help
                   {:description "show keybindings"
                    :group "awesome"})
-       (awful.key [mod-key ctrl shift] "r" awesome.restart
+       (awful.key [mod-key ctrl alt] "r" awesome.restart
                   {:description "reload awesome"
                    :group "awesome"})
        (awful.key [mod-key ctrl alt] "e" awesome.quit
