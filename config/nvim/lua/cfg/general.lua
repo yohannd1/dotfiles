@@ -74,18 +74,83 @@ end
 
 -- me when i copy paste functions into an exec block
 exec([[
-    function! NextBuffer() " {{{
-        bnext
-        silent doautocmd User BufSwitch
-    endfunction " }}}
-    function! PrevBuffer() " {{{
-        bprevious
-        silent doautocmd User BufSwitch
-    endfunction " }}}
+function! NextBuffer() " {{{
+  bnext
+  silent doautocmd User BufSwitch
+endfunction " }}}
+function! PrevBuffer() " {{{
+  bprevious
+  silent doautocmd User BufSwitch
+endfunction " }}}
 
-    function! AddSnippet(key, data) " {{{
-        execute 'nnoremap <silent> <buffer> <Leader>i'.a:key.' i'.a:data.'<Esc>'
-    endfunction " }}}
+function! AddSnippet(key, data) " {{{
+  execute 'nnoremap <silent> <buffer> <Leader>i'.a:key.' i'.a:data.'<Esc>'
+endfunction " }}}
+
+function! Item_ToggleTodo() " {{{
+  let l:Func = exists("b:item_toggletodo_func") ? b:item_toggletodo_func : funcref("Item_Default_ToggleTodo")
+  call l:Func()
+endfunction " }}}
+function! Item_ToggleTodoVisual() " {{{
+  normal mz
+
+  normal '<
+  let l1 = line(".")
+  normal '>
+  let l2 = line(".")
+  let count = l2 - l1 + 1
+
+  let i = 0
+  normal '<
+  while i < count
+    call Item_ToggleTodo()
+    normal j
+    let i = i + 1
+  endwhile
+
+  normal `z
+endfunction " }}}
+function! Item_Default_ToggleTodo() " {{{
+  let current_line = getline('.')
+
+  let preferred_done = exists("b:item_toggletodo_preferred_done") 
+        \ ? b:item_toggletodo_preferred_done
+        \ : "x"
+
+  let open_square_patt = '\v^(\s*)([*-]*)(\s*)\[ \]'
+  if current_line =~ open_square_patt
+    exec 's/' . open_square_patt . '/' . '\1\2\3[' . preferred_done . ']'
+    nohlsearch
+    normal ``
+    return
+  endif
+
+  let open_round_patt = '\v^(\s*)([*-]*)(\s*)\( \)'
+  if current_line =~ open_round_patt
+    exec 's/' . open_round_patt . '/' . '\1\2\3(' . preferred_done . ')'
+    nohlsearch
+    normal ``
+    return
+  endif
+
+  let closed_square_patt = '\v^(\s*)([*-]*)(\s*)\[[Xx]\]'
+  if current_line =~ closed_square_patt
+    exec 's/' . closed_square_patt . '/' . '\1\2\3[ ]'
+    nohlsearch
+    normal ``
+    return
+  endif
+
+  let closed_round_patt = '\v^(\s*)([*-]*)(\s*)\([Xx]\)'
+  if current_line =~ closed_round_patt
+    exec 's/' . closed_round_patt . '/' . '\1\2\3( )'
+    nohlsearch
+    normal ``
+    return
+  endif
+
+  echo "No to-do detected on the current line"
+endfunction " }}}
 ]])
 
 dummy.findTodos = function()
