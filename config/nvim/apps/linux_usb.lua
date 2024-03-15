@@ -20,12 +20,14 @@ exec(string.format("command! ENotes e %s/Repos/PhoneDocs/Pocket/Main.acr", fs_ro
 assert(loadfile(CONF_DIR .. "/lua/prepare.lua"))()
 local ucm = _G.useConfModule
 
-local paths_to_add = {fs_root .. "/Software/Janet/"}
-for _, p in ipairs(paths_to_add) do
-    if vim.fn.isdirectory(p) ~= 0 then
-        vim.env.PATH = vim.env.PATH .. ":" .. p
-    end
-end
+-- (I am handling this elsewhere now)
+--
+-- local paths_to_add = {fs_root .. "/Software/Janet/"}
+-- for _, p in ipairs(paths_to_add) do
+--     if vim.fn.isdirectory(p) ~= 0 then
+--         vim.env.PATH = vim.env.PATH .. ":" .. p
+--     end
+-- end
 
 -- load modules
 ucm("general")
@@ -36,7 +38,7 @@ ucm("statusline")
 local plugged_path = fs_root .. "/Cache/nvim_plugged"
 
 ucm("plugins").init({
-    plugins = { "acrylic.vim", "vim-buftabline" },
+    plugins = { "acrylic.vim", "vim-buftabline", "janet.vim" },
     root_path = plugged_path,
 })
 
