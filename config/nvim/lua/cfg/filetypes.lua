@@ -310,10 +310,15 @@ ft.make = function()
 end
 
 ft.tex = function()
-    vim.b.rifle_ft = "tex"
-    vim.b.rifle_mode = "buffer"
-    setLocals { textwidth = 72 }
+  vim.b.rifle_ft = "tex"
+  vim.b.rifle_mode = "buffer"
+  setLocals { textwidth = 72 }
+  addSnippets {
+    -- WHAT THE FUCK (TODO: make snippets that don't look like utter shit)
+    m = [[\documentclass{article}<CR><CR>\title{Hello, world!}<CR><CR>\begin{document}<CR><CR>\maketitle<CR>\end{document}<Up><Esc>o<CR><Up><CR>]],
+  }
 end
+
 ft.plaintex = ft.tex
 
 ft.zig = function()

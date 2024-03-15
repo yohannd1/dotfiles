@@ -1,4 +1,4 @@
--- vim: fdm=marker foldenable
+-- vim: fdm=marker foldenable sw=4
 -- FONT DEFS {{{
 local font_presets = {
     ["SourceCodePro"] = {
@@ -33,7 +33,7 @@ local font_presets = {
     },
     ["UbuntuMono"] = {
         name = "Ubuntu Mono",
-        base_size = 15,
+        base_size = 17,
         supports_ligatures = false,
     },
     ["RobotoMono"] = {
@@ -109,6 +109,10 @@ local font_presets = {
         name = "Go Mono",
         base_size = 13,
     },
+    ["CourierPrimeCode"] = {
+        name = "Courier Prime Code",
+        base_size = 16,
+    }
 }
 -- }}}
 -- PREPARATIONS {{{
@@ -159,7 +163,7 @@ local T_ALL = {t_xres, t_dots}
 -- }}}
 
 local enable_ligatures = false
-local font = getFontInfo("FiraCode", 1.15)
+local font = getFontInfo("UbuntuMono", 1.15)
 
 local fsize_term = font.base_size
 local xft_font = longFontFormat(font.name, fsize_term)

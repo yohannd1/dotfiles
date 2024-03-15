@@ -37,7 +37,7 @@ HISTSIZE=SAVEHIST=100000
 setopt sharehistory
 setopt extendedhistory
 setopt nobanghist # i fuc king hate !!!!!!!
-setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
 
 # color plugin config
 autoload -U colors && colors
@@ -128,7 +128,7 @@ fzhistory() {
 
 fzSelectFileGen() {
   local item
-  fd -tf | fzf -m "$@" | while read item; do
+  fd -tf | fzagnostic -m "$@" | while read item; do
     echo -n "${(q)item} "
   done
 }
