@@ -3,6 +3,9 @@ import subprocess as sp
 import theme
 from theme import ThemeConfig, Namespace, Font
 
+QUTEBROWSER_SESSION_NAME = os.getenv("QUTEBROWSER_SESSION_NAME") or ""
+is_default_session = (QUTEBROWSER_SESSION_NAME == "")
+
 def main():
     c.downloads.location.directory = os.getenv("XDG_DOWNLOAD_DIR") or "~/inbox"
 
@@ -69,12 +72,6 @@ def main():
     c.zoom.default = "90%"
     c.downloads.open_dispatcher = os.environ.get("OPENER") or "xdg-open"
     c.colors.webpage.darkmode.enabled = False
-    c.url.start_pages = [
-        # "qute://bookmarks/#bookmarks",
-        "https://discord.com/channels/@me",
-        "https://web.whatsapp.com/",
-        "https://app.schildi.chat/",
-    ]
     c.url.searchengines = {
         "DEFAULT": "https://duckduckgo.com/?q={}",
         "dg": "https://duckduckgo.com/?q={}",
@@ -84,9 +81,22 @@ def main():
         "yt": "https://www.youtube.com/results?search_query={}",
         "def": "https://duckduckgo.com/?q={}&ia=definition",
     }
+
     config.load_autoconfig()
 
-    with config.pattern("*://discord.com/*") as p:
+    allow_media_for("*://discord.com/*")
+    allow_media_for("*://meet.google.com/*")
+
+    if is_default_session:
+        c.url.start_pages = [
+            # "qute://bookmarks/#bookmarks",
+            "https://discord.com/channels/@me",
+            "https://web.whatsapp.com/",
+            "https://app.schildi.chat/",
+        ]
+
+def allow_media_for(pattern: str):
+    with config.pattern(pattern) as p:
         p.content.media.audio_video_capture = True
         p.content.autoplay = True
 
