@@ -107,7 +107,7 @@ local font_presets = {
     },
     ["GoMono"] = {
         name = "Go Mono",
-        base_size = 13,
+        base_size = 15,
     },
     ["CourierPrimeCode"] = {
         name = "Courier Prime Code",
@@ -159,11 +159,48 @@ local getFontInfo = function(name, size_multiplier)
     }
 end
 
+local fileExists = function(file)
+    local fd = io.open(file, "rb")
+    if fd then fd:close() end
+    return fd ~= nil
+end
+
+local trimString = function(str)
+   return str:match("^%s*(.-)%s*$")
+end
+
+-- Gets the current boot's font.
+--
+-- If not available, randomly picks one to be such font.
+local getBootRandomFont = function()
+    local font_path = "/tmp/dotf.random-font.txt"
+    if not fileExists(font_path) then
+        local keys = {}
+        for k, _ in pairs(font_presets) do
+            table.insert(keys, k)
+        end
+
+        local key = keys[math.random(#keys)]
+
+        local fd = assert(io.open(font_path, "w"), "could not open random font path")
+        fd:write(key)
+        fd:close()
+        return key
+    end
+
+    local fd = assert(io.open(font_path, "r"), "could not open random font path")
+    local result = trimString(fd:read())
+    fd:close()
+    return result
+end
+
 local T_ALL = {t_xres, t_dots}
 -- }}}
 
 local enable_ligatures = false
-local font = getFontInfo("UbuntuMono", 1.15)
+local font_size = 1.15
+local font_name = getBootRandomFont()
+local font = getFontInfo(font_name, font_size)
 
 local fsize_term = font.base_size
 local xft_font = longFontFormat(font.name, fsize_term)
@@ -317,7 +354,7 @@ decl {
 
 -- qutebrowser
 decl {
-    {"qutebrowser.font_size", "10.5pt"},
+    {"qutebrowser.font_size", (font_size * 11) .. "pt"},
     {"qutebrowser.fonts.monospace", font.name},
     {"qutebrowser.fonts.standard", font.name},
     {"qutebrowser.fonts.sans-serif", "NotoSansMedium"},
