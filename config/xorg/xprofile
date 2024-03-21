@@ -24,11 +24,15 @@ case "$WM" in
 esac
 
 # keybindings daemon
-if [ "$WM" = bspwm ]; then
-  start-sxhkd standard bspwm
-else
-  start-sxhkd standard
-fi &
+case "$WM" in
+  bspwm)
+    start-sxhkd standard bspwm
+    ;;
+  qtile) ;;
+  *)
+    start-sxhkd standard
+    ;;
+esac &
 
 # compositor
 if [ "$WM" = dwm ]; then

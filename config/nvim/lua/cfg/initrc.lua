@@ -109,6 +109,9 @@ do
           ["<C-j>"] = actions.move_selection_next,
           ["<C-k>"] = actions.move_selection_previous,
           ["<C-m>"] = actions.select_default,
+
+          ["<ScrollWheelUp>"] = actions.move_selection_previous,
+          ["<ScrollWheelDown>"] = actions.move_selection_next,
         },
         n = {}
       },
@@ -215,6 +218,18 @@ do
     }):find()
   end
 end
+
+-- TODO: inside neovim, replace the $EDITOR with a wrapper script that connects
+-- to the current neovim instance, opens a buffer, and waits for the buffer to
+-- unload before exiting.
+--
+-- Waiting for neovim to implement --remote-wait to do this. See
+-- https://neovim.io/doc/user/remote.html
+--
+-- This might be possible without --remote-wait already, by using a BufWipeout
+-- hook, but I'd need to figure out how that works and then make the wrapper
+-- script wait till neovim responds back to it with a message saying the buffer
+-- closed. Might not be too hard though?
 
 -- Load configuration from other files
 ucm("general")

@@ -176,14 +176,6 @@
   # (mt :ext ["godot"] :gui ["godot" "-e" file]) # FIXME: not working bruh
   (mt :ext ["yyp"] :gui ["GameMaker" file])
 
-  # music modules
-  (mt :ext ["mod" "it" "s3m" "mptm"] :pop ["openmpt123" file])
-  (mt :ext ["nsf"] :pop ["nosefart" file])
-  (mt :ext ["fur" "dmf"] :gui ["furnace" file])
-  (mt :ext ["ptcop"] :gui ["@ptcollab" file])
-  (mt :ext ["btm"] :gui ["BambooTracker" file])
-  (mt :ext ["vgm" "vgz"] :pop ["vgmplay" file])
-
   # audio files
   (when (or (m :mime [[:begins "audio/"]])
             (m :ext ["aac" "flac" "m4a" "mpa" "mp2" "mp3"
@@ -204,10 +196,22 @@
     (t :runpage ["img2txt" "--gamma=0.6" "--" file])
     (t :runpage ["exiftool" file]))
 
+  # music modules
+  (mt :ext ["mod" "it" "s3m" "mptm"] :pop ["openmpt123" file])
+  (mt :ext ["nsf"] :pop ["nosefart" file])
+  (mt :ext ["fur" "dmf"] :gui ["furnace" file])
+  (mt :ext ["ptcop"] :gui ["@ptcollab" file])
+  (mt :ext ["btm"] :gui ["BambooTracker" file])
+  (mt :ext ["vgm" "vgz"] :pop ["vgmplay" file])
+
   # music projects
   (mt :ext ["kdenlive"] :gui ["kdenlive" file])
   (mt :ext ["sunvox"] :gui ["sunvox" file])
-  (mt :ext ["ardour"] :gui ["ardour7" file])
+  (when (m :ext ["ardour"])
+    (t :gui ["ardour8" file])
+    (t :gui ["ardour7" file])
+    (t :gui ["ardour6" file])
+    )
   (when (m :ext ["mmp" "mmpz"])
     (t :gui ["@lmms" file]) # a wrapper i have on my pc
     (t :gui ["lmms" file]))
@@ -215,9 +219,11 @@
 
   (mt :ext ["swf"] :gui ["flashplayer" file])
 
-  (mt :ext ["djvu" "ps" "epub"] :gui ["zathura" file])
+  (when (m :ext ["djvu" "ps" "epub" "pdf"])
+    (t :gui ["mupdf" file])
+    (t :gui ["zathura" file]))
+
   (when (m :ext ["pdf"])
-    (t :gui ["zathura" file])
     (t :runpage ["pdftotext" "-l" "10" "-nopgbrk" "-q" "--" file "-"])
     (t :runpage ["mutool" "draw" "-F" "txt" "-i" "--" file "1-10"])
     (t :runpage ["exiftool" file]))
@@ -255,6 +261,9 @@
   (when (m :ext ["md"])
     # (t :runpage ["glowrapper" file])
     (t :gui ["md-preview" file]))
+
+  (when (m :ext ["tex"])
+    (t :pop ["rifle-run" "run" "tex" file]))
 
   (when (m :ext ["htm" "html" "xhtml" "mhtml"])
     (t :gui [BROWSER file])

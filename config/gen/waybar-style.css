@@ -1,13 +1,13 @@
 /*!! getColor() { dotcfg send "get:theme_rgb_csv.$1"; }
 /*!! _font_family=$(dotcfg send 'get:waybar.font_family')
 /*!! _font_size=$(dotcfg send 'get:waybar.font_size')
-/*!! _base00=$(getColor base00)
-/*!! _base01=$(getColor base01)
-/*!! _base02=$(getColor base02)
-/*!! _base03=$(getColor base03)
-/*!! _base04=$(getColor base04)
-/*!! _base05=$(getColor base05)
-/*!! _base06=$(getColor base06)
+/*!! base00=$(getColor base00)
+/*!! base01=$(getColor base01)
+/*!! base02=$(getColor base02)
+/*!! base03=$(getColor base03)
+/*!! base04=$(getColor base04)
+/*!! base05=$(getColor base05)
+/*!! base06=$(getColor base06)
 /* */
 
 * {
@@ -18,28 +18,28 @@
 }
 
 window#waybar {
-/*!! printf "background-color: rgba(%s,0.8);\n" "$_base00"
+/*!! printf "background-color: rgba(%s,0.8);\n" "$base00"
 /* */
-/*!! printf "color: rgb(%s);\n" "$_base05"
+/*!! printf "color: rgb(%s);\n" "$base05"
 /* */
 }
 
 #workspaces button, #tags button {
     padding: 0 4px;
     background-color: transparent;
-/*!! printf "color: rgba(%s,1.0);\n" "$_base04"
+/*!! printf "color: rgba(%s,1.0);\n" "$base04"
 /* */
 }
 
 #tags button.occupied {
-/*!! printf "color: rgb(%s);\n" "$_base05"
+/*!! printf "color: rgb(%s);\n" "$base05"
 /* */
 }
 
 #workspaces button.active, #tags button.focused {
-/*!! printf "color: rgb(%s);\n" "$_base06"
+/*!! printf "color: rgb(%s);\n" "$base06"
 /* */
-/*!! printf "background-color: rgb(%s);\n" "$_base02"
+/*!! printf "background-color: rgb(%s);\n" "$base02"
 /* */
 }
 
@@ -67,9 +67,8 @@ window#waybar {
 
 #clock, #pulseaudio, #tray {
     padding: 0 10px;
-    color: #ffffff;
-
-/*!! printf "background-color: rgb(%s);\n" "$_base01"
+/*!! printf "color: rgba(%s,1.0);\n" "$base04"
+/*!! printf "background-color: rgb(%s);\n" "$base01"
 /* */
 }
 

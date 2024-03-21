@@ -5,14 +5,41 @@
     "height": 15,
     "spacing": 0,
 
-    "modules-left": ["hyprland/workspaces", "dwl/tags", "hyprland/window", "dwl/window"],
-    "modules-right": ["pulseaudio", "clock", "tray"],
+    "modules-left": [
+        "river/tags", "river/mode",
+        "hyprland/workspaces",
+        "dwl/tags",
+        "sway/workspaces", "sway/mode",
+    ],
+    "modules-center": [
+        "dwl/window",
+        "river/window",
+        "hyprland/window",
+        "sway/window",
+    ],
+    "modules-right": [
+        // "wlr/taskbar",
+        "pulseaudio", "clock", "tray",
+    ],
 
     "hyprland/workspaces": {
         "disable-scroll": true,
         "all-outputs": false,
         "warp-on-scroll": false,
         "format": "{name}",
+    },
+
+    "river/mode": {
+        "format": "({})",
+    },
+
+    "river/tags": {
+        "num-tags": 9,
+    },
+
+    "river/window": {
+        "format": "{}",
+        "max-length": 60,
     },
 
     "tray": {
@@ -29,6 +56,10 @@
         // "scroll-step": 1, // %, can be a float
         "format": "vol {volume}%",
         "format-muted": "vol OFF",
+    },
+
+    "wlr/taskbar": {
+        "icon-size": 10,
     },
 }
 

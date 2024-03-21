@@ -9,8 +9,9 @@ while getopts "p:h:" o; do
   case "$o" in
     p) hasPrompt=1 prompt="$OPTARG" ;;
     h) hasHeight=1 height="$OPTARG" ;;
+    m) multiSelect=1 ;;
     *)
-      printf >&2 "%s\n" "Usage: $(basename $0) [-p PROMPT] [-h HEIGHT]"
+      printf >&2 "%s\n" "Usage: $(basename $0) [-p PROMPT] [-h HEIGHT] [-m]"
       exit 1
       ;;
   esac
@@ -41,6 +42,7 @@ if [ ! -t 2 ] && [ "$WAYLAND_DISPLAY" ] && exists bemenu; then
   tidyPrompt nospace
   [ "$hasPrompt" ] && args+=(-p "$prompt")
   [ "$hasHeight" ] && args+=(-l "$height") || args+=(-l 10)
+  # $multiSelect not supported
 
   export BEMENU_OPTS=$(bemenu-load-colorscheme)
 
@@ -50,12 +52,16 @@ elif [ ! -t 2 ] && [ "$DISPLAY" ] && exists dmenu; then
   tidyPrompt space
   [ "$hasPrompt" ] && args+=(-p "$prompt")
   [ "$hasHeight" ] && args+=(-l "$height")
+  [ "$multiSelect" ] && args+=(-l "$height")
   dmenu "${args[@]}"
+
+  # $multiSelect not supported
 elif [ -t 2 ] && exists fzf; then
   args=()
   tidyPrompt space
   [ "$hasPrompt" ] && args+=(--prompt "$prompt")
   [ "$hasHeight" ] && args+=(--height "$height")
+  [ "$multiSelect" ] && args+=(-m)
   printf >&2 '\033[2 q' # change cursor to block
   fzf "${args[@]}" --no-border --no-sort --inline-info --exact
 else

@@ -3,9 +3,11 @@ from libqtile.config import Key
 
 from .utils import fzagnostic
 
+alt = "mod1"
 mod = "mod4"
+ctrl = "control"
 
-def get_keys():
+def get_keys(terminal: str):
     return [
         Key([mod], "j", lazy.layout.down(),
             desc="Move focus down"),
@@ -41,13 +43,16 @@ def get_keys():
         Key([mod], "q", lazy.window.kill(),
             desc="Close focused window"),
 
-        Key([mod, "control", "shift"], "r", lazy.restart(),
+        Key([mod, ctrl, alt], "r", lazy.restart(),
             desc="Restart Qtile"),
-        Key([mod, "control", "shift"], "e", lazy.shutdown(),
+        Key([mod, ctrl, alt], "e", lazy.shutdown(),
             desc="Leave Qtile"),
 
         # FIXME: fullscreen seems glitchy
         Key([mod], "f", lazy.window.toggle_fullscreen(),
+            desc="Toggle fullscreen window"),
+
+        Key([mod], "Return", lazy.spawn(terminal),
             desc="Toggle fullscreen window"),
 
         Key([mod], "u", manual_updates,
@@ -65,10 +70,10 @@ def manual_updates(qtile):
 
 @lazy.function
 def switch_to_window(qtile):
-    windows = [w for w in qtile.current_group.windows] # just in case I end up causing some kind of deadlock
+    windows = list(qtile.current_group.windows) # just in case I end up causing some kind of deadlock
 
     choice = fzagnostic(
-        choices=[window.info()["name"] for window in windows],
+        choices=[w.info()["name"] for w in windows],
         prompt="Window:",
     )
 

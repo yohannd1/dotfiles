@@ -117,24 +117,27 @@
                (file/open $ :rn)
                (:read :all)
                (toml->janet) # TODO: start using either (parse-all) for janet-style files or just do a basic config format. i don't want to use a separate library just for this
-               (|(let [config (or ($ :config) {})
-                       exec-dir (or ($ :exec-dir) pkg-f)]
-                   (match ($ :entry)
-                     nil nil
-                     [& ls] (each entry ls
-                              (put entry :config config)
-                              (put entry :exec-dir exec-dir)
-                              (array/push entries entry))
-                     _ (error "Unexpected")))))))))
+
+               # TODO: move most of this into something that runs after the entry has been selected. It would make this faster I think
+               (|(let [config (or (in $ :config) {})
+                       exec-dir (or (in $ :exec-dir) pkg-f)]
+                   (if-let [entries-raw (in $ :entry)]
+                     (each e entries-raw
+                       (put e :config config)
+                       (put e :exec-dir exec-dir)
+                       (array/push entries e))
+                     ))))))))
 
   (match (fzagnostic (->> entries (map |($ :name)))
                      :prompt "Package: "
                      :starting-number 50)
     nil (os/exit 1)
-    [n _] (let [entry (in entries n)]
-            (each [k v] (-> (in entry :config) (in :env {}) (pairs))
+    [n _] (let [entry (in entries n)
+                config (in entry :config)
+                env (in entry :env {})
+                exec-dir (in entry :exec-dir)]
+            (each [k v] (pairs env)
               (os/setenv (string k) v))
-            (def exec-dir (entry :exec-dir))
             (os/cd exec-dir)
             (-> entry (in :command) (run-shell false)))
     _ (error "Unexpected"))

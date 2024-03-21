@@ -3,7 +3,7 @@
 # Useful source: https://customlinux.blogspot.com/2013/02/pavolumesh-control-active-sink-volume.html
 
 max_limit=${VOLUMECTL_MAX_LIMIT:-100}
-increment=${VOLUMECTL_INCREMENT:-5}
+increment=${VOLUMECTL_INCREMENT:-2}
 
 exists() { command -v "$1" >/dev/null; }
 

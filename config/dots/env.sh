@@ -27,25 +27,23 @@ fi
 # the laziest way to force the locale I want
 export LC_ALL='en_US.UTF-8'
 
-export TERMUX_SHELL=zsh
-
 # XDG dirs
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DOWNLOAD_DIR="$HOME/inbox"
 export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_DATA_DIR="$HOME/.local/share"
 export XDG_DATA_HOME="$XDG_DATA_DIR"
-# export XDG_CURRENT_DESKTOP="river"
 
 # personal dirs
 export WIKI=~/wiki
 export ACW_WIKI_DIR="$WIKI/vimwiki"
 
 # global options
-[ -z "$DISPLAY" ] && export WM=awesome # only export if it hasn't been set before
 export TERM=xterm-256color
+# TODO: make a dotf.wrap.editor that replaces maybe-graphedit and handles when an editor actually needs to pop up
 export EDITOR=nvim
 export MAYBE_GRAPHICAL_EDITOR=maybe-graphedit
+export TERMUX_SHELL=zsh
 
 export WAYLAND_TERMINAL=foot
 export XORG_TERMINAL=st
@@ -60,9 +58,6 @@ export OPENER=openfork
 export READER=zathura
 export FILEMAN=nnn
 
-# theming
-export QT_STYLE_OVERRIDE="kvantum"
-
 # SDKs and programming tools
 export GOPATH="$XDG_CACHE_HOME/go"
 export CARGO_HOME="$XDG_CACHE_HOME/cargo"
@@ -73,7 +68,6 @@ export GRADLE_USER_HOME="$XDG_DATA_HOME/gradle"
 export ZIGUP_INSTALL_DIR="$XDG_CACHE_HOME/zigup"
 export ZIGUP_PATH_LINK="$HOME/.local/bin/zig"
 export LUAROCKS_HOME="$HOME/.luarocks"
-export CARP_DIR="$HOME/pj/clone/Carp"
 _exists sccache && export RUSTC_WRAPPER=sccache
 
 # configuration files/folders
@@ -103,15 +97,17 @@ export KBRATE_INTERVAL="45"
 export GIT_EDITOR="$EDITOR"
 export LESS="-RC"
 export KEYTIMEOUT=1
-export FZF_DEFAULT_OPTS='--layout=reverse --no-border
-                         --color fg:5,fg+:7
-                         --color hl:6,hl+:4
-                         --color prompt:8,marker:5,pointer:8
-                         --color spinner:3,gutter:1,info:3'
+export FZF_DEFAULT_OPTS='
+  --layout=reverse --no-border
+  --color fg:5,fg+:7
+  --color hl:6,hl+:4
+  --color prompt:8,marker:5,pointer:8
+  --color spinner:3,gutter:1,info:3'
 export GREP_COLORS='ms=01;34:mc=01;34:sl=:cx=:fn=35:ln=32:bn=32:se=36'
 export OPEN_ALT=dotf.unknown-filetype
 export OPEN_FALLBACK_SILENT=1
 _isAndroid || export GTK_THEME="Adwaita-dark"
+export QT_STYLE_OVERRIDE="kvantum"
 
 # nnn config
 {
@@ -144,7 +140,7 @@ export GCC_COLORS=$(printf "%s" "$_gcc_colors" | tr -d ' ' | tr -d '\n')
 # dotfiles program options
 export DIR_BOOKMARKS=~/storage/share/bookmarks.sh
 export FLAMEW_SCR_FOLDER=~/storage/pictures/screenshots
-export SETBG_WALLPAPER_TYPE="image"
+export SETBG_WALLPAPER_TYPE="color"
 export BKMK_FILE="$WIKI/data/bookmarks.json"
 export ITMN_FILE="$WIKI/data/itmn.json"
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"

@@ -6,7 +6,7 @@ exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
 isWayland() { test "$_uit" = wayland; }
 isXorg() { test "$_uit" = xorg; }
-isHyprland() { [ "$HYPRLAND_INSTANCE_SIGNATURE" ]; }
+isHyprland() { test "$HYPRLAND_INSTANCE_SIGNATURE"; }
 isPipewire() { test "$_audiot" = pipewire; }
 
 if [ "$WAYLAND_DISPLAY" ]; then
@@ -82,11 +82,7 @@ fi
 
 # yambar
 if isWayland; then
-  if isHyprland || pgrep dwl; then
-    waybar &
-  else
-    yambar &
-  fi
+  waybar &
 fi
 
 # set colors for hyprland
