@@ -25,6 +25,7 @@ if [ -d "$THEME_FILES_PATH" ]; then
     eval "$(load-base16-theme --noprefix)"
   elif isAndroid; then
     gen-config termux
+    termux-reload-settings
   elif isTTY; then
     tty-loadcolors
   fi
