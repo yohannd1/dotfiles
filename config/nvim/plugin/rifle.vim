@@ -30,7 +30,8 @@ function! g:Rifle(command)
     let b:rifle_ft = &filetype
   endif
 
-  let l:command = ["rifle-run", a:command, b:rifle_ft, expand("%:p")]
+  " bevsuse neovim on termux is strugglin!!!!11 (FIXME)
+  let l:command = ["bash", $DOTFILES . "/scripts/rifle-run", a:command, b:rifle_ft, expand("%:p")]
   if b:rifle_mode == "popup"
     call jobstart(["termup", "runread"] + l:command)
   elseif b:rifle_mode == "buffer"
