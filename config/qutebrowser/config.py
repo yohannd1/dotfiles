@@ -35,13 +35,14 @@ def main():
 
     monospace_font = Font(get_res("qutebrowser.fonts.monospace",
                                   "Source Code Pro"))
-
     ThemeConfig(
         palette=Namespace(
             bg=get_res("qutebrowser.bg"),
             fg=get_res("qutebrowser.fg"),
             bg_alt=get_res("qutebrowser.bg-alt"),
+            bg_alt2=get_res("qutebrowser.bg-alt2"),
             fg_alt=get_res("qutebrowser.fg-alt"),
+            fg_alt2=get_res("qutebrowser.fg-alt2"),
             bg_attention=get_res("qutebrowser.bg-attention"),
             fg_attention=get_res("qutebrowser.fg-attention"),
             sel_fg=get_res("qutebrowser.sel.fg"),

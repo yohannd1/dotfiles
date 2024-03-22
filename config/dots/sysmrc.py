@@ -68,7 +68,7 @@ m.link_glob(DOTFILES / "config/qutebrowser", "~/.config/qutebrowser")
 m.link_glob(DOTFILES / "config/nvim", "~/.config/nvim")
 m.link_glob(DOTFILES / "config/emacs", "~/.emacs.d")
 m.link_glob(DOTFILES / "desktop", "~/.local/share/applications")
-# m.link_glob(DOTFILES / "config/kak", "~/.config/kak")
+m.link_glob(DOTFILES / "config/kak", "~/.config/kak")
 # m.link_glob(DOTFILES / "config/vscode", "~/.config/Code/User")
 
 XDG_CACHE_HOME = Path(os.environ["XDG_CACHE_HOME"])
