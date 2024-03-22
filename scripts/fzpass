@@ -3,15 +3,32 @@
 # A replacement for passmenu that works with fzagnostic
 
 shopt -s nullglob globstar
+progName=$(basename "$0")
 
 showHelp() {
-  printf >&2 "Usage: %s { copy | otp }\n" "$(basename "$0")"
+  printf >&2 "Usage: %s <TYPE> [OUTPUT]\n" "$progName"
+  printf >&2 "  TYPE := { normal | otp }\n"
+  printf >&2 "  OUTPUT := { stdout | otp }, defaults to stdout\n"
   exit 1
 }
-[ $# != 1 ] && showHelp
 
-case "$1" in
-  copy|otp) action="$1" ;;
+case $# in
+  1) passType="$1" showType="stdout" ;;
+  2) passType="$1" showType="$2" ;;
+  *) showHelp ;;
+esac
+
+args=()
+
+case "$passType" in
+  normal) args+=(show) ;;
+  otp) args+=(otp) ;;
+  *) showHelp ;;
+esac
+
+case "$showType" in
+  stdout) ;;
+  copy) args+=(-c) ;;
   *) showHelp ;;
 esac
 
@@ -25,9 +42,5 @@ files=("${files[@]%.gpg}")
 
 choice=$(printf "%s\n" "${files[@]}" | fzagnostic -p "Entry:") || exit 1
 [ "$choice" ] || exit 1
-
-args=()
-[ "$1" = copy ] && args=(show -c)
-[ "$1" = otp ] && args=(otp -c)
 
 pass "${args[@]}" "$choice" || exit 1
