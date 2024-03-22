@@ -3,7 +3,15 @@
 # Runs a command, and sends a notification based if a condition matches.
 
 . "$(uselib std)"
-depCheck notify-send
+
+if exists notify-send; then
+  nsend() { notify-send -- "$1" "$2"; }
+elif exists termux-notification; then
+  nsend() { printf "%s" "$2" | termux-notification -t "$1"; }
+else
+  # obscure error message. meh. FIXME
+  depCheck notify-send termux-notification
+fi
 
 if [ $# -lt 2 ]; then
   printf >&2 "%s\n" "Usage: $(basename $0) <NOTIFY-IF> <PROGRAM> [ARGS...]"
@@ -32,9 +40,9 @@ showErrorOrOutput() {
 
   headingMessage=$(printf '%s while running %s@(%s)' "$type" "$codeMsg" "$*")
   if [ -z "$output" ]; then
-    notify-send "$headingMessage" "no output provided by the application."
+    nsend "$headingMessage" "no output provided by the application."
   else
-    notify-send "$headingMessage" "$output"
+    nsend "$headingMessage" "$output"
   fi
 }
 
@@ -42,7 +50,7 @@ case "$notifyIf" in
   error-and-output)
     if [ "$exitCode" != 0 ] && [ "$output" ]; then
       headingMessage=$(printf 'Error code %s while running: %s' "$exitCode" "$*")
-      notify-send "$headingMessage" "$output"
+      nsend "$headingMessage" "$output"
     fi
     ;;
   error-or-output)
@@ -54,7 +62,7 @@ case "$notifyIf" in
   output)
     if [ "$output" ]; then
       headingMessage=$(printf 'Output of @(%s)' "$*")
-      notify-send "$headingMessage" "$output"
+      nsend "$headingMessage" "$output"
     fi
     ;;
 esac
