@@ -85,11 +85,12 @@
                   {:description "next layout"
                    :group "layout"})
 
-       (awful.key [mod-key ctrl shift] "s" #(awful.spawn.with_shell "start-sxhkd standard & notify-send 'sxhkd restarted!'")
+       (awful.key [mod-key ctrl alt] "s" #(awful.spawn.with_shell "start-sxhkd standard & notify-send 'sxhkd restarted!'")
                   {:description "restart sxhkd"
                    :group "layout"})
 
-       (awful.key [mod-key ctrl shift] "Return" #(awful.spawn.with_shell "st")
+       (awful.key [mod-key ctrl alt] "Return"
+                  #(awful.spawn.with_shell "dotf.wrap.terminal")
                   {:description "spawn terminal"
                    :group "layout"})
 

@@ -191,8 +191,8 @@
                              :id "background_role"
                              :widget wibox.container.background}}))
 
-      (local bar-position "bottom")
-      (local bar-mode "floating-blocks")
+      (local bar-position "top")
+      (local bar-mode "solid-bar")
       (local solid-alpha "AA")
 
       (local taskbar (awful.wibar {: screen
@@ -200,7 +200,7 @@
                                          "floating-blocks" "#00000000"
                                          "solid-blocks" (.. beautiful.bg_normal solid-alpha))
                                    :position bar-position
-                                   :height 26}))
+                                   :height 23}))
 
       (local bar-side-margin (match bar-mode
                            "floating-blocks" 5
@@ -239,9 +239,8 @@
             3 {1 {1 {:layout wibox.layout.fixed.horizontal
                      1 {1 (let [textbox (wibox.widget.textbox)]
                             (awful.spawn.with_line_callback
-                              "rootblocks"
-                              {:stdout (fn [line]
-                                         (set textbox.text line))})
+                              "dotf.status.monitor"
+                              {:stdout #(set textbox.text $1)})
                             textbox)
                         :left 5
                         :right 7

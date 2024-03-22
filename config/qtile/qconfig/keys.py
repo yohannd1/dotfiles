@@ -24,6 +24,8 @@ def get_keys(terminal: str):
         Key([mod, "shift"], "l", lazy.layout.grow(),
             desc="Expand current window"),
 
+        Key([mod], "space", lazy.window.spawn("runnsend error-and-output fzrun"),
+            desc="spawn fzrun"),
         Key([mod, "shift"], "space", lazy.window.toggle_floating(),
             desc="toggle floating"),
 

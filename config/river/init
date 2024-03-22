@@ -52,13 +52,9 @@ riverctl map normal Super+Shift+Alt K send-to-output -current-tags previous
 # Super+Return to bump the focused view to the top of the layout stack
 # riverctl map normal Super+Shift Return zoom
 
-# Super+H and Super+L to decrease/increase the main ratio of rivertile(1)
-riverctl map -repeat normal Super H send-layout-cmd rivertile "main-ratio -0.05"
-riverctl map -repeat normal Super L send-layout-cmd rivertile "main-ratio +0.05"
-
 # Super+Shift+H and Super+Shift+L to increment/decrement the main count of rivertile(1)
-riverctl map -repeat normal Super+Shift H send-layout-cmd rivertile "main-count +1"
-riverctl map -repeat normal Super+Shift L send-layout-cmd rivertile "main-count -1"
+# riverctl map -repeat normal Super+Shift H send-layout-cmd rivertile "main-count +1"
+# riverctl map -repeat normal Super+Shift L send-layout-cmd rivertile "main-count -1"
 
 #  Mouse keybindings
 riverctl map-pointer normal Super BTN_LEFT move-view
@@ -155,9 +151,15 @@ if exists wideriver; then
     &
 
   riverctl map normal Super Tab send-layout-cmd wideriver '--layout-toggle'
+  riverctl map -repeat normal Super H send-layout-cmd wideriver "--ratio -0.05"
+  riverctl map -repeat normal Super L send-layout-cmd wideriver "--ratio +0.05"
 else
   riverctl default-layout rivertile
   rivertile -view-padding 2 -outer-padding 2 &
+
+  # Super+H and Super+L to decrease/increase the main ratio of rivertile(1)
+  riverctl map -repeat normal Super H send-layout-cmd rivertile "main-ratio -0.05"
+  riverctl map -repeat normal Super L send-layout-cmd rivertile "main-ratio +0.05"
 
   # Super+{Up,Right,Down,Left} to change layout orientation
   # SO CONFUSING

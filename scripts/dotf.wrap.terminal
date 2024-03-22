@@ -77,20 +77,24 @@
 (def exec-args
   (let [a-geo (get arguments :geometry)
         a-eval (get arguments :eval)
-        a-class (get arguments :class)]
+        a-class (get arguments :class)
+
+        args-eval (or a-eval ["tmux"])
+        ]
+
     (cond
       (= terminal "foot") ["foot"
                            ;(if a-geo ["-W" ;a-geo] [])
                            # open tmux as default hehe; this probably should be elsewhere
                            ;(if a-class ["-a" ;a-class] [])
-                           ;(if a-eval a-eval ["tmux"])
+                           ;args-eval
                            ]
 
       # all other terminals
       true [terminal
             ;(if a-geo ["-g" ;a-geo] [])
             ;(if a-class ["-c" ;a-class] [])
-            ;(if a-eval ["-e" ;a-eval] [])
+            ;args-eval
             ]
       )))
 

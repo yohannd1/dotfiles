@@ -1,58 +1,53 @@
-local backlightctl = {}
+-- local is_wayland = os.getenv("WAYLAND_DISPLAY") ~= nil
+-- local is_xorg = (not is_wayland) and (os.getenv("DISPLAY") ~= nil)
 
-local is_wayland = os.getenv("WAYLAND_DISPLAY") ~= nil
-local is_xorg = (not is_wayland) and (os.getenv("DISPLAY") ~= nil)
-
-local xbacklightGet = function()
-    local handle = io.popen("xbacklight -get")
-    local data = handle:read("*all")
-    handle:close() -- TODO: handle return code
-    return data:gsub("^%s*(.-)%s*$", "%1")
+local stringTrim = function(str)
+  return str:gsub("^%s*(.-)%s*$", "%1")
 end
 
-local lightGet = function()
-    local handle = io.popen("light")
-    local data = handle:read("*all")
-    handle:close() -- TODO: handle return code
-    return data:gsub("^%s*(.-)%s*$", "%1")
+local runCommand = function(command)
+  local handle = io.popen(command)
+  handle:close() -- TODO: handle return code
 end
 
-local xbacklightSet = function(data)
-    if type(data) ~= "number" then
-        error("data should be a number (found " .. type(data) .. ")")
-    end
-
-    local handle = io.popen("xbacklight -set " .. data)
-    handle:close() -- TODO: handle return code
+local getCommandOutput = function(command)
+  local handle = io.popen(command)
+  local data = handle:read("*all")
+  handle:close() -- TODO: handle return code
+  return stringTrim(data)
 end
 
-local lightSet = function(data)
-    if type(data) ~= "number" then
-        error("data should be a number (found " .. type(data) .. ")")
-    end
+local XbacklightBackend = {}
+XbacklightBackend.get = function()
+  return tonumber(getCommandOutput("xbacklight -get"))
+end
+XbacklightBackend.set = function(value)
+  assert(type(value) == "number", "expected number, got " .. type(value) .. ")")
+  runCommand("xbacklight -set " .. value)
+end
+XbacklightBackend.inc_dec = function(amount, limits)
+  local lower_limit = limits.lower_limit or error("`limits` must have a `lower_limit` field")
+  local upper_limit = limits.upper_limit or 100
 
-    local handle = io.popen("light -s sysfs/backlight/auto -v3 -S " .. data)
-    handle:close() -- TODO: handle return code
+  local current = XbacklightBackend.get()
+  XbacklightBackend.set(math.min(math.max(lower_limit, current + amount), upper_limit))
 end
 
-function backlightctl.get()
-    if is_xorg then
-        return xbacklightGet()
-    else
-        return lightGet()
-    end
+local LightBackend = {}
+LightBackend.get = function()
+  local str = getCommandOutput("light")
+  return tonumber(str)
+end
+LightBackend.set = function(value)
+  assert(type(value) == "number", "expected number, got " .. type(value) .. ")")
+  runCommand("light -s sysfs/backlight/auto -v3 -S " .. value)
+end
+LightBackend.inc_dec = function(amount, limits)
+  -- FIXME: actually use the limits... it's glitched.
+  amount = amount * 0.4
+  local args = (amount > 0) and ("-A " .. amount) or ("-U " .. -amount)
+  print("light " .. args)
+  runCommand("light " .. args)
 end
 
-function backlightctl.set(data)
-    if is_xorg then xbacklightSet(data) else lightSet(data) end
-end
-
-function backlightctl.inc_dec(amount, limits)
-    local lower_limit = limits.lower_limit or error("`limits` must have a `lower_limit` field")
-    local upper_limit = limits.upper_limit or 100
-
-    local current = backlightctl.get()
-    backlightctl.set(math.min(math.max(lower_limit, current + amount), upper_limit))
-end
-
-return backlightctl
+return LightBackend
