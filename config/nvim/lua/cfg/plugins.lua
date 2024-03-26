@@ -149,6 +149,11 @@ M.add({
     vim.g.buftabline_indicators = 1
   end,
 })
+
+M.add({
+  name = "vim-commentary",
+  source = "tpope/vim-commentary",
+})
 -- }}}
 
 -- Filetype plugins {{{
@@ -167,7 +172,6 @@ plugins_old = function()
   -- Editing enhancements {{{
   plug("tpope/vim-surround")
   plug("tpope/vim-repeat")
-  plug("tpope/vim-commentary")
 
   plug({"mattn/emmet-vim", config = function()
     vim.g.user_emmet_leader_key = '<C-x>e'

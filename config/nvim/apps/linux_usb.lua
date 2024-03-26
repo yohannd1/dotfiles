@@ -2,7 +2,7 @@ _G.dummy = {}
 local vim = _G.vim
 local exec = function(cmd) vim.api.nvim_exec(cmd, false) end
 
-exec("colorscheme habamax")
+exec("colorscheme sorbet")
 
 vim.g.is_first = (vim.g.is_first == nil) and 1 or 0
 
@@ -38,7 +38,7 @@ ucm("statusline")
 local plugged_path = fs_root .. "/Cache/nvim_plugged"
 
 ucm("plugins").init({
-    plugins = { "acrylic.vim", "vim-buftabline", "janet.vim" },
+    plugins = { "acrylic.vim", "vim-buftabline", "janet.vim", "vim-commentary" },
     root_path = plugged_path,
 })
 
