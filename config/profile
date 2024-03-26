@@ -54,7 +54,6 @@ if ! isTermux; then
   printf >&2 "OK!\n"
 
   # set up dotcfg daemon and load config
-  # TODO: make this work on Termux (compile dotcfg over there as well)
   {
     _socket=$(mktemp /tmp/dotcfg.XXXXXX.sock)
     export DOTCFG_SOCKET="$_socket"

@@ -103,7 +103,7 @@ class ThemeConfig:
         c.colors.downloads.system.bg = "rgb" # see ColorSystem valid values
 
         # Hints
-        c.colors.hints.fg = p.fg_alt
+        c.colors.hints.fg = p.fg_alt2
         c.colors.hints.bg = p.bg_alt
         c.hints.border = f"1px solid {p.bg}"
         c.colors.hints.match.fg = p.match_fg

@@ -28,7 +28,7 @@ local font_presets = {
     },
     ["Fixedsys"] = {
         name = "Fixedsys Excelsior",
-        base_size = 16,
+        base_size = 17,
         supports_ligatures = false, -- because of glitches
     },
     ["UbuntuMono"] = {
@@ -38,16 +38,16 @@ local font_presets = {
     },
     ["RobotoMono"] = {
         name = "Roboto Mono Medium",
-        base_size = 13,
+        base_size = 15,
     },
     ["SpaceMono"] = {
-        name = "Space Mono",
-        base_size = 13,
+        name = "Space Mono Nerd Font",
+        base_size = 14,
         supports_ligatures = false, -- because of glitches (FIXME: confirm)
     },
     ["FantasqueSans"] = {
         name = "Fantasque Sans Mono",
-        base_size = 16,
+        base_size = 17,
     },
     ["Sudo"] = {
         name = "Sudo",
@@ -59,7 +59,7 @@ local font_presets = {
     },
     ["Hack"] = {
         name = "Hack",
-        base_size = 13,
+        base_size = 14.6,
     },
     ["IbmPlex"] = {
         name = "Ibm Plex Mono",
@@ -71,11 +71,11 @@ local font_presets = {
     },
     ["Unifont"] = {
         name = "Unifont",
-        base_size = 15,
+        base_size = 17,
     },
     ["ProggyVector"] = {
         name = "ProggyVector",
-        base_size = 13,
+        base_size = 14.5,
     },
     ["PtMono"] = {
         name = "PTMono",
@@ -83,7 +83,7 @@ local font_presets = {
     },
     ["Hermit"] = {
         name = "Hermit",
-        base_size = 13.5,
+        base_size = 14,
     },
     ["Agave"] = {
         name = "Agave",
@@ -111,7 +111,7 @@ local font_presets = {
     },
     ["CourierPrimeCode"] = {
         name = "Courier Prime Code",
-        base_size = 16,
+        base_size = 17,
     }
 }
 -- }}}
@@ -207,7 +207,7 @@ local xft_font = longFontFormat(font.name, fsize_term)
 
 -- st (terminal)
 decl {
-    {"st.alpha", "0.7"},
+    {"st.alpha", "0.95"},
     {"st.cursor", theme["base0D"]},
     {"st.font", xft_font},
     {"st.enableligatures", (enable_ligatures and font.supports_ligatures) and 1 or 0},
@@ -354,7 +354,7 @@ decl {
 
 -- qutebrowser
 decl {
-    {"qutebrowser.font_size", (font_size * 11) .. "pt"},
+    {"qutebrowser.font_size", (font_size * 9) .. "pt"},
     {"qutebrowser.fonts.monospace", font.name},
     {"qutebrowser.fonts.standard", font.name},
     {"qutebrowser.fonts.sans-serif", "NotoSansMedium"},
@@ -362,7 +362,9 @@ decl {
     {"qutebrowser.bg", theme["base00"]},
     {"qutebrowser.fg", theme["base05"]},
     {"qutebrowser.bg-alt", theme["base01"]},
+    {"qutebrowser.bg-alt2", theme["base02"]},
     {"qutebrowser.fg-alt", theme["base04"]},
+    {"qutebrowser.fg-alt2", theme["base0A"]},
     {"qutebrowser.bg-attention", theme["base01"]},
     {"qutebrowser.fg-attention", theme["base04"]},
     {"qutebrowser.sel.bg", theme["base02"]},

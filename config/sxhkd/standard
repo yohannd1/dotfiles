@@ -11,38 +11,21 @@ super + control + shift + c
 super + Return
     dotf.wrap.terminal
 super + shift + Return
-    termup zsh
+    dotf.wrap.terminal -c float
 
 # program launcher
 super + space
     runnsend error-and-output fzrun
 
 # power menu
-super + shift + o
+super + alt + o
     runnsend error-and-output fzpow
 
-# screenshot related
-# Print
-#     runnsend error flamew fullc
-# super + Print
-#     runnsend error flamew gui
-# ctrl + Print
-#     runnsend error flamew full
-
-super + n
-    termup $FILEMAN
-super + shift + n
-    termup -f $FILEMAN
-
+# screenshot
 super + c
     runnsend error ksnip -r
-    # runnsend error flameshot gui
-    # runnsend error flamew gui
-
-# super + alt + c
-#     runnsend error flamew fullc
-# super + shift + c
-#     runnsend error flamew full
+super + shift + c
+    runnsend error ksnip -f
 
 # mounting
 super + F10
@@ -84,7 +67,7 @@ super + {minus,equal}
 
 # toggle red screen
 super + F12
-    redscr toggle 70
+    redscr toggle 90
 
 # show a report (time, current window, CPU usage, battery etc.)
 super + r

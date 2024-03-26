@@ -324,11 +324,8 @@ alias jpdo='LANG=ja_JP.UTF8 LC_ALL=ja_JP'
 alias sy='dotsync'
 alias of='openfork'
 
-# startXServerOrLogout() { start-xserver || logout; }
-# alias sx='startXServerOrLogout'
-
 # sg() { dbus-launch --exit-with-session river-start; }
-sg() { wl-start river; }
+sg() { WM=awesome start-xserver; }
 
 editRecentf() { filehist select "$EDITOR"; }
 alias er='editRecentf'
@@ -413,6 +410,7 @@ epic-translate() {
 
 T() { epic-translate "$@" 2>&1 | less; }
 Td() { epic-translate "$1" "$1" "$2" 2>&1 | less; }
+P() { ps -eo pid,args | rg "$1"; }
 
 # FIXME: I'm not exactly sure how to do this, specially because it messes up if I'm trying to use more than one X server.
 if ! isAndroid; then

@@ -1,0 +1,94 @@
+#!/usr/bin/env janet
+
+(defn get-date-string []
+  (let [date (os/date nil true)]
+    (string/format
+      "%04d-%02d-%02d %02d:%02d"
+      (in date :year)
+      (inc (in date :month))
+      (inc (in date :month-day))
+      (in date :hours)
+      (in date :minutes))))
+
+(defn date-block [channel]
+  (ev/spawn
+    (forever
+      (ev/give channel [:date (get-date-string)])
+      (ev/sleep 2)
+      )))
+
+(defn get-volume-string []
+  (def [stdout-r stdout-w] (os/pipe))
+
+  (def code (os/execute ["dwmblocks-volume"] :p {:out stdout-w}))
+  (assert (= code 0))
+
+  (-> stdout-r (:read math/int32-max))
+  )
+
+(defn volume-block [channel]
+  (def [stdout-r stdout-w] (os/pipe))
+
+  (defn valid-line [line]
+    (and
+      (> (length line) 0)
+      (string/find "sink" line)))
+
+  (ev/spawn
+    (defn update-volume []
+      (ev/give channel [:volume (get-volume-string)]))
+
+    # do it once initially
+    (update-volume)
+
+    # continually listen for sink events
+    (forever
+      (def lines (as-> stdout-r x
+                       (:read x math/int32-max)
+                       (string/split "\n" x)
+                       (map |(string/trim $) x)
+                       (filter valid-line x)
+                       ))
+
+      # TODO: actually get volume info (dwmblocks-volume)
+      (when (-> lines (length) (> 0))
+        (update-volume))
+      )
+    )
+
+  (def code (os/execute ["pactl" "subscribe"] :p {:out stdout-w}))
+  (assert (= code 0))
+  )
+
+(defn main [& args]
+  (def channel (ev/chan 16))
+
+  (var old-string nil)
+
+  (ev/spawn
+    (def outputs @{})
+    (def names [:volume :date])
+
+    (forever
+      (match (ev/take channel)
+        [name content] (set (outputs name) content)
+        _ (error "unexpected..."))
+
+      (def new-string
+           (string/join (map |(-> outputs (in $) (or "???")) names) " | "))
+
+      (when (not= new-string old-string)
+        (:write stdout new-string)
+        (:write stdout "\n")
+        (:flush stdout)
+        (set old-string new-string)
+        )
+      ))
+
+  (ev/spawn
+    (volume-block channel))
+
+  (ev/spawn
+    (date-block channel))
+
+  )

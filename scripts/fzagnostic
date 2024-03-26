@@ -5,7 +5,7 @@
 
 . "$(uselib std)"
 
-while getopts "p:h:" o; do
+while getopts "p:h:m" o; do
   case "$o" in
     p) hasPrompt=1 prompt="$OPTARG" ;;
     h) hasHeight=1 height="$OPTARG" ;;
