@@ -107,7 +107,7 @@ export GREP_COLORS='ms=01;34:mc=01;34:sl=:cx=:fn=35:ln=32:bn=32:se=36'
 export OPEN_ALT=dotf.unknown-filetype
 export OPEN_FALLBACK_SILENT=1
 _isAndroid || export GTK_THEME="Adwaita-dark"
-export QT_STYLE_OVERRIDE="kvantum"
+export QT_STYLE_OVERRIDE="Adwaita-Dark"
 
 # nnn config
 {

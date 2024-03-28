@@ -24,7 +24,7 @@ local font_presets = {
     },
     ["JetbrainsMono"] = {
         name = "JetBrains Mono",
-        base_size = 13.5,
+        base_size = 14,
     },
     ["Fixedsys"] = {
         name = "Fixedsys Excelsior",
@@ -51,11 +51,11 @@ local font_presets = {
     },
     ["Sudo"] = {
         name = "Sudo",
-        base_size = 17,
+        base_size = 19,
     },
     ["Mononoki"] = {
         name = "Mononoki",
-        base_size = 14,
+        base_size = 15,
     },
     ["Hack"] = {
         name = "Hack",
@@ -67,7 +67,7 @@ local font_presets = {
     },
     ["ShareTech"] = {
         name = "Share Tech Mono",
-        base_size = 14,
+        base_size = 16,
     },
     ["Unifont"] = {
         name = "Unifont",
@@ -87,7 +87,7 @@ local font_presets = {
     },
     ["Agave"] = {
         name = "Agave",
-        base_size = 15,
+        base_size = 17,
     },
     ["EnvyCodeR"] = {
         name = "Envy Code R",
@@ -99,11 +99,11 @@ local font_presets = {
     },
     ["Bedstead"] = {
         name = "Bedstead",
-        base_size = 14,
+        base_size = 16,
     },
     ["ModernDOS"] = {
         name = "Modern DOS 9x16",
-        base_size = 15,
+        base_size = 17,
     },
     ["GoMono"] = {
         name = "Go Mono",
@@ -354,7 +354,7 @@ decl {
 
 -- qutebrowser
 decl {
-    {"qutebrowser.font_size", (font_size * 9) .. "pt"},
+    {"qutebrowser.font_size", (font_size * 10) .. "pt"},
     {"qutebrowser.fonts.monospace", font.name},
     {"qutebrowser.fonts.standard", font.name},
     {"qutebrowser.fonts.sans-serif", "NotoSansMedium"},
