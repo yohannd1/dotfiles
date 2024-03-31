@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-acw-list-titles \
+acr-list-titles \
   | rg 'Journal' \
   | sort -h \
   | while read line; do

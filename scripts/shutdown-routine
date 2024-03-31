@@ -7,7 +7,7 @@
   std-commits
 
   # printf >&2 "Regenerating wiki cache...\n"
-  # acw-list-titles >/dev/null
+  # acr-list-titles >/dev/null
 
   printf >&2 "Tidying up filehist...\n"
   filehist tidy

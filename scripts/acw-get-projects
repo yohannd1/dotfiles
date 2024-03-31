@@ -22,7 +22,7 @@ def main() -> int:
         if "project" in tags:
             projects[id] = None
 
-    p_titles = sp.run(["acw-list-titles"], stdout=sp.PIPE, encoding="utf-8")
+    p_titles = sp.run(["acr-list-titles"], stdout=sp.PIPE, encoding="utf-8")
     for line in p_titles.stdout.split("\n"):
         split = line.split(" ", maxsplit=1)
         id = split[0]
