@@ -6,6 +6,7 @@ local utils = ucm("utils")
 local exec = function(s) vim.api.nvim_exec(s, false) end
 
 local vim_runtime_dir = vim.env.VIMRUNTIME
+local autocmd = vim.api.nvim_create_autocmd
 
 -- FIXME: am I doing this right
 -- utils.source_if_present(vim_runtime_dir .. "/delmenu.vim") or utils.source_if_present(vim_runtime_dir .. "/menu.vim")
@@ -152,6 +153,15 @@ function! Item_Default_ToggleTodo() " {{{
   echo "No to-do detected on the current line"
 endfunction " }}}
 ]])
+
+-- autocmd({"TextYankPost"}, {
+--   pattern = "*",
+--   callback = function()
+--     vim.highlight.on_yank({
+--       higroup = "Normal",
+--     })
+--   end
+-- })
 
 dummy.findTodos = function()
     local queries = {'<TODO>', '<FIXME>', '<XXX>'}

@@ -131,23 +131,23 @@ do
 
   local main_theme = themes.get_ivy()
 
-  dummy.open_today_journal = function()
-    local proc = assert(io.popen("acw-today-journal", "r"))
-    local entry = proc:read("*a")
-    proc:close()
+  -- dummy.open_today_journal = function()
+  --   local proc = assert(io.popen("acr-today-journal", "r"))
+  --   local entry = proc:read("*a")
+  --   proc:close()
 
-    if entry == nil or entry == "" then
-      print("Failed to open today's journal")
-    else
-      vim.cmd("e " .. vim.g.wiki_dir .. "/" .. entry:gsub("^%s*", ""):gsub("%s*$", "") .. ".wiki")
-    end
-  end
+  --   if entry == nil or entry == "" then
+  --     print("Failed to open today's journal")
+  --   else
+  --     vim.cmd("e " .. vim.g.wiki_dir .. "/" .. entry:gsub("^%s*", ""):gsub("%s*$", "") .. ".wiki")
+  --   end
+  -- end
 
   -- Search and open on wiki
   dummy.open_wiki_file = function(opts, command)
     opts = opts or {}
     utils.overrideTableWith(opts, main_theme)
-    command = command or {"acw-list-titles"}
+    command = command or {"acr-list-titles"}
 
     pickers.new(opts, {
       prompt_title = "Search on wiki",
@@ -176,7 +176,7 @@ do
 
     pickers.new(opts, {
       prompt_title = "Insert wiki file: " .. repr_string,
-      finder = finders.new_oneshot_job({"acw-list-titles"}, opts),
+      finder = finders.new_oneshot_job({"acr-list-titles"}, opts),
       sorter = conf.generic_sorter(opts),
       attach_mappings = function()
         actions.select_default:replace(function(prompt_bufnr)
