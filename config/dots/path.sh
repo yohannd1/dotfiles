@@ -32,6 +32,7 @@ pathadd ~/storage/scripts
 pathadd "${GEM_HOME:-$HOME/.gem}/bin"
 pathadd ~/.nimble/bin
 [ "$NPM_DIR" ] && pathadd "$NPM_DIR/bin"
+pathadd "$XDG_CONFIG_HOME/composer/vendor/bin"
 
 globpathadd "/opt"
 globpathadd "${XDG_CACHE_HOME:-$HOME/.cache}/packs"

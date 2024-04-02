@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+
+isTerminal() { [ -t 0 ] && [ -t 1 ] && [ -t 2 ]; }
+isWayland() { [ "$WAYLAND_DISPLAY" ]; }
+isXorg() { ! isWayland && [ "$DISPLAY" ]; }
+
+if isTerminal; then
+  exec nvim "$@"
+elif isXorg || isWayland; then
+  exec dotf.wrap.terminal -e tmux new -- nvim "$@"
+else
+  printf >&2 "Could not figure out where to open editor.\n"
+  exit 2
+fi

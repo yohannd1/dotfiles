@@ -64,7 +64,7 @@
                            (string XDG-CACHE-HOME "/fzrun-recent-cmds")))
 
 (def DISPLAY (os/getenv "DISPLAY"))
-(def WAYLAND-DISPLAY (os/getenv "WAYLAND-DISPLAY"))
+(def WAYLAND-DISPLAY (os/getenv "WAYLAND_DISPLAY"))
 (def is-graphical (-> DISPLAY (or WAYLAND-DISPLAY) (truthy?)))
 
 (defn add-line-to-file [path line]
@@ -103,7 +103,7 @@
     [n _] (run-shell (in bins n) add-to-recent)))
 
 (defn edit-recent []
-  (os/exit (os/execute ["maybe-graphedit" FZRUN-RECENT-CMDS] :p)))
+  (os/exit (os/execute [EDITOR FZRUN-RECENT-CMDS] :p)))
 
 (defn package-menu []
   (def entries @[])

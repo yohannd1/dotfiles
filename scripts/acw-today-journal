@@ -27,7 +27,7 @@ local today_date = os.date("%Y%m%d")
 local findTodayEntry = function()
     local journal_entries = {}
     do
-        local handle = assert(io.popen("acw-list-titles"))
+        local handle = assert(io.popen("acr-list-titles"))
         for line in handle:lines() do
             local title = line:gsub("^%d+-[A-Z0-9]+ (.*)$", "%1")
 

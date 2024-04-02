@@ -1,10 +1,10 @@
 #!/usr/bin/env sh
 
-acw-list-titles \
+acr-list-titles \
   | sort -h \
   | while read line; do
     id=$(printf "%s" "$line" | awk '{ print $1 }') || return 1
-    filename="$HOME/wiki/vimwiki/$id.wiki"
+    filename="$HOME/wiki/vimwiki/$id.acr"
 
     rg '(^\s*([*-]\s+)?(\[ \]|\( \))|\b(TODO|FIXME)\b)' "$filename" | while read match; do
       printf "%s:%s\n" "$id" "$match"
@@ -13,5 +13,5 @@ acw-list-titles \
   | fzagnostic \
   | while read choice; do
     id=$(printf "%s\n" "$choice" | awk '{ split($0, arr, ":"); print arr[1] }') || return 1
-    edit "$HOME/wiki/vimwiki/$id.wiki"
+    edit "$HOME/wiki/vimwiki/$id.acr"
   done

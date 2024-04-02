@@ -47,7 +47,6 @@ for app in apps:
     m.link_conf(app, f"~/.config/{app}")
 
 m.link_conf("gdbinit", f"~/.gdbinit")
-m.link_conf("prettierrc.json", f"~/.pretierrc.json")
 m.link_conf("profile", "~/.profile")
 m.link_conf("guile/guilerc", "~/.guile")
 m.link_conf("bash/bashrc", "~/.bashrc")
@@ -78,7 +77,7 @@ print("Downloading/updating repos...", file=sys.stderr)
 
 (DOTS_CACHE / "repos").mkdir(parents=True, exist_ok=True)
 REPOS = {
-    "FlatColor": "https://github.com/YohananDiamond/FlatColor",
+    # "FlatColor": "https://github.com/YohananDiamond/FlatColor",
 }
 for (name, url) in REPOS.items():
     print(f"Current repo: {name} ({url})", file=sys.stderr)
