@@ -91,11 +91,11 @@ local font_presets = {
     },
     ["EnvyCodeR"] = {
         name = "Envy Code R",
-        base_size = 15,
+        base_size = 16,
     },
     ["DinaRemasterII"] = {
         name = "DinaRemasterII",
-        base_size = 16,
+        base_size = 18,
     },
     ["Bedstead"] = {
         name = "Bedstead",
@@ -198,7 +198,7 @@ local T_ALL = {t_xres, t_dots}
 -- }}}
 
 local enable_ligatures = false
-local font_size = 1.15
+local font_size = 1.10
 local font_name = getBootRandomFont()
 local font = getFontInfo(font_name, font_size)
 
