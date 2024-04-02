@@ -40,9 +40,7 @@ export ACW_WIKI_DIR="$WIKI/vimwiki"
 
 # global options
 export TERM=xterm-256color
-# TODO: make a dotf.wrap.editor that replaces maybe-graphedit and handles when an editor actually needs to pop up
-export EDITOR=nvim
-export MAYBE_GRAPHICAL_EDITOR=maybe-graphedit
+export EDITOR=dotf.wrap.editor
 export TERMUX_SHELL=zsh
 
 export WAYLAND_TERMINAL=foot
@@ -140,7 +138,7 @@ export GCC_COLORS=$(printf "%s" "$_gcc_colors" | tr -d ' ' | tr -d '\n')
 # dotfiles program options
 export DIR_BOOKMARKS=~/storage/share/bookmarks.sh
 export FLAMEW_SCR_FOLDER=~/storage/pictures/screenshots
-export SETBG_WALLPAPER_TYPE="color"
+export SETBG_WALLPAPER_TYPE="image"
 export BKMK_FILE="$WIKI/data/bookmarks.json"
 export ITMN_FILE="$WIKI/data/itmn.json"
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"
