@@ -5,11 +5,15 @@ from libqtile import bar, layout, widget
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.lazy import lazy
 
-from qconfig.utils import get_res
-from qconfig.keys import get_keys, mod
+from settings.utils import get_res
+from settings.keys import get_keys, mod
+from settings.data import Config
 
-TERMINAL = os.getenv("TERMINAL") or "xterm"
-keys = get_keys(terminal=TERMINAL)
+cfg = Config(
+    terminal=os.getenv("TERMINAL") or "xterm",
+)
+
+keys = get_keys(cfg)
 
 groups = [Group(i) for i in "123456789"]
 
@@ -34,14 +38,14 @@ for vt in range(1, 8):
 
 layout_theme_cfg = dict(
     border_width=2,
-    margin=5,
+    margin=2,
     border_focus=get_res("qtile.border-focus", "#e1acff"),
     border_normal=get_res("qtile.border-normal", "#1D2330"),
 )
 
 layouts = [
     layout.MonadTall(**layout_theme_cfg),
-    layout.MonadWide(**layout_theme_cfg),
+    # layout.MonadWide(**layout_theme_cfg),
     layout.Max(**layout_theme_cfg),
     layout.Zoomy(**layout_theme_cfg),
     # layout.Columns(border_focus_stack='#d75f5f'),
@@ -62,17 +66,20 @@ widget_defaults = dict(
 )
 extension_defaults = widget_defaults.copy()
 
-# def tasklist_window_select(tl):
-#     if tl.clicked:
-#         window = tl.clicked
-#         window.group.focus(window, False)
+def tasklist_window_select(tl):
+    if tl.clicked:
+        window = tl.clicked
+        window.group.focus(window, False)
 
-#         if window.floating:
-#             window.bring_to_front()
+        if window.floating:
+            window.bring_to_front()
 
 task_list: widget.TaskList = widget.TaskList(
-    # mouse_callbacks={"Button1": lambda: tasklist_window_select(task_list)},
+    mouse_callbacks={
+        "Button1": lambda: tasklist_window_select(task_list),
+    },
     max_title_width=200,
+    highlight_method="block",
 )
 
 standard_bar = bar.Bar(
@@ -80,14 +87,15 @@ standard_bar = bar.Bar(
         widget.GroupBox(
             active=get_res("qtile.bar.fg"),
             inactive=get_res("qtile.bar.fg.inactive"),
+            highlight_method="block",
+            visible_groups=[],
         ),
         widget.TextBox("["),
         widget.CurrentLayout(),
         widget.TextBox("]"),
 
-
-        # task_list,
-        widget.WindowName(),
+        task_list,
+        # widget.WindowName(),
 
         # widget.Chord(
         #     chords_colors={
@@ -107,10 +115,10 @@ standard_bar = bar.Bar(
         #     format="BAT {percent:.0%}",
         # ),
 
-        widget.Volume(fmt="Vol: {}"),
+        widget.Volume(fmt="vol: {}"),
         widget.TextBox("|"),
         widget.Clock(format="%Y-%m-%d %H:%M"),
-        # widget.Systray(),
+        widget.Systray(),
     ],
     size=24,
     foreground=get_res("qtile.bar.fg", fallback="#FFFFFF"),
@@ -129,12 +137,10 @@ mouse = [
          "Button1",
          lazy.window.set_size_floating(),
          start=lazy.window.get_size()),
-    Click([mod], "Button2", lazy.window.bring_to_front()),
 ]
 
 dgroups_key_binder = None
 dgroups_app_rules = []  # type: List
-main = None  # WARNING: this is deprecated and will be removed soon
 follow_mouse_focus = False
 bring_front_click = False
 cursor_warp = False

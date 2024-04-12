@@ -103,10 +103,6 @@ super + alt + c
     dotf.wrap.terminal -c float -g 65x10 -e runread cal -3
 super + alt + m
     dotf.wrap.terminal -c float -e pulsemixer
-super + alt + y
-    dotf.wrap.terminal -c float -g 90x25 -e ytop
-super + alt + p
-    dotf.wrap.terminal -c float -g 100x35 -e calc
 super + alt + t
     dotf.wrap.terminal -e tmux-tray
 super + alt + shift + t

@@ -13,9 +13,11 @@ case "$WM" in
   dwm)
     if exists rootblocks; then
       rootblocks &
-    else
+    elif exists dwmblocks; then
       dwmblocks &
       pactl subscribe | grep --line-buffered "sink" | xargs -I'{}' pkill -RTMIN+10 dwmblocks >/dev/null 2>/dev/null &
+    else
+      true # TODO: error
     fi
     ;;
   pencil)
@@ -28,7 +30,6 @@ case "$WM" in
   bspwm)
     start-sxhkd standard bspwm
     ;;
-  qtile) ;;
   *)
     start-sxhkd standard
     ;;

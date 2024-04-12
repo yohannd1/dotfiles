@@ -2,12 +2,16 @@ from libqtile.lazy import lazy
 from libqtile.config import Key
 
 from .utils import fzagnostic
+from .data import Config
 
 alt = "mod1"
 mod = "mod4"
 ctrl = "control"
+shift = "shift"
 
-def get_keys(terminal: str):
+def get_keys(config: Config):
+    # Mostly just WM-related keybindings here. Use sxhkd for the rest.
+
     return [
         Key([mod], "j", lazy.layout.down(),
             desc="Move focus down"),
@@ -19,19 +23,17 @@ def get_keys(terminal: str):
         Key([mod], "l", lazy.layout.grow_main(),
             desc="Expand main window"),
 
-        Key([mod, "shift"], "h", lazy.layout.shrink(),
+        Key([mod, shift], "h", lazy.layout.shrink(),
             desc="Shrink current window"),
-        Key([mod, "shift"], "l", lazy.layout.grow(),
+        Key([mod, shift], "l", lazy.layout.grow(),
             desc="Expand current window"),
 
-        Key([mod], "space", lazy.window.spawn("runnsend error-and-output fzrun"),
-            desc="spawn fzrun"),
-        Key([mod, "shift"], "space", lazy.window.toggle_floating(),
+        Key([mod, shift], "space", lazy.window.toggle_floating(),
             desc="toggle floating"),
 
-        Key([mod, "shift"], "j", lazy.layout.shuffle_down(),
+        Key([mod, shift], "j", lazy.layout.shuffle_down(),
             desc="Move window down"),
-        Key([mod, "shift"], "k", lazy.layout.shuffle_up(),
+        Key([mod, shift], "k", lazy.layout.shuffle_up(),
             desc="Move window up"),
 
         Key([mod], "n", lazy.layout.normalize(),
@@ -39,7 +41,7 @@ def get_keys(terminal: str):
 
         Key([mod], "Tab", lazy.next_layout(),
             desc="Go to next layout"),
-        Key([mod, "shift"], "Tab", lazy.prev_layout(),
+        Key([mod, shift], "Tab", lazy.prev_layout(),
             desc="Go to previous layout"),
 
         Key([mod], "q", lazy.window.kill(),
@@ -50,17 +52,16 @@ def get_keys(terminal: str):
         Key([mod, ctrl, alt], "e", lazy.shutdown(),
             desc="Leave Qtile"),
 
-        # FIXME: fullscreen seems glitchy
-        Key([mod], "f", lazy.window.toggle_fullscreen(),
+        Key([mod, shift], "f", lazy.window.toggle_fullscreen(),
             desc="Toggle fullscreen window"),
 
-        Key([mod], "Return", lazy.spawn(terminal),
-            desc="Toggle fullscreen window"),
+        Key([mod], "Return", lazy.spawn(config.terminal),
+            desc="Spawn terminal"),
 
         Key([mod], "u", manual_updates,
             desc="Manual update"),
 
-        Key([mod], "s", switch_to_window,
+        Key([mod, alt], "space", switch_to_window,
             desc="Switch to window"),
     ]
 

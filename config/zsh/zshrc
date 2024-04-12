@@ -325,7 +325,7 @@ alias sy='dotsync'
 alias of='openfork'
 
 # sg() { dbus-launch --exit-with-session river-start; }
-sg() { WM=awesome start-xserver; }
+sg() { WM=qtile start-xserver; }
 
 editRecentf() { filehist select "$EDITOR"; }
 alias er='editRecentf'
