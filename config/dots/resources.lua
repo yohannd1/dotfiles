@@ -7,7 +7,7 @@ local font_presets = {
     },
     ["LiberationMono"] = {
         name = "Liberation Mono",
-        base_size = 14,
+        base_size = 15,
     },
     ["Iosevka"] = {
         name = "Iosevka Medium",
@@ -55,7 +55,7 @@ local font_presets = {
     },
     ["Mononoki"] = {
         name = "Mononoki",
-        base_size = 15,
+        base_size = 15.5,
     },
     ["Hack"] = {
         name = "Hack",
@@ -347,7 +347,7 @@ decl {
     {"qtile.border-normal", theme["base00"]},
     {"qtile.bar.bg", theme["base00"]},
     {"qtile.bar.fg", theme["base05"]},
-    {"qtile.bar.fg.inactive", theme["base04"]},
+    {"qtile.bar.fg.inactive", theme["base02"]},
 
     targets = T_ALL,
 }

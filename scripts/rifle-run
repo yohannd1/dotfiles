@@ -163,7 +163,7 @@ case "$1" in
           possibleInterpreters=(chicken-csi csi guile)
           for i in "${possibleInterpreters[@]}"; do
             if printf "%s" "$command" | grep -q "$i"; then
-              exec $command "$i"
+              exec "$i" "$file"
             fi
           done
 
