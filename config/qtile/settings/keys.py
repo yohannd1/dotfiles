@@ -13,10 +13,14 @@ def get_keys(config: Config):
     # Mostly just WM-related keybindings here. Use sxhkd for the rest.
 
     return [
-        Key([mod], "j", lazy.layout.down(),
-            desc="Move focus down"),
-        Key([mod], "k", lazy.layout.up(),
-            desc="Move focus up"),
+        Key([mod], "j",
+            lazy.group.next_window(),
+            lazy.window.bring_to_front(),
+            desc="Go to next window"),
+        Key([mod], "k",
+            lazy.group.prev_window(),
+            lazy.window.bring_to_front(),
+            desc="Go to previous window"),
 
         Key([mod], "h", lazy.layout.shrink_main(),
             desc="Shrink main window"),
