@@ -3,7 +3,7 @@
 local font_presets = {
     ["SourceCodePro"] = {
         name = "Source Code Pro Medium",
-        base_size = 13.5,
+        base_size = 15.5,
     },
     ["LiberationMono"] = {
         name = "Liberation Mono",
@@ -79,7 +79,7 @@ local font_presets = {
     },
     ["PtMono"] = {
         name = "PTMono",
-        base_size = 14,
+        base_size = 15,
     },
     ["Hermit"] = {
         name = "Hermit",
@@ -198,7 +198,7 @@ local T_ALL = {t_xres, t_dots}
 -- }}}
 
 local enable_ligatures = false
-local font_size = 1.10
+local font_size = 1.15
 local font_name = getBootRandomFont()
 local font = getFontInfo(font_name, font_size)
 

@@ -3,6 +3,7 @@
 
 printf >&2 "Failed to open the following file:\n"
 printf >&2 "  %s\n" "$1"
+printf >&2 "Its MIME type is %s\n" "$(file --dereference --brief --mime-type "$1")"
 printf >&2 "What do you want to do about it?\n"
 
 while true; do

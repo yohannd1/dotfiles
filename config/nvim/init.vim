@@ -266,7 +266,7 @@ function! GetCharAt(line, col) " {{{
   return strcharpart(getline(a:line)[a:col - 1:], 0, 1)
 endfunction! " }}}
 function! GetURL(string) " {{{
-  return matchstr(a:string, '\v(https?|www\.)://[a-zA-Z0-9/\-\.%_?#=&+~:]+')
+  return matchstr(a:string, '\v(https?|www\.)://[a-zA-Z0-9/\-\.%_?#=&+~:()]+')
 endfunction " }}}
 function! GetFile(string) " {{{
   return matchstr(a:string, '\v[a-zA-Z0-9_\-\./]+')
