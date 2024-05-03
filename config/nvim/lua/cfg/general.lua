@@ -152,6 +152,30 @@ function! Item_Default_ToggleTodo() " {{{
 
   echo "No to-do detected on the current line"
 endfunction " }}}
+function! ReverseRSearch(basedir, query) " {{{
+  let l:current_dir = a:basedir
+  while 1
+    let l:current_glob = glob(l:current_dir . "/*", 0, 1)
+    let l:list_match = ListMatch(l:current_glob, '.*/' .. a:query .. '$') || ListMatch(l:current_glob, '.*\\' .. a:query .. '$')
+    if (l:current_dir == "/") || (l:current_dir =~ '^\w:\\$') " *NIX or Windows root directories
+      return l:list_match
+    else
+      if l:list_match
+        return 1
+      else
+        let l:current_dir = fnamemodify(l:current_dir, ":h")
+      endif
+    endif
+  endwhile
+endfunction " }}}
+function! ListMatch(list, pattern) " {{{
+  for e in a:list
+    if e =~ a:pattern
+      return 1
+    endif
+  endfor
+  return 0
+endfunction " }}}
 ]])
 
 -- autocmd({"TextYankPost"}, {

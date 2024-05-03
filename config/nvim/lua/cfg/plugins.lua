@@ -154,6 +154,13 @@ M.add({
   name = "vim-commentary",
   source = "tpope/vim-commentary",
 })
+
+-- netrw improvement
+M.add({
+  name = "vim-vinegar",
+  source = "tpope/vim-vinegar",
+})
+
 -- }}}
 
 -- Filetype plugins {{{
@@ -335,9 +342,6 @@ plugins_old = function()
     end
   })
   utils._features["plugin.vim-auto-popmenu"] = true
-
-  -- Misc.
-  plug("tpope/vim-vinegar")
 
   -- acrylic
   -- FIXME: change path lol (probably a $ACR_MAIN_WIKI var)
