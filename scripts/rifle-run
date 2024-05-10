@@ -201,9 +201,12 @@ case "$1" in
       nelua) nelua "$file" --cache-dir "$tmp" ;;
       javascript)
         if exists deno; then
-          deno "$file"
-        else
+          deno run "$file"
+        elif exists nodejs; then
           nodejs "$file"
+        else
+          printf >&2 "Could not find a known JS interpreter.\n"
+          exit 1
         fi
         ;;
       java)
