@@ -207,7 +207,7 @@ local xft_font = longFontFormat(font.name, fsize_term)
 
 -- st (terminal)
 decl {
-    {"st.alpha", "0.95"},
+    {"st.alpha", "0.85"},
     {"st.cursor", theme["base0D"]},
     {"st.font", xft_font},
     {"st.enableligatures", (enable_ligatures and font.supports_ligatures) and 1 or 0},

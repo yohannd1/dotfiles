@@ -125,7 +125,7 @@ standard_bar = bar.Bar(
     background=get_res("qtile.bar.bg", fallback="#000000"),
 )
 
-screens = [Screen(top=standard_bar)]
+screens = [Screen(bottom=standard_bar)]
 
 # Drag floating layouts.
 mouse = [

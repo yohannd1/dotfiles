@@ -134,7 +134,7 @@ M.add({
 
       highlight = {
         enable = true,
-        disable = { "gitcommit", "bash", "PKGBUILD" },
+        disable = { "gitcommit", "bash", "PKGBUILD", "latex", "janet" },
         additional_vim_regex_highlighting = true,
       },
     }

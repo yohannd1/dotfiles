@@ -3,8 +3,8 @@
 [ "$DOTCFG_SOCKET" ] || exit 0 # exit silently if the daemon isn't up
 # this adds a 20ms overhead :((
 #
-_bg=$(dotcfg send get:theme.base00)
-_bgs=$(dotcfg send get:theme.base01)
+_bg="$(dotcfg send get:theme.base00)"
+_bgs="$(dotcfg send get:theme.base01)"
 _fg=$(dotcfg send get:theme.base05)
 _fgs=$(dotcfg send get:theme.base05)
 
