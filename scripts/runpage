@@ -7,4 +7,4 @@ if [ $# = 0 ]; then
   exit 1
 fi
 
-"$@" | less -R
+"$@" 2>&1 | less -R
