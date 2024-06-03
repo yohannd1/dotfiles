@@ -63,7 +63,7 @@ local font_presets = {
     },
     ["IbmPlex"] = {
         name = "Ibm Plex Mono",
-        base_size = 13,
+        base_size = 14,
     },
     ["ShareTech"] = {
         name = "Share Tech Mono",
@@ -199,7 +199,7 @@ local T_ALL = {t_xres, t_dots}
 
 local enable_ligatures = false
 local font_size = 1.15
-local font_name = getBootRandomFont()
+local font_name = "CascadiaCode"
 local font = getFontInfo(font_name, font_size)
 
 local fsize_term = font.base_size

@@ -114,33 +114,33 @@ end
 local HOME = assert(os.getenv("HOME"), "could not get home directory")
 local pj_code = HOME .. "/pj/code"
 
-M.add({
-  name = "nvim-treesitter",
-  source = "nvim-treesitter/nvim-treesitter",
-  condition = not utils.os.is_android,
-  after = function()
-    require("nvim-treesitter.configs").setup {
-      ensure_installed = {
-        "c", "lua", "vim",
-        "vimdoc", "query", "python",
-      },
+-- M.add({
+--   name = "nvim-treesitter",
+--   source = "nvim-treesitter/nvim-treesitter",
+--   condition = not utils.os.is_android,
+--   after = function()
+--     require("nvim-treesitter.configs").setup {
+--       ensure_installed = {
+--         "c", "lua", "vim",
+--         "vimdoc", "query", "python",
+--       },
 
-      -- Install parsers synchronously (only applied to `ensure_installed`)
-      sync_install = false,
+--       -- Install parsers synchronously (only applied to `ensure_installed`)
+--       sync_install = false,
 
-      -- Automatically install missing parsers when entering buffer
-      auto_install = true,
+--       -- Automatically install missing parsers when entering buffer
+--       auto_install = true,
 
-      ignore_install = {},
+--       ignore_install = {},
 
-      highlight = {
-        enable = true,
-        disable = { "gitcommit", "bash", "PKGBUILD", "latex", "janet" },
-        additional_vim_regex_highlighting = true,
-      },
-    }
-  end,
-})
+--       highlight = {
+--         enable = true,
+--         disable = { "gitcommit", "bash", "PKGBUILD", "latex", "janet" },
+--         additional_vim_regex_highlighting = true,
+--       },
+--     }
+--   end,
+-- })
 
 -- Utils {{{
 M.add({
