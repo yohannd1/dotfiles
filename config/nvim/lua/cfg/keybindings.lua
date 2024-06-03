@@ -237,3 +237,4 @@ do
 end
 
 exec("map <C-m> <CR>")
+map("n", "-", ":NERDTreeToggle<CR>", arg_nr)

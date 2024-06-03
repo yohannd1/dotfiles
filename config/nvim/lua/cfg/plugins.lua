@@ -157,11 +157,19 @@ M.add({
 })
 
 -- netrw improvement
+-- M.add({
+--   name = "vim-vinegar",
+--   source = "tpope/vim-vinegar",
+-- })
 M.add({
-  name = "vim-vinegar",
-  source = "tpope/vim-vinegar",
+  name = "nerdtree",
+  source = "preservim/nerdtree",
+  after = function()
+    vim.g.NERDTreeMinimalUI = true
+    vim.g.NERDTreeMinimalMenu = true
+    vim.g.NERDTreeQuitOnOpen = true
+  end,
 })
-
 -- }}}
 
 -- Filetype plugins {{{
@@ -173,6 +181,11 @@ M.add({
 M.add({
   name = "janet.vim",
   source = "janet-lang/janet.vim",
+})
+
+M.add({
+  name = "vimtex",
+  source = "lervag/vimtex",
 })
 
 -- }}}
