@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -o vi
+
+setPrompt() {
+  normal=$(tput setaf 7)
+  blue=$(tput setaf 4)
+
+  exitCode="$?"
+  if [ "$exitCode" = 0 ]; then
+    txtEc=
+  else
+    txtEc="ec:$exitCode "
+  fi
+  PS1=$(printf '%s[ %s\W %s%s]\n$%s ' "$blue" "$normal" "$code" "$blue" "$normal")
+}
+PROMPT_COMMAND='setPrompt'
+PS2=' | '

@@ -2,7 +2,7 @@ _G.dummy = {}
 local vim = _G.vim
 local exec = function(cmd) vim.api.nvim_exec(cmd, false) end
 
-exec("colorscheme sorbet")
+exec("colorscheme retrobox")
 
 vim.g.is_first = (vim.g.is_first == nil) and 1 or 0
 
@@ -49,3 +49,5 @@ if vim.fn.isdirectory(plugged_path .. "/vim-buftabline") then
         false
     )
 end
+
+vim.o.shell = "dotf.wrap.usb-shell"

@@ -201,6 +201,7 @@ ft.cpp = function()
     setLocals {
         foldmethod = "syntax",
         commentstring = "// %s",
+        cinoptions = "g0,:0,l1,(1s,N-s"
     }
 
     vim.b.format_command = "clang-multicfg-format cpp"

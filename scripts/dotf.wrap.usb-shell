@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+
+# if we have args... just forward them to bash I guess.
+[ $# = 0 ] || exec bash "$@"
+
+exists() { command -v "$1" >/dev/null; }
+
+if exists zsh; then
+  exec zsh
+elif exists bash; then
+  exec bash --rcfile "$DOTFILES/config/bash/usbrc"
+else
+  exec sh
+fi
