@@ -49,5 +49,11 @@ if vim.fn.isdirectory(plugged_path .. "/vim-buftabline") then
         false
     )
 end
+if vim.fn.isdirectory(plugged_path .. "/nerdtree") then
+    vim.api.nvim_exec(
+        string.format([[source %s/nerdtree/plugin/NERD_tree.vim]], plugged_path),
+        false
+    )
+end
 
 vim.o.shell = "dotf.wrap.usb-shell"
