@@ -38,7 +38,7 @@ ucm("statusline")
 local plugged_path = fs_root .. "/Cache/nvim_plugged"
 
 ucm("plugins").init({
-    plugins = { "acrylic.vim", "vim-buftabline", "janet.vim", "vim-commentary", "vim-vinegar" },
+    plugins = { "acrylic.vim", "vim-buftabline", "janet.vim", "vim-commentary", "nerdtree" },
     root_path = plugged_path,
 })
 
