@@ -198,7 +198,7 @@ local T_ALL = {t_xres, t_dots}
 -- }}}
 
 local enable_ligatures = false
-local font_size = 1.15
+local font_size = 1.09
 local font_name = "CascadiaCode"
 local font = getFontInfo(font_name, font_size)
 

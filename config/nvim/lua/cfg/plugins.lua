@@ -258,6 +258,8 @@ plugins_old = function()
         vimwiki = 0,
         acrylic = 0,
         uxntal = 0,
+        tex = 0,
+        latex = 0,
       }
     }
   end})

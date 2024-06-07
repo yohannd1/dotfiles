@@ -313,10 +313,12 @@ end
 ft.tex = function()
   vim.b.rifle_ft = "tex"
   vim.b.rifle_mode = "buffer"
+  vim.b.rifle_window_height = 8
   setLocals { textwidth = 72 }
   addSnippets {
     -- WHAT THE FUCK (TODO: make snippets that don't look like utter shit)
     m = [[\documentclass{article}<CR><CR>\title{Hello, world!}<CR><CR>\begin{document}<CR><CR>\maketitle<CR>\end{document}<Up><Esc>o<CR><Up><CR>]],
+    a = [[\begin{align*}<CR>\end{align*}<Esc>O]],
   }
 end
 

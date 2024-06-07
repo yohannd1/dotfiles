@@ -219,12 +219,15 @@
 
   (mt :ext ["swf"] :gui ["flashplayer" file])
 
-  (when (m :ext ["djvu" "ps" "epub" "pdf"])
+  (def is-pdf (or (m :ext ["pdf"])
+                  (m :mime ["application/pdf"])))
+
+  (when (or is-pdf (m :ext ["djvu" "ps" "epub" "pdf"]))
     (t :gui ["zathura" file])
     (t :gui ["mupdf" file])
     )
 
-  (when (m :ext ["pdf"])
+  (when is-pdf
     (t :runpage ["pdftotext" "-l" "10" "-nopgbrk" "-q" "--" file "-"])
     (t :runpage ["mutool" "draw" "-F" "txt" "-i" "--" file "1-10"])
     (t :runpage ["exiftool" file]))

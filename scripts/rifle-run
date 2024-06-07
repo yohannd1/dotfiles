@@ -173,9 +173,14 @@ case "$1" in
         ;;
       latex|tex)
         name=$(basename "${file%.*}")
+
         # pdflatex -output-directory "$tmp" "$file" </dev/null
-        latexmk -pdf -outdir="$tmp" "$file" </dev/null
-        OPEN_GUI=1 open "$tmp/$name.pdf"
+
+        # latexmk -pdf -outdir="$tmp" "$file" </dev/null
+        # OPEN_GUI=1 open "$tmp/$name.pdf"
+
+        # with live reload :)
+        latexmk -pvc -pdf -outdir="$tmp" "$file" </dev/null
         ;;
       python)
         python=$(getPython)
