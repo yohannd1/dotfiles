@@ -198,8 +198,8 @@ local T_ALL = {t_xres, t_dots}
 -- }}}
 
 local enable_ligatures = false
-local font_size = 1.09
-local font_name = "CascadiaCode"
+local font_size = 1.20
+local font_name = "Mononoki"
 local font = getFontInfo(font_name, font_size)
 
 local fsize_term = font.base_size
