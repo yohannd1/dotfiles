@@ -232,6 +232,8 @@ end
 -- closed. Might not be too hard though?
 
 -- Load configuration from other files
+--
+-- TODO: back to using `require`, but now with a proper config name (tbh I think `cfg` is just fine)
 ucm("general")
 ucm("statusline")
 ucm("keybindings")

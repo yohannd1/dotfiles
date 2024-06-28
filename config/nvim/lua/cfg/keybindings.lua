@@ -161,8 +161,8 @@ vim.keymap.set("i", "<C-u>'", function()
 end, {expr = true})
 
 -- Buffer navigation
-map("n", "<C-j>", ":call NextBuffer()<CR>", arg_nr_s)
-map("n", "<C-k>", ":call PrevBuffer()<CR>", arg_nr_s)
+map("n", "<C-j>", ":lua dummy.bufSwitch(true)<CR>", arg_nr_s)
+map("n", "<C-k>", ":lua dummy.bufSwitch(false)<CR>", arg_nr_s)
 
 -- Better Join - a join command similar to the one in emacs (or evil-mode, idk) {{{
 dummy.betterJoin = function()
@@ -206,8 +206,9 @@ map("n", "J", ":lua dummy.betterJoin()<CR>", arg_nr_s)
 map("v", "J", ":lua dummy.betterJoinVisual()<CR>", arg_nr_s)
 -- }}}
 
--- Terminal escaping
-map("t", "<C-w>[", "<C-\\><C-n>", arg_nr_s)
+-- Terminal commands
+map("t", "<C-w>.", "<C-\\><C-n>", arg_nr_s)
+map("t", "<C-w>q", "<C-\\><C-n><C-w>q", arg_nr_s)
 map("t", "<C-w><C-j>", "<C-j>", arg_nr_s)
 map("t", "<C-w><C-k>", "<C-k>", arg_nr_s)
 map("t", "<C-j>", "<C-\\><C-n>:call NextBuffer()<CR>", arg_nr_s)
@@ -220,6 +221,11 @@ end)
 map("n", "<C-x>j", ":tabn<CR>", arg_nr_s)
 map("n", "<C-x>k", ":tabp<CR>", arg_nr_s)
 map("n", "<C-x>n", ":tabnew<CR>", arg_nr_s)
+
+-- Buffer closing
+exec("cabbrev bd Bclose")
+exec("cabbrev bd! Bclose!")
+map("n", "<C-w>k", ":Bclose<CR>", arg_nr_s)
 
 -- Navigate the completion menu with <C-k>, <C-j> and <C-m>
 do

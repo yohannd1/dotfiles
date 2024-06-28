@@ -39,7 +39,7 @@ end
 
 local addSnippets = function(snips)
     for k, v in pairs(snips) do
-        vim.fn["AddSnippet"](k, v)
+        dummy.addSnippet(k, v)
     end
 end
 

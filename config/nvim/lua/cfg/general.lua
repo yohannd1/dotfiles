@@ -5,6 +5,14 @@ local utils = ucm("utils")
 
 local exec = function(s) vim.api.nvim_exec(s, false) end
 
+local mapVimFn = function(name, map)
+  exec(string.format([[
+    function! %s()
+      lua %s()
+    endfunction
+  ]], name, map))
+end
+
 local vim_runtime_dir = vim.env.VIMRUNTIME
 local autocmd = vim.api.nvim_create_autocmd
 
@@ -20,13 +28,27 @@ vim.o.title = true
 vim.o.number = true
 vim.o.relativenumber = true
 
+vim.o.backspace = "indent,eol,start"
+vim.o.laststatus = 2
+
+-- default indent settings
+local TAB_WIDTH = 8
+local SPACE_WIDTH = 4
+vim.o.tabstop = TAB_WIDTH
+vim.o.shiftwidth = SPACE_WIDTH
+vim.o.softtabstop = SPACE_WIDTH
+vim.o.expandtab = true
+vim.o.smarttab = true
+
+vim.o.wildmenu = true
+vim.o.wildmode = "longest:full,full"
+
+vim.o.autoindent = true
+
+vim.o.hlsearch = true
+vim.o.incsearch = true
+
 exec([[
-    set backspace=indent,eol,start
-    set laststatus=2
-    set wildmenu
-    set wildmode=longest:full,full
-    set autoindent
-    set hlsearch incsearch
     set linebreak wrap
     set cursorline " line highlighting
     set showcmd
@@ -44,11 +66,6 @@ exec([[
     set cinoptions+=:0
     set scrolloff=3 " scroll ahead :)
 
-    " Indentation
-    set tabstop=8 " For tab characters, I guess
-    set shiftwidth=4 softtabstop=4
-    set expandtab smarttab
-
     set listchars=tab:\ \ ,trail:¬
 
     syntax on
@@ -58,6 +75,7 @@ exec([[
     let &t_ZR = "\<Esc>[23m"
 ]])
 
+-- only auto-cd if we're not on windows
 vim.o.autochdir = not utils.os.is_windows
 
 if vim.g.neovide then
@@ -68,53 +86,57 @@ if vim.g.neovide then
 end
 
 dummy.toggleVirtualEdit = function()
-    local v = (vim.o.ve == "") and "all" or ""
-    vim.o.ve = v
-    exec(string.format([[echomsg "Virtual edit set to '%s'"]], v))
+    local value = (vim.o.ve == "") and "all" or ""
+    vim.o.ve = value
+
+    local message = string.format("Virtual edit set to '%s'", value)
+    vim.api.nvim_echo({{message}}, false, {})
+end
+
+dummy.bufSwitch = function(next)
+  exec(next and "bnext" or "bprevious")
+  exec("silent doautocmd User BufSwitch")
+end
+
+-- TODO: improved snippet system (move into separate module ig)
+dummy.addSnippet = function(key, data)
+  exec(string.format("nnoremap <silent> <buffer> <Leader>i%s i%s<Esc>", key, data))
+end
+
+dummy.itemToggleTodo = function()
+  local fn = vim.b.item_toggletodo_func or vim.fn.Item_Default_ToggleTodo
+  fn()
+end
+
+-- TODO: remove this
+mapVimFn("Item_ToggleTodo", "dummy.itemToggleTodo")
+mapVimFn("Item_ToggleTodoVisual", "dummy.itemToggleTodoVisual")
+
+dummy.itemToggleTodoVisual = function()
+  exec("normal mz") -- mark
+
+  -- get beginning and end lines
+  exec("normal '<")
+  local l1 = vim.fn.line(".")
+  exec("normal '>")
+  local l2 = vim.fn.line(".")
+  local count = l2 - l1
+
+  exec("normal '<")
+  for i = 0, count do
+    vim.fn.Item_ToggleTodo()
+    exec("normal j")
+  end
+
+  exec("normal `z")
 end
 
 -- me when i copy paste functions into an exec block
 exec([[
-function! NextBuffer() " {{{
-  bnext
-  silent doautocmd User BufSwitch
-endfunction " }}}
-function! PrevBuffer() " {{{
-  bprevious
-  silent doautocmd User BufSwitch
-endfunction " }}}
-
-function! AddSnippet(key, data) " {{{
-  execute 'nnoremap <silent> <buffer> <Leader>i'.a:key.' i'.a:data.'<Esc>'
-endfunction " }}}
-
-function! Item_ToggleTodo() " {{{
-  let l:Func = exists("b:item_toggletodo_func") ? b:item_toggletodo_func : funcref("Item_Default_ToggleTodo")
-  call l:Func()
-endfunction " }}}
-function! Item_ToggleTodoVisual() " {{{
-  normal mz
-
-  normal '<
-  let l1 = line(".")
-  normal '>
-  let l2 = line(".")
-  let count = l2 - l1 + 1
-
-  let i = 0
-  normal '<
-  while i < count
-    call Item_ToggleTodo()
-    normal j
-    let i = i + 1
-  endwhile
-
-  normal `z
-endfunction " }}}
 function! Item_Default_ToggleTodo() " {{{
   let current_line = getline('.')
 
-  let preferred_done = exists("b:item_toggletodo_preferred_done") 
+  let preferred_done = exists("b:item_toggletodo_preferred_done")
         \ ? b:item_toggletodo_preferred_done
         \ : "x"
 
