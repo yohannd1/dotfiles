@@ -6,7 +6,7 @@
 (defn dev-null []
   (assert (file/open "/dev/null" :r)))
 
-(def open-gui (-> (os/getenv "OPEN_GUI" "") (length) (> 0)))
+(var open-gui (-> (os/getenv "OPEN_GUI" "") (length) (> 0)))
 
 (defn get-prog-output [-args]
   (def (pipe-r pipe-w) (os/pipe))
@@ -126,6 +126,7 @@
 
 (defn main [&]
   (when (nil? (os/getenv "WAYLAND_DISPLAY"))
+    (set open-gui true)
     (os/setenv "OPEN_GUI" "1"))
 
   (def help-str
@@ -223,6 +224,7 @@
                   (m :mime ["application/pdf"])))
 
   (when (or is-pdf (m :ext ["djvu" "ps" "epub" "pdf"]))
+    (t :gui ["okular" file])
     (t :gui ["zathura" file])
     (t :gui ["mupdf" file])
     )
