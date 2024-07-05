@@ -45,7 +45,7 @@ autoload -U colors && colors
 # "edit in editor" plugin config
 autoload -z edit-command-line
 zle -N edit-command-line
-bindkey "^X^E" edit-command-line
+bindkey -M vicmd "[" edit-command-line
 
 # completion plugin config
 autoload -U compinit # completion support
