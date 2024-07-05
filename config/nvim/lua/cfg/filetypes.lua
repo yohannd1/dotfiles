@@ -115,10 +115,14 @@ local initialize = function()
     })
 
     if utils._features["plugin.vim-auto-popmenu"] then
+        local apcReenable = function()
+            if vim.b.apc_enable ~= 1 then return end
+            exec("ApcEnable")
+        end
         autocmd("BufEnter", {
             pattern = "*",
             group = "buffer_load",
-            callback = "ApcReenable",
+            callback = apcReenable,
         })
     end
 

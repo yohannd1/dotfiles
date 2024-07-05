@@ -4,46 +4,25 @@
 
 lua _G.dummy = {}
 
+" Cancel if this is not being sourced by NeoVim
+if !has("nvim")
+  echoerr "You are not using NeoVim; this configuration doesn't work properly with Vim."
+  finish
+endif
+
 " Check if this is the first time sourcing the file
 let g:is_first = exists("g:is_first") ? 0 : 1
 
-if g:is_first
-  " Cancel if this is not being sourced by NeoVim
-  if !has("nvim")
-    echoerr "You are not using NeoVim; this configuration doesn't work properly with Vim."
-    finish
-  endif
+" Get config root
+let g:config_root = resolve(expand("<sfile>:p:h"))
 
-  " Set config locations
-  let g:config_root = resolve(expand("<sfile>:p:h"))
-  let $VIM_INIT = g:config_root . "/init.vim"
-  let $GVIM_INIT = g:config_root . "/ginit.vim"
-
-  " Variables for platforms. This one was pretty stolen.
-  let g:is_win = has("win32") || has("win64")
-  let g:is_linux = has("unix") && !has("macunix")
-  let g:is_mac = has("macunix")
-  let g:is_android = isdirectory("/sdcard")
-  let g:is_tty = $DISPLAY == "" && !g:is_android
-  let g:is_embedded = $NVIM_EMBEDDED_MODE == "1"
-endif
-
-lua <<EOF
--- bootstrap module system
-local config_root = assert(vim.g.config_root, "config root not defined")
-assert(loadfile(config_root .. "/lua/prepare.lua"))()
-EOF
+" bootstrap module system
+lua assert(loadfile(vim.g.config_root .. "/lua/prepare.lua"))()
 
 " }}}
 " Plugins {{{
 "
-lua <<EOF
-local plugins = require("cfg.plugins")
-plugins.init({
-    plugins = "all",
-    root_path = vim.g.config_root .. "/plugged",
-})
-EOF
+lua require("cfg.plugins").init({ plugins = "all", root_path = vim.g.config_root .. "/plugged" })
 
 function! _InsertWikiFileRef(input, after_cursor)
   normal! m`
@@ -53,46 +32,6 @@ function! _InsertWikiFileRef(input, after_cursor)
     normal! l
   endif
 endfunction
-
-" Make it so <Esc> cancels clap even while on insert mode
-" augroup clap_esc_fix
-"   au!
-"   au User ClapOnEnter inoremap <silent> <buffer> <Esc> <Esc>:<c-u>call clap#handler#exit()<CR>
-"   au User ClapOnExit silent! iunmap <buffer> <Esc>
-" augroup end
-
-" let g:clap_open_preview = "never"
-" let g:clap_layout = { "relative": "editor" }
-
-if 0
-  " So, pear-tree kept undloading the keybindings, so I forced it to reload
-  " everytime I switch or load buffers.
-  "
-  " I fear this might be CPU expensive but since I'm too lazy to figure out
-  " what is the bug and pear-tree is one of the best paren match plugins
-  " out there I'll just do this.
-  " {{{
-  function! PearTreeUpdate()
-    if get(b:, "pear_tree_enabled", 0)
-      imap <buffer> <BS> <Plug>(PearTreeBackspace)
-      imap <buffer> <CR> <Plug>(PearTreeExpand)
-    endif
-  endfunction
-
-  " Buffer autocommands
-  augroup pear_tree_reload_on_buffer
-    au!
-    au BufRead,BufEnter,BufWinEnter * call PearTreeUpdate()
-    au User BufSwitch call PearTreeUpdate()
-  augroup end
-
-  " Key mappings
-  nnoremap <silent> <C-w>h <C-w>h:call PearTreeUpdate()<CR>
-  nnoremap <silent> <C-w>j <C-w>j:call PearTreeUpdate()<CR>
-  nnoremap <silent> <C-w>k <C-w>k:call PearTreeUpdate()<CR>
-  nnoremap <silent> <C-w>l <C-w>l:call PearTreeUpdate()<CR>
-  " }}}
-endif
 
 " }}}
 " Functions {{{
@@ -226,11 +165,6 @@ function! ShowFormatErr() " {{{
     echo line
   endfor
 endfunction " }}}
-function! ApcReenable() " {{{
-  if get(b:, "apc_enable", 0) == 1
-    ApcEnable
-  endif
-endfunction " }}}
 function! GetCurrentChar() " {{{
   " TODO: refactor into a char utilities file
   return strcharpart(getline('.')[col('.') - 1:], 0, 1)
@@ -355,11 +289,6 @@ endif
 
 " }}}
 " Mappings {{{
-
-" goyo
-nnoremap <silent> <C-x>j :Goyo 120<CR>
-au User GoyoEnter nested nnoremap <silent> <buffer> <C-x>j :Goyo!<CR>
-au User GoyoLeave nested nnoremap <silent> <buffer> <C-x>j :Goyo 120<CR>
 
 " Rifle commands
 " {{{
@@ -496,9 +425,9 @@ vim.fn["hydra#hydras#register"] {
           {"p", "e ~/wiki/vimwiki/202401151901-42E4FA.acr", "open week plan (2024)"},
           {"o", "lua dummy.open_wiki_file({})", "select a wiki file"},
           {"O", "lua dummy.open_wiki_file({}, {'acw-get-projects'})", "select a project"},
-          {"H", "Vimwiki2HTMLBrowse", "compile current & browse"},
-          {"h", "Vimwiki2HTML", "compile current"},
-          {"A", "VimwikiAll2HTML", "compile all"},
+          -- {"H", "Vimwiki2HTMLBrowse", "compile current & browse"},
+          -- {"h", "Vimwiki2HTML", "compile current"},
+          -- {"A", "VimwikiAll2HTML", "compile all"},
         },
     },
 
@@ -527,10 +456,6 @@ au BufRead,BufNewFile *.lang set ft=lang
 " Telescope builtins
 nnoremap <leader>. <cmd>lua require("telescope.builtin").fd()<CR>
 nnoremap <leader>o <cmd>lua dummy.open_recent()<CR>
-
-nnoremap <leader>g <cmd>Goyo 130<CR>
-nnoremap <leader>G <cmd>Goyo!<CR>
-nnoremap <leader>W <cmd>MatchupWhereAmI?<CR>
 
 nnoremap <Leader>L <cmd>set cursorline!<CR>
 nnoremap <Leader>C <cmd>set cursorcolumn!<CR>

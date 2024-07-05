@@ -49,31 +49,31 @@ vim.o.hlsearch = true
 vim.o.incsearch = true
 
 exec([[
-    set linebreak wrap
-    set cursorline " line highlighting
-    set showcmd
-    set shortmess+=atcI
-    set belloff+=ctrlg
-    set mouse=a
-    set display+=lastline
-    set complete=.,w,b,u,k,kspell " 'i' was interesting too but it seems too expensive; 't' for no tags
-    set completeopt-=preview
-    set completeopt+=menuone,noselect
-    set noshowmode
-    set list
-    set nofoldenable
-    set cinoptions+=g0
-    set cinoptions+=:0
-    set scrolloff=3 " scroll ahead :)
+  set linebreak wrap
+  set cursorline " line highlighting
+  set showcmd
+  set shortmess+=atcI
+  set belloff+=ctrlg
+  set mouse=a
+  set display+=lastline
+  set complete=.,w,b,u,k,kspell " 'i' was interesting too but it seems too expensive; 't' for no tags
+  set completeopt-=preview
+  set completeopt+=menuone,noselect
+  set noshowmode
+  set list
+  set nofoldenable
+  set cinoptions+=g0
+  set cinoptions+=:0
+  set scrolloff=3 " scroll ahead :)
 
-    set listchars=tab:\ \ ,trail:¬
+  set listchars=tab:\ \ ,trail:¬
 
-    syntax on
-
-    " That's how the italics work (or not)
-    let &t_ZH = "\<Esc>[3m"
-    let &t_ZR = "\<Esc>[23m"
+  " That's how the italics work (or not)
+  let &t_ZH = "\<Esc>[3m"
+  let &t_ZR = "\<Esc>[23m"
 ]])
+
+exec("syntax on")
 
 -- only auto-cd if we're not on windows
 vim.o.autochdir = not utils.os.is_windows
@@ -210,13 +210,13 @@ endfunction " }}}
 -- })
 
 dummy.findTodos = function()
-    local queries = {'<TODO>', '<FIXME>', '<XXX>'}
-    for _, q in ipairs(vim.b.todo_queries or {}) do
-        table.insert(queries, q)
-    end
+  local queries = {'<TODO>', '<FIXME>', '<XXX>'}
+  for _, q in ipairs(vim.b.todo_queries or {}) do
+    table.insert(queries, q)
+  end
 
-    local query = string.format("\\v(%s)", table.concat(queries, "|"))
+  local query = string.format("\\v(%s)", table.concat(queries, "|"))
 
-    vim.fn.search(query)
-    vim.fn.histadd("/", query)
+  vim.fn.search(query)
+  vim.fn.histadd("/", query)
 end

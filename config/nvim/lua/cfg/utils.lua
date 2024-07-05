@@ -3,7 +3,19 @@ local M = {}
 
 M.os = {}
 M.os.is_android = vim.fn.isdirectory("/sdcard") ~= 0
-M.os.is_windows = (vim.fn.has("win32") or vim.fn.has("win64")) ~= 0
+M.os.is_windows = (vim.fn.has("win32") ~= 0 or vim.fn.has("win64") ~= 0)
+M.os.is_tty = vim.env.DISPLAY == "" and not M.os.is_android
+
+M.log = {}
+M.log.history = {}
+M.log.addLog = function(message)
+  table.insert(M.log.history, os.date("%Y%m%d %H:%M :: ") .. msg)
+end
+M.log.printAll = function()
+  for _, message in ipairs(M.log.history) do
+    print(message)
+  end
+end
 
 M.parseEscapeCode = function(str)
     return vim.api.nvim_replace_termcodes(str, true, true, true)
@@ -48,10 +60,6 @@ M.splitIter = function(str, separator)
     end
 end
 
-M.enumerateIter = function(iter)
-    error("unimplemented") -- TODO
-end
-
 M.pathAppend = function(dir)
     local p = vim.env.PATH
     if not p:find(dir) then
@@ -66,6 +74,66 @@ end
 
 M._features = {}
 
--- TODO: "inspect" function
+M.hasIntegerRepr = function(num)
+  return tostring(num):match("^%d+$") ~= nil
+end
+
+M.moveCursorHorizontal = function(offset)
+  assert(
+    M.hasIntegerRepr(math.abs(offset)),
+    string.format(
+      "Absolute of `offset` (%s) has no integer representation",
+      math.abs(offset)
+    )
+  )
+
+  if offset == 0 then
+    return 0
+  end
+
+  local direction_str = (offset > 0) and "l" or "h"
+  local direction_signal = (offset > 0) and 1 or -1
+
+  for i = 1, math.abs(offset) do
+    local ccol = vim.fn.col(".")
+    vim.cmd("normal! " .. direction_str)
+    if vim.fn.col(".") == ccol then
+      -- Didn't move at all this round - it's the end of the line. Let's return already then.
+      return i * direction_signal
+    end
+  end
+
+  return offset
+end
+
+M.columnAtCharOffset = function(offset)
+  local moved = M.moveCursorHorizontal(offset)
+  if moved ~= offset then
+    M.moveCursorHorizontal(-moved)
+  else
+    local ccol = vim.fn.col(".")
+    M.moveCursorHorizontal(-offset)
+    return ccol
+  end
+end
+
+M.makeAddTxt = function(after_cursor)
+  return function(text)
+    assert(text ~= nil, "Argument `text` must not be nil")
+
+    local line = vim.fn.getline(".")
+    local start_offset = after_cursor and 0 or -1
+    local divide_point = M.columnAtCharOffset(start_offset) or 0
+
+    vim.fn.setline(
+      ".",
+      table.concat({
+        vim.fn.strpart(line, 0, divide_point), -- FIXME: why is this still splitting multibyte chars(?) in half?
+        text,
+        vim.fn.strpart(line, divide_point),
+      }, "")
+    )
+  end
+end
 
 return M

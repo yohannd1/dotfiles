@@ -114,6 +114,7 @@ end
 local HOME = assert(os.getenv("HOME"), "could not get home directory")
 local pj_code = HOME .. "/pj/code"
 
+-- Treesitter {{{
 -- M.add({
 --   name = "nvim-treesitter",
 --   source = "nvim-treesitter/nvim-treesitter",
@@ -141,7 +142,133 @@ local pj_code = HOME .. "/pj/code"
 --     }
 --   end,
 -- })
+-- }}}
+-- Telescope {{{
+M.add({
+  name = "telescope.nvim",
+  source = "nvim-telescope/telescope.nvim",
+  after = function()
+    local telescope = require("telescope")
+    local conf = require("telescope.config").values
+    local finders = require("telescope.finders")
+    local pickers = require("telescope.pickers")
+    local themes = require("telescope.themes")
+    local action_state = require("telescope.actions.state")
+    local actions = require("telescope.actions")
 
+    telescope.setup {
+      defaults = {
+        layout_strategy = "bottom_pane",
+        layout_config = {
+          bottom_pane = {
+            prompt_position = "bottom",
+          },
+        },
+        mappings = {
+          i = {
+            ["<Esc>"] = actions.close,
+            ["<C-j>"] = actions.move_selection_next,
+            ["<C-k>"] = actions.move_selection_previous,
+            ["<C-m>"] = actions.select_default,
+
+            ["<ScrollWheelUp>"] = actions.move_selection_previous,
+            ["<ScrollWheelDown>"] = actions.move_selection_next,
+          },
+          n = {}
+        },
+        scroll_strategy = "cycle",
+      },
+      pickers = {
+        buffers = {
+          sort_lastused = true,
+          theme = "dropdown",
+          previewer = false,
+        },
+        find_files = {
+          theme = "dropdown"
+        }
+      },
+    }
+
+    local main_theme = themes.get_ivy()
+
+    -- Search and open on wiki
+    dummy.open_wiki_file = function(opts, command)
+      opts = opts or {}
+      utils.overrideTableWith(opts, main_theme)
+      command = command or {"acr-list-titles"}
+
+      pickers.new(opts, {
+        prompt_title = "Search on wiki",
+        finder = finders.new_oneshot_job(command, opts),
+        sorter = conf.generic_sorter(opts),
+        attach_mappings = function()
+          actions.select_default:replace(function(prompt_bufnr)
+            local selection = action_state.get_selected_entry()
+            actions.close(prompt_bufnr)
+
+            if selection then
+              vim.cmd("e " .. vim.g.wiki_dir .. "/" .. vim.fn.split(selection[1])[1] .. ".acr")
+            end
+          end)
+
+          return true
+        end,
+      }):find()
+    end
+
+    dummy.insert_wiki_file = function(opts)
+      opts = opts or {}
+      utils.overrideTableWith(opts, main_theme)
+
+      local repr_string = opts.after_cursor and "after" or "before"
+
+      pickers.new(opts, {
+        prompt_title = "Insert wiki file: " .. repr_string,
+        finder = finders.new_oneshot_job({"acr-list-titles"}, opts),
+        sorter = conf.generic_sorter(opts),
+        attach_mappings = function()
+          actions.select_default:replace(function(prompt_bufnr)
+            local selection = action_state.get_selected_entry()
+            actions.close(prompt_bufnr)
+
+            if selection then
+              local link = "@ref(" .. vim.fn.split(selection[1])[1] .. ")"
+              utils.makeAddTxt(opts.after_cursor)(link)
+              vim.cmd(string.format("normal! %dl", opts.after_cursor and 2 + link:len() or 1))
+            end
+          end)
+
+          return true
+        end,
+      }):find()
+    end
+
+    dummy.open_recent = function(opts)
+      opts = opts or {}
+      utils.overrideTableWith(opts, main_theme)
+
+      pickers.new(opts, {
+        prompt_title = "Open recent file",
+        finder = finders.new_oneshot_job({"filehist", "list"}, opts),
+        sorter = conf.generic_sorter(opts),
+        attach_mappings = function()
+          actions.select_default:replace(function(prompt_bufnr)
+            local selection = action_state.get_selected_entry()
+            actions.close(prompt_bufnr)
+
+            if selection then
+              vim.cmd("e " .. selection[1])
+            end
+          end)
+
+          return true
+        end,
+      }):find()
+    end
+  end
+})
+-- }}}
 -- Utils {{{
 M.add({
   name = "vim-buftabline",
@@ -156,11 +283,20 @@ M.add({
   source = "tpope/vim-commentary",
 })
 
+M.add({
+  name = "goyo.vim",
+  source = "junegunn/goyo.vim",
+  before = function()
+    vim.g.goyo_width = 120
+  end,
+})
+
 -- netrw improvement
 -- M.add({
 --   name = "vim-vinegar",
 --   source = "tpope/vim-vinegar",
 -- })
+
 M.add({
   name = "nerdtree",
   source = "preservim/nerdtree",
@@ -224,6 +360,11 @@ plugins_old = function()
     local bs_code = autopairs.esc("<BS>")
     local autopairs_cr = autopairs.autopairs_cr
     local autopairs_bs = autopairs.autopairs_bs
+
+    local mapKey = vim.api.nvim_set_keymap
+
+    mapKey("i", "<CR>", "v:lua.dummy.imap_enter_handle()", {expr = true, noremap = true})
+    mapKey("i", "<BS>", "v:lua.dummy.imap_bs_handle()", {expr = true, noremap = true})
 
     dummy.imap_enter_handle = function()
       if vim.fn.pumvisible() ~= 0 then
@@ -329,7 +470,6 @@ plugins_old = function()
   end
   -- }}}
 
-  plug("junegunn/goyo.vim")
 
   -- Themes
   if utils.os.is_windows then
@@ -367,96 +507,87 @@ plugins_old = function()
   end
 
   -- plug({"vimwiki/vimwiki", config = function()
-    --     -- FIXME: Slowdown candidate
+  --     -- FIXME: Slowdown candidate
 
-    --     vim.g.wiki_dir = os.getenv("WIKI") .. "/vimwiki"
-    --     vim.g.vimwiki_list = {{
-      --         path = vim.g.wiki_dir,
-      --         path_html = "~/.cache/output/vimwiki_html",
-      --         syntax = "default",
-      --         ext = ".wiki"
-      --     }}
-      --     vim.g.vimwiki_map_prefix = "<NOP>"
-      --     vim.g.vimwiki_global_ext = 0
-      --     vim.g.vimwiki_conceallevel = 0
-      --     vim.g.vimwiki_url_maxsave = 0
-      -- end})
+  --     vim.g.wiki_dir = os.getenv("WIKI") .. "/vimwiki"
+  --     vim.g.vimwiki_list = {{
+  --         path = vim.g.wiki_dir,
+  --         path_html = "~/.cache/output/vimwiki_html",
+  --         syntax = "default",
+  --         ext = ".wiki"
+  --     }}
+  --     vim.g.vimwiki_map_prefix = "<NOP>"
+  --     vim.g.vimwiki_global_ext = 0
+  --     vim.g.vimwiki_conceallevel = 0
+  --     vim.g.vimwiki_url_maxsave = 0
+  -- end})
 
-      -- plug({"nvim-neorg/neorg", config = function()
-        --     require('neorg').setup {
-          --         load = {
-            --             ["core.defaults"] = {}, -- Loads default behaviour
-            --             ["core.keybinds"] = {
-              --                 config = { default_keybinds = false }
-              --             },
-              --             -- ["core.concealer"] = { -- Symbol concealing for a tidier view
-              --             --     config = {
-                --             --         icons = {
-                  --             --             todo = { enabled = false },
-                  --             --         },
-                  --             --     }
-                  --             -- },
-                  --             ["core.promo"] = {}, -- Semantic indentation
-                  --             ["core.export"] = {}, -- export to markdown
-                  --         },
-                  --     }
-                  -- end})
+  -- plug({"nvim-neorg/neorg", config = function()
+  --     require('neorg').setup {
+  --         load = {
+  --             ["core.defaults"] = {}, -- Loads default behaviour
+  --             ["core.keybinds"] = {
+  --                 config = { default_keybinds = false }
+  --             },
+  --             -- ["core.concealer"] = { -- Symbol concealing for a tidier view
+  --             --     config = {
+  --             --         icons = {
+  --             --             todo = { enabled = false },
+  --             --         },
+  --             --     }
+  --             -- },
+  --             ["core.promo"] = {}, -- Semantic indentation
+  --             ["core.export"] = {}, -- export to markdown
+  --         },
+  --     }
+  -- end})
 
-                  plug({
-                    firstAvailableDir { pj_code .. "/vim-hydra-fork", fallback = "YohananDiamond/vim-hydra-fork" },
-                    config = function()
-                      exec("nnoremap <silent> <Leader>f :Hydra extrafind<CR>")
-                      vim.fn["hydra#hydras#register"] {
-                        name = "extrafind",
-                        title = "Extra find",
-                        show = "popup",
-                        exit_key = "q",
-                        feed_key = false,
-                        foreign_key = true,
-                        single_command = true,
-                        position = "s:bottom_right",
-                        keymap = {{
-                          name = "In buffer",
-                          keys = {
-                            {"t", "lua dummy.findTodos()", "TODOs (in buffer)"},
-                            {"b", "lua require('telescope.builtin').buffers()", "buffers"},
-                            {"h", "lua require('telescope.builtin').help_tags()", "help tags"},
-                          }
-                        }},
-                      }
-                    end
-                  })
+  plug({
+    firstAvailableDir { pj_code .. "/vim-hydra-fork", fallback = "YohananDiamond/vim-hydra-fork" },
+    config = function()
+      exec("nnoremap <silent> <Leader>f :Hydra extrafind<CR>")
+      vim.fn["hydra#hydras#register"] {
+        name = "extrafind",
+        title = "Extra find",
+        show = "popup",
+        exit_key = "q",
+        feed_key = false,
+        foreign_key = true,
+        single_command = true,
+        position = "s:bottom_right",
+        keymap = {{
+          name = "In buffer",
+          keys = {
+            {"t", "lua dummy.findTodos()", "TODOs (in buffer)"},
+            {"b", "lua require('telescope.builtin').buffers()", "buffers"},
+            {"h", "lua require('telescope.builtin').help_tags()", "help tags"},
+          }
+        }},
+      }
+    end
+  })
 
-                  plug({"nvim-telescope/telescope.nvim"})
-                  plug("nvim-lua/popup.nvim")
-                  plug("nvim-lua/plenary.nvim")
+  plug("nvim-lua/popup.nvim")
+  plug("nvim-lua/plenary.nvim")
 
-                  -- Illuminate - delay to highlight words (in millisceconds)
-                  -- plug({"RRethy/vim-illuminate", config = function()
-                    --     vim.g.Illuminate_delay = 250
-                    -- end})
+  -- Illuminate - delay to highlight words (in millisceconds)
+  -- plug({"RRethy/vim-illuminate", config = function()
+  --   vim.g.Illuminate_delay = 250
+  -- end})
 
-                    -- plug("slakkenhuis/vim-margin")
+  -- plug("slakkenhuis/vim-margin")
 
-                    -- plug("airblade/vim-gitgutter")
+  -- plug("airblade/vim-gitgutter")
+end
 
-                    -- Loose config
-                    plug {config = function()
-                      -- :help php-indent
-                      vim.g.PHP_outdentphpescape = 0
-                      vim.g.PHP_default_indenting = 0
+-- Extra config (after everything)
+do
+  -- :help php-indent
+  vim.g.PHP_outdentphpescape = 0
+  vim.g.PHP_default_indenting = 0
 
-                      -- rifle
-                      vim.g.rifle_mode = (vim.g.is_android == 1) and "buffer" or "popup"
-                    end}
+  -- rifle
+  vim.g.rifle_mode = (utils.os.is_android == 1) and "buffer" or "popup"
+end
 
-                    -- " Clap command: recent files
-                    -- " TODO: remove
-                    -- let g:clap_provider_recent = {
-                      --       \ "source": "filehist list | tac",
-                      --       \ "sink": "e",
-                      --       \ "description": "Load a file from the recent list",
-                      --       \ }
-                    end
-
-                    return M
+return M

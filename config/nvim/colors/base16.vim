@@ -9,7 +9,7 @@ let s:is_win = has("win32") || has("win64")
 let s:is_linux = has("unix") && !has("macunix")
 let s:is_mac = has("macunix")
 let s:is_android = isdirectory("/sdcard")
-let s:is_tty = $DISPLAY == "" && !g:is_android
+let s:is_tty = $DISPLAY == "" && !s:is_android
 let s:supports_x_resources = ($DISPLAY != "") && executable("xgetres")
 " let s:is_gui = has("gui_running") || (has("nvim") && nvim_list_uis()[0]["rgb"] == v:true)
 let s:is_gui = has("gui_running")
