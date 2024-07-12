@@ -37,7 +37,7 @@ tidyPrompt() {
   esac
 }
 
-if [ ! -t 2 ] && [ "$WAYLAND_DISPLAY" ] && exists bemenu; then
+if [ ! -t 2 ] && exists bemenu; then
   args=(-i -n)
   tidyPrompt nospace
   [ "$hasPrompt" ] && args+=(-p "$prompt")
