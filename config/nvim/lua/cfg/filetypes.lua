@@ -98,18 +98,10 @@ local initialize = function()
             local filetype = vim.o.filetype
             if ft[filetype] then
                 ft[filetype]()
-            else
-                local cmd = [[
-                    if has_key(g:, "ft") && has_key(g:ft, &filetype)
-                        call g:ft[&filetype]()
-                    endif
-                ]]
-
-                exec(cmd)
             end
 
-            if vim.fn.exists("*SetupMakefileRifle") ~= 0 then
-                vim.fn["SetupMakefileRifle"]()
+            if vim.fn.ReverseRSearch(vim.fn.expand("%:p:h"), "Makefile") ~= 0 then
+              vim.b.rifle_ft = "@make"
             end
         end
     })
@@ -138,6 +130,8 @@ end
 -- }}}
 
 -- Extension -> filetype
+ext_ft.wiki = "acrylic"
+ext_ft.lang = "lang"
 ext_ft.alg = "visualg"
 ext_ft.as = "actionscript"
 ext_ft.asm = "nasm"

@@ -33,15 +33,38 @@ forChars("nv", function(m)
   map(m, ",", "<Leader>")
 end)
 
+-- Soft wrap keybindings
+dummy.setSoftWrapBinds = function(enable)
+  local keys = "jk0$"
+
+  if not enable then
+    forChars(keys, function(k)
+      vim.cmd.nunmap(k)
+      vim.cmd.nunmap("g" .. k)
+    end)
+    return
+  end
+
+  forChars(keys, function(k)
+    local opts = {noremap = true, expr = true}
+    forChars("nv", function(m)
+      local fmt = string.format
+      map(m, k, fmt([[v:count == 0 ? 'g%s' : '%s']], k, k), opts)
+      map(m, "g" .. k, fmt([[v:count == 0 ? '%s' : 'g%s']], k, k), opts)
+    end)
+  end)
+end
+dummy.setSoftWrapBinds(true)
+
+vim.cmd([[command! -nargs=0 SWBindOn lua dummy.setSoftWrapBinds(true)]])
+vim.cmd([[command! -nargs=0 SWBindOff lua dummy.setSoftWrapBinds(false)]])
+
 -- Mouse wheel scrolling (except on android)
 if not utils.os.is_android then
   map("n", "<ScrollWheelUp>", "<C-u>", arg_nr)
   map("n", "<ScrollWheelDown>", "<C-d>", arg_nr)
   map("i", "<ScrollWheelUp>", "<C-o><C-u>", arg_nr)
   map("i", "<ScrollWheelDown>", "<C-o><C-d>", arg_nr)
-
-  -- TODO: check if this is working
-  -- TODO: disable visual mode in insert mode
 end
 
 -- Disable mouse clicks without modifier key
@@ -225,7 +248,6 @@ map("n", "<C-x>n", ":tabnew<CR>", arg_nr_s)
 -- Buffer closing
 exec("cabbrev bd Bclose")
 exec("cabbrev bd! Bclose!")
-map("n", "<C-w>k", ":Bclose<CR>", arg_nr_s)
 
 -- Navigate the completion menu with <C-k>, <C-j> and <C-m>
 do
@@ -244,5 +266,21 @@ end
 
 exec("map <C-m> <CR>")
 
-map("n", "-", ":NERDTreeToggle<CR>", arg_nr)
+dummy.nerdTreeToggleX = function()
+  if vim.fn.exists("b:NERDTree") ~= 0 then
+    vim.cmd.NERDTreeClose()
+  else
+    vim.cmd.NERDTreeCWD()
+  end
+end
+
+map("n", "-", ":lua dummy.nerdTreeToggleX()<CR>", arg_nr)
+map("n", "<Leader>o", ":lua dummy.menuOpenRecent()<CR>", arg_nr)
 map("n", "<Leader>G", ":Goyo<CR>", arg_nr_s)
+
+map("n", "<Leader>L", ":set cursorline!<CR>", arg_nr)
+map("n", "<Leader>C", ":set cursorcolumn!<CR>", arg_nr)
+
+-- better n/N keys
+map("n", "n", "/<Up><CR>", arg_nr_s)
+map("n", "N", "?<Up><CR>", arg_nr_s)

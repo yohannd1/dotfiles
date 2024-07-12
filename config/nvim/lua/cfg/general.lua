@@ -16,8 +16,8 @@ end
 local vim_runtime_dir = vim.env.VIMRUNTIME
 local autocmd = vim.api.nvim_create_autocmd
 
--- FIXME: am I doing this right
--- utils.source_if_present(vim_runtime_dir .. "/delmenu.vim") or utils.source_if_present(vim_runtime_dir .. "/menu.vim")
+-- delete menus
+-- utils.sourceIfPresent(vim_runtime_dir .. "/delmenu.vim")
 
 vim.o.encoding = "utf-8"
 vim.o.langmenu = "en_US"

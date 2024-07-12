@@ -8,7 +8,7 @@ local M = {}
 
 local ucm = _G.useConfModule
 local utils = ucm("utils")
-local exec = function(cmd) vim.api.nvim_exec(cmd, false) end
+local exec = utils.exec
 
 local function plug(arg)
   local plugin = nil
@@ -43,7 +43,9 @@ local firstAvailableDir = function(arg)
   return arg.fallback or error("Could not find plugin + no fallback specified")
 end
 
-local plugins_old = function() error("used before implementation") end
+local plugins_old = function()
+  error("used before implementation")
+end
 
 do
   local plugins = {}
@@ -64,11 +66,6 @@ do
   end
 
   M.init = function(opts)
-    local is_first = (vim.g.is_first or 1) ~= 0
-    if not is_first then
-      return
-    end
-
     local plugins_to_load = assert(opts.plugins, ".plugins not specified")
     local all_was_specified = (plugins_to_load == "all")
     plugins_to_load = (plugins_to_load == "all") and plugin_names or plugins_to_load
@@ -99,6 +96,8 @@ do
     end
 
     vim.fn["plug#end"]()
+
+    M.tmp_after()
 
     for _, f in ipairs(_configs) do f() end -- FIXME: legacy code
     for _, f in ipairs(to_call) do f() end
@@ -192,8 +191,13 @@ M.add({
 
     local main_theme = themes.get_ivy()
 
+    local wikiInsertRef = function(ref, opts)
+      local text = "@ref(" .. ref .. ")"
+      utils.addTextInLine(text, opts)
+    end
+
     -- Search and open on wiki
-    dummy.open_wiki_file = function(opts, command)
+    dummy.wikiFzOpen = function(opts, command)
       opts = opts or {}
       utils.overrideTableWith(opts, main_theme)
       command = command or {"acr-list-titles"}
@@ -208,7 +212,7 @@ M.add({
             actions.close(prompt_bufnr)
 
             if selection then
-              vim.cmd("e " .. vim.g.wiki_dir .. "/" .. vim.fn.split(selection[1])[1] .. ".acr")
+              vim.cmd.edit(vim.g.wiki_dir .. "/" .. vim.fn.split(selection[1])[1] .. ".acr")
             end
           end)
 
@@ -217,7 +221,30 @@ M.add({
       }):find()
     end
 
-    dummy.insert_wiki_file = function(opts)
+    dummy.wikiNewFileInsertRef = function(opts)
+      local RANDOM_LIMIT = 20
+      local i = 0
+      while true do
+        local filename = vim.fn.WikiGenTitle()
+        local path = string.format("%s/%s.acr", vim.g.wiki_dir, filename)
+
+        if vim.fn.filereadable(path) == 0 then
+          wikiInsertRef(filename, {
+            after_cursor = opts.after_cursor,
+            telescope_fix = false,
+          })
+          vim.cmd.edit(path)
+          return true
+        end
+
+        i = i + 1
+        if i > RANDOM_LIMIT then
+          error("exceeded random limit")
+        end
+      end
+    end
+
+    dummy.wikiFzInsertRef = function(opts)
       opts = opts or {}
       utils.overrideTableWith(opts, main_theme)
 
@@ -232,11 +259,12 @@ M.add({
             local selection = action_state.get_selected_entry()
             actions.close(prompt_bufnr)
 
-            if selection then
-              local link = "@ref(" .. vim.fn.split(selection[1])[1] .. ")"
-              utils.makeAddTxt(opts.after_cursor)(link)
-              vim.cmd(string.format("normal! %dl", opts.after_cursor and 2 + link:len() or 1))
-            end
+            if not selection then return end
+            local page = vim.fn.split(selection[1])[1]
+            wikiInsertRef(page, {
+              after_cursor = opts.after_cursor,
+              telescope_fix = true,
+            })
           end)
 
           return true
@@ -244,7 +272,7 @@ M.add({
       }):find()
     end
 
-    dummy.open_recent = function(opts)
+    dummy.menuOpenRecent = function(opts)
       opts = opts or {}
       utils.overrideTableWith(opts, main_theme)
 
@@ -258,7 +286,7 @@ M.add({
             actions.close(prompt_bufnr)
 
             if selection then
-              vim.cmd("e " .. selection[1])
+              vim.cmd.edit(selection[1])
             end
           end)
 
@@ -470,7 +498,6 @@ plugins_old = function()
   end
   -- }}}
 
-
   -- Themes
   if utils.os.is_windows then
     -- use gruvbox as the default theme for windows
@@ -548,7 +575,7 @@ plugins_old = function()
       exec("nnoremap <silent> <Leader>f :Hydra extrafind<CR>")
       vim.fn["hydra#hydras#register"] {
         name = "extrafind",
-        title = "Extra find",
+        title = "Find",
         show = "popup",
         exit_key = "q",
         feed_key = false,
@@ -561,6 +588,25 @@ plugins_old = function()
             {"t", "lua dummy.findTodos()", "TODOs (in buffer)"},
             {"b", "lua require('telescope.builtin').buffers()", "buffers"},
             {"h", "lua require('telescope.builtin').help_tags()", "help tags"},
+          }
+        }},
+      }
+
+      exec("nnoremap <silent> <Leader>e :Hydra edit<CR>")
+      vim.fn["hydra#hydras#register"] {
+        name = "edit",
+        title = "Edit",
+        show = "popup",
+        exit_key = "q",
+        feed_key = false,
+        foreign_key = true,
+        single_command = true,
+        position = "s:bottom_right",
+        keymap = {{
+          name = "Common files",
+          keys = {
+            {"v", "e $VIM_INIT", "init.vim"},
+            {"r", "e $DOTFILES/config/dots/resources.lua", "resources.lua"},
           }
         }},
       }
@@ -588,6 +634,65 @@ do
 
   -- rifle
   vim.g.rifle_mode = (utils.os.is_android == 1) and "buffer" or "popup"
+end
+
+M.tmp_after = function()
+  -- rifle
+  vim.fn["hydra#hydras#register"] {
+    name = "rifle",
+    title = "Rifle",
+    show = "popup",
+    exit_key = "q",
+    feed_key = false,
+    foreign_key = true,
+    single_command = true,
+    position = "s:bottom_right",
+    keymap = {{
+      name = "General",
+      keys = {
+        {"r", [[Rifle 'run']], "run"},
+        {"b", [[Rifle 'build']], "build"},
+        {"c", [[Rifle 'check']], "check"},
+        {"t", [[Rifle 'test']], "test"},
+      },
+    }}
+  }
+  exec([[nnoremap <silent> <Leader>r :Hydra rifle<CR>]])
+
+  -- wiki stuff
+  vim.fn["hydra#hydras#register"] {
+    name = "wiki",
+    title = "Wiki",
+    show = "popup",
+    exit_key = "q",
+    feed_key = false,
+    foreign_key = true,
+    single_command = true,
+    position = "s:bottom_right",
+    keymap = {
+      {
+        name = "Open...",
+        keys = {
+          {"w", "e ~/wiki/vimwiki/index.acr", "index"},
+          {"s", "e ~/wiki/vimwiki/202105021825-E80938.acr", "scratchpad"},
+          {"p", "e ~/wiki/vimwiki/202401151901-42E4FA.acr", "week plan (2024)"},
+          {"o", "lua dummy.wikiFzOpen({})", "search"},
+          -- {"O", "lua dummy.wikiFzOpen({}, {'acw-get-projects'})", "select a project"},
+        },
+      },
+
+      {
+        name = "References",
+        keys = {
+          {"R", "lua dummy.wikiFzInsertRef({after_cursor = false})", "add reference ←"},
+          {"r", "lua dummy.wikiFzInsertRef({after_cursor = true})", "add reference →"},
+          {"N", "lua dummy.wikiNewFileInsertRef({after_cursor = false})", "new note + add reference ←"},
+          {"n", "lua dummy.wikiNewFileInsertRef({after_cursor = true})", "new note + add reference →"},
+        }
+      }
+    }
+  }
+  exec([[nnoremap <silent> <Leader>w :Hydra wiki<CR>]])
 end
 
 return M

@@ -5,8 +5,6 @@ local exec = function(cmd) vim.api.nvim_exec(cmd, false) end
 vim.o.background = "light"
 exec("colorscheme gruvbox")
 
-vim.g.is_first = (vim.g.is_first == nil) and 1 or 0
-
 -- prepare config dir
 local CONF_DIR = vim.fn.resolve(vim.fn.expand("<sfile>:p:h:h"))
 package.path = string.format("%s;%s/lua/?.lua", package.path, CONF_DIR)

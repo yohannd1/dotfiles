@@ -17,6 +17,10 @@ M.log.printAll = function()
   end
 end
 
+M.exec = function(str)
+  vim.api.nvim_exec(str, false)
+end
+
 M.parseEscapeCode = function(str)
     return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
@@ -78,61 +82,28 @@ M.hasIntegerRepr = function(num)
   return tostring(num):match("^%d+$") ~= nil
 end
 
-M.moveCursorHorizontal = function(offset)
-  assert(
-    M.hasIntegerRepr(math.abs(offset)),
-    string.format(
-      "Absolute of `offset` (%s) has no integer representation",
-      math.abs(offset)
-    )
-  )
+M.addTextInLine = function(text, opts)
+  local after_cursor = opts.after_cursor
 
-  if offset == 0 then
-    return 0
+  local offset = after_cursor and 1 or 0
+  if opts.telescope_fix then
+    offset = offset - 1
   end
 
-  local direction_str = (offset > 0) and "l" or "h"
-  local direction_signal = (offset > 0) and 1 or -1
+  local str_pos = vim.fn.col(".") - 1 + offset
+  local line = vim.fn.getline(".")
 
-  for i = 1, math.abs(offset) do
-    local ccol = vim.fn.col(".")
-    vim.cmd("normal! " .. direction_str)
-    if vim.fn.col(".") == ccol then
-      -- Didn't move at all this round - it's the end of the line. Let's return already then.
-      return i * direction_signal
-    end
-  end
+  local before = vim.fn.strpart(line, 0, str_pos)
+  local after = vim.fn.strpart(line, str_pos)
+  local rebuilt = before .. text .. after
 
-  return offset
+  vim.fn.setline(".", rebuilt)
+  vim.cmd("normal! " .. (str_pos+2) .. "|")
 end
 
-M.columnAtCharOffset = function(offset)
-  local moved = M.moveCursorHorizontal(offset)
-  if moved ~= offset then
-    M.moveCursorHorizontal(-moved)
-  else
-    local ccol = vim.fn.col(".")
-    M.moveCursorHorizontal(-offset)
-    return ccol
-  end
-end
-
-M.makeAddTxt = function(after_cursor)
-  return function(text)
-    assert(text ~= nil, "Argument `text` must not be nil")
-
-    local line = vim.fn.getline(".")
-    local start_offset = after_cursor and 0 or -1
-    local divide_point = M.columnAtCharOffset(start_offset) or 0
-
-    vim.fn.setline(
-      ".",
-      table.concat({
-        vim.fn.strpart(line, 0, divide_point), -- FIXME: why is this still splitting multibyte chars(?) in half?
-        text,
-        vim.fn.strpart(line, divide_point),
-      }, "")
-    )
+M.sourceIfPresent = function(path)
+  if vim.fn.filereadable(path) ~= 0 then
+    vim.cmd.source(path)
   end
 end
 
