@@ -1,7 +1,7 @@
 import os
 from typing import List
 
-from libqtile import bar, layout, widget
+from libqtile import bar, layout, widget, hook
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.lazy import lazy
 
@@ -71,8 +71,9 @@ def tasklist_window_select(tl):
         window = tl.clicked
         window.group.focus(window, False)
 
-        if window.floating:
-            window.bring_to_front()
+@hook.subscribe.client_focus
+def client_focus(client):
+    client.bring_to_front()
 
 task_list: widget.TaskList = widget.TaskList(
     mouse_callbacks={
