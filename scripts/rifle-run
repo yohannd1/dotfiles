@@ -248,6 +248,14 @@ case "$1" in
         uxnasm "$file" "$tmp/out.rom"
         uxnemu "$tmp/out.rom"
         ;;
+      acrylic)
+        ln -s ~/.local/share/katex "$tmp/katex"
+        acr2html "$file" -o "$tmp/out.html" -k katex/
+        printf >&2 "Opening HTML output...\n"
+        open "file://$tmp/out.html"
+        printf >&2 "Opened. Press enter to end (will delete temp files).\n"
+        read
+        ;;
       *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
     esac ;;
   build)
