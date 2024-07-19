@@ -47,7 +47,7 @@ export WAYLAND_TERMINAL=foot
 export XORG_TERMINAL=st
 export TERMINAL=dotf.wrap.terminal
 
-export BROWSER=qutebrowser
+export BROWSER=librewolf
 _isAndroid && export BROWSER=termux-open-url
 
 export TERMBROWSER=w3m
@@ -66,6 +66,8 @@ export GRADLE_USER_HOME="$XDG_DATA_HOME/gradle"
 export ZIGUP_INSTALL_DIR="$XDG_CACHE_HOME/zigup"
 export ZIGUP_PATH_LINK="$HOME/.local/bin/zig"
 export LUAROCKS_HOME="$HOME/.luarocks"
+export JANET_MODPATH="$HOME/.cache/janet"
+export JANET_BINPATH="$HOME/.local/bin"
 _exists sccache && export RUSTC_WRAPPER=sccache
 
 # configuration files/folders

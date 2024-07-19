@@ -186,6 +186,19 @@
     (t :tty ["exiftool" file])
     (t :runpage ["mediainfo" file]))
 
+  # music projects
+  (mt :ext ["kdenlive"] :gui ["kdenlive" file])
+  (mt :ext ["sunvox"] :gui ["sunvox" file])
+  (when (m :ext ["ardour"])
+    (t :gui ["ardour8" file])
+    (t :gui ["ardour7" file])
+    (t :gui ["ardour6" file])
+    )
+  (when (m :ext ["mmp" "mmpz"])
+    (t :gui ["@lmms" file]) # a wrapper i have on my pc
+    (t :gui ["lmms" file]))
+  (mt :ext ["rad"] :gui ["radium" file])
+
   # image
   (when (m :mime ["image/vnd.djvu"])
     (t :runpage ["djvutxt" file])
@@ -204,19 +217,6 @@
   (mt :ext ["ptcop"] :gui ["@ptcollab" file])
   (mt :ext ["btm"] :gui ["BambooTracker" file])
   (mt :ext ["vgm" "vgz"] :pop ["vgmplay" file])
-
-  # music projects
-  (mt :ext ["kdenlive"] :gui ["kdenlive" file])
-  (mt :ext ["sunvox"] :gui ["sunvox" file])
-  (when (m :ext ["ardour"])
-    (t :gui ["ardour8" file])
-    (t :gui ["ardour7" file])
-    (t :gui ["ardour6" file])
-    )
-  (when (m :ext ["mmp" "mmpz"])
-    (t :gui ["@lmms" file]) # a wrapper i have on my pc
-    (t :gui ["lmms" file]))
-  (mt :ext ["rad"] :gui ["radium" file])
 
   (mt :ext ["swf"] :gui ["flashplayer" file])
 
