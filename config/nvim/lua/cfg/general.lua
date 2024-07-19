@@ -2,95 +2,113 @@ local ucm = _G.useConfModule
 local dummy = _G.dummy
 
 local utils = ucm("utils")
+local exec = utils.exec
+local map = utils.map
+local setGlobals = utils.setGlobals
 
-local exec = function(s) vim.api.nvim_exec(s, false) end
+local vim_runtime_dir = vim.env.VIMRUNTIME
+local autocmd = vim.api.nvim_create_autocmd
+local augroup = vim.api.nvim_create_augroup
 
-local mapVimFn = function(name, map)
+local mapVimFn = function(name, m)
   exec(string.format([[
     function! %s()
       lua %s()
     endfunction
-  ]], name, map))
+  ]], name, m))
 end
-
-local vim_runtime_dir = vim.env.VIMRUNTIME
-local autocmd = vim.api.nvim_create_autocmd
-
--- delete menus
--- utils.sourceIfPresent(vim_runtime_dir .. "/delmenu.vim")
 
 vim.o.encoding = "utf-8"
 vim.o.langmenu = "en_US"
 vim.env.LANG = "en_US"
 
-vim.o.hidden = true
-vim.o.title = true
-vim.o.number = true
-vim.o.relativenumber = true
-
-vim.o.backspace = "indent,eol,start"
-vim.o.laststatus = 2
-
--- default indent settings
 local TAB_WIDTH = 8
 local SPACE_WIDTH = 4
-vim.o.tabstop = TAB_WIDTH
-vim.o.shiftwidth = SPACE_WIDTH
-vim.o.softtabstop = SPACE_WIDTH
-vim.o.expandtab = true
-vim.o.smarttab = true
 
-vim.o.wildmenu = true
-vim.o.wildmode = "longest:full,full"
+setGlobals {
+  -- default indent settings
+  tabstop = TAB_WIDTH,
+  shiftwidth = SPACE_WIDTH,
+  softtabstop = SPACE_WIDTH,
+  expandtab = true,
+  smarttab = true,
+  autoindent = true,
 
-vim.o.autoindent = true
+  hidden = true,
+  title = true,
+  number = true,
+  relativenumber = true,
 
-vim.o.hlsearch = true
-vim.o.incsearch = true
+  backspace = "indent,eol,start",
+  laststatus = 2,
 
+  wildmenu = true,
+  wildmode = "longest:full,full",
+
+  -- search options
+  hlsearch = true,
+  incsearch = true,
+
+  -- word wrap
+  linebreak = true,
+  wrap = true,
+
+  cursorline = true, -- line highlighting
+  showcmd = true, -- show keystrokes & visual mode size
+
+  belloff = "all",
+  mouse = "a",
+
+  -- 'i' was interesting too but it seems too expensive; 't' for no tags
+  complete = ".,w,b,u,k,kspell",
+  completeopt = "menu,menuone,noselect",
+
+  -- show as much of the last line as possible
+  display = "lastline",
+
+  list = true,
+  listchars = "tab:  ,trail:¬",
+
+  -- no fold by default
+  foldenable = false,
+
+  -- don't show mode on the command line
+  showmode = false,
+
+  -- cindent default config
+  cinoptions = "g0,:0",
+
+  -- scroll ahead :)
+  scrolloff = 3,
+}
+
+vim.opt.shortmess:append("atCI")
+
+-- attempt to make italics work
 exec([[
-  set linebreak wrap
-  set cursorline " line highlighting
-  set showcmd
-  set shortmess+=atcI
-  set belloff+=ctrlg
-  set mouse=a
-  set display+=lastline
-  set complete=.,w,b,u,k,kspell " 'i' was interesting too but it seems too expensive; 't' for no tags
-  set completeopt-=preview
-  set completeopt+=menuone,noselect
-  set noshowmode
-  set list
-  set nofoldenable
-  set cinoptions+=g0
-  set cinoptions+=:0
-  set scrolloff=3 " scroll ahead :)
-
-  set listchars=tab:\ \ ,trail:¬
-
-  " That's how the italics work (or not)
-  let &t_ZH = "\<Esc>[3m"
-  let &t_ZR = "\<Esc>[23m"
+let &t_ZH = "\<Esc>[3m"
+let &t_ZR = "\<Esc>[23m"
 ]])
 
 exec("syntax on")
+exec("filetype plugin indent on")
 
 -- only auto-cd if we're not on windows
 vim.o.autochdir = not utils.os.is_windows
 
 if vim.g.neovide then
-    vim.o.guifont = "Cascadia Code:h9"
+  vim.o.guifont = "Cascadia Code:h9"
 
-    vim.g.neovide_transparency = 0.8
-    vim.g.neovide_cursor_vfx_mode = "ripple"
+  vim.g.neovide_transparency = 0.8
+  vim.g.neovide_cursor_vfx_mode = "ripple"
 end
 
 dummy.toggleVirtualEdit = function()
-    local value = (vim.o.ve == "") and "all" or ""
-    vim.o.ve = value
+  local value = (vim.o.ve == "") and "all" or ""
+  vim.o.ve = value
 
-    local message = string.format("Virtual edit set to '%s'", value)
-    vim.api.nvim_echo({{message}}, false, {})
+  local message = string.format("Virtual edit set to '%s'", value)
+  vim.api.nvim_echo({{message}}, false, {})
 end
 
 dummy.bufSwitch = function(next)
@@ -174,30 +192,6 @@ function! Item_Default_ToggleTodo() " {{{
 
   echo "No to-do detected on the current line"
 endfunction " }}}
-function! ReverseRSearch(basedir, query) " {{{
-  let l:current_dir = a:basedir
-  while 1
-    let l:current_glob = glob(l:current_dir . "/*", 0, 1)
-    let l:list_match = ListMatch(l:current_glob, '.*/' .. a:query .. '$') || ListMatch(l:current_glob, '.*\\' .. a:query .. '$')
-    if (l:current_dir == "/") || (l:current_dir =~ '^\w:\\$') " *NIX or Windows root directories
-      return l:list_match
-    else
-      if l:list_match
-        return 1
-      else
-        let l:current_dir = fnamemodify(l:current_dir, ":h")
-      endif
-    endif
-  endwhile
-endfunction " }}}
-function! ListMatch(list, pattern) " {{{
-  for e in a:list
-    if e =~ a:pattern
-      return 1
-    endif
-  endfor
-  return 0
-endfunction " }}}
 ]])
 
 -- autocmd({"TextYankPost"}, {
@@ -219,4 +213,63 @@ dummy.findTodos = function()
 
   vim.fn.search(query)
   vim.fn.histadd("/", query)
+end
+
+-- Pager mode
+dummy.pagerMode = function(filetype)
+  if filetype ~= nil then
+    vim.o.filetype = filetype
+  end
+  exec("setlocal ts=8 nomod nolist noma timeoutlen=0 nocursorline norelativenumber noshowcmd")
+  local arg_nr_bs = { noremap = true, buffer = true, silent = true }
+  map("n", "d", "<C-d>")
+  map("n", "u", "<C-u>")
+  map("n", "q", ":q<CR>")
+  map("n", "j", "<C-e>")
+  map("n", "k", "<C-y>")
+  exec("normal M")
+end
+vim.cmd("command! -nargs=* PagerMode call v:lua.dummy.pagerMode(<f-args>)")
+
+-- Folding
+exec([[
+function! MyFoldText()
+  let l:foldmarker = split(&foldmarker, ',')
+  let l:tab_char = strpart(' ', shiftwidth())
+  let l:line_contents = substitute(getline(v:foldstart), '\t', l:tab_char, 'g')
+  let l:line_contents = substitute(l:line_contents, ' *'.l:foldmarker[0].'\d* *', '', 'g')
+
+  let l:numbers_width = &foldcolumn + &number * &numberwidth
+  let l:window_width = winwidth(0) - numbers_width - 1
+  let l:folded_lines_number = v:foldend - v:foldstart
+
+  let l:line_contents = strpart(l:line_contents, 0, l:window_width - 2 - len(l:folded_lines_number))
+  let l:void_size = l:window_width - len(l:line_contents) - len(folded_lines_number)
+  let l:void_char = '·'
+
+  return l:line_contents . repeat(l:void_char, l:void_size) . l:folded_lines_number . 'l   '
+endfunction
+set foldtext=MyFoldText()
+command! FoldNone set nofoldenable
+command! FoldBracket set foldenable foldmethod=marker foldmarker={,}
+]])
+
+-- highlight to-dos, fixmes etc.
+-- partially stolen from https://github.com/sakshamgupta05/vim-todo-highlight
+--
+-- TODO: make this work inside regions (e.g. strings)
+do
+  local NAMES = {"TODO", "FIXME", "XXX", "NOTE"}
+  for _, name in ipairs(NAMES) do
+    local gname = ("annotation_%s"):format(name:lower())
+    augroup(gname, {clear = true})
+    autocmd({"Syntax"}, {
+      pattern = "*",
+      callback = function()
+        local fmt = [[syntax match %s /\v\_.<%s>:?/hs=s+1 contained containedin=.*Comment.*]]
+        exec(fmt:format(gname, name))
+      end,
+    })
+    exec(("hi link %s Todo"):format(gname))
+  end
 end

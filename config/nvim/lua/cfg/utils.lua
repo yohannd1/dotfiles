@@ -107,4 +107,27 @@ M.sourceIfPresent = function(path)
   end
 end
 
+M.map = function(m, lhs, rhs, args)
+  local args = args or {}
+  vim.api.nvim_set_keymap(m, lhs, rhs, args)
+end
+
+M.forChars = function(chars, fn)
+  for c in M.splitIter(chars, "") do
+    fn(c)
+  end
+end
+
+M.setLocals = function(opts)
+    for k, v in pairs(opts) do
+        vim.opt_local[k] = v
+    end
+end
+
+M.setGlobals = function(opts)
+    for k, v in pairs(opts) do
+        vim.opt[k] = v
+    end
+end
+
 return M

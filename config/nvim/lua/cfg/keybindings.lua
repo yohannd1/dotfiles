@@ -5,18 +5,10 @@ local ucm = _G.useConfModule
 local utils = ucm("utils")
 
 local getLineToEnd = function() return vim.fn.getline('.'):sub(vim.fn.col('.')) end
-local exec = function(cmd) vim.api.nvim_exec(cmd, false) end
+local exec = utils.exec
+local map = utils.map
+local forChars = utils.forChars
 
-local map = function(m, lhs, rhs, args)
-  local args = args or {}
-  vim.api.nvim_set_keymap(m, lhs, rhs, args)
-end
-
-local forChars = function(chars, fn)
-  for c in utils.splitIter(chars, "") do
-    fn(c)
-  end
-end
 
 -- Quick binding arguments
 local arg_nr = {noremap = true}
@@ -165,9 +157,6 @@ end)
 -- Toggle virtualedit
 map("n", "<Leader>tv", ":lua dummy.toggleVirtualEdit()<CR>", arg_nr)
 
--- Improved file opener
-map("n", "gf", ":call OpenSelected()<CR>", arg_nr)
-
 -- Buffer formatting
 map("n", "<Leader>bf", ":FormatBuffer<CR>", arg_nr)
 
@@ -284,3 +273,34 @@ map("n", "<Leader>C", ":set cursorcolumn!<CR>", arg_nr)
 -- better n/N keys
 map("n", "n", "/<Up><CR>", arg_nr_s)
 map("n", "N", "?<Up><CR>", arg_nr_s)
+
+-- open hovered text
+dummy.openCurrentWORD = function()
+  local matchstr = vim.fn.matchstr
+  local cword = vim.fn.expand("<cWORD>")
+
+  local url = matchstr(cword, [[\v(https?|www\.)://[a-zA-Z0-9/\-\.%_?#=&+~:()]+]])
+  if #url > 0 then
+    print("Found URL: " .. url)
+    local browser = assert(vim.env.BROWSER, "Could not find a suitable browser to open the WORD (set it via $BROWSER)")
+
+    if vim.fn.confirm("Open using a browser?", "&Yes\n&No") == 1 then
+      vim.fn.jobstart({browser, url})
+    end
+
+    return
+  end
+
+  local file = matchstr(cword, [[\v[a-zA-Z0-9_\-\./]+]])
+  if #file > 0 then
+    print("Found file: " .. file)
+    if vim.fn.confirm("Open in a new buffer", "&Yes\n&No") == 1 then
+      vim.cmd.edit(file)
+    end
+
+    return
+  end
+
+  print("Could not find a suitable file or url in the current WORD")
+end
+map("n", "gf", ":lua dummy.openCurrentWORD()<CR>", arg_nr)

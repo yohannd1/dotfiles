@@ -221,27 +221,30 @@ M.add({
       }):find()
     end
 
-    dummy.wikiNewFileInsertRef = function(opts)
-      local RANDOM_LIMIT = 20
-      local i = 0
-      while true do
-        local filename = vim.fn.WikiGenTitle()
-        local path = string.format("%s/%s.acr", vim.g.wiki_dir, filename)
-
+    dummy.wikiGenNewFilename = function(opts)
+      local attempt_limit = opts.attempt_limit or 32
+      local base_path = opts.base_path or ""
+      for i = 1, attempt_limit do
+        local time = vim.fn.strftime("%Y%m%d%H%M")
+        local suffix = vim.fn.trim(
+          vim.fn.system("hexdump -n 3 -e '4/4 \"%08X\" 1 \"\\n\"' /dev/random | cut -c 3-")
+        )
+        local name = string.format("%s-%s", time, suffix)
+        local path = string.format("%s/%s.acr", base_path, name)
         if vim.fn.filereadable(path) == 0 then
-          wikiInsertRef(filename, {
-            after_cursor = opts.after_cursor,
-            telescope_fix = false,
-          })
-          vim.cmd.edit(path)
-          return true
-        end
-
-        i = i + 1
-        if i > RANDOM_LIMIT then
-          error("exceeded random limit")
+          return { name = name, path = path }
         end
       end
+      error("Too many attempts while trying to generate filename")
+    end
+
+    dummy.wikiNewFileInsertRef = function(opts)
+      local r = dummy.wikiGenNewFilename({ base_path = vim.g.wiki_dir })
+      wikiInsertRef(r.name, {
+        after_cursor = opts.after_cursor,
+        telescope_fix = false,
+      })
+      vim.cmd.edit(r.path)
     end
 
     dummy.wikiFzInsertRef = function(opts)
@@ -675,6 +678,7 @@ M.tmp_after = function()
         keys = {
           {"w", "e ~/wiki/vimwiki/index.acr", "index"},
           {"s", "e ~/wiki/vimwiki/202105021825-E80938.acr", "scratchpad"},
+          {"P", "e ~/wiki/vimwiki/202407161554-F1C8E4.acr", "plan"},
           {"p", "e ~/wiki/vimwiki/202401151901-42E4FA.acr", "week plan (2024)"},
           {"o", "lua dummy.wikiFzOpen({})", "search"},
           -- {"O", "lua dummy.wikiFzOpen({}, {'acw-get-projects'})", "select a project"},
@@ -693,6 +697,8 @@ M.tmp_after = function()
     }
   }
   exec([[nnoremap <silent> <Leader>w :Hydra wiki<CR>]])
+
+  exec("colorscheme base16")
 end
 
 return M

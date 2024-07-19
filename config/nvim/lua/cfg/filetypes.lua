@@ -3,17 +3,13 @@
 
 local vim = _G.vim
 local ucm = _G.useConfModule
+
 local utils = ucm("utils")
+local exec = utils.exec
+local setLocals = utils.setLocals
 
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
-local exec = function(x) vim.api.nvim_exec(x, false) end
-
-local setLocals = function(locals)
-    for k, v in pairs(locals) do
-        vim.opt_local[k] = v
-    end
-end
 
 local setTabIndent = function(indent)
     setLocals {
@@ -40,6 +36,12 @@ end
 local addSnippets = function(snips)
     for k, v in pairs(snips) do
         dummy.addSnippet(k, v)
+    end
+end
+
+local fsRootMatch = function(patt)
+    return function(name, _)
+        return name:match(patt) ~= nil
     end
 end
 
@@ -100,7 +102,7 @@ local initialize = function()
                 ft[filetype]()
             end
 
-            if vim.fn.ReverseRSearch(vim.fn.expand("%:p:h"), "Makefile") ~= 0 then
+            if vim.fs.root(0, "Makefile") ~= nil then
               vim.b.rifle_ft = "@make"
             end
         end
@@ -259,7 +261,7 @@ ft.nim = function()
     }
 
     local this_folder = vim.fn.expand("%:p:h")
-    local found = vim.fn.ReverseRSearch(this_folder, "*.nimble") ~= 0
+    local found = vim.fs.root(0, fsRootMatch("%.nimble$")) ~= nil
     vim.b.rifle_ft = found and "@nimble" or "nim"
 end
 ft.nims = ft.nim
@@ -284,7 +286,7 @@ ft.rust = function()
     }
 
     local this_folder = vim.fn.expand("%:p:h")
-    local found = vim.fn.ReverseRSearch(this_folder, "Cargo.toml") ~= 0
+    local found = vim.fs.root(0, "Cargo.toml") ~= nil
     vim.b.rifle_ft = found and "@cargo" or "rust"
 
     addSnippets {
@@ -294,7 +296,7 @@ end
 
 ft.java = function()
     local this_folder = vim.fn.expand("%:p:h")
-    local found = vim.fn.ReverseRSearch(this_folder, "gradlew") ~= 0
+    local found = vim.fs.root(0, "gradlew") ~= nil
     vim.b.rifle_ft = found and "@gradlew" or "java"
 
     vim.b.format_command = "google-java-format --aosp - 2>/dev/null"
@@ -324,7 +326,7 @@ ft.plaintex = ft.tex
 
 ft.zig = function()
     local this_folder = vim.fn.expand("%:p:h")
-    local found = vim.fn.ReverseRSearch(this_folder, "build.zig") ~= 0
+    local found = vim.fs.root(0, "build.zig") ~= nil
     vim.b.rifle_ft = found and "@zig-build" or "zig"
 
     vim.b.format_command = "zig fmt --stdin"
