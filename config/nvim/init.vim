@@ -110,3 +110,5 @@ lua require("cfg.general")
 lua require("cfg.statusline")
 lua require("cfg.keybindings")
 lua require("cfg.filetypes")
+
+colorscheme base16

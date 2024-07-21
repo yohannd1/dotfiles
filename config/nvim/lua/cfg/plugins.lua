@@ -91,14 +91,12 @@ do
     end
 
     if all_was_specified then
-      plugins_old() -- FIXME: legacy code (only when "all" was specified. or something.)
+      plugins_old() -- FIXME: remove this (legacy code) (currently runs only when "all" is specified)
     end
 
     vim.fn["plug#end"]()
 
-    M.tmp_after()
-
-    for _, f in ipairs(_configs) do f() end -- FIXME: legacy code
+    for _, f in ipairs(_configs) do f() end -- FIXME: remve this (legacy code)
     for _, f in ipairs(to_call) do f() end
   end
 end
@@ -612,6 +610,64 @@ plugins_old = function()
           }
         }},
       }
+
+      -- rifle
+      vim.fn["hydra#hydras#register"] {
+        name = "rifle",
+        title = "Rifle",
+        show = "popup",
+        exit_key = "q",
+        feed_key = false,
+        foreign_key = true,
+        single_command = true,
+        position = "s:bottom_right",
+        keymap = {{
+          name = "General",
+          keys = {
+            {"r", [[Rifle 'run']], "run"},
+            {"b", [[Rifle 'build']], "build"},
+            {"c", [[Rifle 'check']], "check"},
+            {"t", [[Rifle 'test']], "test"},
+          },
+        }}
+      }
+      exec([[nnoremap <silent> <Leader>r :Hydra rifle<CR>]])
+
+      -- wiki stuff
+      vim.fn["hydra#hydras#register"] {
+        name = "wiki",
+        title = "Wiki",
+        show = "popup",
+        exit_key = "q",
+        feed_key = false,
+        foreign_key = true,
+        single_command = true,
+        position = "s:bottom_right",
+        keymap = {
+          {
+            name = "Open...",
+            keys = {
+              {"w", "e ~/wiki/vimwiki/index.acr", "index"},
+              {"s", "e ~/wiki/vimwiki/202105021825-E80938.acr", "scratchpad"},
+              {"P", "e ~/wiki/vimwiki/202407161554-F1C8E4.acr", "plan"},
+              {"p", "e ~/wiki/vimwiki/202401151901-42E4FA.acr", "week plan (2024)"},
+              {"o", "lua dummy.wikiFzOpen({})", "search"},
+              -- {"O", "lua dummy.wikiFzOpen({}, {'acw-get-projects'})", "select a project"},
+            },
+          },
+
+          {
+            name = "References",
+            keys = {
+              {"R", "lua dummy.wikiFzInsertRef({after_cursor = false})", "add reference ←"},
+              {"r", "lua dummy.wikiFzInsertRef({after_cursor = true})", "add reference →"},
+              {"N", "lua dummy.wikiNewFileInsertRef({after_cursor = false})", "new note + add reference ←"},
+              {"n", "lua dummy.wikiNewFileInsertRef({after_cursor = true})", "new note + add reference →"},
+            }
+          }
+        }
+      }
+      exec([[nnoremap <silent> <Leader>w :Hydra wiki<CR>]])
     end
   })
 
@@ -636,68 +692,6 @@ do
 
   -- rifle
   vim.g.rifle_mode = (utils.os.is_android == 1) and "buffer" or "popup"
-end
-
-M.tmp_after = function()
-  -- rifle
-  vim.fn["hydra#hydras#register"] {
-    name = "rifle",
-    title = "Rifle",
-    show = "popup",
-    exit_key = "q",
-    feed_key = false,
-    foreign_key = true,
-    single_command = true,
-    position = "s:bottom_right",
-    keymap = {{
-      name = "General",
-      keys = {
-        {"r", [[Rifle 'run']], "run"},
-        {"b", [[Rifle 'build']], "build"},
-        {"c", [[Rifle 'check']], "check"},
-        {"t", [[Rifle 'test']], "test"},
-      },
-    }}
-  }
-  exec([[nnoremap <silent> <Leader>r :Hydra rifle<CR>]])
-
-  -- wiki stuff
-  vim.fn["hydra#hydras#register"] {
-    name = "wiki",
-    title = "Wiki",
-    show = "popup",
-    exit_key = "q",
-    feed_key = false,
-    foreign_key = true,
-    single_command = true,
-    position = "s:bottom_right",
-    keymap = {
-      {
-        name = "Open...",
-        keys = {
-          {"w", "e ~/wiki/vimwiki/index.acr", "index"},
-          {"s", "e ~/wiki/vimwiki/202105021825-E80938.acr", "scratchpad"},
-          {"P", "e ~/wiki/vimwiki/202407161554-F1C8E4.acr", "plan"},
-          {"p", "e ~/wiki/vimwiki/202401151901-42E4FA.acr", "week plan (2024)"},
-          {"o", "lua dummy.wikiFzOpen({})", "search"},
-          -- {"O", "lua dummy.wikiFzOpen({}, {'acw-get-projects'})", "select a project"},
-        },
-      },
-
-      {
-        name = "References",
-        keys = {
-          {"R", "lua dummy.wikiFzInsertRef({after_cursor = false})", "add reference ←"},
-          {"r", "lua dummy.wikiFzInsertRef({after_cursor = true})", "add reference →"},
-          {"N", "lua dummy.wikiNewFileInsertRef({after_cursor = false})", "new note + add reference ←"},
-          {"n", "lua dummy.wikiNewFileInsertRef({after_cursor = true})", "new note + add reference →"},
-        }
-      }
-    }
-  }
-  exec([[nnoremap <silent> <Leader>w :Hydra wiki<CR>]])
-
-  exec("colorscheme base16")
 end
 
 return M
