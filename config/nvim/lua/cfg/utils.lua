@@ -119,15 +119,15 @@ M.forChars = function(chars, fn)
 end
 
 M.setLocals = function(opts)
-    for k, v in pairs(opts) do
-        vim.opt_local[k] = v
-    end
+  for k, v in pairs(opts) do
+    vim.opt_local[k] = v
+  end
 end
 
 M.setGlobals = function(opts)
-    for k, v in pairs(opts) do
-        vim.opt[k] = v
-    end
+  for k, v in pairs(opts) do
+    vim.opt[k] = v
+  end
 end
 
 return M

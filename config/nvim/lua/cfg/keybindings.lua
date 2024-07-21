@@ -1,14 +1,12 @@
 -- vim: foldenable foldmethod=marker foldmarker={{{,}}}
 
 local dummy = _G.dummy
-local ucm = _G.useConfModule
-local utils = ucm("utils")
+local utils = require("cfg.utils")
 
 local getLineToEnd = function() return vim.fn.getline('.'):sub(vim.fn.col('.')) end
 local exec = utils.exec
 local map = utils.map
 local forChars = utils.forChars
-
 
 -- Quick binding arguments
 local arg_nr = {noremap = true}

@@ -1,7 +1,6 @@
+local utils = require("cfg.utils")
 local vim = _G.vim
 local dummy = _G.dummy
-local ucm = _G.useConfModule
-local utils = ucm("utils")
 
 local mode_map = {
   ["n"]  = "NORMAL",

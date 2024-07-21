@@ -1,7 +1,6 @@
-local ucm = _G.useConfModule
 local dummy = _G.dummy
 
-local utils = ucm("utils")
+local utils = require("cfg.utils")
 local exec = utils.exec
 local map = utils.map
 local setGlobals = utils.setGlobals
@@ -273,3 +272,15 @@ do
     exec(("hi link %s Todo"):format(gname))
   end
 end
+
+-- TODO: inside neovim, replace the $EDITOR with a wrapper script that connects
+-- to the current neovim instance, opens a buffer, and waits for the buffer to
+-- unload before exiting.
+--
+-- Waiting for neovim to implement --remote-wait to do this. See
+-- https://neovim.io/doc/user/remote.html
+--
+-- This might be possible without --remote-wait already, by using a BufWipeout
+-- hook, but I'd need to figure out how that works and then make the wrapper
+-- script wait till neovim responds back to it with a message saying the buffer
+-- closed. Might not be too hard though?

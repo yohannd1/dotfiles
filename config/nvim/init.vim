@@ -105,5 +105,8 @@ command! -nargs=0 FormatBuffer call FormatBuffer()
 command! -nargs=0 ShowFormatErr call ShowFormatErr()
 command! Fgitmerge /\v^(\<{4,}|\={4,}|\>{4,})
 
-" load the rest of the lua config
-lua require("cfg.initrc")
+" load the rest of the config
+lua require("cfg.general")
+lua require("cfg.statusline")
+lua require("cfg.keybindings")
+lua require("cfg.filetypes")

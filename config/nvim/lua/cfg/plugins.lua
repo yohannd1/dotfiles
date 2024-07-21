@@ -6,8 +6,7 @@ local dummy = _G.dummy
 local _configs = {}
 local M = {}
 
-local ucm = _G.useConfModule
-local utils = ucm("utils")
+local utils = require("cfg.utils")
 local exec = utils.exec
 
 local function plug(arg)
