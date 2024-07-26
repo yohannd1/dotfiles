@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+#
+# Wrap commands that take a file to take the stdin
+
+if [ $# = 0 ]; then
+  printf >&2 "Usage: %s <COMMAND> [COMMAND-ARGS...]\n" "$(basename "$0")"
+  printf >&2 "Use the \$MKTEMP_FORMAT variable for setting the format\n"
+  exit 2
+fi
+
+tmp=$(mktemp "/tmp/${MKTEMP_FORMAT:-XXXXXX.txt}") || exit 1
+cleanup() { rm "$tmp"; }
+trap 'cleanup' EXIT
+
+cat >"$tmp"
+
+cmd="$1"
+shift
+"$cmd" "$tmp" "$@" >/dev/null || exit 1
+
+cat "$tmp"
