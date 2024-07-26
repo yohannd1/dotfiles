@@ -261,6 +261,8 @@
   (mt :ext ["odt" "ods" "odp" "sxw"] :runpage ["odt2txt" file])
 
   (mt :ext ["kra"] :gui ["krita" file])
+  (mt :ext ["pxo"] :gui ["pixelorama" file])
+  (mt :ext ["blend"] :gui ["blender" file])
   (mt :ext ["tic"] :gui ["tic80" file])
   (mt :ext ["rpy"] :pop [EDITOR file])
 

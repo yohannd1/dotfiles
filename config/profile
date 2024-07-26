@@ -48,13 +48,14 @@ if ! isTermux; then
   exists ntpd && startjob "Clock Update" _updateClock
 
   # prepare GPG & SSH
-  printf >&2 "Preparing GPG and SSH..."
+  printf >&2 "*** Preparing GPG and SSH..."
   gpgconf --launch gpg-agent
   export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
   printf >&2 "OK!\n"
 
   # set up dotcfg daemon and load config
   {
+    printf >&2 "*** Setting up dotcfg..."
     _socket=$(mktemp /tmp/dotcfg.XXXXXX.sock)
     export DOTCFG_SOCKET="$_socket"
     dotcfg daemon >/dev/null 2>/dev/null & disown
@@ -63,7 +64,7 @@ if ! isTermux; then
 
   # generate configs
   # too disk-intensive to do every time it boots up on Termux
-  printf >&2 "Generating config (sysm)...\n"
+  printf >&2 "*** Generating config (sysm)...\n"
   sysm
 
   # set up SSH keychaing
