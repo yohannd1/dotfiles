@@ -335,6 +335,19 @@ M.add({
   end,
 })
 -- }}}
+-- Themes {{{
+if utils.os.is_windows then
+  M.add({
+    name = "gruvbox",
+    source = "morhetz/gruvbox",
+    after = function()
+      vim.g.gruvbox_bold = 1
+      vim.g.gruvbox_italics = 1
+      exec("colorscheme gruvbox")
+    end,
+  })
+end
+-- }}}
 
 -- Filetype plugins {{{
 M.add({
@@ -497,15 +510,6 @@ plugins_old = function()
     plug("YohananDiamond/nvim-nim")
   end
   -- }}}
-
-  -- Themes
-  if utils.os.is_windows then
-    -- use gruvbox as the default theme for windows
-    plug {"morhetz/gruvbox", config = function()
-      vim.g.gruvbox_bold = 1
-      vim.g.gruvbox_italics = 1
-    end }
-  end
 
   -- fork of redox-os/ion-vim
   plug("https://gitlab.redox-os.org/YohananDiamond/ion-vim")

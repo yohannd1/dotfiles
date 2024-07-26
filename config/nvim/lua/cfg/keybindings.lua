@@ -155,9 +155,6 @@ end)
 -- Toggle virtualedit
 map("n", "<Leader>tv", ":lua dummy.toggleVirtualEdit()<CR>", arg_nr)
 
--- Buffer formatting
-map("n", "<Leader>bf", ":FormatBuffer<CR>", arg_nr)
-
 map("i", "<C-u>", "<Nop>", arg_s)
 
 -- Insert date
@@ -302,3 +299,74 @@ dummy.openCurrentWORD = function()
   print("Could not find a suitable file or url in the current WORD")
 end
 map("n", "gf", ":lua dummy.openCurrentWORD()<CR>", arg_nr)
+
+dummy.formatBuffer = function()
+  if vim.b.format_command == nil then
+    print("No format command found (set it with b:format_command)")
+    return
+  end
+
+  local append = vim.fn.append
+
+  local lines = vim.fn.getline(1, "$")
+
+  local in_file = vim.fn.tempname()
+  vim.fn.writefile(lines, in_file)
+
+  local cmd = ("%s < %s"):format(vim.b.format_command, in_file)
+  local output = vim.fn.systemlist(cmd)
+
+  if vim.v.shell_error ~= 0 then
+    vim.g.last_format_err = output
+    print("Formatting failed - see buffer for more info")
+    exec([[
+      if bufname("*Format Errors*") == ""
+        split
+        wincmd j
+        enew
+        file *Format Errors*
+        setlocal buftype=nofile
+        setlocal bufhidden=delete
+        setlocal noswapfile
+        setlocal nobuflisted
+      else
+        let s:bufwindow = bufwinid("*Format Errors*")
+
+        if s:bufwindow != -1
+          call win_gotoid(s:bufwindow)
+        else
+          split
+          wincmd j
+          buffer *Format Errors*
+        endif
+      endif
+    ]])
+
+    vim.opt_local.modifiable = true
+    exec("normal ggdG")
+    append("$", "Formatting failed:")
+    for _, line in ipairs(output) do
+      append("$", "  " .. line)
+    end
+    exec("normal ggdd")
+    vim.opt_local.modifiable = false
+  else
+    local bw = vim.fn.bufwinid("*Format Errors*")
+    if bw ~= -1 then
+      vim.fn.nvim_win_close(bw, false)
+    end
+
+    -- TODO: turn this into a "snapshot position"
+    -- something like utils.savePosition(); utils.restorePosition()
+    local l_win_top = vim.fn.line("w0")
+    local c_line = vim.fn.line(".")
+    local c_col = vim.fn.col(".")
+    exec("normal ggdG")
+    vim.fn.setline(1, output)
+    exec(("normal %dGzt"):format(l_win_top))
+    exec(("normal %dG%d|"):format(c_line, c_col))
+  end
+
+  vim.fn.delete(in_file)
+end
+map("n", "<Leader>bf", ":lua dummy.formatBuffer()<CR>", arg_nr)

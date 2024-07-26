@@ -288,6 +288,7 @@ ft.rust = function()
   local this_folder = vim.fn.expand("%:p:h")
   local found = vim.fs.root(0, "Cargo.toml") ~= nil
   vim.b.rifle_ft = found and "@cargo" or "rust"
+  vim.b.format_command = "stdin-wrap rustfmt"
 
   addSnippets {
     m = "fn main() {<CR><CR>}<Up>",

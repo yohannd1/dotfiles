@@ -17,6 +17,10 @@ local mapVimFn = function(name, m)
   ]], name, m))
 end
 
+vim.env.VIM_INIT = vim.g.config_root .. "/init.vim"
+vim.env.GVIM_INIT = vim.g.config_root .. "/ginit.vim"
+vim.g.is_win = utils.os.is_windows
+
 vim.o.encoding = "utf-8"
 vim.o.langmenu = "en_US"
 vim.env.LANG = "en_US"
@@ -102,6 +106,8 @@ if vim.g.neovide then
   vim.g.neovide_cursor_vfx_mode = "ripple"
 end
 
+exec([[ command! Fgitmerge /\v^(\<{4,}|\={4,}|\>{4,}) ]])
+
 dummy.toggleVirtualEdit = function()
   local value = (vim.o.ve == "") and "all" or ""
   vim.o.ve = value
@@ -149,49 +155,50 @@ dummy.itemToggleTodoVisual = function()
 end
 
 -- me when i copy paste functions into an exec block
-exec([[
-function! Item_Default_ToggleTodo() " {{{
-  let current_line = getline('.')
+dummy.itemToggleTodoDefault = function()
+  local cur_line = vim.fn.getline(".")
+  local preferred_done = vim.b.item_toggletodo_preferred_done or "x"
 
-  let preferred_done = exists("b:item_toggletodo_preferred_done")
-        \ ? b:item_toggletodo_preferred_done
-        \ : "x"
+  local trim = vim.fn.trim
+  local OPEN_SQUARE_PATT = trim([[ \v^(\s*)([*-]*)(\s*)\[ \] ]])
+  local OPEN_ROUND_PATT = trim([[ \v^(\s*)([*-]*)(\s*)\( \) ]])
+  local CLOSED_SQUARE_PATT = trim([[ \v^(\s*)([*-]*)(\s*)\[[Xx]\] ]])
+  local CLOSED_ROUND_PATT = trim([[ \v^(\s*)([*-]*)(\s*)\([Xx]\) ]])
 
-  let open_square_patt = '\v^(\s*)([*-]*)(\s*)\[ \]'
-  if current_line =~ open_square_patt
-    exec 's/' . open_square_patt . '/' . '\1\2\3[' . preferred_done . ']'
-    nohlsearch
-    normal ``
+  local afterReplace = function()
+    vim.cmd.nohlsearch()
+    vim.cmd("normal! ``")
+  end
+
+  local match = vim.fn.match
+  if match(cur_line, OPEN_SQUARE_PATT) ~= -1 then
+    exec(("s/%s/\\1\\2\\3[%s]"):format(OPEN_SQUARE_PATT, preferred_done))
+    afterReplace()
     return
-  endif
+  end
 
-  let open_round_patt = '\v^(\s*)([*-]*)(\s*)\( \)'
-  if current_line =~ open_round_patt
-    exec 's/' . open_round_patt . '/' . '\1\2\3(' . preferred_done . ')'
-    nohlsearch
-    normal ``
+  if match(cur_line, OPEN_ROUND_PATT) ~= -1 then
+    exec(("s/%s/\\1\\2\\3(%s)"):format(OPEN_ROUND_PATT, preferred_done))
+    afterReplace()
     return
-  endif
+  end
 
-  let closed_square_patt = '\v^(\s*)([*-]*)(\s*)\[[Xx]\]'
-  if current_line =~ closed_square_patt
-    exec 's/' . closed_square_patt . '/' . '\1\2\3[ ]'
-    nohlsearch
-    normal ``
+  if match(cur_line, CLOSED_SQUARE_PATT) ~= -1 then
+    print("***")
+    exec(("s/%s/\\1\\2\\3[ ]"):format(CLOSED_SQUARE_PATT))
+    afterReplace()
     return
-  endif
+  end
 
-  let closed_round_patt = '\v^(\s*)([*-]*)(\s*)\([Xx]\)'
-  if current_line =~ closed_round_patt
-    exec 's/' . closed_round_patt . '/' . '\1\2\3( )'
-    nohlsearch
-    normal ``
+  if match(cur_line, CLOSED_ROUND_PATT) ~= -1 then
+    exec(("s/%s/\\1\\2\\3( )"):format(CLOSED_ROUND_PATT))
+    afterReplace()
     return
-  endif
+  end
 
-  echo "No to-do detected on the current line"
-endfunction " }}}
-]])
+  print("No to-do detected on the current line")
+end
+mapVimFn("Item_Default_ToggleTodo", "dummy.itemToggleTodoDefault")
 
 -- autocmd({"TextYankPost"}, {
 --   pattern = "*",
