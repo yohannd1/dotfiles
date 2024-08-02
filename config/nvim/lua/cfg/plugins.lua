@@ -3,34 +3,10 @@
 -- Preparations {{{
 local vim = _G.vim
 local dummy = _G.dummy
-local _configs = {}
 local M = {}
 
 local utils = require("cfg.utils")
 local exec = utils.exec
-
-local function plug(arg)
-  local plugin = nil
-  local config = nil
-
-  if type(arg) == "string" then
-    plugin = arg
-  elseif type(arg) == "table" then
-    plugin = arg[1]
-    config = arg.config
-  else
-    error("Expected string or table, found " .. type(arg))
-  end
-
-  if plugin then
-    assert(type(plugin) == "string", "Tried to plug non-string")
-    vim.cmd(string.format("Plug '%s'", plugin))
-  end
-
-  if config then
-    table.insert(_configs, arg.config)
-  end
-end
 
 local firstAvailableDir = function(arg)
   for _, dir in ipairs(arg) do
@@ -42,23 +18,26 @@ local firstAvailableDir = function(arg)
   return arg.fallback or error("Could not find plugin + no fallback specified")
 end
 
-local plugins_old = function()
-  error("used before implementation")
-end
-
 do
   local plugins = {}
   local plugin_names = {}
 
-  M.add = function(opts)
+  M.add = function(arg)
+    local opts
+    if type(arg) == "string" then opts = { source = arg }
+    elseif type(arg) == "table" then opts = arg
+    else error("Expected string/table, got " .. vim.inspect(arg))
+    end
+
     local source = assert(opts.source, ".source entry missing")
-    local name = opts.name or source
-    local condition = (function(x)
-      if x == nil then return true
-      else return x end
-    end)(opts.condition)
+    local name = opts.name or vim.fs.basename(source)
     local before = opts.before or function() end
     local after = opts.after or function() end
+
+    local condition = (function(x)
+      if x == nil then return true end
+      return x
+    end)(opts.condition)
 
     plugins[name] = { name = name, source = source, condition = condition, before = before, after = after }
     table.insert(plugin_names, name)
@@ -74,6 +53,7 @@ do
     local to_call = {}
 
     vim.fn["plug#begin"](root_path)
+    local plug = vim.fn["plug#"]
 
     for _, pname in ipairs(plugins_to_load) do
       local info = assert(plugins[pname], "plugin of name " .. pname .. " is not defined")
@@ -90,13 +70,8 @@ do
       end
     end
 
-    if all_was_specified then
-      plugins_old() -- FIXME: remove this (legacy code) (currently runs only when "all" is specified)
-    end
-
     vim.fn["plug#end"]()
 
-    for _, f in ipairs(_configs) do f() end -- FIXME: remve this (legacy code)
     for _, f in ipairs(to_call) do f() end
   end
 end
@@ -110,38 +85,41 @@ end
 local HOME = assert(os.getenv("HOME"), "could not get home directory")
 local pj_code = HOME .. "/pj/code"
 
+local UNUSED_PLUGIN_COND = false
+
+-- TODO: experiment using fzf instead of telescope
+-- BUT before that, make an interface for my menus because I don't want to be switching a lot of stuff for every backend.
+-- M.add("junegunn/fzf")
+-- M.add("junegunn/fzf.vim")
+
 -- Treesitter {{{
--- M.add({
---   name = "nvim-treesitter",
---   source = "nvim-treesitter/nvim-treesitter",
---   condition = not utils.os.is_android,
---   after = function()
---     require("nvim-treesitter.configs").setup {
---       ensure_installed = {
---         "c", "lua", "vim",
---         "vimdoc", "query", "python",
---       },
+M.add({
+  name = "nvim-treesitter",
+  source = "nvim-treesitter/nvim-treesitter",
+  condition = false,
+  after = function()
+    require("nvim-treesitter.configs").setup {
+      ensure_installed = {},
 
---       -- Install parsers synchronously (only applied to `ensure_installed`)
---       sync_install = false,
+      -- Install parsers synchronously (only applied to `ensure_installed`)
+      sync_install = false,
 
---       -- Automatically install missing parsers when entering buffer
---       auto_install = true,
+      -- Automatically install missing parsers when entering buffer
+      auto_install = false,
 
---       ignore_install = {},
+      ignore_install = {},
 
---       highlight = {
---         enable = true,
---         disable = { "gitcommit", "bash", "PKGBUILD", "latex", "janet" },
---         additional_vim_regex_highlighting = true,
---       },
---     }
---   end,
--- })
+      highlight = {
+        enable = { "nim" },
+        disable = { "gitcommit", "bash", "PKGBUILD", "latex", "janet" },
+        additional_vim_regex_highlighting = true,
+      },
+    }
+  end,
+})
 -- }}}
 -- Telescope {{{
 M.add({
-  name = "telescope.nvim",
   source = "nvim-telescope/telescope.nvim",
   after = function()
     local telescope = require("telescope")
@@ -209,7 +187,7 @@ M.add({
             actions.close(prompt_bufnr)
 
             if selection then
-              vim.cmd.edit(vim.g.wiki_dir .. "/" .. vim.fn.split(selection[1])[1] .. ".acr")
+              vim.cmd.edit(("%s/%s.acr"):format(vim.g.acr_wiki_dir, vim.fn.split(selection[1])[1]))
             end
           end)
 
@@ -236,7 +214,7 @@ M.add({
     end
 
     dummy.wikiNewFileInsertRef = function(opts)
-      local r = dummy.wikiGenNewFilename({ base_path = vim.g.wiki_dir })
+      local r = dummy.wikiGenNewFilename({ base_path = vim.g.acr_wiki_dir })
       wikiInsertRef(r.name, {
         after_cursor = opts.after_cursor,
         telescope_fix = false,
@@ -299,7 +277,6 @@ M.add({
 -- }}}
 -- Utils {{{
 M.add({
-  name = "vim-buftabline",
   source = "ap/vim-buftabline",
   before = function()
     vim.g.buftabline_indicators = 1
@@ -334,54 +311,20 @@ M.add({
     vim.g.NERDTreeQuitOnOpen = true
   end,
 })
--- }}}
--- Themes {{{
-if utils.os.is_windows then
-  M.add({
-    name = "gruvbox",
-    source = "morhetz/gruvbox",
-    after = function()
-      vim.g.gruvbox_bold = 1
-      vim.g.gruvbox_italics = 1
-      exec("colorscheme gruvbox")
-    end,
-  })
-end
--- }}}
 
--- Filetype plugins {{{
-M.add({
-  name = "acrylic.vim",
-  source = firstAvailableDir({ pj_code .. "/acrylic.vim", fallback = "YohananDiamond/acrylic.vim" }),
-})
+M.add("nvim-lua/popup.nvim")
+M.add("nvim-lua/plenary.nvim")
+-- M.add("slakkenhuis/vim-margin")
+-- M.add("airblade/vim-gitgutter")
+-- }}}
+-- Editing enhancements {{{
+M.add("tpope/vim-surround")
+
+M.add("tpope/vim-repeat")
 
 M.add({
-  name = "janet.vim",
-  source = "janet-lang/janet.vim",
-})
-
-M.add({
-  name = "vimtex",
-  source = "lervag/vimtex",
-})
-
--- }}}
-
-plugins_old = function()
-  -- Editing enhancements {{{
-  plug("tpope/vim-surround")
-  plug("tpope/vim-repeat")
-
-  plug({"mattn/emmet-vim", config = function()
-    vim.g.user_emmet_leader_key = '<C-x>e'
-  end})
-
-  plug("godlygeek/tabular")
-
-  plug("tpope/vim-rsi")
-
-  -- Electric pairs
-  plug({"windwp/nvim-autopairs", config = function()
+  source = "https://github.com/windwp/nvim-autopairs",
+  after = function()
     -- set up autopairs
     local autopairs = require("nvim-autopairs")
     local conds = require("nvim-autopairs.conds")
@@ -421,14 +364,26 @@ plugins_old = function()
     dummy.imap_bs_handle = function()
       return autopairs_bs()
     end
-  end})
+  end
+})
+-- M.add("tmsvg/pear-tree")
+-- M.add("vim-scripts/AutoClose")
+-- M.add("jiangmiao/auto-pairs")
 
-  -- plug("tmsvg/pear-tree")
-  -- plug("vim-scripts/AutoClose")
-  -- plug("jiangmiao/auto-pairs")
+M.add({
+  source = "mattn/emmet-vim",
+  before = function()
+    vim.g.user_emmet_leader_key = '<C-x>e'
+  end,
+})
 
-  -- Matching pairs
-  plug({"luochen1990/rainbow", config = function()
+M.add("godlygeek/tabular")
+M.add("tpope/vim-rsi")
+
+-- Matching/rainbow pairs
+M.add({
+  source = "luochen1990/rainbow",
+  before = function()
     vim.g.rainbow_active = 1
     vim.g.rainbow_conf = {
       -- parentheses = {
@@ -444,26 +399,60 @@ plugins_old = function()
         latex = 0,
       }
     }
-  end})
-  -- plug({"andymass/vim-matchup", config = function()
-  --     vim.g.matchup_matchparen_offscreen = {method = "popup"}
-  -- end})
+  end,
+})
+-- M.add({source = "andymass/vim-matchup", before = function()
+--     vim.g.matchup_matchparen_offscreen = {method = "popup"}
+-- end})
 
-  -- }}}
+-- fork of skywind3000/vim-auto-popmenu
+M.add({
+  source = firstAvailableDir {
+    pj_code .. "/vim-auto-popmenu",
+    fallback = "yohannd1/vim-auto-popmenu",
+  },
+  before = function()
+    vim.g.apc_default_state = 1
+    vim.g.apc_map_enter_backspace = 0
+    vim.g.apc_custom_states = {
+      clap_input = 0, -- prevent conflicts with vim-clap
+    }
+    utils._features["plugin.vim-auto-popmenu"] = true
+  end
+})
 
-  -- Filetypes {{{
-  plug("Clavelito/indent-sh.vim")
-  plug({"YohananDiamond/zig.vim", config = function()
-    -- original: ziglang/zig.vim
+-- }}}
+-- Themes {{{
+if utils.os.is_windows then
+  M.add({
+    source = "morhetz/gruvbox",
+    after = function()
+      vim.g.gruvbox_bold = 1
+      vim.g.gruvbox_italics = 1
+      exec("colorscheme gruvbox")
+    end,
+  })
+end
+-- }}}
+-- Filetype plugins {{{
+M.add({
+  name = "acrylic.vim",
+  source = firstAvailableDir({
+    pj_code .. "/acrylic.vim",
+    fallback = "yohannd1/acrylic.vim"
+  }),
+})
+
+M.add({
+  source = "yohannd1/zig.vim",
+  before = function()
     vim.g.zig_fmt_autosave = 0
-  end})
-  plug("cespare/vim-toml")
-  plug("neoclide/jsonc.vim")
-  plug("HerringtonDarkholme/yats.vim")
-  plug("vala-lang/vala.vim")
+  end
+})
 
-  plug({"plasticboy/vim-markdown", config = function()
-    -- markdown
+M.add({
+  source = "plasticboy/vim-markdown",
+  config = function()
     vim.g.vim_markdown_frontmatter = 1
     vim.g.vim_markdown_folding_disabled = 1
     vim.g.vim_markdown_folding_style_pythonic = 0
@@ -471,225 +460,215 @@ plugins_old = function()
     vim.g.vim_markdown_no_extensions_in_markdown = 1
     vim.g.vim_markdown_new_list_item_indent = 0
     vim.g.vim_markdown_auto_insert_bullets = 0
-  end})
+  end,
+})
 
-  plug("wlangstroth/vim-racket")
-  plug("vim-scripts/scribble.vim")
-  plug("neovimhaskell/haskell-vim")
-  plug("leafo/moonscript-vim")
-  plug("rust-lang/rust.vim")
-  plug("vim-crystal/vim-crystal")
-  plug("justinmk/vim-syntax-extra")
-  plug("Vimjas/vim-python-pep8-indent")
-  plug("vim-python/python-syntax")
-  plug("https://gitlab.com/HiPhish/guile.vim")
-  plug("YohananDiamond/fennel.vim") -- fork of bakpakin/fennel.vim
-  plug("udalov/kotlin-vim")
-  plug("ollykel/v-vim")
-  plug("Tetralux/odin.vim")
-  plug("YohananDiamond/danmakufu-ph3.vim")
-  plug("hellerve/carp-vim")
-  plug("habamax/vim-godot")
-  plug({"jdonaldson/vaxe", config = function()
+M.add({
+  source = "jdonaldson/vaxe",
+  before = function()
     vim.g.vaxe_lime_target = "flash"
-  end})
-  -- plug("daveyarwood/vim-alda")
-  plug("bellinitte/uxntal.vim")
-  -- plug("jakwings/vim-terra")
-  plug("imsnif/kdl.vim")
-
-  -- plug("tbastos/vim-lua")
-  -- plug("hylang/vim-hy")
-  -- plug("fsharp/vim-fsharp")
-  -- plug("xolox/vim-lua-ftplugin")
-  -- plug("teal-language/vim-teal")
-  -- plug("JuliaEditorSupport/julia-vim")
-
-  -- nim
-  if hasExecutable("nim") and hasExecutable("nimsuggest") then
-    plug("YohananDiamond/nvim-nim")
   end
-  -- }}}
+})
 
-  -- fork of redox-os/ion-vim
-  plug("https://gitlab.redox-os.org/YohananDiamond/ion-vim")
+-- M.add("alaviss/nim.nvim")
+M.add("zah/nim.vim")
 
-  -- fork of skywind3000/vim-auto-popmenu
-  plug({
-    firstAvailableDir {
-      pj_code .. "/vim-auto-popmenu",
-      fallback = "YohananDiamond/vim-auto-popmenu",
-    },
-    config = function()
-      vim.g.apc_default_state = 1
-      vim.g.apc_map_enter_backspace = 0
-      vim.g.apc_custom_states = {
-        clap_input = 0, -- prevent conflicts with vim-clap
-      }
-    end
-  })
-  utils._features["plugin.vim-auto-popmenu"] = true
+-- M.add({
+--   source = "yohannd1/nvim-nim",
+--   condition = hasExecutable("nim") and hasExecutable("nimsuggest"),
+-- })
 
-  -- acrylic
-  -- FIXME: change path lol (probably a $ACR_MAIN_WIKI var)
-  local WIKI = os.getenv("WIKI")
-  if WIKI then
-    vim.g.wiki_dir = WIKI .. "/vimwiki"
-  end
+M.add("janet-lang/janet.vim")
+M.add("lervag/vimtex")
+M.add("cespare/vim-toml")
+M.add("neoclide/jsonc.vim")
+M.add("HerringtonDarkholme/yats.vim")
+M.add("vala-lang/vala.vim")
+M.add("Clavelito/indent-sh.vim")
+M.add("neovimhaskell/haskell-vim")
+M.add("leafo/moonscript-vim")
+M.add("rust-lang/rust.vim")
+M.add("vim-crystal/vim-crystal")
+M.add("justinmk/vim-syntax-extra")
+M.add("Vimjas/vim-python-pep8-indent")
+M.add("vim-python/python-syntax")
+M.add("https://gitlab.com/HiPhish/guile.vim")
+M.add("yohannd1/fennel.vim") -- fork of bakpakin/fennel.vim
+M.add("udalov/kotlin-vim")
+M.add("ollykel/v-vim")
+M.add("yohannd1/danmakufu-ph3.vim")
+M.add("habamax/vim-godot")
+M.add("bellinitte/uxntal.vim")
 
-  -- plug({"vimwiki/vimwiki", config = function()
-  --     -- FIXME: Slowdown candidate
+-- M.add("https://gitlab.redox-os.org/yohannd1/ion-vim") -- fork of redox-os/ion-vim
+-- M.add("wlangstroth/vim-racket")
+-- M.add("vim-scripts/scribble.vim")
+-- M.add("Tetralux/odin.vim")
+-- M.add("hellerve/carp-vim")
+-- M.add("imsnif/kdl.vim")
+-- M.add("daveyarwood/vim-alda")
+-- M.add("jakwings/vim-terra")
+-- M.add("tbastos/vim-lua")
+-- M.add("hylang/vim-hy")
+-- M.add("fsharp/vim-fsharp")
+-- M.add("xolox/vim-lua-ftplugin")
+-- M.add("teal-language/vim-teal")
+-- M.add("JuliaEditorSupport/julia-vim")
+-- }}}
+-- Hydra {{{
+M.add({
+  source = firstAvailableDir { pj_code .. "/vim-hydra-fork", fallback = "yohannd1/vim-hydra-fork" },
+  after = function()
+    exec("nnoremap <silent> <Leader>f :Hydra extrafind<CR>")
+    vim.fn["hydra#hydras#register"] {
+      name = "extrafind",
+      title = "Find",
+      show = "popup",
+      exit_key = "q",
+      feed_key = false,
+      foreign_key = true,
+      single_command = true,
+      position = "s:bottom_right",
+      keymap = {{
+        name = "In buffer",
+        keys = {
+          {"t", "lua dummy.findTodos()", "TODOs (in buffer)"},
+          {"b", "lua require('telescope.builtin').buffers()", "buffers"},
+          {"h", "lua require('telescope.builtin').help_tags()", "help tags"},
+        }
+      }},
+    }
 
-  --     vim.g.wiki_dir = os.getenv("WIKI") .. "/vimwiki"
-  --     vim.g.vimwiki_list = {{
-  --         path = vim.g.wiki_dir,
-  --         path_html = "~/.cache/output/vimwiki_html",
-  --         syntax = "default",
-  --         ext = ".wiki"
-  --     }}
-  --     vim.g.vimwiki_map_prefix = "<NOP>"
-  --     vim.g.vimwiki_global_ext = 0
-  --     vim.g.vimwiki_conceallevel = 0
-  --     vim.g.vimwiki_url_maxsave = 0
-  -- end})
+    exec("nnoremap <silent> <Leader>e :Hydra edit<CR>")
+    vim.fn["hydra#hydras#register"] {
+      name = "edit",
+      title = "Edit",
+      show = "popup",
+      exit_key = "q",
+      feed_key = false,
+      foreign_key = true,
+      single_command = true,
+      position = "s:bottom_right",
+      keymap = {{
+        name = "Common files",
+        keys = {
+          {"v", "e $VIM_INIT", "init.vim"},
+          {"r", "e $DOTFILES/config/dots/resources.lua", "resources.lua"},
+        }
+      }},
+    }
 
-  -- plug({"nvim-neorg/neorg", config = function()
-  --     require('neorg').setup {
-  --         load = {
-  --             ["core.defaults"] = {}, -- Loads default behaviour
-  --             ["core.keybinds"] = {
-  --                 config = { default_keybinds = false }
-  --             },
-  --             -- ["core.concealer"] = { -- Symbol concealing for a tidier view
-  --             --     config = {
-  --             --         icons = {
-  --             --             todo = { enabled = false },
-  --             --         },
-  --             --     }
-  --             -- },
-  --             ["core.promo"] = {}, -- Semantic indentation
-  --             ["core.export"] = {}, -- export to markdown
-  --         },
-  --     }
-  -- end})
+    -- rifle
+    vim.fn["hydra#hydras#register"] {
+      name = "rifle",
+      title = "Rifle",
+      show = "popup",
+      exit_key = "q",
+      feed_key = false,
+      foreign_key = true,
+      single_command = true,
+      position = "s:bottom_right",
+      keymap = {{
+        name = "General",
+        keys = {
+          {"r", [[Rifle 'run']], "run"},
+          {"b", [[Rifle 'build']], "build"},
+          {"c", [[Rifle 'check']], "check"},
+          {"t", [[Rifle 'test']], "test"},
+        },
+      }}
+    }
+    exec([[nnoremap <silent> <Leader>r :Hydra rifle<CR>]])
 
-  plug({
-    firstAvailableDir { pj_code .. "/vim-hydra-fork", fallback = "YohananDiamond/vim-hydra-fork" },
-    config = function()
-      exec("nnoremap <silent> <Leader>f :Hydra extrafind<CR>")
-      vim.fn["hydra#hydras#register"] {
-        name = "extrafind",
-        title = "Find",
-        show = "popup",
-        exit_key = "q",
-        feed_key = false,
-        foreign_key = true,
-        single_command = true,
-        position = "s:bottom_right",
-        keymap = {{
-          name = "In buffer",
+    -- wiki stuff
+    vim.fn["hydra#hydras#register"] {
+      name = "wiki",
+      title = "Wiki",
+      show = "popup",
+      exit_key = "q",
+      feed_key = false,
+      foreign_key = true,
+      single_command = true,
+      position = "s:bottom_right",
+      keymap = {
+        {
+          name = "Open...",
           keys = {
-            {"t", "lua dummy.findTodos()", "TODOs (in buffer)"},
-            {"b", "lua require('telescope.builtin').buffers()", "buffers"},
-            {"h", "lua require('telescope.builtin').help_tags()", "help tags"},
-          }
-        }},
-      }
-
-      exec("nnoremap <silent> <Leader>e :Hydra edit<CR>")
-      vim.fn["hydra#hydras#register"] {
-        name = "edit",
-        title = "Edit",
-        show = "popup",
-        exit_key = "q",
-        feed_key = false,
-        foreign_key = true,
-        single_command = true,
-        position = "s:bottom_right",
-        keymap = {{
-          name = "Common files",
-          keys = {
-            {"v", "e $VIM_INIT", "init.vim"},
-            {"r", "e $DOTFILES/config/dots/resources.lua", "resources.lua"},
-          }
-        }},
-      }
-
-      -- rifle
-      vim.fn["hydra#hydras#register"] {
-        name = "rifle",
-        title = "Rifle",
-        show = "popup",
-        exit_key = "q",
-        feed_key = false,
-        foreign_key = true,
-        single_command = true,
-        position = "s:bottom_right",
-        keymap = {{
-          name = "General",
-          keys = {
-            {"r", [[Rifle 'run']], "run"},
-            {"b", [[Rifle 'build']], "build"},
-            {"c", [[Rifle 'check']], "check"},
-            {"t", [[Rifle 'test']], "test"},
+            {"w", "e ~/wiki/vimwiki/index.acr", "index"},
+            {"s", "e ~/wiki/vimwiki/202105021825-E80938.acr", "scratchpad"},
+            {"P", "e ~/wiki/vimwiki/202407161554-F1C8E4.acr", "plan"},
+            {"p", "e ~/wiki/vimwiki/202401151901-42E4FA.acr", "week plan (2024)"},
+            {"o", "lua dummy.wikiFzOpen({})", "search"},
+            -- {"O", "lua dummy.wikiFzOpen({}, {'acw-get-projects'})", "select a project"},
           },
-        }}
-      }
-      exec([[nnoremap <silent> <Leader>r :Hydra rifle<CR>]])
+        },
 
-      -- wiki stuff
-      vim.fn["hydra#hydras#register"] {
-        name = "wiki",
-        title = "Wiki",
-        show = "popup",
-        exit_key = "q",
-        feed_key = false,
-        foreign_key = true,
-        single_command = true,
-        position = "s:bottom_right",
-        keymap = {
-          {
-            name = "Open...",
-            keys = {
-              {"w", "e ~/wiki/vimwiki/index.acr", "index"},
-              {"s", "e ~/wiki/vimwiki/202105021825-E80938.acr", "scratchpad"},
-              {"P", "e ~/wiki/vimwiki/202407161554-F1C8E4.acr", "plan"},
-              {"p", "e ~/wiki/vimwiki/202401151901-42E4FA.acr", "week plan (2024)"},
-              {"o", "lua dummy.wikiFzOpen({})", "search"},
-              -- {"O", "lua dummy.wikiFzOpen({}, {'acw-get-projects'})", "select a project"},
-            },
-          },
-
-          {
-            name = "References",
-            keys = {
-              {"R", "lua dummy.wikiFzInsertRef({after_cursor = false})", "add reference ←"},
-              {"r", "lua dummy.wikiFzInsertRef({after_cursor = true})", "add reference →"},
-              {"N", "lua dummy.wikiNewFileInsertRef({after_cursor = false})", "new note + add reference ←"},
-              {"n", "lua dummy.wikiNewFileInsertRef({after_cursor = true})", "new note + add reference →"},
-            }
+        {
+          name = "References",
+          keys = {
+            {"R", "lua dummy.wikiFzInsertRef({after_cursor = false})", "add reference ←"},
+            {"r", "lua dummy.wikiFzInsertRef({after_cursor = true})", "add reference →"},
+            {"N", "lua dummy.wikiNewFileInsertRef({after_cursor = false})", "new note + add reference ←"},
+            {"n", "lua dummy.wikiNewFileInsertRef({after_cursor = true})", "new note + add reference →"},
           }
         }
       }
-      exec([[nnoremap <silent> <Leader>w :Hydra wiki<CR>]])
-    end
-  })
+    }
+    exec([[nnoremap <silent> <Leader>w :Hydra wiki<CR>]])
+  end
+})
+-- }}}
+-- Unused {{{
+M.add({
+  source = "vimwiki/vimwiki",
+  condition = UNUSED_PLUGIN_COND,
+  before = function()
+    vim.g.acr_wiki_dir = WIKI .. "/vimwiki"
+    vim.g.vimwiki_list = {{
+        path = vim.g.acr_wiki_dir,
+        path_html = "~/.cache/output/vimwiki_html",
+        syntax = "default",
+        ext = ".wiki"
+    }}
+    vim.g.vimwiki_map_prefix = "<NOP>"
+    vim.g.vimwiki_global_ext = 0
+    vim.g.vimwiki_conceallevel = 0
+    vim.g.vimwiki_url_maxsave = 0
+  end,
+})
 
-  plug("nvim-lua/popup.nvim")
-  plug("nvim-lua/plenary.nvim")
+M.add({
+  source = "nvim-neorg/neorg",
+  condition = UNUSED_PLUGIN_COND,
+  after = function()
+    require('neorg').setup {
+      load = {
+        ["core.defaults"] = {}, -- Loads default behaviour
+        ["core.keybinds"] = {
+          config = { default_keybinds = false }
+        },
+        ["core.promo"] = {}, -- Semantic indentation
+        ["core.export"] = {}, -- export to markdown
+      },
+    }
+  end
+})
 
-  -- Illuminate - delay to highlight words (in millisceconds)
-  -- plug({"RRethy/vim-illuminate", config = function()
-  --   vim.g.Illuminate_delay = 250
-  -- end})
-
-  -- plug("slakkenhuis/vim-margin")
-
-  -- plug("airblade/vim-gitgutter")
-end
+-- Illuminate - delay to highlight words (in millisceconds)
+M.add({
+  source = "RRethy/vim-illuminate",
+  condition = UNUSED_PLUGIN_COND,
+  before = function()
+    vim.g.Illuminate_delay = 250
+  end
+})
+-- }}}
 
 -- Extra config (after everything)
 do
+  -- acrylic related stuff
+  vim.g.acr_wiki_dir = assert(os.getenv("ACR_WIKI_DIR"), "no $ACR_WIKI_DIR specified")
+
   -- :help php-indent
   vim.g.PHP_outdentphpescape = 0
   vim.g.PHP_default_indenting = 0

@@ -131,10 +131,6 @@ dummy.itemToggleTodo = function()
   fn()
 end
 
--- TODO: remove this
-mapVimFn("Item_ToggleTodo", "dummy.itemToggleTodo")
-mapVimFn("Item_ToggleTodoVisual", "dummy.itemToggleTodoVisual")
-
 dummy.itemToggleTodoVisual = function()
   exec("normal mz") -- mark
 
@@ -147,7 +143,7 @@ dummy.itemToggleTodoVisual = function()
 
   exec("normal '<")
   for i = 0, count do
-    vim.fn.Item_ToggleTodo()
+    dummy.itemToggleTodo()
     exec("normal j")
   end
 

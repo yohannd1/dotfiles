@@ -38,10 +38,12 @@ local addSnippets = function(snips)
   end
 end
 
-local fsRootMatch = function(patt)
-  return function(name, _)
+local findPattTillRoot = function(patt)
+  local res = vim.fs.root(0, function(name, _)
     return name:match(patt) ~= nil
-  end
+  end)
+
+  return not (res == nil or vim.fn.isdirectory(res) ~= 0)
 end
 
 local ft = {}
@@ -220,17 +222,13 @@ ft.sh = function()
     foldmethod = "syntax",
   }
 
-  -- " let b:is_bash = 1
-  -- " let b:sh_fold_enabled = 0
-
-  -- " 1 (001): fold functions
-  -- " let b:sh_fold_enabled += 1
-
-  -- " 2 (010): fold heredoc
-  -- " let b:sh_fold_enabled += 2
-
-  -- " 4 (100): fold if/for/case/...
-  -- " let b:sh_fold_enabled += 4
+  vim.b.is_bash = 1
+  vim.b.sh_fold_enabled = (
+    0
+    -- + 1 -- fold functions
+    -- + 2 -- fold heredoc
+    -- + 4 -- fold if/for/case/...
+  )
 end
 
 ft.zsh = function()
@@ -261,7 +259,7 @@ ft.nim = function()
   }
 
   local this_folder = vim.fn.expand("%:p:h")
-  local found = vim.fs.root(0, fsRootMatch("%.nimble$")) ~= nil
+  local found = findPattTillRoot("%.nimble$")
   vim.b.rifle_ft = found and "@nimble" or "nim"
 end
 ft.nims = ft.nim
@@ -501,6 +499,10 @@ end
 
 ft.lua = function()
   setSpaceIndent(2)
+end
+
+ft.gsl = function()
+  setTabIndent(4)
 end
 
 initialize()

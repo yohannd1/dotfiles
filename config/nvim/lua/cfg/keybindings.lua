@@ -100,9 +100,8 @@ for k, once in pairs({h = "<", l = ">"}) do
 end
 
 -- Alt + o : toggle todo<->done state in items
-map("n", "<M-o>", ":call Item_ToggleTodo()<CR>", arg_nr)
-map("i", "<M-o>", "<Esc>:call Item_ToggleTodo()<CR>a", arg_nr)
-map("v", "<M-o>", "<Esc>:call Item_ToggleTodoVisual()<CR>", arg_nr)
+map("n", "<M-o>", ":lua dummy.itemToggleTodo()<CR>", arg_nr)
+map("v", "<M-o>", "<Esc>:lua dummy.itemToggleTodoVisual()<CR>", arg_nr)
 
 exec([[
   function! TabOrComplete(mode)
