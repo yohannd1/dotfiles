@@ -5,9 +5,11 @@ import subprocess as sp
 class BadResourceError(Exception): ...
 
 def get_res(resource_name: str, fallback: Optional[str] = None) -> str:
-    command = sp.Popen(["dotcfg", "send", f"get:{resource_name}"],
-                       stdout=sp.PIPE,
-                       encoding="UTF-8")
+    command = sp.Popen(
+        ["dotcfg", "send", f"get:{resource_name}"],
+        stdout=sp.PIPE,
+        encoding="UTF-8",
+    )
 
     exit_status = command.wait()
 

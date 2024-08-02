@@ -34,9 +34,8 @@ export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_DATA_DIR="$HOME/.local/share"
 export XDG_DATA_HOME="$XDG_DATA_DIR"
 
-# personal dirs
-export WIKI=~/wiki
-export ACW_WIKI_DIR="$WIKI/vimwiki"
+# personal dirs (should this even be here lol)
+export ACR_WIKI_DIR="$HOME/wiki/vimwiki"
 
 # global options
 export TERM=xterm-256color

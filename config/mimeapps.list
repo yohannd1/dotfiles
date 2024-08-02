@@ -6,6 +6,7 @@ audio/x-wav=open.desktop
 audio/x-vgm=open.desktop
 audio/x-mpeg=open.desktop
 audio/ogg=open.desktop
+application/x-shockwave-flash=open.desktop
 text/html=browser.desktop
 inode/directory=filemanager.desktop
 

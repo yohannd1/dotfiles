@@ -111,7 +111,7 @@ case "$1" in
       @gradlew) fparent-run "gradlew" run-file script-dir run ;;
       terra) terra "$file" ;;
       rust) rustc "$file" -o "$tmp/exe" && "$tmp/exe" ;;
-      gdscript) Godot -s "$file" --no-window ;;
+      gdscript) godot -s "$file" --no-window ;;
       haskell)
         nameFull=${file%.*}
         name=$(basename "$nameFull")
