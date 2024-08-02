@@ -6,7 +6,7 @@
 (defn dev-null []
   (assert (file/open "/dev/null" :r)))
 
-(var open-gui (-> (os/getenv "OPEN_GUI" "") (length) (> 0)))
+(var *open-gui* (-> (os/getenv "OPEN_GUI" "") (length) (> 0)))
 
 (defn get-prog-output [-args]
   (def (pipe-r pipe-w) (os/pipe))
@@ -14,28 +14,37 @@
   (when (= code 0)
     (-> pipe-r (:read math/int32-max) (string/trim))))
 
-(defn state/init []
+(defn state/init [file]
   (def peg-url-protocol
     '{:a-z (choice (range "az") (range "AZ"))
-      :main (sequence (capture (some :a-z)) "://")})
-  (def peg-file-ext
-    '{:main (sequence (some (if-not "." 1))
-              (some (sequence "." (capture (some (if-not "." 1))))))})
+      :main (* (capture (some :a-z)) "://")})
 
-  (let [open-alt (os/getenv "OPEN_ALT" "xdg-open")
-        file (-> (dyn :args) (1))
-        mime (let [out (get-prog-output ["file" "--dereference" "--brief" "--mime-type" "--" file])]
-               (unless (or (nil? out) (string/has-prefix? "cannot" out))
-                 out))
-        protocol (let [r (peg/match peg-url-protocol file)]
-                   (unless (nil? r) (r 0)))
-        ext (let [r (peg/match peg-file-ext file)]
-              (unless (nil? r) (-> r (length) (- 1) (r))))]
-    @{:open-alt open-alt
-      :file file
-      :mime mime
-      :ext (-?> ext (string/ascii-lower))
-      :protocol protocol}))
+  (def peg-file-ext
+    '{:main (* (? "./") :non-dot (some :extension))
+      :non-dot (some (if-not "." 1))
+      :extension (* "." (<- :non-dot))
+      })
+
+  (def open-alt (os/getenv "OPEN_ALT" "xdg-open"))
+
+  (def mime
+    (let [out (get-prog-output ["file" "--dereference" "--brief" "--mime-type" "--" file])]
+      # TODO: proper error handling (but why the hell doesn't it return 1 when it errors??)
+      (unless (or (nil? out) (string/has-prefix? "cannot" out))
+        out)))
+
+  (def protocol
+    (let [r (peg/match peg-url-protocol file)]
+      (unless (nil? r) (r 0))))
+
+  (def ext (-?> (peg/match peg-file-ext file) (last) (string/ascii-lower)))
+
+  @{:open-alt open-alt
+    :file file
+    :mime mime
+    :ext ext
+    :protocol protocol
+    })
 
 (defn state/try
   "Try to open.
@@ -58,16 +67,16 @@
 
   (defn condit-open [prog]
     (when (prog-exists (-args 0))
-      (if open-gui
+      (if *open-gui*
         (do
           (os/exit (os/execute (array/concat @[] prog -args)
                                :p {:in (dev-null) :err stdout})))
         (os/exit (os/execute -args :p)))))
 
   (match -type
-    :gui (when (and open-gui (prog-exists (-args 0)))
+    :gui (when (and *open-gui* (prog-exists (-args 0)))
            (os/exit (os/execute -args :p {:in (dev-null) :err stdout})))
-    :tty (when (and (not open-gui) (prog-exists (-args 0)))
+    :tty (when (and (not *open-gui*) (prog-exists (-args 0)))
            (os/exit (os/execute -args :p)))
     :pop (condit-open ["termup" "-f"])
     :runpage (condit-open ["termup" "-f" "runpage"])
@@ -84,7 +93,7 @@
     _ (error (string/format "Unknown action for symbol %s" -type))))
 
 (defn warn [msg]
-  (if open-gui
+  (if *open-gui*
     (os/execute ["notify-send" "--" msg] :px)
     (do
       (:write stderr msg)
@@ -124,23 +133,23 @@
     _ (error (string/format "Unknown action for symbol %s" mtype))))
 # >>>
 
-(defn main [&]
+(defn main [_ & args]
   (when (nil? (os/getenv "WAYLAND_DISPLAY"))
-    (set open-gui true)
+    (set *open-gui* true)
     (os/setenv "OPEN_GUI" "1"))
 
   (def help-str
     (string
-      "Usage: $(basename $0) { <FILE> | <URL> }\n"
+      "Usage: open { <FILE> | <URL> }\n"
       "Environment variables:\n"
       "  OPEN_GUI: forces to open only apps in GUI mode.\n"
       "  OPEN_ALT: a fallback opener; default is xdg-open\n"))
 
-  (when (not= 2 (length (dyn :args)))
+  (when (-> args (length) (not= 1))
     (:write stderr help-str)
     (os/exit 1))
 
-  (def s (state/init))
+  (def s (state/init (in args 0)))
   (def {:file file} s)
 
   (defn t [-type &opt -arg] (state/try s -type -arg))
