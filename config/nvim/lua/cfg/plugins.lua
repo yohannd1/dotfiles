@@ -6,6 +6,7 @@ local dummy = _G.dummy
 local M = {}
 
 local utils = require("cfg.utils")
+local services = utils.services
 local exec = utils.exec
 
 local firstAvailableDir = function(arg)
@@ -45,7 +46,6 @@ do
 
   M.init = function(opts)
     local plugins_to_load = assert(opts.plugins, ".plugins not specified")
-    local all_was_specified = (plugins_to_load == "all")
     plugins_to_load = (plugins_to_load == "all") and plugin_names or plugins_to_load
 
     local root_path = assert(opts.root_path, ".root_path not specified")
@@ -73,11 +73,9 @@ do
     vim.fn["plug#end"]()
 
     for _, f in ipairs(to_call) do f() end
-  end
-end
 
-local hasExecutable = function(name)
-  return vim.fn.executable(name) ~= 0
+    M.afterPluginLoad()
+  end
 end
 
 -- }}}
@@ -86,11 +84,6 @@ local HOME = assert(os.getenv("HOME"), "could not get home directory")
 local pj_code = HOME .. "/pj/code"
 
 local UNUSED_PLUGIN_COND = false
-
--- TODO: experiment using fzf instead of telescope
--- BUT before that, make an interface for my menus because I don't want to be switching a lot of stuff for every backend.
--- M.add("junegunn/fzf")
--- M.add("junegunn/fzf.vim")
 
 -- Treesitter {{{
 M.add({
@@ -165,111 +158,36 @@ M.add({
     }
 
     local main_theme = themes.get_ivy()
+    utils.services.fuzzyPicker = function(opts)
+      local prompt = assert(opts.prompt, "Missing prompt title")
+      local source = assert(opts.source, "Missing source")
+      local on_choice = opts.on_choice or function() end
 
-    local wikiInsertRef = function(ref, opts)
-      local text = "@ref(" .. ref .. ")"
-      utils.addTextInLine(text, opts)
-    end
+      local tel_opts = {}
+      utils.overrideTableWith(tel_opts, main_theme)
 
-    -- Search and open on wiki
-    dummy.wikiFzOpen = function(opts, command)
-      opts = opts or {}
-      utils.overrideTableWith(opts, main_theme)
-      command = command or {"acr-list-titles"}
-
-      pickers.new(opts, {
-        prompt_title = "Search on wiki",
-        finder = finders.new_oneshot_job(command, opts),
-        sorter = conf.generic_sorter(opts),
-        attach_mappings = function()
-          actions.select_default:replace(function(prompt_bufnr)
-            local selection = action_state.get_selected_entry()
-            actions.close(prompt_bufnr)
-
-            if selection then
-              vim.cmd.edit(("%s/%s.acr"):format(vim.g.acr_wiki_dir, vim.fn.split(selection[1])[1]))
-            end
-          end)
-
-          return true
-        end,
-      }):find()
-    end
-
-    dummy.wikiGenNewFilename = function(opts)
-      local attempt_limit = opts.attempt_limit or 32
-      local base_path = opts.base_path or ""
-      for i = 1, attempt_limit do
-        local time = vim.fn.strftime("%Y%m%d%H%M")
-        local suffix = vim.fn.trim(
-          vim.fn.system("hexdump -n 3 -e '4/4 \"%08X\" 1 \"\\n\"' /dev/random | cut -c 3-")
-        )
-        local name = string.format("%s-%s", time, suffix)
-        local path = string.format("%s/%s.acr", base_path, name)
-        if vim.fn.filereadable(path) == 0 then
-          return { name = name, path = path }
-        end
+      local finder
+      if source.command then
+        finder = finders.new_oneshot_job(source.command, opts)
+      else
+        error("Unknown source type...")
       end
-      error("Too many attempts while trying to generate filename")
-    end
 
-    dummy.wikiNewFileInsertRef = function(opts)
-      local r = dummy.wikiGenNewFilename({ base_path = vim.g.acr_wiki_dir })
-      wikiInsertRef(r.name, {
-        after_cursor = opts.after_cursor,
-        telescope_fix = false,
-      })
-      vim.cmd.edit(r.path)
-    end
-
-    dummy.wikiFzInsertRef = function(opts)
-      opts = opts or {}
-      utils.overrideTableWith(opts, main_theme)
-
-      local repr_string = opts.after_cursor and "after" or "before"
-
-      pickers.new(opts, {
-        prompt_title = "Insert wiki file: " .. repr_string,
-        finder = finders.new_oneshot_job({"acr-list-titles"}, opts),
-        sorter = conf.generic_sorter(opts),
+      pickers.new(tel_opts, {
+        prompt_title = prompt,
+        finder = finder,
+        sorter = conf.generic_sorter(tel_opts),
         attach_mappings = function()
           actions.select_default:replace(function(prompt_bufnr)
             local selection = action_state.get_selected_entry()
             actions.close(prompt_bufnr)
-
-            if not selection then return end
-            local page = vim.fn.split(selection[1])[1]
-            wikiInsertRef(page, {
-              after_cursor = opts.after_cursor,
-              telescope_fix = true,
-            })
-          end)
-
-          return true
-        end,
-      }):find()
-    end
-
-    dummy.menuOpenRecent = function(opts)
-      opts = opts or {}
-      utils.overrideTableWith(opts, main_theme)
-
-      pickers.new(opts, {
-        prompt_title = "Open recent file",
-        finder = finders.new_oneshot_job({"filehist", "list"}, opts),
-        sorter = conf.generic_sorter(opts),
-        attach_mappings = function()
-          actions.select_default:replace(function(prompt_bufnr)
-            local selection = action_state.get_selected_entry()
-            actions.close(prompt_bufnr)
-
             if selection then
-              vim.cmd.edit(selection[1])
+              on_choice(selection[1])
             end
           end)
 
           return true
-        end,
+        end
       }):find()
     end
   end
@@ -623,7 +541,6 @@ M.add({
   source = "vimwiki/vimwiki",
   condition = UNUSED_PLUGIN_COND,
   before = function()
-    vim.g.acr_wiki_dir = WIKI .. "/vimwiki"
     vim.g.vimwiki_list = {{
         path = vim.g.acr_wiki_dir,
         path_html = "~/.cache/output/vimwiki_html",
@@ -664,17 +581,83 @@ M.add({
 })
 -- }}}
 
--- Extra config (after everything)
-do
-  -- acrylic related stuff
-  vim.g.acr_wiki_dir = assert(os.getenv("ACR_WIKI_DIR"), "no $ACR_WIKI_DIR specified")
-
+M.afterPluginLoad = function()
   -- :help php-indent
   vim.g.PHP_outdentphpescape = 0
   vim.g.PHP_default_indenting = 0
 
   -- rifle
   vim.g.rifle_mode = (utils.os.is_android == 1) and "buffer" or "popup"
+
+  -- acrylic related stuff
+  vim.g.acr_wiki_dir = assert(os.getenv("ACR_WIKI_DIR"), "no $ACR_WIKI_DIR specified")
+
+  local wikiInsertRef = function(ref, opts)
+    local text = "@ref(" .. ref .. ")"
+    utils.addTextInLine(text, opts)
+  end
+
+  dummy.wikiFzOpen = function()
+    services.fuzzyPicker({
+      prompt = "Search on wiki",
+      source = { command = {"acr-list-titles"} },
+      on_choice = function(choice)
+        local name = vim.fn.split(choice)[1]
+        vim.cmd.edit(("%s/%s.acr"):format(vim.g.acr_wiki_dir, name))
+      end
+    })
+  end
+
+  dummy.wikiGenNewFilename = function(opts)
+    local attempt_limit = opts.attempt_limit or 32
+    local base_path = opts.base_path or ""
+    for _ = 1, attempt_limit do
+      local time = vim.fn.strftime("%Y%m%d%H%M")
+      local suffix = vim.fn.trim(
+        vim.fn.system("hexdump -n 3 -e '4/4 \"%08X\" 1 \"\\n\"' /dev/random | cut -c 3-")
+      )
+      local name = string.format("%s-%s", time, suffix)
+      local path = string.format("%s/%s.acr", base_path, name)
+      if vim.fn.filereadable(path) == 0 then
+        return { name = name, path = path }
+      end
+    end
+    error("Too many attempts while trying to generate filename")
+  end
+
+  dummy.wikiNewFileInsertRef = function(opts)
+    local r = dummy.wikiGenNewFilename({ base_path = vim.g.acr_wiki_dir })
+    wikiInsertRef(r.name, {
+      after_cursor = opts.after_cursor,
+      telescope_fix = false,
+    })
+    vim.cmd.edit(r.path)
+  end
+
+  dummy.wikiFzInsertRef = function(opts)
+    local repr_string = opts.after_cursor and "after" or "before"
+    services.fuzzyPicker({
+      prompt = "Insert wiki file: " .. repr_string,
+      source = { command = {"acr-list-titles"} },
+      on_choice = function(choice)
+        local name = vim.fn.split(choice)[1]
+        wikiInsertRef(name, {
+          after_cursor = opts.after_cursor,
+          telescope_fix = true,
+        })
+      end
+    })
+  end
+
+  dummy.menuOpenRecent = function()
+    services.fuzzyPicker({
+      prompt = "Open recent file",
+      source = { command = {"filehist", "list"} },
+      on_choice = function(choice)
+        vim.cmd.edit(choice)
+      end
+    })
+  end
 end
 
 return M

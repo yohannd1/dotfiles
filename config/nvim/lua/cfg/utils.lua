@@ -130,4 +130,6 @@ M.setGlobals = function(opts)
   end
 end
 
+M.services = {}
+
 return M
