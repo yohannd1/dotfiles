@@ -437,102 +437,25 @@ M.add("bellinitte/uxntal.vim")
 M.add({
   source = firstAvailableDir { pj_code .. "/vim-hydra-fork", fallback = "yohannd1/vim-hydra-fork" },
   after = function()
-    exec("nnoremap <silent> <Leader>f :Hydra extrafind<CR>")
-    vim.fn["hydra#hydras#register"] {
-      name = "extrafind",
-      title = "Find",
-      show = "popup",
-      exit_key = "q",
-      feed_key = false,
-      foreign_key = true,
-      single_command = true,
-      position = "s:bottom_right",
-      keymap = {{
-        name = "In buffer",
-        keys = {
-          {"t", "lua dummy.findTodos()", "TODOs (in buffer)"},
-          {"b", "lua require('telescope.builtin').buffers()", "buffers"},
-          {"h", "lua require('telescope.builtin').help_tags()", "help tags"},
-        }
-      }},
-    }
+    services.defKeyMenu = function(opts)
+      local id = assert(opts.id, "Missing id")
+      local title = assert(opts.title, "Missing title")
+      local keymaps = assert(opts.keymaps, "Missing keymaps")
 
-    exec("nnoremap <silent> <Leader>e :Hydra edit<CR>")
-    vim.fn["hydra#hydras#register"] {
-      name = "edit",
-      title = "Edit",
-      show = "popup",
-      exit_key = "q",
-      feed_key = false,
-      foreign_key = true,
-      single_command = true,
-      position = "s:bottom_right",
-      keymap = {{
-        name = "Common files",
-        keys = {
-          {"v", "e $VIM_INIT", "init.vim"},
-          {"r", "e $DOTFILES/config/dots/resources.lua", "resources.lua"},
-        }
-      }},
-    }
+      vim.fn["hydra#hydras#register"]({
+        name = id,
+        title = title,
+        show = "popup",
+        exit_key = "q",
+        feed_key = false,
+        foreign_key = true,
+        single_command = true,
+        position = "s:bottom_right",
+        keymap = keymaps,
+      })
+    end
 
-    -- rifle
-    vim.fn["hydra#hydras#register"] {
-      name = "rifle",
-      title = "Rifle",
-      show = "popup",
-      exit_key = "q",
-      feed_key = false,
-      foreign_key = true,
-      single_command = true,
-      position = "s:bottom_right",
-      keymap = {{
-        name = "General",
-        keys = {
-          {"r", [[Rifle 'run']], "run"},
-          {"b", [[Rifle 'build']], "build"},
-          {"c", [[Rifle 'check']], "check"},
-          {"t", [[Rifle 'test']], "test"},
-        },
-      }}
-    }
-    exec([[nnoremap <silent> <Leader>r :Hydra rifle<CR>]])
-
-    -- wiki stuff
-    vim.fn["hydra#hydras#register"] {
-      name = "wiki",
-      title = "Wiki",
-      show = "popup",
-      exit_key = "q",
-      feed_key = false,
-      foreign_key = true,
-      single_command = true,
-      position = "s:bottom_right",
-      keymap = {
-        {
-          name = "Open...",
-          keys = {
-            {"w", "e ~/wiki/vimwiki/index.acr", "index"},
-            {"s", "e ~/wiki/vimwiki/202105021825-E80938.acr", "scratchpad"},
-            {"P", "e ~/wiki/vimwiki/202407161554-F1C8E4.acr", "plan"},
-            {"p", "e ~/wiki/vimwiki/202401151901-42E4FA.acr", "week plan (2024)"},
-            {"o", "lua dummy.wikiFzOpen({})", "search"},
-            -- {"O", "lua dummy.wikiFzOpen({}, {'acw-get-projects'})", "select a project"},
-          },
-        },
-
-        {
-          name = "References",
-          keys = {
-            {"R", "lua dummy.wikiFzInsertRef({after_cursor = false})", "add reference ←"},
-            {"r", "lua dummy.wikiFzInsertRef({after_cursor = true})", "add reference →"},
-            {"N", "lua dummy.wikiNewFileInsertRef({after_cursor = false})", "new note + add reference ←"},
-            {"n", "lua dummy.wikiNewFileInsertRef({after_cursor = true})", "new note + add reference →"},
-          }
-        }
-      }
-    }
-    exec([[nnoremap <silent> <Leader>w :Hydra wiki<CR>]])
+    services.loadKeyMenu = vim.cmd.Hydra
   end
 })
 -- }}}

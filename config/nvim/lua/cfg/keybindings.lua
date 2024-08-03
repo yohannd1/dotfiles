@@ -2,6 +2,7 @@
 
 local dummy = _G.dummy
 local utils = require("cfg.utils")
+local services = utils.services
 
 local getLineToEnd = function() return vim.fn.getline('.'):sub(vim.fn.col('.')) end
 local exec = utils.exec
@@ -9,9 +10,9 @@ local map = utils.map
 local forChars = utils.forChars
 
 -- Quick binding arguments
-local arg_nr = {noremap = true}
-local arg_nr_s = {noremap = true, silent = true}
-local arg_s = {silent = true}
+local arg_nr = { noremap = true }
+local arg_nr_s = { noremap = true, silent = true }
+local arg_s = { silent = true }
 
 -- Related config
 vim.o.timeoutlen = 1000
@@ -369,3 +370,76 @@ dummy.formatBuffer = function()
   vim.fn.delete(in_file)
 end
 map("n", "<Leader>bf", ":lua dummy.formatBuffer()<CR>", arg_nr)
+
+services.defKeyMenu({
+  id = "extrafind",
+  title = "Find",
+  keymaps = {{
+    name = "In buffer",
+    keys = {
+      {"t", "lua dummy.findTodos()", "TODOs (in buffer)"},
+      {"b", "lua require('telescope.builtin').buffers()", "buffers"},
+      {"h", "lua require('telescope.builtin').help_tags()", "help tags"},
+    },
+  }}
+})
+map("n", "<Leader>f", [[:lua require("cfg.utils").services.loadKeyMenu("extrafind")<CR>]], arg_nr_s)
+
+services.defKeyMenu({
+  id = "edit",
+  title = "Edit",
+  keymaps = {{
+    name = "Common files",
+    keys = {
+      {"v", "e $VIM_INIT", "init.vim"},
+      {"r", "e $DOTFILES/config/dots/resources.lua", "resources.lua"},
+    },
+  }},
+})
+map("n", "<Leader>e", [[:lua require("cfg.utils").services.loadKeyMenu("edit")<CR>]], arg_nr_s)
+
+-- rifle
+services.defKeyMenu({
+  id = "rifle",
+  title = "Rifle",
+  keymaps = {{
+    name = "General",
+    keys = {
+      {"r", [[Rifle 'run']], "run"},
+      {"b", [[Rifle 'build']], "build"},
+      {"c", [[Rifle 'check']], "check"},
+      {"t", [[Rifle 'test']], "test"},
+    },
+  }},
+})
+map("n", "<Leader>r", [[:lua require("cfg.utils").services.loadKeyMenu("rifle")<CR>]], arg_nr_s)
+
+-- wiki stuff
+services.defKeyMenu({
+  id = "wiki",
+  title = "Wiki",
+  keymaps = {
+    {
+      name = "Open...",
+      keys = {
+        {"w", "e ~/wiki/vimwiki/index.acr", "index"},
+        {"s", "e ~/wiki/vimwiki/202105021825-E80938.acr", "scratchpad"},
+        {"P", "e ~/wiki/vimwiki/202407161554-F1C8E4.acr", "plan"},
+        {"p", "e ~/wiki/vimwiki/202401151901-42E4FA.acr", "week plan (2024)"},
+        {"o", "lua dummy.wikiFzOpen({})", "search"},
+        -- {"O", "lua dummy.wikiFzOpen({}, {'acw-get-projects'})", "select a project"},
+      },
+    },
+
+    {
+      name = "References",
+      keys = {
+        {"R", "lua dummy.wikiFzInsertRef({after_cursor = false})", "add reference ←"},
+        {"r", "lua dummy.wikiFzInsertRef({after_cursor = true})", "add reference →"},
+        {"N", "lua dummy.wikiNewFileInsertRef({after_cursor = false})", "new note + add reference ←"},
+        {"n", "lua dummy.wikiNewFileInsertRef({after_cursor = true})", "new note + add reference →"},
+      }
+    },
+  },
+})
+map("n", "<Leader>w", [[:lua require("cfg.utils").services.loadKeyMenu("wiki")<CR>]], arg_nr_s)
