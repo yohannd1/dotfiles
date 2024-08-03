@@ -130,6 +130,11 @@ M.setGlobals = function(opts)
   end
 end
 
-M.services = {}
+local services_mt = {}
+services_mt.__index = function(_, key)
+  error("No service registered with the name " .. key)
+end
+
+M.services = setmetatable({}, services_mt)
 
 return M
