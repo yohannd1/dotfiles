@@ -536,16 +536,14 @@ M.afterPluginLoad = function()
     local base_path = opts.base_path or ""
     for _ = 1, attempt_limit do
       local time = vim.fn.strftime("%Y%m%d%H%M")
-      local suffix = vim.fn.trim(
-        vim.fn.system("hexdump -n 3 -e '4/4 \"%08X\" 1 \"\\n\"' /dev/random | cut -c 3-")
-      )
+      local suffix = utils.randomHexString(6)
       local name = string.format("%s-%s", time, suffix)
       local path = string.format("%s/%s.acr", base_path, name)
       if vim.fn.filereadable(path) == 0 then
         return { name = name, path = path }
       end
     end
-    error("Too many attempts while trying to generate filename")
+    error(("Too many attempts (%d) while trying to generate filename"):format(attempt_limit))
   end
 
   dummy.wikiNewFileInsertRef = function(opts)
