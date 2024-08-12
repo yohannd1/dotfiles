@@ -513,7 +513,7 @@ M.afterPluginLoad = function()
   vim.g.rifle_mode = (utils.os.is_android == 1) and "buffer" or "popup"
 
   -- acrylic related stuff
-  vim.g.acr_wiki_dir = assert(os.getenv("ACR_WIKI_DIR"), "no $ACR_WIKI_DIR specified")
+  vim.g.acr_wiki_dir = os.getenv("ACR_WIKI_DIR")
 
   local wikiInsertRef = function(ref, opts)
     local text = "@ref(" .. ref .. ")"

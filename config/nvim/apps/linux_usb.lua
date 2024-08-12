@@ -8,6 +8,9 @@ package.path = string.format("%s;%s/lua/?.lua", package.path, CONF_DIR)
 vim.opt.runtimepath:append { CONF_DIR }
 vim.g.config_root = CONF_DIR
 
+local utils = require("cfg.utils")
+utils.services.defKeyMenu = function() end -- dummy
+
 -- load modules
 require("cfg.general")
 require("cfg.keybindings")
