@@ -26,22 +26,17 @@ exec(string.format("command! ENotes e %s/Repos/PhoneDocs/Pocket/Main.acr", fs_ro
 local plugged_path = fs_root .. "/Cache/nvim_plugged"
 
 require("cfg.plugins").init({
-  plugins = { "acrylic.vim", "vim-buftabline", "janet.vim", "vim-commentary", "nerdtree" },
+  plugins = { "acrylic.vim", "vim-buftabline", "janet.vim", "vim-commentary", "nerdtree", "vim-auto-popmenu" },
   root_path = plugged_path,
 })
 
--- buftabline isn't loading by itself... why???
-if vim.fn.isdirectory(plugged_path .. "/vim-buftabline") then
-  vim.api.nvim_exec(
-    string.format([[source %s/vim-buftabline/plugin/buftabline.vim]], plugged_path),
-    false
-  )
-end
-if vim.fn.isdirectory(plugged_path .. "/nerdtree") then
-  vim.api.nvim_exec(
-    string.format([[source %s/nerdtree/plugin/NERD_tree.vim]], plugged_path),
-    false
-  )
+-- manually sourcing every needed plugin file because FOR SOME REASON ITS NOT DOING IT BY ITSELF
+local runtime_paths = vim.fn.split(vim.o.runtimepath, ",")
+for _, rtp in ipairs(runtime_paths) do
+  local glob = vim.fn.glob(("%s/plugin/*.vim"):format(rtp), false, true)
+  for _, file in ipairs(glob) do
+    vim.cmd.source(file)
+  end
 end
 
 vim.o.shell = "dotf.wrap.usb-shell"
