@@ -12,7 +12,10 @@ let s:is_android = isdirectory("/sdcard")
 let s:is_tty = $DISPLAY == "" && !s:is_android
 let s:supports_x_resources = ($DISPLAY != "") && executable("xgetres")
 " let s:is_gui = has("gui_running") || (has("nvim") && nvim_list_uis()[0]["rgb"] == v:true)
-let s:is_gui = has("gui_running")
+
+let b:base16_gui_colors = exists("b:base16_gui_colors")
+    \ ? b:base16_gui_colors : 0
+let s:is_gui = has("gui_running") || b:base16_gui_colors
 
 " Some constants, just to make stuff more readable
 let s:TTY = 0
@@ -26,43 +29,18 @@ function s:xgetres(string)
     return split(system("xgetres " .. a:string), "\n")[0]
 endfunction
 
-let s:bases["00"] = ["", ""]
-let s:bases["01"] = ["", ""]
-let s:bases["02"] = ["", ""]
-let s:bases["03"] = ["", ""]
-let s:bases["04"] = ["", ""]
-let s:bases["05"] = ["", ""]
-let s:bases["06"] = ["", ""]
-let s:bases["07"] = ["", ""]
-let s:bases["08"] = ["", ""]
-let s:bases["09"] = ["", ""]
-let s:bases["0A"] = ["", ""]
-let s:bases["0B"] = ["", ""]
-let s:bases["0C"] = ["", ""]
-let s:bases["0D"] = ["", ""]
-let s:bases["0E"] = ["", ""]
-let s:bases["0F"] = ["", ""]
+for i in range(16)
+    let s:bases[printf("%02X", i)] = ["", ""]
+endfor
 
 if s:is_gui
     " On a GUI version of Neovim - true base16 color codes probably won't make sense here, since t's not a terminal
     if s:is_linux && s:supports_x_resources
         " If possible, get X resources
-        let s:bases["00"][s:GUI] = s:xgetres("nvim.base00")
-        let s:bases["01"][s:GUI] = s:xgetres("nvim.base01")
-        let s:bases["02"][s:GUI] = s:xgetres("nvim.base02")
-        let s:bases["03"][s:GUI] = s:xgetres("nvim.base03")
-        let s:bases["04"][s:GUI] = s:xgetres("nvim.base04")
-        let s:bases["05"][s:GUI] = s:xgetres("nvim.base05")
-        let s:bases["06"][s:GUI] = s:xgetres("nvim.base06")
-        let s:bases["07"][s:GUI] = s:xgetres("nvim.base07")
-        let s:bases["08"][s:GUI] = s:xgetres("nvim.base08")
-        let s:bases["09"][s:GUI] = s:xgetres("nvim.base09")
-        let s:bases["0A"][s:GUI] = s:xgetres("nvim.base0A")
-        let s:bases["0B"][s:GUI] = s:xgetres("nvim.base0B")
-        let s:bases["0C"][s:GUI] = s:xgetres("nvim.base0C")
-        let s:bases["0D"][s:GUI] = s:xgetres("nvim.base0D")
-        let s:bases["0E"][s:GUI] = s:xgetres("nvim.base0E")
-        let s:bases["0F"][s:GUI] = s:xgetres("nvim.base0F")
+        for i in range(16)
+            let id = printf("%02X", i)
+            let s:bases[id][s:GUI] = s:xgetres("nvim.base" . id)
+        endfor
     else
         " If can't get X resources, then at least get a default color scheme
         let s:bases["00"][s:GUI] = "#f2e5bc"
@@ -84,59 +62,24 @@ if s:is_gui
     endif
 
     " Disable TTY color schemes, as it's not needed
-    let s:bases["00"][s:TTY] = "NONE"
-    let s:bases["01"][s:TTY] = "NONE"
-    let s:bases["02"][s:TTY] = "NONE"
-    let s:bases["03"][s:TTY] = "NONE"
-    let s:bases["04"][s:TTY] = "NONE"
-    let s:bases["05"][s:TTY] = "NONE"
-    let s:bases["06"][s:TTY] = "NONE"
-    let s:bases["07"][s:TTY] = "NONE"
-    let s:bases["08"][s:TTY] = "NONE"
-    let s:bases["09"][s:TTY] = "NONE"
-    let s:bases["0A"][s:TTY] = "NONE"
-    let s:bases["0B"][s:TTY] = "NONE"
-    let s:bases["0C"][s:TTY] = "NONE"
-    let s:bases["0D"][s:TTY] = "NONE"
-    let s:bases["0E"][s:TTY] = "NONE"
-    let s:bases["0F"][s:TTY] = "NONE"
+    for i in range(16)
+        let id = printf("%02X", i)
+        let s:bases[id][s:TTY] = "NONE"
+    endfor
 else
     " Not on GUI - let's use the terminal native coloring, assuming its
     " colors match each base16 color
-    let s:bases["00"][s:TTY] = "00"
-    let s:bases["01"][s:TTY] = "01"
-    let s:bases["02"][s:TTY] = "02"
-    let s:bases["03"][s:TTY] = "03"
-    let s:bases["04"][s:TTY] = "04"
-    let s:bases["05"][s:TTY] = "05"
-    let s:bases["06"][s:TTY] = "06"
-    let s:bases["07"][s:TTY] = "07"
-    let s:bases["08"][s:TTY] = "08"
-    let s:bases["09"][s:TTY] = "09"
-    let s:bases["0A"][s:TTY] = "10"
-    let s:bases["0B"][s:TTY] = "11"
-    let s:bases["0C"][s:TTY] = "12"
-    let s:bases["0D"][s:TTY] = "13"
-    let s:bases["0E"][s:TTY] = "14"
-    let s:bases["0F"][s:TTY] = "15"
+    for i in range(16)
+        let id_hex = printf("%02X", i)
+        let id_int = printf("%02d", i)
+        let s:bases[id_hex][s:TTY] = id_int
+    endfor
 
     " Ignore GUI coloring
-    let s:bases["00"][s:GUI] = "NONE"
-    let s:bases["01"][s:GUI] = "NONE"
-    let s:bases["02"][s:GUI] = "NONE"
-    let s:bases["03"][s:GUI] = "NONE"
-    let s:bases["04"][s:GUI] = "NONE"
-    let s:bases["05"][s:GUI] = "NONE"
-    let s:bases["06"][s:GUI] = "NONE"
-    let s:bases["07"][s:GUI] = "NONE"
-    let s:bases["08"][s:GUI] = "NONE"
-    let s:bases["09"][s:GUI] = "NONE"
-    let s:bases["0A"][s:GUI] = "NONE"
-    let s:bases["0B"][s:GUI] = "NONE"
-    let s:bases["0C"][s:GUI] = "NONE"
-    let s:bases["0D"][s:GUI] = "NONE"
-    let s:bases["0E"][s:GUI] = "NONE"
-    let s:bases["0F"][s:GUI] = "NONE"
+    for i in range(16)
+        let id = printf("%02X", i)
+        let s:bases[id][s:GUI] = "NONE"
+    endfor
 endif
 
 function! s:hl(group, fg_code, bg_code, attr, guisp)

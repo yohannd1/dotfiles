@@ -17,7 +17,10 @@ require("cfg.keybindings")
 require("cfg.filetypes")
 require("cfg.statusline")
 
-exec("colorscheme retrobox")
+-- exec("colorscheme retrobox")
+
+vim.b.base16_gui_colors = true
+vim.cmd.color("base16")
 
 local fs_root = CONF_DIR .. "/../../../.."
 
@@ -30,13 +33,8 @@ require("cfg.plugins").init({
   root_path = plugged_path,
 })
 
--- manually sourcing every needed plugin file because FOR SOME REASON ITS NOT DOING IT BY ITSELF
-local runtime_paths = vim.fn.split(vim.o.runtimepath, ",")
-for _, rtp in ipairs(runtime_paths) do
-  local glob = vim.fn.glob(("%s/plugin/*.vim"):format(rtp), false, true)
-  for _, file in ipairs(glob) do
-    vim.cmd.source(file)
-  end
-end
+-- Manually run plugin files (because I suspended it on the command line)
+-- For context, :help load-plugins and :help --noplugin
+vim.cmd([[ runtime! plugin/**/*.{vim,lua} ]])
 
 vim.o.shell = "dotf.wrap.usb-shell"

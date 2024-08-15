@@ -1,3 +1,4 @@
+local vim = _G.vim
 local dummy = _G.dummy
 
 local utils = require("cfg.utils")
@@ -5,17 +6,8 @@ local exec = utils.exec
 local map = utils.map
 local setGlobals = utils.setGlobals
 
-local vim_runtime_dir = vim.env.VIMRUNTIME
 local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup
-
-local mapVimFn = function(name, m)
-  exec(string.format([[
-    function! %s()
-      lua %s()
-    endfunction
-  ]], name, m))
-end
 
 vim.env.VIM_INIT = vim.g.config_root .. "/init.vim"
 vim.env.GVIM_INIT = vim.g.config_root .. "/ginit.vim"
@@ -93,8 +85,8 @@ let &t_ZH = "\<Esc>[3m"
 let &t_ZR = "\<Esc>[23m"
 ]])
 
-exec("syntax on")
-exec("filetype plugin indent on")
+vim.cmd("syntax on")
+vim.cmd("filetype plugin indent on")
 
 -- only auto-cd if we're not on windows
 vim.o.autochdir = not utils.os.is_windows
@@ -117,8 +109,8 @@ dummy.toggleVirtualEdit = function()
 end
 
 dummy.bufSwitch = function(next)
-  exec(next and "bnext" or "bprevious")
-  exec("silent doautocmd User BufSwitch")
+  vim.cmd(next and "bnext" or "bprevious")
+  vim.cmd([[ silent doautocmd User BufSwitch ]])
 end
 
 -- TODO: improved snippet system (move into separate module ig)
@@ -127,7 +119,7 @@ dummy.addSnippet = function(key, data)
 end
 
 dummy.itemToggleTodo = function()
-  local fn = vim.b.item_toggletodo_func or vim.fn.Item_Default_ToggleTodo
+  local fn = vim.b.item_toggletodo_func or dummy.itemToggleTodoDefault
   fn()
 end
 
@@ -142,7 +134,7 @@ dummy.itemToggleTodoVisual = function()
   local count = l2 - l1
 
   exec("normal '<")
-  for i = 0, count do
+  for _ = 1, count do
     dummy.itemToggleTodo()
     exec("normal j")
   end
@@ -194,7 +186,6 @@ dummy.itemToggleTodoDefault = function()
 
   print("No to-do detected on the current line")
 end
-mapVimFn("Item_Default_ToggleTodo", "dummy.itemToggleTodoDefault")
 
 -- autocmd({"TextYankPost"}, {
 --   pattern = "*",
@@ -224,42 +215,43 @@ dummy.pagerMode = function(filetype)
   end
   exec("setlocal ts=8 nomod nolist noma timeoutlen=0 nocursorline norelativenumber noshowcmd")
   local arg_nr_bs = { noremap = true, buffer = true, silent = true }
-  map("n", "d", "<C-d>")
-  map("n", "u", "<C-u>")
-  map("n", "q", ":q<CR>")
-  map("n", "j", "<C-e>")
-  map("n", "k", "<C-y>")
+  map("n", "d", "<C-d>", arg_nr_bs)
+  map("n", "u", "<C-u>", arg_nr_bs)
+  map("n", "q", ":q<CR>", arg_nr_bs)
+  map("n", "j", "<C-e>", arg_nr_bs)
+  map("n", "k", "<C-y>", arg_nr_bs)
   exec("normal M")
 end
-vim.cmd("command! -nargs=* PagerMode call v:lua.dummy.pagerMode(<f-args>)")
+vim.cmd([[ command! -nargs=* PagerMode call v:lua.dummy.pagerMode(<f-args>) ]])
 
--- Folding
-exec([[
-function! MyFoldText()
-  let l:foldmarker = split(&foldmarker, ',')
-  let l:tab_char = strpart(' ', shiftwidth())
-  let l:line_contents = substitute(getline(v:foldstart), '\t', l:tab_char, 'g')
-  let l:line_contents = substitute(l:line_contents, ' *'.l:foldmarker[0].'\d* *', '', 'g')
+dummy.myFoldText = function()
+  local strpart = vim.fn.strpart
+  local substitute = vim.fn.substitute
 
-  let l:numbers_width = &foldcolumn + &number * &numberwidth
-  let l:window_width = winwidth(0) - numbers_width - 1
-  let l:folded_lines_number = v:foldend - v:foldstart
+  local foldmarker = vim.fn.split(vim.o.foldmarker, ',')
+  local tab_char = strpart(' ', vim.fn.shiftwidth())
 
-  let l:line_contents = strpart(l:line_contents, 0, l:window_width - 2 - len(l:folded_lines_number))
-  let l:void_size = l:window_width - len(l:line_contents) - len(folded_lines_number)
-  let l:void_char = '·'
+  local line_contents = substitute(vim.fn.getline(vim.v.foldstart), '\t', tab_char, 'g')
+  line_contents = substitute(line_contents, ' *' .. foldmarker[1] .. [[\d* *]], '', 'g')
 
-  return l:line_contents . repeat(l:void_char, l:void_size) . l:folded_lines_number . 'l   '
-endfunction
-set foldtext=MyFoldText()
-command! FoldNone set nofoldenable
-command! FoldBracket set foldenable foldmethod=marker foldmarker={,}
-]])
+  local number_int = vim.o.number and 1 or 0
+  local numbers_width = vim.o.foldcolumn + number_int * vim.o.numberwidth
+  local window_width = vim.fn.winwidth(0) - numbers_width - 1
+  local folded_lines_number = vim.v.foldend - vim.v.foldstart
+
+  line_contents = strpart(line_contents, 0, window_width - 2 - vim.fn.len(folded_lines_number))
+  local void_size = window_width - vim.fn.len(line_contents) - vim.fn.len(folded_lines_number)
+  local void_char = '·'
+
+  local rs = vim.fn["repeat"](void_char, void_size)
+  return line_contents .. rs .. folded_lines_number .. 'l   '
+end
+vim.o.foldtext = [[v:lua.dummy.myFoldText()]]
+vim.cmd([[ command! FoldNone set nofoldenable ]])
+vim.cmd([[ command! FoldBracket set foldenable foldmethod=marker foldmarker={,} ]])
 
 -- highlight to-dos, fixmes etc.
 -- partially stolen from https://github.com/sakshamgupta05/vim-todo-highlight
---
--- TODO: make this work inside regions (e.g. strings)
 do
   local NAMES = {"TODO", "FIXME", "XXX", "NOTE"}
   for _, name in ipairs(NAMES) do

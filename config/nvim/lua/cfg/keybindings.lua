@@ -101,8 +101,8 @@ for k, once in pairs({h = "<", l = ">"}) do
 end
 
 -- Alt + o : toggle todo<->done state in items
-map("n", "<M-o>", ":lua dummy.itemToggleTodo()<CR>", arg_nr)
-map("v", "<M-o>", "<Esc>:lua dummy.itemToggleTodoVisual()<CR>", arg_nr)
+map("n", "<M-o>", ":lua dummy.itemToggleTodo()<CR>", arg_nr_s)
+map("v", "<M-o>", "<Esc>:lua dummy.itemToggleTodoVisual()<CR>", arg_nr_s)
 
 exec([[
   function! TabOrComplete(mode)
@@ -380,6 +380,7 @@ services.defKeyMenu({
       {"t", "lua dummy.findTodos()", "TODOs (in buffer)"},
       {"b", "lua require('telescope.builtin').buffers()", "buffers"},
       {"h", "lua require('telescope.builtin').help_tags()", "help tags"},
+      {".", "lua require('telescope.builtin').find_files()", "files"},
     },
   }}
 })

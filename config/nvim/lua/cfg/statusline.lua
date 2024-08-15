@@ -36,9 +36,9 @@ end
 dummy.statusLineGetShortName = function()
   -- FIXME: actually use the value of $HOME for this
   local x = vim.fn.expand("%:p"):gsub("^/home/(%w+)", "~")
-  local LIMIT = 30
+  local LIMIT = 35
   if #x > LIMIT then
-    x = "..." .. x:sub(#x-LIMIT+1, #x)
+    x = "..." .. x:sub(#x-LIMIT+4, #x)
   end
   return x
 end
