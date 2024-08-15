@@ -13,9 +13,8 @@ let s:is_tty = $DISPLAY == "" && !s:is_android
 let s:supports_x_resources = ($DISPLAY != "") && executable("xgetres")
 " let s:is_gui = has("gui_running") || (has("nvim") && nvim_list_uis()[0]["rgb"] == v:true)
 
-let b:base16_gui_colors = exists("b:base16_gui_colors")
-    \ ? b:base16_gui_colors : 0
-let s:is_gui = has("gui_running") || b:base16_gui_colors
+let b:base16_use_true_colors = get(b:, "base16_use_true_colors", 0)
+let s:is_gui = has("gui_running") || b:base16_use_true_colors
 
 " Some constants, just to make stuff more readable
 let s:TTY = 0
@@ -34,32 +33,32 @@ for i in range(16)
 endfor
 
 if s:is_gui
-    " On a GUI version of Neovim - true base16 color codes probably won't make sense here, since t's not a terminal
-    if s:is_linux && s:supports_x_resources
+    " On a GUI version of Neovim - true base16 color codes probably won't make sense here, since it's not a terminal
+    " if s:is_linux && s:supports_x_resources
         " If possible, get X resources
-        for i in range(16)
-            let id = printf("%02X", i)
-            let s:bases[id][s:GUI] = s:xgetres("nvim.base" . id)
-        endfor
-    else
-        " If can't get X resources, then at least get a default color scheme
-        let s:bases["00"][s:GUI] = "#f2e5bc"
-        let s:bases["01"][s:GUI] = "#ebdbb2"
-        let s:bases["02"][s:GUI] = "#d5c4a1"
-        let s:bases["03"][s:GUI] = "#bdae93"
-        let s:bases["04"][s:GUI] = "#665c54"
-        let s:bases["05"][s:GUI] = "#504945"
-        let s:bases["06"][s:GUI] = "#3c3836"
-        let s:bases["07"][s:GUI] = "#282828"
-        let s:bases["08"][s:GUI] = "#9d0006"
-        let s:bases["09"][s:GUI] = "#af3a03"
-        let s:bases["0A"][s:GUI] = "#b57614"
-        let s:bases["0B"][s:GUI] = "#79740e"
-        let s:bases["0C"][s:GUI] = "#427b58"
-        let s:bases["0D"][s:GUI] = "#076678"
-        let s:bases["0E"][s:GUI] = "#8f3f71"
-        let s:bases["0F"][s:GUI] = "#d65d0e"
-    endif
+        " for i in range(16)
+        "     let id = printf("%02X", i)
+        "     let s:bases[id][s:GUI] = s:xgetres("nvim.base" . id)
+        " endfor
+    " else
+    " If can't get X resources, then at least get a default color scheme
+    let true_colors = get(b:, "base16_true_color_map", {})
+    let s:bases["00"][s:GUI] = get(true_colors, "00", "#f2e5bc")
+    let s:bases["01"][s:GUI] = get(true_colors, "01", "#ebdbb2")
+    let s:bases["02"][s:GUI] = get(true_colors, "02", "#d5c4a1")
+    let s:bases["03"][s:GUI] = get(true_colors, "03", "#bdae93")
+    let s:bases["04"][s:GUI] = get(true_colors, "04", "#665c54")
+    let s:bases["05"][s:GUI] = get(true_colors, "05", "#504945")
+    let s:bases["06"][s:GUI] = get(true_colors, "06", "#3c3836")
+    let s:bases["07"][s:GUI] = get(true_colors, "07", "#282828")
+    let s:bases["08"][s:GUI] = get(true_colors, "08", "#9d0006")
+    let s:bases["09"][s:GUI] = get(true_colors, "09", "#af3a03")
+    let s:bases["0A"][s:GUI] = get(true_colors, "0A", "#b57614")
+    let s:bases["0B"][s:GUI] = get(true_colors, "0B", "#79740e")
+    let s:bases["0C"][s:GUI] = get(true_colors, "0C", "#427b58")
+    let s:bases["0D"][s:GUI] = get(true_colors, "0D", "#076678")
+    let s:bases["0E"][s:GUI] = get(true_colors, "0E", "#8f3f71")
+    let s:bases["0F"][s:GUI] = get(true_colors, "0F", "#d65d0e")
 
     " Disable TTY color schemes, as it's not needed
     for i in range(16)
