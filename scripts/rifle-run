@@ -204,6 +204,7 @@ case "$1" in
       crystal) crystal run "$file" ;;
       vlang) v run "$file" ;;
       nelua) nelua "$file" --cache-dir "$tmp" ;;
+      dart) dart run "$file" ;;
       javascript)
         if exists deno; then
           deno run "$file"

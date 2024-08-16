@@ -268,6 +268,8 @@ do
   end
 end
 
+vim.g.rifle_mode = utils.os.is_android and "buffer" or "popup"
+
 if utils.os.is_android then
   -- local theme_name_path = ("%s/dots/theme"):format(vim.env.XDG_DATA_DIR)
   -- local theme_name = vim.fn.trim(vim.fn.readfile(theme_name_path)[1])
