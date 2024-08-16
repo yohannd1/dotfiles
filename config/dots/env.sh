@@ -169,3 +169,5 @@ export LD_LIBRARY_PATH='/usr/lib/carla'
 if [ -r ~/.config/dircolors ]; then
   eval "$(dircolors -b ~/.config/dircolors)"
 fi
+
+export NO_COLOR=1
