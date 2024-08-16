@@ -27,32 +27,11 @@ require("cfg.keybindings")
 require("cfg.filetypes")
 require("cfg.statusline")
 
-local loadColorschemeFromYaml = function(path)
-  local colors = {}
-  local tryParseLine = function(l)
-    local id, color = l:match([[base(0[0-9A-Z]): "([0-9a-zA-Z]+)"]])
-    if id == nil or color == nil then
-      return nil
-    end
-    colors[id] = "#" .. color
-  end
-
-  local fd = assert(io.open(path), "Failed to open theme file")
-  while true do
-    local line = fd:read("line")
-    if line == nil then break end
-    tryParseLine(line)
-  end
-  fd:close()
-
-  return colors
-end
-
 local theme_name = "gruvbox-mid"
 vim.o.termguicolors = true
 vim.b.base16_use_true_colors = true
 vim.b.base16_true_color_map =
-  loadColorschemeFromYaml(("%s/config/dots/themes/%s.yaml"):format(dotfiles_dir, theme_name))
+  utils.loadColorschemeFromYaml(("%s/config/dots/themes/%s.yaml"):format(dotfiles_dir, theme_name))
 vim.cmd.color("base16")
 
 vim.cmd(("command! ENotes e %s/Repos/PhoneDocs/Pocket/Main.acr"):format(fs_root))

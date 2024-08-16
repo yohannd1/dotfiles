@@ -268,6 +268,16 @@ do
   end
 end
 
+if utils.os.is_android then
+  local theme_name_path = ("%s/dots/theme"):format(vim.env.XDG_DATA_DIR)
+  local theme_name = vim.fn.trim(vim.fn.readfile(theme_name_path)[1])
+  vim.o.termguicolors = true
+  vim.b.base16_use_true_colors = true
+  vim.b.base16_true_color_map =
+    utils.loadColorschemeFromYaml(("%s/config/dots/themes/%s.yaml"):format(vim.env.DOTFILES, theme_name))
+  vim.cmd.colorscheme("base16")
+end
+
 -- TODO: inside neovim, replace the $EDITOR with a wrapper script that connects
 -- to the current neovim instance, opens a buffer, and waits for the buffer to
 -- unload before exiting.

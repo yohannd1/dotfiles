@@ -150,4 +150,25 @@ M.randomHexString = function(length)
   return table.concat(acc)
 end
 
+M.loadColorschemeFromYaml = function(path)
+  local colors = {}
+  local tryParseLine = function(l)
+    local id, color = l:match([[base(0[0-9A-Z]): "([0-9a-zA-Z]+)"]])
+    if id == nil or color == nil then
+      return nil
+    end
+    colors[id] = "#" .. color
+  end
+
+  local fd = assert(io.open(path), "Failed to open theme file at " .. path)
+  while true do
+    local line = fd:read("line")
+    if line == nil then break end
+    tryParseLine(line)
+  end
+  fd:close()
+
+  return colors
+end
+
 return M
