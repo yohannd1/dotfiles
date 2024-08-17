@@ -134,7 +134,7 @@ dummy.itemToggleTodoVisual = function()
   local count = l2 - l1
 
   exec("normal '<")
-  for _ = 1, count do
+  for _ = 0, count do
     dummy.itemToggleTodo()
     exec("normal j")
   end
@@ -268,17 +268,8 @@ do
   end
 end
 
-vim.g.rifle_mode = utils.os.is_android and "buffer" or "popup"
-
-if utils.os.is_android then
-  -- local theme_name_path = ("%s/dots/theme"):format(vim.env.XDG_DATA_DIR)
-  -- local theme_name = vim.fn.trim(vim.fn.readfile(theme_name_path)[1])
-  -- vim.o.termguicolors = true
-  -- vim.b.base16_use_true_colors = true
-  -- vim.b.base16_true_color_map =
-  --   utils.loadColorschemeFromYaml(("%s/config/dots/themes/%s.yaml"):format(vim.env.DOTFILES, theme_name))
-  -- vim.cmd.colorscheme("base16")
-  vim.o.termguicolors = false
+if vim.g.rifle_mode == nil then
+  vim.g.rifle_mode = utils.os.is_android and "buffer" or "popup"
 end
 
 -- TODO: inside neovim, replace the $EDITOR with a wrapper script that connects

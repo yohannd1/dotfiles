@@ -60,13 +60,12 @@ end
 
 -- Disable mouse clicks without modifier key
 forChars("ni", function(m)
-  -- TODO: visual mode drag when off normal mode
   map(m, "<LeftMouse>", "<nop>", arg_nr)
   map(m, "<RightMouse>", "<nop>", arg_nr)
 
   -- NOTE: This is enabled by default already
-  -- map(m, "<C-LeftMouse>", "<LeftMouse>", arg_nr)
-  -- map(m, "<C-RightMouse>", "<RightMouse>", arg_nr)
+  map(m, "<C-LeftMouse>", "<LeftMouse>", arg_nr)
+  map(m, "<C-RightMouse>", "<RightMouse>", arg_nr)
 end)
 
 map("n", "<Esc>", ":noh<CR>", arg_nr_s)
@@ -356,7 +355,7 @@ dummy.formatBuffer = function()
       vim.fn.nvim_win_close(bw, false)
     end
 
-    -- TODO: turn this into a "snapshot position"
+    -- TODO: turn this into a "snapshot position" function
     -- something like utils.savePosition(); utils.restorePosition()
     local l_win_top = vim.fn.line("w0")
     local c_line = vim.fn.line(".")

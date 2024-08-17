@@ -71,26 +71,17 @@ local initialize = function()
   })
 
   if not utils.os.is_android and vim.fn.executable("filehist") ~= 0 then
-    -- TODO: port this to lua
-    exec([[
-      function! AddToRecFile()
-        let l:path = expand("%:p")
-        if l:path == ""
-          return
-        else
-          let l:pid = jobstart(["filehist", "add", l:path])
-          if l:pid == -1
-            " `filehist` probably doesn't exist - let's ignore this then
-            return
-          endif
-        endif
-      endfunction
-    ]])
+    local function tryAddCurFileToRec()
+      local path = vim.fn.expand("%:p")
+      if path ~= "" then
+        vim.fn.jobstart({"filehist", "add", path})
+      end
+    end
 
     autocmd({"BufNewFile", "BufRead"}, {
       pattern = "*",
       group = "buffer_load",
-      callback = "AddToRecFile",
+      callback = tryAddCurFileToRec,
     })
   end
 
@@ -499,6 +490,11 @@ end
 
 ft.lua = function()
   setSpaceIndent(2)
+
+  -- vim.lsp.start({
+  --   name = 'lua-language-server',
+  --   cmd = {'lua-language-server'},
+  -- })
 end
 
 ft.gsl = function()
