@@ -20,12 +20,12 @@ def main() -> int:
         eprint("If PAGE_ID is specified, only the ID of that page is returned.")
         return 1
 
-    if (ACW_WIKI_DIR := os.getenv("ACW_WIKI_DIR")) is None:
-        eprint("ACW_WIKI_DIR is not set; please set it with the path of your wiki")
+    if (ACR_WIKI_DIR := os.getenv("ACR_WIKI_DIR")) is None:
+        eprint("ACR_WIKI_DIR is not set; please set it with the path of your wiki")
         return 1
-    ACW_WIKI_DIR = Path(ACW_WIKI_DIR)
+    ACR_WIKI_DIR = Path(ACR_WIKI_DIR)
 
-    for file in ACW_WIKI_DIR.glob("*.wiki"):
+    for file in ACR_WIKI_DIR.glob("*.acr"):
         page_id = file.stem
 
         if len(args) == 1:

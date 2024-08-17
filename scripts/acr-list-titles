@@ -9,10 +9,10 @@ local XDG_CACHE_HOME = os.getenv("XDG_CACHE_HOME") or (HOME .. "/.cache")
 local ACW_CACHE_DIR = os.getenv("ACW_CACHE_DIR") or (XDG_CACHE_HOME .. "/acw")
 local DATA_PATH = ACW_CACHE_DIR .. "/list-titles-cache"
 
-local ACW_WIKI_DIR = HOME .. "/wiki/vimwiki"
+local ACR_WIKI_DIR = HOME .. "/wiki/vimwiki"
 
-if ACW_WIKI_DIR == nil or ACW_WIKI_DIR == "" then
-  io.stderr:write("error: ACW_WIKI_DIR is not set\n")
+if ACR_WIKI_DIR == nil or ACR_WIKI_DIR == "" then
+  io.stderr:write("error: ACR_WIKI_DIR is not set\n")
   os.exit(1)
 end
 
@@ -31,8 +31,8 @@ local function isDirectory(path)
   return lfs.attributes(path, "mode") == "directory"
 end
 
-if not isDirectory(ACW_WIKI_DIR) then
-  assert(lfs.mkdir(ACW_WIKI_DIR))
+if not isDirectory(ACR_WIKI_DIR) then
+  assert(lfs.mkdir(ACR_WIKI_DIR))
 end
 
 local function getNoteTitle(file)
@@ -87,7 +87,7 @@ end
 local last_gen_time = fileExists(DATA_PATH)
   and lfs.attributes(DATA_PATH, "modification")
   or 0
-local wiki_mod_time = assert(lfs.attributes(ACW_WIKI_DIR, "modification"))
+local wiki_mod_time = assert(lfs.attributes(ACR_WIKI_DIR, "modification"))
 
 if fileExists(DATA_PATH) and last_gen_time >= wiki_mod_time then
   -- The data file path exists and it's updated.
@@ -128,9 +128,9 @@ elseif fileExists(DATA_PATH) then
   end
 
   -- Then go through the list of files, update the ones that need it and print them to the screen.
-  for file in fileIter(ACW_WIKI_DIR) do
+  for file in fileIter(ACR_WIKI_DIR) do
     if file:match("%.acr$") then
-      local file_path = ACW_WIKI_DIR .. "/" .. file
+      local file_path = ACR_WIKI_DIR .. "/" .. file
       local id = file:gsub("%.acr$", "")
 
       local mod_time = assert(lfs.attributes(file_path, "modification"))
@@ -163,9 +163,9 @@ else
   -- Generate the entire file, as we do not have it.
 
   local out_fd = assert(io.open(DATA_PATH, "w"))
-  for file in fileIter(ACW_WIKI_DIR) do
+  for file in fileIter(ACR_WIKI_DIR) do
     if file:match("%.acr$") then
-      local file_path = ACW_WIKI_DIR .. "/" .. file
+      local file_path = ACR_WIKI_DIR .. "/" .. file
       local id = file:gsub("%.acr$", "")
       local title = getNoteTitle(assert(io.open(file_path))) or "<No Title>"
       local mod_time = assert(lfs.attributes(file_path, "modification"))

@@ -3,12 +3,12 @@
 import subprocess as sp
 import sys
 
-# TODO: test for failure when calling the commans
+# TODO: test for failure when calling the commands
 
 def main() -> int:
     projects = {}
 
-    p_tags = sp.run(["acw-get-tags"], stdout=sp.PIPE, encoding="utf-8")
+    p_tags = sp.run(["acr-get-tags"], stdout=sp.PIPE, encoding="utf-8")
     # assert p_tags.
     for line in p_tags.stdout.split("\n"):
         split = line.split(" ", maxsplit=1)
