@@ -1,6 +1,5 @@
 _G.dummy = {}
 local vim = _G.vim
-local exec = utils.exec
 
 -- prepare config dir
 local CONF_DIR = vim.fn.resolve(vim.fn.expand("<sfile>:p:h:h"))

@@ -17,10 +17,6 @@ M.log.printAll = function()
   end
 end
 
-M.exec = function(str)
-  vim.api.nvim_exec(str, false)
-end
-
 M.parseEscapeCode = function(str)
     return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
@@ -75,8 +71,6 @@ M.string = {}
 M.string.endsWith = function(haystack, suffix)
     return string.sub(haystack, -#suffix) == suffix
 end
-
-M._features = {}
 
 M.hasIntegerRepr = function(num)
   return tostring(num):match("^%d+$") ~= nil
@@ -169,6 +163,17 @@ M.loadColorschemeFromYaml = function(path)
   fd:close()
 
   return colors
+end
+
+M.doKeys = function(keys)
+  vim.cmd.normal({
+    args = { vim.api.nvim_replace_termcodes(keys, true, true, true) },
+    bang = true
+  })
+end
+
+M.xor = function(a,b)
+  return (not a) ~= (not b)
 end
 
 return M

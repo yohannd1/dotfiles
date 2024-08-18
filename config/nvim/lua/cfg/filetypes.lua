@@ -4,11 +4,15 @@
 local vim = _G.vim
 
 local utils = require("cfg.utils")
-local exec = utils.exec
 local setLocals = utils.setLocals
 
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
+
+local BETTER_JOIN_CTYPE_OPTS = {
+  whitespace_match = "[(%[{]",
+  whitespace_on_match = true,
+}
 
 local setTabIndent = function(indent)
   setLocals {
@@ -27,9 +31,7 @@ local setSpaceIndent = function(indent)
 end
 
 local setLispJoin = function()
-  local bjopt = vim.b.better_join_opts or {}
-  bjopt.add_whitespace_match = "[(%[{]"
-  vim.b.better_join_opts = bjopt
+  vim.b.better_join_opts = BETTER_JOIN_CTYPE_OPTS
 end
 
 local addSnippets = function(snips)
@@ -101,10 +103,10 @@ local initialize = function()
       end
   })
 
-  if utils._features["plugin.vim-auto-popmenu"] then
+  if vim.g.has_vim_auto_popmenu then
       local apcReenable = function()
           if vim.b.apc_enable ~= 1 then return end
-          exec("ApcEnable")
+          vim.cmd.ApcEnable()
       end
       autocmd("BufEnter", {
           pattern = "*",
@@ -125,7 +127,6 @@ end
 -- }}}
 
 -- Extension -> filetype
-ext_ft.wiki = "acrylic"
 ext_ft.lang = "lang"
 ext_ft.alg = "visualg"
 ext_ft.as = "actionscript"
@@ -343,11 +344,9 @@ end
 ft.python = function()
   vim.b.format_command = "black - -q"
 
-  exec([[
-    syn keyword Boolean True
-    syn keyword Boolean False
-    syn keyword Boolean None
-  ]])
+  vim.cmd("syn keyword Boolean True")
+  vim.cmd("syn keyword Boolean False")
+  vim.cmd("syn keyword Boolean None")
 
   addSnippets {
     m = [[def main():<CR>pass<CR><CR>if __name__ == "__main__":<CR>main()]],
@@ -393,7 +392,7 @@ end
 
 ft.fennel = function()
   setLispJoin()
-  exec([[ hi link FennelKeyword String ]])
+  vim.cmd([[ hi link FennelKeyword String ]])
 end
 
 ft.gdscript = function()
@@ -433,23 +432,20 @@ ft.acrylic = function()
   }
 
   vim.b.item_toggletodo_preferred_done = "x"
-
-  exec([[
-    let b:todo_queries = ['^(\s*)([-*]\s+)?\( \)', '^(\s*)([-*]\s+)?\[ \]']
-  ]])
+  vim.b.todo_queries = {
+    "^(\\s*)([-*]\\s+)?\\( \\)",
+    "^(\\s*)([-*]\\s+)?\\[ \\]",
+  }
 
   setSpaceIndent(2)
   setLocals { foldenable = true }
 
   -- Custom syntax
-  exec([[
-    syn match acrXDatetime /\v\d{1,2}(:\d{2}){1,2}(AM|PM)?/
-    syn match acrXDatetime /\v\d{4}\/\d{2}\/\d{2}/
-    hi link acrXDatetime Special
-
-    syn match acrXTodo /\v<(TODO|FIXME|XXX)>/
-    hi link acrXTodo Todo
-  ]])
+  vim.cmd([[ syn match acrXDatetime /\v\d{1,2}(:\d{2}){1,2}(AM|PM)?/ ]])
+  vim.cmd([[ syn match acrXDatetime /\v\d{4}\/\d{2}\/\d{2}/ ]])
+  vim.cmd([[ hi link acrXDatetime Special ]])
+  vim.cmd([[ syn match acrXTodo /\v<(TODO|FIXME|XXX)>/ ]])
+  vim.cmd([[ hi link acrXTodo Todo ]])
 end
 
 ft.PKGBUILD = function()
@@ -490,6 +486,7 @@ end
 
 ft.lua = function()
   setSpaceIndent(2)
+  vim.b.better_join_opts = BETTER_JOIN_CTYPE_OPTS
 
   -- vim.lsp.start({
   --   name = 'lua-language-server',

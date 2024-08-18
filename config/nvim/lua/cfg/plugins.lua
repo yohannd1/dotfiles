@@ -7,7 +7,6 @@ local M = {}
 
 local utils = require("cfg.utils")
 local services = utils.services
-local exec = utils.exec
 
 local firstAvailableDir = function(arg)
   for _, dir in ipairs(arg) do
@@ -323,7 +322,7 @@ M.add({
 --     vim.g.matchup_matchparen_offscreen = {method = "popup"}
 -- end})
 
--- fork of skywind3000/vim-auto-popmenu
+-- Automatic completion menu - fork of skywind3000/vim-auto-popmenu
 M.add({
   source = firstAvailableDir {
     pj_code .. "/vim-auto-popmenu",
@@ -335,7 +334,7 @@ M.add({
     vim.g.apc_custom_states = {
       clap_input = 0, -- prevent conflicts with vim-clap
     }
-    utils._features["plugin.vim-auto-popmenu"] = true
+    vim.g.has_vim_auto_popmenu = true
   end
 })
 
@@ -347,7 +346,7 @@ if utils.os.is_windows then
     after = function()
       vim.g.gruvbox_bold = 1
       vim.g.gruvbox_italics = 1
-      exec("colorscheme gruvbox")
+      vim.cmd.color("gruvbox")
     end,
   })
 end

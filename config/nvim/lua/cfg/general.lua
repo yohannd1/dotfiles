@@ -2,7 +2,6 @@ local vim = _G.vim
 local dummy = _G.dummy
 
 local utils = require("cfg.utils")
-local exec = utils.exec
 local map = utils.map
 local setGlobals = utils.setGlobals
 
@@ -80,10 +79,8 @@ setGlobals {
 vim.opt.shortmess:append("atCI")
 
 -- attempt to make italics work
-exec([[
-let &t_ZH = "\<Esc>[3m"
-let &t_ZR = "\<Esc>[23m"
-]])
+vim.cmd([[ let &t_ZH = "\<Esc>[3m" ]])
+vim.cmd([[ let &t_ZR = "\<Esc>[23m" ]])
 
 vim.cmd("syntax on")
 vim.cmd("filetype plugin indent on")
@@ -98,7 +95,7 @@ if vim.g.neovide then
   vim.g.neovide_cursor_vfx_mode = "ripple"
 end
 
-exec([[ command! Fgitmerge /\v^(\<{4,}|\={4,}|\>{4,}) ]])
+vim.cmd([[ command! Fgitmerge /\v^(\<{4,}|\={4,}|\>{4,}) ]])
 
 dummy.toggleVirtualEdit = function()
   local value = (vim.o.ve == "") and "all" or ""
@@ -115,7 +112,7 @@ end
 
 -- TODO: improved snippet system (move into separate module ig)
 dummy.addSnippet = function(key, data)
-  exec(string.format("nnoremap <silent> <buffer> <Leader>i%s i%s<Esc>", key, data))
+  vim.cmd(("nnoremap <silent> <buffer> <Leader>i%s i%s<Esc>"):format(key, data))
 end
 
 dummy.itemToggleTodo = function()
@@ -124,25 +121,27 @@ dummy.itemToggleTodo = function()
 end
 
 dummy.itemToggleTodoVisual = function()
-  exec("normal mz") -- mark
+  local doKeys = utils.doKeys
+  local line = vim.fn.line
+
+  doKeys("mz") -- mark
 
   -- get beginning and end lines
-  exec("normal '<")
-  local l1 = vim.fn.line(".")
-  exec("normal '>")
-  local l2 = vim.fn.line(".")
+  doKeys("'<")
+  local l1 = line(".")
+  doKeys("'>")
+  local l2 = line(".")
   local count = l2 - l1
 
-  exec("normal '<")
+  doKeys("'<")
   for _ = 0, count do
     dummy.itemToggleTodo()
-    exec("normal j")
+    doKeys("j")
   end
 
-  exec("normal `z")
+  doKeys("`z")
 end
 
--- me when i copy paste functions into an exec block
 dummy.itemToggleTodoDefault = function()
   local cur_line = vim.fn.getline(".")
   local preferred_done = vim.b.item_toggletodo_preferred_done or "x"
@@ -160,26 +159,25 @@ dummy.itemToggleTodoDefault = function()
 
   local match = vim.fn.match
   if match(cur_line, OPEN_SQUARE_PATT) ~= -1 then
-    exec(("s/%s/\\1\\2\\3[%s]"):format(OPEN_SQUARE_PATT, preferred_done))
+    vim.cmd(("s/%s/\\1\\2\\3[%s]"):format(OPEN_SQUARE_PATT, preferred_done))
     afterReplace()
     return
   end
 
   if match(cur_line, OPEN_ROUND_PATT) ~= -1 then
-    exec(("s/%s/\\1\\2\\3(%s)"):format(OPEN_ROUND_PATT, preferred_done))
+    vim.cmd(("s/%s/\\1\\2\\3(%s)"):format(OPEN_ROUND_PATT, preferred_done))
     afterReplace()
     return
   end
 
   if match(cur_line, CLOSED_SQUARE_PATT) ~= -1 then
-    print("***")
-    exec(("s/%s/\\1\\2\\3[ ]"):format(CLOSED_SQUARE_PATT))
+    vim.cmd(("s/%s/\\1\\2\\3[ ]"):format(CLOSED_SQUARE_PATT))
     afterReplace()
     return
   end
 
   if match(cur_line, CLOSED_ROUND_PATT) ~= -1 then
-    exec(("s/%s/\\1\\2\\3( )"):format(CLOSED_ROUND_PATT))
+    vim.cmd(("s/%s/\\1\\2\\3( )"):format(CLOSED_ROUND_PATT))
     afterReplace()
     return
   end
@@ -187,14 +185,17 @@ dummy.itemToggleTodoDefault = function()
   print("No to-do detected on the current line")
 end
 
--- autocmd({"TextYankPost"}, {
---   pattern = "*",
---   callback = function()
---     vim.highlight.on_yank({
---       higroup = "Normal",
---     })
---   end
--- })
+-- Highlight yanked selection briefly
+if false then -- turned off lol
+  autocmd({"TextYankPost"}, {
+    pattern = "*",
+    callback = function()
+      vim.highlight.on_yank({
+        higroup = "Normal",
+      })
+    end
+  })
+end
 
 dummy.findTodos = function()
   local queries = {'<TODO>', '<FIXME>', '<XXX>'}
@@ -213,14 +214,14 @@ dummy.pagerMode = function(filetype)
   if filetype ~= nil then
     vim.o.filetype = filetype
   end
-  exec("setlocal ts=8 nomod nolist noma timeoutlen=0 nocursorline norelativenumber noshowcmd")
+  vim.cmd([[ setlocal ts=8 nomod nolist noma timeoutlen=0 nocursorline norelativenumber noshowcmd ]])
   local arg_nr_bs = { noremap = true, buffer = true, silent = true }
   map("n", "d", "<C-d>", arg_nr_bs)
   map("n", "u", "<C-u>", arg_nr_bs)
   map("n", "q", ":q<CR>", arg_nr_bs)
   map("n", "j", "<C-e>", arg_nr_bs)
   map("n", "k", "<C-y>", arg_nr_bs)
-  exec("normal M")
+  utils.doKey("M")
 end
 vim.cmd([[ command! -nargs=* PagerMode call v:lua.dummy.pagerMode(<f-args>) ]])
 
@@ -261,10 +262,10 @@ do
       pattern = "*",
       callback = function()
         local fmt = [[syntax match %s /\v\_.<%s>:?/hs=s+1 contained containedin=.*Comment.*]]
-        exec(fmt:format(gname, name))
+        vim.cmd(fmt:format(gname, name))
       end,
     })
-    exec(("hi link %s Todo"):format(gname))
+    vim.cmd(("hi link %s Todo"):format(gname))
   end
 end
 

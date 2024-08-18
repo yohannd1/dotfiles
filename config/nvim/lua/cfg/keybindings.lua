@@ -5,7 +5,6 @@ local utils = require("cfg.utils")
 local services = utils.services
 
 local getLineToEnd = function() return vim.fn.getline('.'):sub(vim.fn.col('.')) end
-local exec = utils.exec
 local map = utils.map
 local forChars = utils.forChars
 
@@ -103,26 +102,38 @@ end
 map("n", "<M-o>", ":lua dummy.itemToggleTodo()<CR>", arg_nr_s)
 map("v", "<M-o>", "<Esc>:lua dummy.itemToggleTodoVisual()<CR>", arg_nr_s)
 
-exec([[
-  function! TabOrComplete(mode)
-  """ Used when no completion plugin is available.
-  """ When pressing the tab key, decide if it's needed to complete the current word, or else simply insert the tab key.
-  """ There is a mapping in the Mappings section for this.
-  if (col(".") > 1) && !(strcharpart(getline("."), col(".") - 2, 1) =~ '\v[ \t]')
-    if (a:mode == 0)
-      return "\<C-P>"
-    elseif (a:mode == 1)
-      return "\<C-N>"
-    endif
-  else
-    return "\<Tab>"
-  endif
-endfunction
-]])
+-- Used when no completion plugin is available.
+--
+-- When pressing the tab key, decide if it's needed to complete the current
+-- word, or else simply insert the tab key.
+dummy.tabOrComplete = function(scroll_direction)
+  local col = vim.fn.col
+  local esc = function(x)
+    return vim.api.nvim_replace_termcodes(x, true, true, true)
+  end
+
+  local scrollKey = function()
+    if scroll_direction == "up" then
+      return esc("<C-p>")
+    elseif scroll_direction == "down" then
+      return esc("<C-n>")
+    else
+      error(("Unknown scroll direction: %s"):format(scroll_direction))
+    end
+  end
+
+  if vim.fn.pumvisible() ~= 0 then
+    return scrollKey()
+  end
+
+  local not_first_char = col(".") > 1
+  local is_space = not_first_char and vim.fn.strcharpart(vim.fn.getline("."), col(".") - 2, 1):match("[ \t]")
+  return (not is_space) and scrollKey() or esc("<Tab>")
+end
 
 -- Use Tab to complete or insert indent
-map("i", "<Tab>", "<C-r>=TabOrComplete(1)<CR>", arg_nr_s)
-map("i", "<S-Tab>", "<C-r>=TabOrComplete(0)<CR>", arg_nr_s)
+map("i", "<Tab>", "<C-r>=v:lua.dummy.tabOrComplete('down')<CR>", arg_nr_s)
+map("i", "<S-Tab>", "<C-r>=v:lua.dummy.tabOrComplete('up')<CR>", arg_nr_s)
 
 -- Folding commands
 -- " nnoremap <silent> <Tab> za
@@ -172,40 +183,48 @@ map("n", "<C-k>", ":lua dummy.bufSwitch(false)<CR>", arg_nr_s)
 
 -- Better Join - a join command similar to the one in emacs (or evil-mode, idk) {{{
 dummy.betterJoin = function()
-  local normal = function(s) exec("normal! " .. s) end
-  local rmTrailWhs = function() normal("V:s/\\s\\+$//e\\<CR>") end
+  local doKeys = utils.doKeys
+  local rmTrailWhs = function()
+    doKeys([[V:s/\s\+$//e<CR>]])
+  end
 
   local opts = vim.b.better_join_opts or {}
-  local add_whitespace_match = opts.add_whitespace_match or -1
-  vim.b._foo = add_whitespace_match
+  local whitespace_match = opts.whitespace_match or -1
+  local whitespace_on_match = opts.whitespace_on_match or false
 
-  normal("$m`") -- go to the end of the line and set a mark there
+  doKeys("$m`") -- go to the end of the line and set a mark there
   rmTrailWhs() -- remove trailing whitespace
-  normal("J") -- actually join lines
+  doKeys("J") -- actually join lines
   rmTrailWhs() -- remove trailing whitespace again
-  normal("``l") -- go to the mark we had set and move 1 to the right
+  doKeys("``l") -- go to the mark we had set and move 1 to the right
 
   -- At this point, we're at the start of what was previously the line
   -- below. Let's remove the potential whitespace just in case.
   if getLineToEnd():match("^%s+") then
-    normal("dw")
+    doKeys("dw")
   end
 
   -- Add whitespace if a specific match is wanted
-  if add_whitespace_match ~= -1
-    and getLineToEnd():match("^" .. add_whitespace_match) then
-    normal("i ")
+  --
+  -- xor because we want the reverse result if whitespace_match is
+  -- false (see its truth table lol)
+  local matched = (whitespace_match ~= -1 and getLineToEnd():match("^" .. whitespace_match))
+  if utils.xor(matched, whitespace_on_match) then
+    doKeys("i ")
   end
 end
 
 dummy.betterJoinVisual = function()
-  local line_start = getpos("'<")[1]
-  local line_end = getpos("'>")[1]
+  local getpos = vim.fn.getpos
+  local line_start = getpos("'<")[2]
+  local line_end = getpos("'>")[2]
   local line_diff = line_end - line_start
 
-  exec("normal \\<Esc>" .. line_start .. "G")
-  for _ = 1,line_diff do dummy.betterJoin() end
-  exec("normal " .. line_start .. "G")
+  utils.doKeys(("%dG"):format(line_start))
+  for _ = 1, line_diff do
+    dummy.betterJoin()
+  end
+  utils.doKeys(("%dG"):format(line_start))
 end
 
 map("n", "J", ":lua dummy.betterJoin()<CR>", arg_nr_s)
@@ -229,8 +248,8 @@ map("n", "<C-x>k", ":tabp<CR>", arg_nr_s)
 map("n", "<C-x>n", ":tabnew<CR>", arg_nr_s)
 
 -- Buffer closing
-exec("cabbrev bd Bclose")
-exec("cabbrev bd! Bclose!")
+vim.cmd.cabbrev("bd Bclose")
+vim.cmd.cabbrev("bd! Bclose!")
 
 -- Navigate the completion menu with <C-k>, <C-j> and <C-m>
 do
@@ -247,7 +266,7 @@ do
   vim.keymap.set("i", "<C-m>", pv_check("<C-y>", "<C-m>"), {expr = true})
 end
 
-exec("map <C-m> <CR>")
+vim.cmd([[ map <C-m> <CR> ]])
 
 dummy.nerdTreeToggleX = function()
   if vim.fn.exists("b:NERDTree") ~= 0 then
@@ -315,42 +334,39 @@ dummy.formatBuffer = function()
   local cmd = ("%s < %s"):format(vim.b.format_command, in_file)
   local output = vim.fn.systemlist(cmd)
 
+  local BUF_TITLE = "*Format Errors*"
+
   if vim.v.shell_error ~= 0 then
     vim.g.last_format_err = output
     print("Formatting failed - see buffer for more info")
-    exec([[
-      if bufname("*Format Errors*") == ""
-        split
-        wincmd j
-        enew
-        file *Format Errors*
-        setlocal buftype=nofile
-        setlocal bufhidden=delete
-        setlocal noswapfile
-        setlocal nobuflisted
-      else
-        let s:bufwindow = bufwinid("*Format Errors*")
 
-        if s:bufwindow != -1
-          call win_gotoid(s:bufwindow)
-        else
-          split
-          wincmd j
-          buffer *Format Errors*
-        endif
-      endif
-    ]])
+    if vim.fn.bufname(BUF_TITLE) == "" then
+      vim.cmd.split()
+      vim.cmd.wincmd("j")
+      vim.cmd.enew()
+      vim.cmd.file(BUF_TITLE)
+      vim.cmd([[ setlocal buftype=nofile bufhidden=delete noswapfile nobuflisted ]])
+    else
+      local bw = vim.fn.bufwinid(BUF_TITLE)
+      if bw ~= -1 then
+        vim.fn.win_gotoid(bw)
+      else
+        vim.cmd.split()
+        vim.cmd.wincmd("j")
+        vim.cmd.buffer(BUF_TITLE)
+      end
+    end
 
     vim.opt_local.modifiable = true
-    exec("normal ggdG")
+    utils.doKeys("ggdG")
     append("$", "Formatting failed:")
     for _, line in ipairs(output) do
       append("$", "  " .. line)
     end
-    exec("normal ggdd")
+    utils.doKeys("ggdd")
     vim.opt_local.modifiable = false
   else
-    local bw = vim.fn.bufwinid("*Format Errors*")
+    local bw = vim.fn.bufwinid(BUF_TITLE)
     if bw ~= -1 then
       vim.fn.nvim_win_close(bw, false)
     end
@@ -360,10 +376,10 @@ dummy.formatBuffer = function()
     local l_win_top = vim.fn.line("w0")
     local c_line = vim.fn.line(".")
     local c_col = vim.fn.col(".")
-    exec("normal ggdG")
+    utils.doKeys("ggdG")
     vim.fn.setline(1, output)
-    exec(("normal %dGzt"):format(l_win_top))
-    exec(("normal %dG%d|"):format(c_line, c_col))
+    utils.doKeys(("%dGzt"):format(l_win_top))
+    utils.doKeys(("%dG%d|"):format(c_line, c_col))
   end
 
   vim.fn.delete(in_file)
