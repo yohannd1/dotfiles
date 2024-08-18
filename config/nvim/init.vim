@@ -20,6 +20,7 @@ lua require("cfg.general")
 lua require("cfg.statusline")
 lua require("cfg.keybindings")
 lua require("cfg.filetypes")
+lua require("cfg.rifle")
 
 set notermguicolors
 colorscheme base16

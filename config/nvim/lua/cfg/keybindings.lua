@@ -427,10 +427,10 @@ services.defKeyMenu({
   keymaps = {{
     name = "General",
     keys = {
-      {"r", [[Rifle 'run']], "run"},
-      {"b", [[Rifle 'build']], "build"},
-      {"c", [[Rifle 'check']], "check"},
-      {"t", [[Rifle 'test']], "test"},
+      {"r", [[Rifle run]], "run"},
+      {"b", [[Rifle build]], "build"},
+      {"c", [[Rifle check]], "check"},
+      {"t", [[Rifle test]], "test"},
     },
   }},
 })

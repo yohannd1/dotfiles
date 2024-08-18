@@ -26,6 +26,7 @@ require("cfg.general")
 require("cfg.keybindings")
 require("cfg.filetypes")
 require("cfg.statusline")
+require("cfg.rifle")
 
 local theme_name = "gruvbox-mid"
 vim.o.termguicolors = true
