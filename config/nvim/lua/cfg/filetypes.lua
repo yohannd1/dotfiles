@@ -9,10 +9,13 @@ local setLocals = utils.setLocals
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
-local BETTER_JOIN_CTYPE_OPTS = {
-  whitespace_match = "[(%[{]",
-  whitespace_on_match = true,
-}
+local defaultJoinMatcher = function(l_cur, l_next)
+  return not (l_cur:match("[(%[{]$") or l_next:match("[)%]}]$"))
+end
+
+local lispJoinMatcher = function(l_cur, l_next)
+  return not l_cur:match("[(%[{]$")
+end
 
 local setTabIndent = function(indent)
   setLocals {
@@ -28,10 +31,6 @@ local setSpaceIndent = function(indent)
     tabstop = 8,
     expandtab = true,
   }
-end
-
-local setLispJoin = function()
-  vim.b.better_join_opts = BETTER_JOIN_CTYPE_OPTS
 end
 
 local addSnippets = function(snips)
@@ -88,39 +87,42 @@ local initialize = function()
   end
 
   autocmd("FileType", {
-      pattern = "*",
-      group = "buffer_load",
-      callback = function()
-          -- Filetype execution
-          local filetype = vim.o.filetype
-          if ft[filetype] then
-              ft[filetype]()
-          end
+    pattern = "*",
+    group = "buffer_load",
+    callback = function()
+      -- Configure better join
+      vim.b.better_join_whitespace_matcher = defaultJoinMatcher
 
-          if vim.fs.root(0, "Makefile") ~= nil then
-            vim.b.rifle_ft = "@make"
-          end
+      -- Filetype execution
+      local filetype = vim.o.filetype
+      if ft[filetype] then
+        ft[filetype]()
       end
+
+      if vim.fs.root(0, "Makefile") ~= nil then
+        vim.b.rifle_ft = "@make"
+      end
+    end
   })
 
   if vim.g.has_vim_auto_popmenu then
-      local apcReenable = function()
-          if vim.b.apc_enable ~= 1 then return end
-          vim.cmd.ApcEnable()
-      end
-      autocmd("BufEnter", {
-          pattern = "*",
-          group = "buffer_load",
-          callback = apcReenable,
-      })
+    local apcReenable = function()
+      if vim.b.apc_enable ~= 1 then return end
+      vim.cmd.ApcEnable()
+    end
+    autocmd("BufEnter", {
+      pattern = "*",
+      group = "buffer_load",
+      callback = apcReenable,
+    })
   end
 
   autocmd("TermOpen", {
-      pattern = "*",
-      group = "buffer_load",
-      callback = function()
-          setLocals { relativenumber = false, number = false, cursorcolumn = false }
-      end
+    pattern = "*",
+    group = "buffer_load",
+    callback = function()
+      setLocals { relativenumber = false, number = false, cursorcolumn = false }
+    end
   })
 end
 
@@ -239,6 +241,7 @@ end
 
 ft.hy = function()
   setSpaceIndent(2)
+  vim.b.better_join_whitespace_matcher = lispJoinMatcher
   setLocals {
     foldmethod = "syntax",
   }
@@ -391,7 +394,6 @@ ft.vlang = function()
 end
 
 ft.fennel = function()
-  setLispJoin()
   vim.cmd([[ hi link FennelKeyword String ]])
 end
 
@@ -454,11 +456,11 @@ ft.PKGBUILD = function()
 end
 
 ft.lisp = function()
-  setLispJoin()
+  vim.b.better_join_whitespace_matcher = lispJoinMatcher
 end
 
 ft.janet = function()
-  setLispJoin()
+  vim.b.better_join_whitespace_matcher = lispJoinMatcher
 end
 
 ft.haxe = function()
@@ -486,8 +488,6 @@ end
 
 ft.lua = function()
   setSpaceIndent(2)
-  vim.b.better_join_opts = BETTER_JOIN_CTYPE_OPTS
-
   -- vim.lsp.start({
   --   name = 'lua-language-server',
   --   cmd = {'lua-language-server'},

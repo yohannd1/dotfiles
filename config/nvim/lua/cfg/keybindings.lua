@@ -183,14 +183,20 @@ map("n", "<C-k>", ":lua dummy.bufSwitch(false)<CR>", arg_nr_s)
 
 -- Better Join - a join command similar to the one in emacs (or evil-mode, idk) {{{
 dummy.betterJoin = function()
+  local line = vim.fn.line
+  local getline = vim.fn.getline
   local doKeys = utils.doKeys
   local rmTrailWhs = function()
     doKeys([[V:s/\s\+$//e<CR>]])
   end
 
-  local opts = vim.b.better_join_opts or {}
-  local whitespace_match = opts.whitespace_match or -1
-  local whitespace_on_match = opts.whitespace_on_match or false
+  local l = line(".")
+  if l == line("$") then
+    return -- we're at the end. there's nothing to join.
+  end
+
+  local l_cur = getline(l)
+  local l_next = getline(l+1)
 
   doKeys("$m`") -- go to the end of the line and set a mark there
   rmTrailWhs() -- remove trailing whitespace
@@ -208,8 +214,8 @@ dummy.betterJoin = function()
   --
   -- xor because we want the reverse result if whitespace_match is
   -- false (see its truth table lol)
-  local matched = (whitespace_match ~= -1 and getLineToEnd():match("^" .. whitespace_match))
-  if utils.xor(matched, whitespace_on_match) then
+  local ws_m = vim.b.better_join_whitespace_matcher
+  if ws_m == nil or ws_m(l_cur, l_next) then
     doKeys("i ")
   end
 end
