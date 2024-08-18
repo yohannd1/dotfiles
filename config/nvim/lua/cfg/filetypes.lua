@@ -2,6 +2,7 @@
 -- Preparation {{{
 
 local vim = _G.vim
+local dummy = _G.dummy
 
 local utils = require("cfg.utils")
 local setLocals = utils.setLocals
@@ -13,7 +14,7 @@ local defaultJoinMatcher = function(l_cur, l_next)
   return not (l_cur:match("[(%[{]$") or l_next:match("[)%]}]$"))
 end
 
-local lispJoinMatcher = function(l_cur, l_next)
+local lispJoinMatcher = function(l_cur, _l_next)
   return not l_cur:match("[(%[{]$")
 end
 
@@ -253,7 +254,6 @@ ft.nim = function()
     foldmethod = "syntax",
   }
 
-  local this_folder = vim.fn.expand("%:p:h")
   local found = findPattTillRoot("%.nimble$")
   vim.b.rifle_ft = found and "@nimble" or "nim"
 end
@@ -278,7 +278,6 @@ ft.rust = function()
     textwidth = 100,
   }
 
-  local this_folder = vim.fn.expand("%:p:h")
   local found = vim.fs.root(0, "Cargo.toml") ~= nil
   vim.b.rifle_ft = found and "@cargo" or "rust"
   vim.b.format_command = "stdin-wrap rustfmt"
@@ -289,7 +288,6 @@ ft.rust = function()
 end
 
 ft.java = function()
-  local this_folder = vim.fn.expand("%:p:h")
   local found = vim.fs.root(0, "gradlew") ~= nil
   vim.b.rifle_ft = found and "@gradlew" or "java"
 
@@ -319,7 +317,6 @@ end
 ft.plaintex = ft.tex
 
 ft.zig = function()
-  local this_folder = vim.fn.expand("%:p:h")
   local found = vim.fs.root(0, "build.zig") ~= nil
   vim.b.rifle_ft = found and "@zig-build" or "zig"
 

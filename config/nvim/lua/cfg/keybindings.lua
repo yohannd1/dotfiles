@@ -1,5 +1,6 @@
 -- vim: foldenable foldmethod=marker foldmarker={{{,}}}
 
+local vim = _G.vim
 local dummy = _G.dummy
 local utils = require("cfg.utils")
 local services = utils.services

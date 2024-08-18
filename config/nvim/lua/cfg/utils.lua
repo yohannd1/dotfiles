@@ -8,7 +8,7 @@ M.os.is_tty = vim.env.DISPLAY == "" and not M.os.is_android
 
 M.log = {}
 M.log.history = {}
-M.log.addLog = function(message)
+M.log.addLog = function(msg)
   table.insert(M.log.history, os.date("%Y%m%d %H:%M :: ") .. msg)
 end
 M.log.printAll = function()
@@ -102,8 +102,7 @@ M.sourceIfPresent = function(path)
 end
 
 M.map = function(m, lhs, rhs, args)
-  local args = args or {}
-  vim.api.nvim_set_keymap(m, lhs, rhs, args)
+  vim.api.nvim_set_keymap(m, lhs, rhs, args or {})
 end
 
 M.forChars = function(chars, fn)
@@ -135,7 +134,7 @@ M.randomHexString = function(length)
   local CHARS = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"}
   local acc = {}
 
-  for i = 1, length do
+  for _ = 1, length do
     local n = math.floor(math.random() * 16)
     local c = CHARS[n+1]
     table.insert(acc, c)
