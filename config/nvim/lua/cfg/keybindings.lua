@@ -422,20 +422,25 @@ services.defKeyMenu({
 map("n", "<Leader>e", [[:lua require("cfg.utils").services.loadKeyMenu("edit")<CR>]], arg_nr_s)
 
 -- rifle
-services.defKeyMenu({
-  id = "rifle",
-  title = "Rifle",
-  keymaps = {{
-    name = "General",
-    keys = {
-      {"r", [[Rifle run]], "run"},
-      {"b", [[Rifle build]], "build"},
-      {"c", [[Rifle check]], "check"},
-      {"t", [[Rifle test]], "test"},
-    },
-  }},
-})
-map("n", "<Leader>r", [[:lua require("cfg.utils").services.loadKeyMenu("rifle")<CR>]], arg_nr_s)
+-- services.defKeyMenu({
+--   id = "rifle",
+--   title = "Rifle",
+--   keymaps = {{
+--     name = "General",
+--     keys = {
+--       {"r", [[Rifle run]], "run"},
+--       {"b", [[Rifle build]], "build"},
+--       {"c", [[Rifle check]], "check"},
+--       {"t", [[Rifle test]], "test"},
+--     },
+--   }},
+-- })
+-- map("n", "<Leader>r", [[:lua require("cfg.utils").services.loadKeyMenu("rifle")<CR>]], arg_nr_s)
+
+map("n", "<Leader>rr", [[:Rifle run<CR>]], arg_nr_s)
+map("n", "<Leader>rb", [[:Rifle build<CR>]], arg_nr_s)
+map("n", "<Leader>rc", [[:Rifle check<CR>]], arg_nr_s)
+map("n", "<Leader>rt", [[:Rifle test<CR>]], arg_nr_s)
 
 -- wiki stuff
 services.defKeyMenu({

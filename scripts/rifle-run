@@ -3,7 +3,7 @@
 # a script that runs debug actions based on the specified filetype
 # intented for editors like vim and emacs
 
-. "$(uselib std)"
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
 set -e
 

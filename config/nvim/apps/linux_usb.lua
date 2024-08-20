@@ -49,4 +49,6 @@ require("cfg.plugins").init({
 -- For context, :help load-plugins and :help --noplugin
 vim.cmd([[ runtime! plugin/**/*.{vim,lua} ]])
 
+vim.g.rifle_mode = "buffer"
+vim.g.rifle_split_direction = "right"
 vim.o.shell = "dotf.wrap.usb-shell"
