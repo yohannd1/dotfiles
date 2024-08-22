@@ -409,6 +409,7 @@ M.add("yohannd1/fennel.vim") -- fork of bakpakin/fennel.vim
 M.add("ollykel/v-vim")
 M.add("habamax/vim-godot")
 M.add("bellinitte/uxntal.vim")
+M.add("dart-lang/dart-vim-plugin")
 
 -- M.add("vala-lang/vala.vim")
 -- M.add("neovimhaskell/haskell-vim")
