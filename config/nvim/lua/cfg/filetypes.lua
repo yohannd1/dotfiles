@@ -95,10 +95,8 @@ local initialize = function()
       vim.b.better_join_whitespace_matcher = defaultJoinMatcher
 
       -- Filetype execution
-      local filetype = vim.o.filetype
-      if ft[filetype] then
-        ft[filetype]()
-      end
+      local callback = ft[vim.o.filetype]
+      if callback then callback() end
 
       if vim.fs.root(0, "Makefile") ~= nil then
         vim.b.rifle_ft = "@make"

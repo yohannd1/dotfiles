@@ -4,18 +4,18 @@ local vim = _G.vim
 -- prepare config dir
 local CONF_DIR = vim.fn.resolve(vim.fn.expand("<sfile>:p:h:h"))
 local RUNTIME_DIR = assert(vim.env.VIMRUNTIME, "could not get runtime dir")
+local USR_DIR = vim.fs.normalize(("%s/../../.."):format(RUNTIME_DIR))
 package.path = string.format("%s;%s/lua/?.lua", package.path, CONF_DIR)
 
-local fs_root = ("%s/../../../.."):format(CONF_DIR)
+local fs_root = vim.fs.normalize(("%s/../../../.."):format(CONF_DIR))
 local dotfiles_dir = ("%s/Repos/dotfiles"):format(fs_root)
 local plugged_dir = ("%s/Cache/nvim_plugged"):format(fs_root)
 
 vim.g.config_root = CONF_DIR
 vim.opt.runtimepath = {
   RUNTIME_DIR,
-  RUNTIME_DIR .. "/pack/dist/opt/matchit",
-  RUNTIME_DIR .. "/../lib/nvim",
-  RUNTIME_DIR .. "/../lib/nvim",
+  ("%s/pack/dist/opt/matchit"):format(RUNTIME_DIR),
+  ("%s/lib/nvim"):format(USR_DIR),
   CONF_DIR,
 }
 
@@ -31,8 +31,9 @@ require("cfg.rifle")
 local theme_name = "gruvbox-mid"
 vim.o.termguicolors = true
 vim.b.base16_use_true_colors = true
-vim.b.base16_true_color_map =
-  utils.loadColorschemeFromYaml(("%s/config/dots/themes/%s.yaml"):format(dotfiles_dir, theme_name))
+vim.b.base16_true_color_map = utils.loadColorschemeFromYaml(
+  ("%s/config/dots/themes/%s.yaml"):format(dotfiles_dir, theme_name)
+)
 vim.cmd.color("base16")
 
 vim.cmd(("command! ENotes e %s/Repos/PhoneDocs/Pocket/Main.acr"):format(fs_root))

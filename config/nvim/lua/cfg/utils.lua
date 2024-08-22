@@ -8,7 +8,7 @@ M.os.is_tty = vim.env.DISPLAY == "" and not M.os.is_android
 
 M.log = {}
 M.log.history = {}
-M.log.addLog = function(msg)
+M.log.add = function(msg)
   table.insert(M.log.history, os.date("%Y%m%d %H:%M :: ") .. msg)
 end
 M.log.printAll = function()

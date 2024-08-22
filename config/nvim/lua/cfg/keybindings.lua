@@ -47,8 +47,8 @@ dummy.setSoftWrapBinds = function(enable)
 end
 dummy.setSoftWrapBinds(true)
 
-vim.cmd([[command! -nargs=0 SWBindOn lua dummy.setSoftWrapBinds(true)]])
-vim.cmd([[command! -nargs=0 SWBindOff lua dummy.setSoftWrapBinds(false)]])
+vim.cmd([[ command! -nargs=0 SWBindOn lua dummy.setSoftWrapBinds(true) ]])
+vim.cmd([[ command! -nargs=0 SWBindOff lua dummy.setSoftWrapBinds(false) ]])
 
 -- Mouse wheel scrolling (except on android)
 if not utils.os.is_android then
