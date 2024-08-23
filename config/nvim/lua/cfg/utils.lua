@@ -18,7 +18,7 @@ M.log.printAll = function()
 end
 
 M.parseEscapeCode = function(str)
-    return vim.api.nvim_replace_termcodes(str, true, true, true)
+  return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
 M.overrideTableWith = function(dest, src)
@@ -29,47 +29,47 @@ end
 
 -- TODO: is this the most efficient way
 M.splitIter = function(str, separator)
-    local length = str:len()
+  local length = str:len()
 
-    local start_p = 1
-    local end_p = 1
+  local start_p = 1
+  local end_p = 1
 
-    return function()
-        while true do
-            if start_p > length then
-                return nil
-            end
+  return function()
+    while true do
+      if start_p > length then
+        return nil
+      end
 
-            if separator == "" then
-                local i = end_p
-                end_p = end_p + 1
-                start_p = end_p
-                return str:sub(i, i)
-            elseif (str:sub(end_p, end_p) == separator) then
-                local s = start_p
-                local e = end_p
+      if separator == "" then
+        local i = end_p
+        end_p = end_p + 1
+        start_p = end_p
+        return str:sub(i, i)
+      elseif (str:sub(end_p, end_p) == separator) then
+        local s = start_p
+        local e = end_p
 
-                end_p = end_p + 1
-                start_p = start_p + 1
+        end_p = end_p + 1
+        start_p = start_p + 1
 
-                return str:sub(s, e-1)
-            end
+        return str:sub(s, e-1)
+      end
 
-            end_p = end_p + 1
-        end
+      end_p = end_p + 1
     end
+  end
 end
 
 M.pathAppend = function(dir)
-    local p = vim.env.PATH
-    if not p:find(dir) then
-        vim.env.PATH = p .. (M.os.is_windows and ";" or ":") .. dir
-    end
+  local p = vim.env.PATH
+  if not p:find(dir) then
+    vim.env.PATH = p .. (M.os.is_windows and ";" or ":") .. dir
+  end
 end
 
 M.string = {}
 M.string.endsWith = function(haystack, suffix)
-    return string.sub(haystack, -#suffix) == suffix
+  return string.sub(haystack, -#suffix) == suffix
 end
 
 M.hasIntegerRepr = function(num)
@@ -127,7 +127,6 @@ local services_mt = {}
 services_mt.__index = function(_, key)
   error("No service registered with the name " .. key)
 end
-
 M.services = setmetatable({}, services_mt)
 
 M.randomHexString = function(length)
@@ -183,11 +182,95 @@ M.tableJoin = function(t1, t2)
 end
 
 do
-  local iw = {}
-  M.result_buf = iw
+  local splitWindow = function(dir)
+    if dir == "down" then
+      vim.cmd.split()
+      vim.cmd.wincmd("j")
+    elseif dir == "up" then
+      vim.cmd.split()
+    elseif dir == "left" then
+      vim.cmd.vsplit()
+    elseif dir == "right" then
+      vim.cmd.vsplit()
+      vim.cmd.wincmd("l")
+    else
+      error(("Invalid split direction: %s"):format(dir))
+    end
+    vim.cmd.enew()
+  end
 
-  -- TODO: a generic "universal result buffer/window" for use with rifle and format
-  -- they should use the same window but I don't want the terminal buffer to be killed when I try to format something.
+  local windows = {}
+  M.uni_win = {}
+  M.uni_win.get = function(id)
+    local w = windows[id]
+    return vim.api.nvim_win_is_valid(w) and w or nil
+  end
+  M.uni_win.focus = function(id, opts)
+    opts = opts or {}
+    local create_direction = opts.create_direction or "down"
+
+    local w = windows[id]
+    if w == nil or not vim.api.nvim_win_is_valid(w) then
+      splitWindow(create_direction)
+      w = vim.api.nvim_get_current_win()
+      windows[id] = w
+    else
+      vim.api.nvim_set_current_win(w)
+    end
+    return w
+  end
+  M.uni_win.drop = function(id)
+    windows[id] = nil
+  end
+  M.uni_win.delete = function(id)
+    local w = windows[id]
+    if w ~= nil and vim.api.nvim_win_is_valid(w) then
+      vim.api.nvim_win_close(w, true)
+      windows[id] = nil
+    end
+  end
+
+  local buffers = {}
+  M.uni_buf = {}
+  M.uni_buf.get = function(id)
+    local b = buffers[id]
+    return vim.api.nvim_buf_is_valid(b) and b or nil
+  end
+  M.uni_buf.focus = function(id, opts)
+    opts = opts or {}
+    local create_fn = assert(opts.create_fn, "missing create_fn field")
+    local replace = opts.replace or false
+
+    local makeBuf = function()
+      create_fn()
+      b = vim.api.nvim_get_current_buf()
+      buffers[id] = b
+      return b
+    end
+
+    local b = buffers[id]
+    if b == nil or not vim.api.nvim_buf_is_valid(b) then
+      makeBuf()
+    elseif replace then
+      local b_new = makeBuf()
+      if vim.api.nvim_buf_is_valid(b) then
+        -- might be false in the rare case the buffer automatically replaces the other one... :v
+        vim.api.nvim_buf_delete(b, {force = true, unload = false})
+      end
+      b = b_new
+    else
+      vim.api.nvim_set_current_buf(b)
+    end
+
+    return b
+  end
+  M.uni_buf.drop = function(id)
+    buffers[id] = nil
+  end
+  M.uni_buf.delete = function(id)
+    vim.api.nvim_buf_delete(buffers[id], {force = true, unload = false})
+    buffers[id] = nil
+  end
 end
 
 return M

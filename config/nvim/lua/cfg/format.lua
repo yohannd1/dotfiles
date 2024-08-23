@@ -6,7 +6,7 @@ local utils = require("cfg.utils")
 local append = vim.fn.append
 
 M.formatBuffer = function()
-  -- TODO: use the same window-creation API that rifle uses
+  local BUF_TITLE = "*Format Errors*"
 
   local format_command = vim.b.format_command
   if format_command == nil then
@@ -16,47 +16,21 @@ M.formatBuffer = function()
 
   local lines = vim.fn.getline(1, "$")
 
-  local in_file = vim.fn.tempname()
-  vim.fn.writefile(lines, in_file)
+  local tmp_in_file = vim.fn.tempname()
+  vim.fn.writefile(lines, tmp_in_file)
 
-  local cmd = ("%s < %s"):format(format_command, in_file)
+  local cmd = ("%s < %s"):format(format_command, tmp_in_file)
   local output = vim.fn.systemlist(cmd)
 
-  local BUF_TITLE = "*Format Errors*"
+  vim.fn.delete(tmp_in_file)
 
-  if vim.v.shell_error ~= 0 then
-    vim.g.last_format_err = output
-    print("Formatting failed - see buffer for more info")
-
-    if vim.fn.bufname(BUF_TITLE) == "" then
-      vim.cmd.split()
-      vim.cmd.wincmd("j")
-      vim.cmd.enew()
-      vim.cmd.file(BUF_TITLE)
-      vim.cmd([[ setlocal buftype=nofile bufhidden=delete noswapfile nobuflisted ]])
-    else
-      local bw = vim.fn.bufwinid(BUF_TITLE)
-      if bw ~= -1 then
-        vim.fn.win_gotoid(bw)
-      else
-        vim.cmd.split()
-        vim.cmd.wincmd("j")
-        vim.cmd.buffer(BUF_TITLE)
-      end
-    end
-
-    vim.opt_local.modifiable = true
-    utils.doKeys("ggdG")
-    append("$", "Formatting failed:")
-    for _, line in ipairs(output) do
-      append("$", "  " .. line)
-    end
-    utils.doKeys("ggdd")
-    vim.opt_local.modifiable = false
-  else
-    local bw = vim.fn.bufwinid(BUF_TITLE)
-    if bw ~= -1 then
-      vim.fn.nvim_win_close(bw, false)
+  local successful = vim.v.shell_error == 0
+  if successful then
+    local w = utils.uni_win.get("aux")
+    local b = utils.uni_buf.get("format_errors")
+    if w ~= nil and b ~= nil and vim.fs.basename(vim.api.nvim_buf_get_name(b)) == BUF_TITLE then
+      utils.uni_buf.delete("format_errors")
+      utils.uni_win.delete("aux")
     end
 
     -- TODO: turn this into a "snapshot position" function
@@ -68,9 +42,30 @@ M.formatBuffer = function()
     vim.fn.setline(1, output)
     utils.doKeys(("%dGzt"):format(l_win_top))
     utils.doKeys(("%dG%d|"):format(c_line, c_col))
-  end
+  else
+    local createFormatError = function()
+      vim.cmd.enew()
+      vim.cmd.file(BUF_TITLE)
+      vim.cmd([[ setlocal buftype=nofile bufhidden=delete noswapfile nobuflisted ]])
+      vim.b.is_format_buffer = true
+      vim.opt_local.modifiable = true
+      vim.cmd([[ normal! ggdG ]])
+      append("$", "Formatting failed:")
+      for _, line in ipairs(output) do
+        append("$", "  " .. line)
+      end
+      utils.doKeys("ggdd")
+      vim.opt_local.modifiable = false
+    end
 
-  vim.fn.delete(in_file)
+    utils.uni_win.focus("aux", { create_direction = "down" })
+    utils.uni_buf.focus("format_errors", {
+      replace = true,
+      create_fn = createFormatError,
+    })
+
+    print(("Formatting failed - see buffer %q for more info"):format(BUF_TITLE))
+  end
 end
 
 return M

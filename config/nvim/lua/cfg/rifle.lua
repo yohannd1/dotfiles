@@ -42,25 +42,20 @@ M.run = function(command)
     local tbl = utils.tableJoin({"termup", "runread"}, cmd)
     vim.fn.jobstart(tbl)
   elseif rifle_mode == "buffer" then
-    -- open the window or go to the last one, if it exists
-    if static.window == nil or not vim.api.nvim_win_is_valid(static.window) then
-      splitWindow()
-      static.window = vim.api.nvim_get_current_win()
-    else
-      vim.api.nvim_set_current_win(static.window)
+    local createRifleTerm = function()
+      vim.cmd.enew()
+      vim.fn.termopen(utils.tableJoin({"runread"}, cmd))
+      vim.cmd.file("*Rifle*")
+      vim.cmd([[ normal! i ]])
     end
 
-    vim.cmd.enew()
-    vim.fn.termopen(utils.tableJoin({"runread"}, cmd))
-
-    -- save the buffer's handle and, if there was an old one, force-delete it
-    local old_buffer = static.buffer
-    static.buffer = vim.api.nvim_get_current_buf()
-    if old_buffer ~= nil and vim.api.nvim_buf_is_valid(old_buffer) then
-      vim.api.nvim_buf_delete(old_buffer, {force = true, unload = false})
-    end
-
-    vim.cmd([[ normal! i ]])
+    utils.uni_win.focus("aux", {
+      create_direction = vim.b.rifle_split_direction or "right",
+    })
+    utils.uni_buf.focus("rifle", {
+      replace = true,
+      create_fn = createRifleTerm,
+    })
   elseif rifle_mode == "silent" then
     vim.fn.jobstart(cmd)
   else
@@ -69,11 +64,10 @@ M.run = function(command)
 end
 
 M.rifleReset = function()
-  static.window = nil
-  static.buffer = nil
+  utils.uni_buf.drop("aux")
 end
 
 vim.cmd([[ command! -nargs=1 Rifle call v:lua.require('cfg.rifle').run(<f-args>) ]])
-vim.cmd([[ command! RifleReset call v:lua..require('cfg.rifle').rifleReset() ]])
+vim.cmd([[ command! RifleReset call v:lua.require('cfg.rifle').rifleReset() ]])
 
 return M
