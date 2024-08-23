@@ -4,6 +4,7 @@ local executable = vim.fn.executable
 local utils = require("cfg.utils")
 
 local static = {}
+local M = {}
 
 local splitWindow = function()
   local dir = vim.g.rifle_split_direction or vim.b.rifle_split_direction or "down"
@@ -21,7 +22,7 @@ local splitWindow = function()
   end
 end
 
-dummy.rifle = function(command)
+M.run = function(command)
   if executable("rifle-run") == 0 then
     error("could not find `rifle-run` in PATH")
   end
@@ -67,10 +68,12 @@ dummy.rifle = function(command)
   end
 end
 
-dummy.rifleReset = function()
+M.rifleReset = function()
   static.window = nil
   static.buffer = nil
 end
 
-vim.cmd([[ command! -nargs=1 Rifle call v:lua.dummy.rifle(<f-args>) ]])
-vim.cmd([[ command! RifleReset call v:lua.dummy.rifleReset() ]])
+vim.cmd([[ command! -nargs=1 Rifle call v:lua.require('cfg.rifle').run(<f-args>) ]])
+vim.cmd([[ command! RifleReset call v:lua..require('cfg.rifle').rifleReset() ]])
+
+return M

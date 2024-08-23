@@ -182,4 +182,12 @@ M.tableJoin = function(t1, t2)
   return result
 end
 
+do
+  local iw = {}
+  M.result_buf = iw
+
+  -- TODO: a generic "universal result buffer/window" for use with rifle and format
+  -- they should use the same window but I don't want the terminal buffer to be killed when I try to format something.
+end
+
 return M
