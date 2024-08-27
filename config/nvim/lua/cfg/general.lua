@@ -105,8 +105,11 @@ dummy.toggleVirtualEdit = function()
   vim.api.nvim_echo({{message}}, false, {})
 end
 
-dummy.bufSwitch = function(next)
-  vim.cmd(next and "bnext" or "bprevious")
+dummy.bufSwitch = function(dir)
+  if dir == "next" then vim.cmd.bnext()
+  elseif dir == "prev" then vim.cmd.bprevious()
+  else error(("Unknown direction: %s"):format(dir))
+  end
   vim.cmd([[ silent doautocmd User BufSwitch ]])
 end
 

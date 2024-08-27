@@ -5,7 +5,6 @@ local dummy = _G.dummy
 local utils = require("cfg.utils")
 local services = utils.services
 
-local getLineToEnd = function() return vim.fn.getline('.'):sub(vim.fn.col('.')) end
 local map = utils.map
 local forChars = utils.forChars
 
@@ -179,46 +178,32 @@ vim.keymap.set("i", "<C-u>'", function()
 end, {expr = true})
 
 -- Buffer navigation
-map("n", "<C-j>", ":lua dummy.bufSwitch(true)<CR>", arg_nr_s)
-map("n", "<C-k>", ":lua dummy.bufSwitch(false)<CR>", arg_nr_s)
+map("n", "<C-j>", ":lua dummy.bufSwitch('next')<CR>", arg_nr_s)
+map("n", "<C-k>", ":lua dummy.bufSwitch('prev')<CR>", arg_nr_s)
 
--- Better Join - a join command similar to the one in emacs (or evil-mode, idk) {{{
 dummy.betterJoin = function()
   local line = vim.fn.line
   local getline = vim.fn.getline
   local doKeys = utils.doKeys
-  local rmTrailWhs = function()
-    doKeys([[V:s/\s\+$//e<CR>]])
-  end
 
-  local l = line(".")
-  if l == line("$") then
+  local lnum = line(".")
+  if lnum == line("$") then
     return -- we're at the end. there's nothing to join.
   end
 
-  local l_cur = getline(l)
-  local l_next = getline(l+1)
+  local l_cur = getline(lnum):gsub("%s+$", "")
+  local l_next = getline(lnum+1):gsub("^%s+", "")
+  doKeys("jddk") -- delete the old "next line"
 
-  doKeys("$m`") -- go to the end of the line and set a mark there
-  rmTrailWhs() -- remove trailing whitespace
-  doKeys("J") -- actually join lines
-  rmTrailWhs() -- remove trailing whitespace again
-  doKeys("``l") -- go to the mark we had set and move 1 to the right
-
-  -- At this point, we're at the start of what was previously the line
-  -- below. Let's remove the potential whitespace just in case.
-  if getLineToEnd():match("^%s+") then
-    doKeys("dw")
-  end
-
-  -- Add whitespace if a specific match is wanted
-  --
-  -- xor because we want the reverse result if whitespace_match is
-  -- false (see its truth table lol)
+  -- add whitespace if needed (following the whitespace matcher's result)
   local ws_m = vim.b.better_join_whitespace_matcher
-  if ws_m == nil or ws_m(l_cur, l_next) then
-    doKeys("i ")
-  end
+  local add_whitespace = ( ws_m == nil or ws_m(l_cur, l_next) )
+
+  -- replace and get back to where we were
+  vim.fn.setline(".", l_cur .. (add_whitespace and " " or "") .. l_next)
+  local ret_y = lnum
+  local ret_x = vim.fn.strcharlen(l_cur)
+  vim.api.nvim_win_set_cursor(0, {ret_y, ret_x})
 end
 
 dummy.betterJoinVisual = function()
@@ -236,15 +221,14 @@ end
 
 map("n", "J", ":lua dummy.betterJoin()<CR>", arg_nr_s)
 map("v", "J", ":lua dummy.betterJoinVisual()<CR>", arg_nr_s)
--- }}}
 
 -- Terminal commands
 map("t", "<C-w>.", "<C-\\><C-n>", arg_nr_s)
 map("t", "<C-w>q", "<C-\\><C-n><C-w>q", arg_nr_s)
 map("t", "<C-w><C-j>", "<C-j>", arg_nr_s)
 map("t", "<C-w><C-k>", "<C-k>", arg_nr_s)
-map("t", "<C-j>", "<C-\\><C-n>:call NextBuffer()<CR>", arg_nr_s)
-map("t", "<C-k>", "<C-\\><C-n>:call PrevBuffer()<CR>", arg_nr_s)
+map("t", "<C-j>", "<C-\\><C-n>:lua dummy.bufSwitch('next')<CR>", arg_nr_s)
+map("t", "<C-k>", "<C-\\><C-n>:lua dummy.bufSwitch('prev')<CR>", arg_nr_s)
 forChars("hjkl", function(l)
   map("t", "<C-w>" .. l, "<C-\\><C-n><C-w>" .. l, arg_nr_s)
 end)

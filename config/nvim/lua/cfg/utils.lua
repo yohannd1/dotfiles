@@ -203,7 +203,7 @@ do
   M.uni_win = {}
   M.uni_win.get = function(id)
     local w = windows[id]
-    return vim.api.nvim_win_is_valid(w) and w or nil
+    return (w ~= nil and vim.api.nvim_win_is_valid(w)) and w or nil
   end
   M.uni_win.focus = function(id, opts)
     opts = opts or {}
@@ -234,7 +234,7 @@ do
   M.uni_buf = {}
   M.uni_buf.get = function(id)
     local b = buffers[id]
-    return vim.api.nvim_buf_is_valid(b) and b or nil
+    return (b ~= nil and vim.api.nvim_buf_is_valid(b)) and b or nil
   end
   M.uni_buf.focus = function(id, opts)
     opts = opts or {}

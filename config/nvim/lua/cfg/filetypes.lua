@@ -11,11 +11,11 @@ local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
 local defaultJoinMatcher = function(l_cur, l_next)
-  return not (l_cur:match("[(%[{]$") or l_next:match("[)%]}]$"))
+  return not (l_cur:match("[(%[{]$") or l_next:match("^[)%]}]"))
 end
 
-local lispJoinMatcher = function(l_cur, _l_next)
-  return not l_cur:match("[(%[{]$")
+local lispJoinMatcher = function(l_cur, l_next)
+  return not l_cur:match("[(%[{]$") and not l_next:match("^[)%]}]")
 end
 
 local setTabIndent = function(indent)
