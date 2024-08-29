@@ -1,26 +1,8 @@
-local dummy = _G.dummy
 local vim = _G.vim
 local executable = vim.fn.executable
 local utils = require("cfg.utils")
 
-local static = {}
 local M = {}
-
-local splitWindow = function()
-  local dir = vim.g.rifle_split_direction or vim.b.rifle_split_direction or "down"
-
-  if dir == "down" then
-    vim.cmd.split()
-    vim.cmd.wincmd("j")
-  elseif dir == "up" then
-    vim.cmd.split()
-  elseif dir == "left" then
-    vim.cmd.vsplit()
-  elseif dir == "right" then
-    vim.cmd.vsplit()
-    vim.cmd.wincmd("l")
-  end
-end
 
 M.run = function(command)
   if executable("rifle-run") == 0 then
@@ -29,7 +11,6 @@ M.run = function(command)
 
   local has_display = (vim.env.DISPLAY ~= nil) or (vim.env.WAYLAND_DISPLAY ~= nil)
   local supports_popup = has_display
-  print(has_display)
   local default_rifle_mode = supports_popup and "popup" or "buffer"
   local split_direction = vim.g.rifle_split_direction or vim.b.rifle_split_direction or "right"
   local rifle_mode = vim.b.rifle_mode or vim.g.rifle_mode or default_rifle_mode
@@ -37,29 +18,29 @@ M.run = function(command)
 
   -- because neovim on termux is struggling!!!!11 (FIXME)
   local dotfiles = assert(vim.env.DOTFILES, "$DOTFILES not set (sorry)")
-  local rifle_exe_path = ("%s/scripts/rifle-run"):format(dotfiles)
-  local cmd = {"bash", rifle_exe_path, command, rifle_ft, vim.fn.expand("%:p")}
+  local rifle_run_path = ("%s/scripts/rifle-run"):format(dotfiles)
+  local runread_path = ("%s/scripts/runread"):format(dotfiles)
+  local cmd = {rifle_run_path, command, rifle_ft, vim.fn.expand("%:p")}
+  local cmd_prefix = utils.os.is_android and {"bash"} or {}
 
   if rifle_mode == "popup" then
-    local tbl = utils.tableJoin({"termup", "runread"}, cmd)
+    local tbl = utils.tableJoin({"termup", runread_path}, cmd)
     vim.fn.jobstart(tbl)
   elseif rifle_mode == "buffer" then
     local createRifleTerm = function()
       vim.cmd.enew()
-      vim.fn.termopen(utils.tableJoin({"runread"}, cmd))
+      vim.fn.termopen(utils.tableJoin({cmd_prefix, runread_path}, cmd))
       vim.cmd.file("*Rifle*")
       vim.cmd([[ normal! i ]])
     end
 
-    utils.uni_win.focus("aux", {
-      create_direction = split_direction,
-    })
+    utils.uni_win.focus("aux", { create_direction = split_direction })
     utils.uni_buf.focus("rifle", {
       replace = true,
       create_fn = createRifleTerm,
     })
   elseif rifle_mode == "silent" then
-    vim.fn.jobstart(cmd)
+    vim.fn.jobstart(utils.tableJoin({cmd_prefix, cmd}))
   else
     error(("invalid rifle mode: %s"):format(rifle_mode))
   end
