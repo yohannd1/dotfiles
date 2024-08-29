@@ -29,7 +29,7 @@ M.run = function(command)
   elseif rifle_mode == "buffer" then
     local createRifleTerm = function()
       vim.cmd.enew()
-      vim.fn.termopen(utils.tableJoin({cmd_prefix, runread_path}, cmd))
+      vim.fn.termopen(utils.tableJoin(cmd_prefix, {runread_path}, cmd))
       vim.cmd.file("*Rifle*")
       vim.cmd([[ normal! i ]])
     end
@@ -40,7 +40,7 @@ M.run = function(command)
       create_fn = createRifleTerm,
     })
   elseif rifle_mode == "silent" then
-    vim.fn.jobstart(utils.tableJoin({cmd_prefix, cmd}))
+    vim.fn.jobstart(utils.tableJoin(cmd_prefix, cmd))
   else
     error(("invalid rifle mode: %s"):format(rifle_mode))
   end

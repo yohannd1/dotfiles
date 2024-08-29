@@ -174,10 +174,11 @@ M.xor = function(a,b)
   return (not a) ~= (not b)
 end
 
-M.tableJoin = function(t1, t2)
+M.tableJoin = function(...)
   local result = {}
-  for _, v in ipairs(t1) do table.insert(result, v) end
-  for _, v in ipairs(t2) do table.insert(result, v) end
+  for _, t in ipairs({...}) do
+    for _, v in ipairs(t) do table.insert(result, v) end
+  end
   return result
 end
 
