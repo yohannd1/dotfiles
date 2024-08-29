@@ -165,17 +165,20 @@ end)
 -- Toggle virtualedit
 map("n", "<Leader>tv", ":lua dummy.toggleVirtualEdit()<CR>", arg_nr)
 
-map("i", "<C-u>", "<Nop>", arg_s)
+-- Small... snippets?
+forChars("ic", function(m)
+  map(m, "<C-u>", "<Nop>", arg_s)
 
--- Insert date
-vim.keymap.set("i", "<C-u>d", function()
-  return vim.fn.strftime("%Y/%m/%d")
-end, {expr = true})
+  -- Current date
+  vim.keymap.set(m, "<C-u>d", function()
+    return vim.fn.strftime("%Y/%m/%d")
+  end, {expr = true})
 
--- Insert the shits
-vim.keymap.set("i", "<C-u>'", function()
-  return "``````" .. "<Left>" .. "<Left>" .. "<Left>"
-end, {expr = true})
+  -- Many backquotes
+  vim.keymap.set(m, "<C-u>'", function()
+    return "``````" .. "<Left>" .. "<Left>" .. "<Left>"
+  end, {expr = true})
+end)
 
 -- Buffer navigation
 map("n", "<C-j>", ":lua dummy.bufSwitch('next')<CR>", arg_nr_s)
@@ -186,14 +189,19 @@ dummy.betterJoin = function()
   local getline = vim.fn.getline
   local doKeys = utils.doKeys
 
-  local lnum = line(".")
-  if lnum == line("$") then
+  -- line numbers
+  local ln_cur = line(".")
+  local ln_last = line("$")
+  if ln_cur == ln_last then
     return -- we're at the end. there's nothing to join.
   end
 
-  local l_cur = getline(lnum):gsub("%s+$", "")
-  local l_next = getline(lnum+1):gsub("^%s+", "")
-  doKeys("jddk") -- delete the old "next line"
+  local l_cur = getline(ln_cur):gsub("%s+$", "")
+  local l_next = getline(ln_cur+1):gsub("^%s+", "")
+  doKeys("jdd") -- delete the old "next line"
+  if ln_cur < ln_last - 1 then
+    doKeys("k") -- a fix because if we delete the last line it'll push us upward already
+  end
 
   -- add whitespace if needed (following the whitespace matcher's result)
   local ws_m = vim.b.better_join_whitespace_matcher
@@ -201,7 +209,7 @@ dummy.betterJoin = function()
 
   -- replace and get back to where we were
   vim.fn.setline(".", l_cur .. (add_whitespace and " " or "") .. l_next)
-  local ret_y = lnum
+  local ret_y = ln_cur
   local ret_x = vim.fn.strcharlen(l_cur)
   vim.api.nvim_win_set_cursor(0, {ret_y, ret_x})
 end
