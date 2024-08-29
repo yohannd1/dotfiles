@@ -276,6 +276,8 @@ if vim.g.rifle_mode == nil then
   vim.g.rifle_mode = utils.os.is_android and "buffer" or "popup"
 end
 
+vim.g.rifle_split_direction = utils.os.is_android and "down" or "right"
+
 -- TODO: inside neovim, replace the $EDITOR with a wrapper script that connects
 -- to the current neovim instance, opens a buffer, and waits for the buffer to
 -- unload before exiting.

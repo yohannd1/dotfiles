@@ -28,8 +28,10 @@ M.run = function(command)
   end
 
   local has_display = (vim.env.DISPLAY ~= nil) or (vim.env.WAYLAND_DISPLAY ~= nil)
-  local supports_popup = has_display and executable("termup") ~= 0
+  local supports_popup = has_display
+  print(has_display)
   local default_rifle_mode = supports_popup and "popup" or "buffer"
+  local split_direction = vim.g.rifle_split_direction or vim.b.rifle_split_direction or "right"
   local rifle_mode = vim.b.rifle_mode or vim.g.rifle_mode or default_rifle_mode
   local rifle_ft = vim.b.rifle_ft or vim.o.filetype
 
@@ -50,7 +52,7 @@ M.run = function(command)
     end
 
     utils.uni_win.focus("aux", {
-      create_direction = vim.b.rifle_split_direction or "right",
+      create_direction = split_direction,
     })
     utils.uni_buf.focus("rifle", {
       replace = true,

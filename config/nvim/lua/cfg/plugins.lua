@@ -508,9 +508,6 @@ M.afterPluginLoad = function()
   vim.g.PHP_outdentphpescape = 0
   vim.g.PHP_default_indenting = 0
 
-  -- rifle
-  vim.g.rifle_mode = (utils.os.is_android == 1) and "buffer" or "popup"
-
   -- acrylic related stuff
   vim.g.acr_wiki_dir = os.getenv("ACR_WIKI_DIR")
 
