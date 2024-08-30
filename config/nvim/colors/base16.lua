@@ -83,7 +83,7 @@ local hl = function(group, fg_code, bg_code, attr, guisp)
   attr = attr or ""
   guisp = guisp or ""
 
-  hargs = {}
+  local hargs = {}
   local set = function(k, v)
     table.insert(hargs, ("%s=%s"):format(k, v))
   end

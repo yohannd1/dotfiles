@@ -2,7 +2,6 @@
 -- Preparation {{{
 
 local vim = _G.vim
-local dummy = _G.dummy
 
 local utils = require("cfg.utils")
 local setLocals = utils.setLocals
@@ -36,10 +35,23 @@ local setSpaceIndent = function(indent)
   }
 end
 
-local addSnippets = function(snips)
-  for k, v in pairs(snips) do
-    dummy.addSnippet(k, v)
-  end
+-- add a simple generic snippet
+local addSnippet = function(key, content)
+  snippets.register({
+    key = key,
+    content = content,
+    reindent = true,
+  })
+end
+
+-- add a simple generic snippet w/ marker
+local addMSnippet = function(key, content)
+  snippets.register({
+    key = key,
+    content = content,
+    marker = "<[@]>",
+    reindent = true,
+  })
 end
 
 local findPattTillRoot = function(patt)
@@ -188,10 +200,12 @@ ft.c = function()
 
   vim.b.format_command = "clang-multicfg-format c"
 
-  addSnippets {
-    s = "#include <stdio.h>",
-    m = "int main(void) {<CR><CR>}<Up>",
-  }
+  addSnippet("s", "#include <stdio.h>")
+  addMSnippet("m", [[
+    int main(void) {
+      <[@]>
+    }
+  ]])
 end
 
 ft.cpp = function()
@@ -203,12 +217,14 @@ ft.cpp = function()
 
   vim.b.format_command = "clang-multicfg-format cpp"
 
-  addSnippets {
-    s = "#include <iostream>",
-    v = "#include <vector>",
-    M = "#include <memory>",
-    m = "int main() {<CR><CR>}<Up>",
-  }
+  addSnippet("s", "#include <iostream>")
+  addSnippet("v", "#include <vector>")
+  addSnippet("M", "#include <memory>")
+  addMSnippet("m", [[
+    int main() {
+      <[@]>
+    }
+  ]])
 end
 
 ft.sh = function()
@@ -299,9 +315,11 @@ ft.rust = function()
   vim.b.rifle_ft = found and "@cargo" or "rust"
   vim.b.format_command = "stdin-wrap rustfmt"
 
-  addSnippets {
-    m = "fn main() {<CR><CR>}<Up>",
-  }
+  addMSnippet("m", [[
+    fn main() {
+      <[@]>
+    }
+  ]])
 end
 
 ft.java = function()
@@ -310,9 +328,13 @@ ft.java = function()
 
   vim.b.format_command = "google-java-format --aosp - 2>/dev/null"
 
-  addSnippets {
-    m = [[public class Main {<CR>public static void main(String[] args) {<CR>System.out.println("Hello, World!");<CR>}<CR>}<Up><Up><C-o>_]],
-  }
+  addMSnippet("m", [[
+    public class Main {
+      public static void main(String[] args) {
+        System.out.println("Hello, World!");
+      }
+    }
+  ]])
 end
 
 ft.make = function()
@@ -324,11 +346,26 @@ ft.tex = function()
   vim.b.rifle_mode = "buffer"
   vim.b.rifle_window_height = 8
   setLocals { textwidth = 72 }
-  addSnippets {
-    -- WHAT THE FUCK (TODO: make snippets that don't look like utter shit)
-    m = [[\documentclass{article}<CR><CR>\title{Hello, world!}<CR><CR>\begin{document}<CR><CR>\maketitle<CR>\end{document}<Up><Esc>o<CR><Up><CR>]],
-    a = [[\begin{align*}<CR>\end{align*}<Esc>O]],
-  }
+
+  addMSnippet("m", [[
+    \documentclass{article}
+
+    \title{Hello, world!}
+
+    \begin{document}
+
+    \maketitle
+
+    <[@]>
+
+    \end{document}
+  ]])
+
+  addMSnippet("m", [[
+    \begin{align*}
+    <[@]>
+    \end{align*}
+  ]])
 end
 
 ft.plaintex = ft.tex
@@ -343,11 +380,17 @@ ft.zig = function()
     textwidth = 120,
   }
 
-  addSnippets {
-    s = [[const std = @import("std");]],
-    m = [[pub fn main() anyerror!void {<CR><CR>}<Up>]],
-    t = [[test {<CR><CR>}<Up>]],
-  }
+  addSnippet("s", [[const std = @import("std");]])
+  addMSnippet("m", [[
+    pub fn main() anyerror!void {
+      <[@]>
+    }
+  ]])
+  addMSnippet("t", [[
+    test {
+      <[@]>
+    }
+  ]])
 end
 
 ft.moon = function()
@@ -365,11 +408,15 @@ ft.python = function()
   vim.cmd("syn keyword Boolean False")
   vim.cmd("syn keyword Boolean None")
 
-  addSnippets {
-    m = [[def main():<CR>pass<CR><CR>if __name__ == "__main__":<CR>main()]],
-    c = [[from dataclasses import dataclass]],
-    a = [[from abc import abstractmethod]],
-  }
+  addSnippet("c", [[from dataclasses import dataclass]])
+  addSnippet("a", [[from abc import abstractmethod]])
+  addSnippet("m", [[
+    def main():
+      pass
+
+    if __name__ == "__main__":
+      main()
+  ]])
 end
 
 ft.yaml = function()
@@ -443,9 +490,7 @@ ft.uxntal = function()
 end
 
 ft.acrylic = function()
-  addSnippets {
-    t = "%:title ",
-  }
+  addSnippet("t", "%:title ")
 
   vim.b.item_toggletodo_preferred_done = "x"
   vim.b.todo_queries = {

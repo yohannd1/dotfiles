@@ -1,5 +1,5 @@
 local vim = _G.vim
-local M = {} 
+local M = {}
 M.os = {}
 M.os.is_android = vim.fn.isdirectory("/sdcard") ~= 0
 M.os.is_windows = (vim.fn.has("win32") ~= 0 or vim.fn.has("win64") ~= 0)
@@ -243,7 +243,7 @@ do
 
     local makeBuf = function()
       create_fn()
-      b = vim.api.nvim_get_current_buf()
+      local b = vim.api.nvim_get_current_buf()
       buffers[id] = b
       return b
     end

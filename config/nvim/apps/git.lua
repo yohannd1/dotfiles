@@ -1,6 +1,5 @@
 local vim = _G.vim
 
-local CONF_DIR = vim.fn.resolve(vim.fn.expand("<sfile>:p:h"))
 local PACK_DIR = assert(vim.env.PACK_DIR)
 
 vim.cmd.nnoremap("ç :")

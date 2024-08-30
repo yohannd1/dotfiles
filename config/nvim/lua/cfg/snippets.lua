@@ -9,7 +9,7 @@ M.register = function(opts)
 
   local content = assert(opts.content, "content not specified")
   if type(content) == "string" then
-    content = vim.split(content, "\n", { plain = true, trimempty = true })
+    content = vim.split(vim.trim(content), "\n", { plain = true, trimempty = true })
   end
 
   local marker = opts.marker
@@ -27,6 +27,8 @@ M.register = function(opts)
     reindent = reindent,
   }
   vim.b.snippets = snippets
+
+  vim.keymap.set("n", "<leader>i" .. key, function() M.use(key) end)
 end
 
 M.use = function(key)
@@ -35,19 +37,20 @@ M.use = function(key)
     error(("No such key: %s"):format(key))
   end
 
-  if vim.trim(vim.fn.getline(".")) ~= "" then
-    doKeys("o")
+  if vim.trim(vim.fn.getline(".")) == "" then
+    doKeys("ddk")
   end
-  local start_line = vim.fn.line(".")
-
+  local cur_lnum = vim.fn.line(".")
   doKeys("mz")
-  vim.fn.setline(".", s.content)
+  vim.fn.append(cur_lnum, s.content)
   doKeys("`z")
 
+  local start_line = cur_lnum + 1
   local line_count = #(s.content)
 
   if s.reindent then
-    doKeys(("=%dj"):format(line_count))
+    doKeys(("%dG"):format(start_line))
+    doKeys(("=%dj"):format(math.max(0, line_count-1)))
   end
 
   if s.marker ~= nil then
@@ -56,7 +59,7 @@ M.use = function(key)
       error("found marker past the inserted lines. whoops!")
     end
 
-    local char_count = vim.fn.strcharlen(marker)
+    local char_count = vim.fn.strcharlen(s.marker)
     assert(char_count > 0, "WHY IS THE CHAR COUNT <= 0")
     doKeys(("d%dl"):format(char_count))
   end
