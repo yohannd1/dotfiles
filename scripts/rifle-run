@@ -199,6 +199,10 @@ case "$1" in
       svg) openfork "$file" ;;
       moon) moon "$file" ;;
       teal) tl run "$file" ;;
+      dot)
+        dot -Tsvg "$file" -o "$tmp/out.svg"
+        open "$tmp/out.svg"
+        ;;
       zig) zig run "$file" --color off --cache-dir "$tmp" ;;
       fennel) fennel "$file" ;;
       crystal) crystal run "$file" ;;

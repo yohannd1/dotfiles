@@ -75,12 +75,14 @@ def tasklist_window_select(tl):
 def on_client_focus(window):
     window.bring_to_front()
 
-task_list: widget.TaskList = widget.TaskList(
+task_list = widget.TaskList(
     mouse_callbacks={
         "Button1": lambda: tasklist_window_select(task_list),
     },
     max_title_width=200,
     highlight_method="block",
+    margin_y=0,
+    stretch=True,
 )
 
 standard_bar = bar.Bar(
@@ -121,12 +123,12 @@ standard_bar = bar.Bar(
         widget.Clock(format="%Y-%m-%d %H:%M"),
         widget.Systray(),
     ],
-    size=24,
+    size=20,
     foreground=get_res("qtile.bar.fg", fallback="#FFFFFF"),
     background=get_res("qtile.bar.bg", fallback="#000000"),
 )
 
-screens = [Screen(bottom=standard_bar)]
+screens = [Screen(top=standard_bar)]
 
 # Drag floating layouts.
 mouse = [

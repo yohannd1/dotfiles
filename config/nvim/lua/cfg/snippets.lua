@@ -37,26 +37,37 @@ M.use = function(key)
     error(("No such key: %s"):format(key))
   end
 
-  if vim.trim(vim.fn.getline(".")) == "" then
-    doKeys("ddk")
-  end
-  local cur_lnum = vim.fn.line(".")
-  doKeys("mz")
-  vim.fn.append(cur_lnum, s.content)
-  doKeys("`z")
+  local start_lnum = vim.fn.line(".")
+  local line_count = #s.content
+  local append_count = line_count
 
-  local start_line = cur_lnum + 1
-  local line_count = #(s.content)
+  local is_empty_line = vim.trim(vim.fn.getline(".")) == ""
+  if is_empty_line then
+    append_count = append_count - 1
+  else
+    start_lnum = start_lnum + 1
+  end
+
+  for _ = 1, append_count do
+    doKeys("o")
+  end
+
+  doKeys(start_lnum .. "G")
+  vim.fn.setline(".", s.content)
 
   if s.reindent then
-    doKeys(("%dG"):format(start_line))
+    doKeys(("%dG"):format(start_lnum))
     doKeys(("=%dj"):format(math.max(0, line_count-1)))
   end
 
   if s.marker ~= nil then
-    utils.searchLiteral(s.marker)
-    if vim.fn.line(".") >= start_line + line_count then
-      error("found marker past the inserted lines. whoops!")
+    doKeys(("%dG"):format(start_lnum))
+
+    if not utils.searchLiteral(s.marker)
+      or vim.fn.line(".") < start_lnum
+      or vim.fn.line(".") >= start_lnum + line_count
+    then
+      error("failed to find marker in the inserted snippet lines")
     end
 
     local char_count = vim.fn.strcharlen(s.marker)

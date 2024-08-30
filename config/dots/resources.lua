@@ -14,7 +14,7 @@ local font_presets = {
         base_size = 17,
     },
     ["Iosevka"] = {
-        name = "Iosevka Medium",
+        name = "Iosevka",
         base_size = 16,
         supports_ligatures = true, -- FIXME: I don't think so?
     },
@@ -202,8 +202,8 @@ local T_ALL = {t_xres, t_dots}
 -- }}}
 
 local enable_ligatures = false
-local font_size = 1.3
-local font_name = "Terminus"
+local font_size = 1.2
+local font_name = "Hack"
 local font = getFontInfo(font_name, font_size)
 
 local fsize_term = font.base_size

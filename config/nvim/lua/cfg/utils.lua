@@ -277,7 +277,7 @@ M.searchLiteral = function(query)
   -- I'm not fully sure about how to do this but I think \V has got me covered.
   -- :help /\V
   local escaped = "\\V" .. vim.fn.escape(query, "\\")
-  vim.fn.search(escaped)
+  return vim.fn.search(escaped) > 0
 end
 
 return M
