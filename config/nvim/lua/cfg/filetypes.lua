@@ -7,6 +7,8 @@ local dummy = _G.dummy
 local utils = require("cfg.utils")
 local setLocals = utils.setLocals
 
+local snippets = require("cfg.snippets")
+
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
@@ -264,10 +266,27 @@ end
 ft.html = function()
   vim.b.rifle_mode = "silent"
 
-  addSnippets {
-    -- hell
-    m = "<!DOCTYPE html><CR><html><CR><head><CR><title>Title</title><CR><meta charset=\"UTF-8\"/><CR><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/><CR><link rel=\"stylesheet\" href=\"style.css\"/><CR></head><CR><CR><body><CR><p>Hello, World!</p><CR></body><CR></html><Esc>gg",
-  }
+  snippets.register({
+    key = "m",
+    content = [[
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Title</title>
+          <meta charset="UTF-8"/>
+          <meta name="viewport" content="width=device-width,initial-scale=1"/>
+          <link rel="stylesheet" href="style.css"/>
+        </head>
+
+        <body>
+          <p>Hello, World!</p>
+          <[@]>
+        </body>
+      </html>
+    ]],
+    marker = "<[@]>",
+    reindent = true,
+  })
 end
 
 ft.rust = function()

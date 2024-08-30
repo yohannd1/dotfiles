@@ -1,6 +1,5 @@
 local vim = _G.vim
-local M = {}
-
+local M = {} 
 M.os = {}
 M.os.is_android = vim.fn.isdirectory("/sdcard") ~= 0
 M.os.is_windows = (vim.fn.has("win32") ~= 0 or vim.fn.has("win64") ~= 0)
@@ -272,6 +271,13 @@ do
     vim.api.nvim_buf_delete(buffers[id], {force = true, unload = false})
     buffers[id] = nil
   end
+end
+
+M.searchLiteral = function(query)
+  -- I'm not fully sure about how to do this but I think \V has got me covered.
+  -- :help /\V
+  local escaped = "\\V" .. vim.fn.escape(query, "\\")
+  vim.fn.search(escaped)
 end
 
 return M
