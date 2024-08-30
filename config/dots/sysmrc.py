@@ -12,6 +12,8 @@ else:
         "hypr",
         "awesome",
         "qtile",
+        # "i3",
+        # "bspwm",
 
         "sxhkd",
         "picom",
@@ -19,10 +21,10 @@ else:
         "taskwarrior",
         "sxiv",
         "tig",
-        # "i3",
         # "rofi",
-        # "bspwm",
         # "polybar",
+
+        "wezterm",
         # "alacritty",
     ]
 
