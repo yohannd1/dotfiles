@@ -43,7 +43,7 @@ export EDITOR=dotf.wrap.editor
 export TERMUX_SHELL=zsh
 
 export WAYLAND_TERMINAL=foot
-export XORG_TERMINAL=wezterm
+export XORG_TERMINAL=st
 export TERMINAL=dotf.wrap.terminal
 
 export BROWSER=librewolf

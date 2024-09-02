@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 [ "$TMUX" ] && { printf >&2 "TMUX is set; aborting...\n"; exit 1; }
-[ $# != 1 ] && { printf >&2 "Usage: %s <COMMAND>\n" "$(basename "$0")"; exit 1; }
+[ $# -lt 1 ] && { printf >&2 "Usage: %s <COMMAND> [ARGS...]\n" "$(basename "$0")"; exit 1; }
 
 session="bg-running"
 
@@ -12,7 +12,7 @@ faketty() {
 
 export RUNREAD_PIPE=1
 
-cmd="runread $1" # and pray this isn't exploited
+cmd=$(printf "%q " runread "$@") # i think this does escaping fine?
 if tmux has-session -t "$session" 2>/dev/null; then
   faketty tmux attach -t "$session" ';' new-window "$cmd" ';' detach
 else

@@ -99,9 +99,18 @@ case "$1" in
   run)
     case "$2" in
       lisp) sbcl --script "$file" ;;
-      @make) fparent-run "Makefile" run-command file-dir make run ;;
-      @zig-build) fparent-run "build.zig" run-command file-dir zig build run --color off ;;
-      @cargo) fparent-run "Cargo.toml" run-command file-dir cargo run ;;
+      @make)
+        cd "$(dirname "$file")"
+        fparent-run "Makefile" run-command file-dir make run
+        ;;
+      @zig-build)
+        cd "$(dirname "$file")"
+        fparent-run "build.zig" run-command file-dir zig build run --color off
+        ;;
+      @cargo)
+        cd "$(dirname "$file")"
+        fparent-run "Cargo.toml" run-command file-dir cargo run
+        ;;
       @nimble)
         dir=$(fparent_pattern '\.nimble$') || exit 1
         echo "$dir"
