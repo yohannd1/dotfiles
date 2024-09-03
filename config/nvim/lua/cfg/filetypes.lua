@@ -328,7 +328,7 @@ ft.java = function()
 
   vim.b.format_command = "google-java-format --aosp - 2>/dev/null"
 
-  addMSnippet("m", [[
+  addSnippet("m", [[
     public class Main {
       public static void main(String[] args) {
         System.out.println("Hello, World!");

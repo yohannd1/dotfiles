@@ -28,7 +28,7 @@ require("cfg.filetypes")
 require("cfg.statusline")
 require("cfg.rifle")
 
-local theme_name = "onedark"
+local theme_name = "3024"
 vim.o.termguicolors = true
 vim.b.base16_use_true_colors = true
 vim.b.base16_true_color_map = utils.loadColorschemeFromYaml(
