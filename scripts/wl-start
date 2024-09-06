@@ -1,6 +1,5 @@
 #!/usr/bin/env sh
 
-
 tty=$(tty)
 if printf "%s" "$tty" | grep -q '^/dev/tty'; then
   tty=${tty#/dev/tty}

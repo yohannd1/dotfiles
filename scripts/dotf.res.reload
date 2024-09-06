@@ -1,17 +1,9 @@
 #!/usr/bin/env bash
-#
-# TODO: rename this to... idk, dotf.res.reload?
 
 set -e
 set -o pipefail
 
 PROGNAME=$(basename "$0")
-
-# usage() {
-#   printf >&2 "Usage: %s [ARGS...]\n" "$PROGNAME"
-#   printf >&2 "  ARGS are passed to gen-config.\n"
-#   exit 1
-# }
 
 [ "$DISPLAY" ] && { gen-res xresources | xrdb; }
 gen-res dotcfg | dotcfg stdin-send >/dev/null

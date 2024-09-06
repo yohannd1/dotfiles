@@ -17,6 +17,7 @@ confirm() {
   local answer
   printf >&2 "%s [Y/n] " "$1"
   read -n1 answer
+  [ "$answer" != $'\n' ] && printf >&2 "\n"
   case "$answer" in
     y|Y|'') return 0 ;;
     n|N|*) return 1 ;;

@@ -21,7 +21,7 @@ if [ -d "$THEME_FILES_PATH" ]; then
     && printf "%s" "$choice" > "$THEME_CFG_PATH" || exit 1
 
   if [ "$DISPLAY" ] && exists xrdb; then
-    xdb-reload || msg "Failed to reload theme to %s."
+    dotf.res.reload || msg "Failed to reload theme to %s."
     eval "$(load-base16-theme --noprefix)"
   elif isAndroid; then
     gen-config termux
