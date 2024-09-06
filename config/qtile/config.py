@@ -2,40 +2,23 @@ import os
 from typing import List
 
 from libqtile import bar, layout, widget, hook
-from libqtile.config import Click, Drag, Group, Key, Match, Screen
+from libqtile.config import Group, Key, Match, Screen
 from libqtile.lazy import lazy
 
 from settings.utils import get_res
-from settings.keys import get_keys, mod
+from settings.keys import make_keyboard_map, make_mouse_map, mod
 from settings.data import Config
 from layouts.paper import Paper
 
-cfg = Config(
-    terminal=os.getenv("TERMINAL") or "xterm",
-)
-
-keys = get_keys(cfg)
-
 groups = [Group(i) for i in "123456789"]
 
-for i in groups:
-    keys += [
-        # mod1 + letter of group = switch to group
-        Key([mod], i.name, lazy.group[i.name].toscreen(),
-            desc="Switch to group {}".format(i.name)),
+cfg = Config(
+    terminal=os.getenv("TERMINAL") or "xterm",
+    groups=groups,
+)
 
-        # mod1 + shift + letter of group = switch to & move focused window to group
-        Key([mod, "shift"], i.name, lazy.window.togroup(i.name, switch_group=False),
-            desc="Move focused window to group {}".format(i.name)),
-    ]
-
-for vt in range(1, 8):
-    keys.append(Key(
-        ["control", "mod1"],
-        f"f{vt}",
-        lazy.core.change_vt(vt).when(func=lambda: qtile.core.name == "wayland"),
-        desc=f"Switch to VT{vt}",
-    ))
+keys = make_keyboard_map(cfg)
+mouse = make_mouse_map(cfg)
 
 layout_theme_cfg = dict(
     border_width=2,
@@ -141,18 +124,6 @@ standard_bar = bar.Bar(
 )
 
 screens = [Screen(top=standard_bar)]
-
-# Drag floating layouts.
-mouse = [
-    Drag([mod],
-         "Button1",
-         lazy.window.set_position_floating(),
-         start=lazy.window.get_position()),
-    Drag([mod, "shift"],
-         "Button1",
-         lazy.window.set_size_floating(),
-         start=lazy.window.get_size()),
-]
 
 dgroups_key_binder = None
 dgroups_app_rules = []  # type: List

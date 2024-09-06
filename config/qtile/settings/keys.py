@@ -1,5 +1,5 @@
 from libqtile.lazy import lazy
-from libqtile.config import Key
+from libqtile.config import Key, Click, Drag
 
 from .utils import fzagnostic
 from .data import Config
@@ -9,17 +9,25 @@ mod = "mod4"
 ctrl = "control"
 shift = "shift"
 
-def get_keys(config: Config):
-    # Mostly just WM-related keybindings here. Use sxhkd for the rest.
+next_window_actions = [
+    lazy.group.next_window(),
+    lazy.window.bring_to_front(),
+]
 
-    return [
+prev_window_actions = [
+    lazy.group.prev_window(),
+    lazy.window.bring_to_front(),
+]
+
+def make_keyboard_map(cfg) -> list:
+    keys = []
+
+    keys += [
         Key([mod], "j",
-            lazy.group.next_window(),
-            lazy.window.bring_to_front(),
+            *next_window_actions,
             desc="Go to next window"),
         Key([mod], "k",
-            lazy.group.prev_window(),
-            lazy.window.bring_to_front(),
+            *prev_window_actions,
             desc="Go to previous window"),
 
         Key([mod], "h", lazy.layout.shrink_main(),
@@ -59,7 +67,7 @@ def get_keys(config: Config):
         Key([mod, shift], "f", lazy.window.toggle_fullscreen(),
             desc="Toggle fullscreen window"),
 
-        Key([mod], "Return", lazy.spawn(config.terminal),
+        Key([mod], "Return", lazy.spawn(cfg.terminal),
             desc="Spawn terminal"),
 
         Key([mod], "u", manual_updates,
@@ -67,6 +75,44 @@ def get_keys(config: Config):
 
         Key([mod, alt], "space", switch_to_window,
             desc="Switch to window"),
+    ]
+
+    for i in cfg.groups:
+        keys += [
+            # mod1 + letter of group = switch to group
+            Key([mod], i.name, lazy.group[i.name].toscreen(),
+                desc="Switch to group {}".format(i.name)),
+
+            # mod1 + shift + letter of group = switch to & move focused window to group
+            Key([mod, "shift"], i.name, lazy.window.togroup(i.name, switch_group=False),
+                desc="Move focused window to group {}".format(i.name)),
+        ]
+
+    for vt in range(1, 8):
+        keys.append(Key(
+            ["control", "mod1"],
+            f"f{vt}",
+            lazy.core.change_vt(vt).when(func=lambda: qtile.core.name == "wayland"),
+            desc=f"Switch to VT{vt}",
+        ))
+
+    return keys
+
+def make_mouse_map(cfg) -> list:
+    return [
+        Click([mod], "Button5",
+              *next_window_actions),
+
+        Click([mod], "Button4",
+              *prev_window_actions),
+
+        Drag([mod], "Button1",
+             lazy.window.set_position_floating(),
+             start=lazy.window.get_position()),
+
+        Drag([mod, "shift"], "Button1",
+             lazy.window.set_size_floating(),
+             start=lazy.window.get_size()),
     ]
 
 @lazy.function
