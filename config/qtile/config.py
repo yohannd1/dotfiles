@@ -8,6 +8,7 @@ from libqtile.lazy import lazy
 from settings.utils import get_res
 from settings.keys import get_keys, mod
 from settings.data import Config
+from layouts.paper import Paper
 
 cfg = Config(
     terminal=os.getenv("TERMINAL") or "xterm",
@@ -44,9 +45,14 @@ layout_theme_cfg = dict(
 )
 
 layouts = [
+    Paper(
+        default_width_factor=0.95,
+        max_if_only=True,
+        **layout_theme_cfg,
+    ),
     layout.MonadTall(**layout_theme_cfg),
-    # layout.MonadWide(**layout_theme_cfg),
     layout.Max(**layout_theme_cfg),
+    # layout.MonadWide(**layout_theme_cfg),
     # layout.Zoomy(**layout_theme_cfg),
     # layout.Columns(border_focus_stack='#d75f5f'),
     # layout.Stack(num_stacks=2),
@@ -83,6 +89,7 @@ task_list = widget.TaskList(
     highlight_method="block",
     margin_y=0,
     stretch=True,
+    icon_size=0,
 )
 
 standard_bar = bar.Bar(
@@ -92,9 +99,14 @@ standard_bar = bar.Bar(
             inactive=get_res("qtile.bar.fg.inactive"),
             highlight_method="block",
             visible_groups=[],
+            disable_drag=True,
         ),
         widget.TextBox("["),
         widget.CurrentLayout(),
+        widget.CurrentScreen(
+            active_color=get_res("qtile.bar.fg"),
+            inactive_color=get_res("theme.base03"),
+        ),
         widget.TextBox("]"),
 
         task_list,

@@ -36,9 +36,9 @@ def get_keys(config: Config):
             desc="toggle floating"),
 
         Key([mod, shift], "j", lazy.layout.shuffle_down(),
-            desc="Move window down"),
+            desc="Move window down/forward"),
         Key([mod, shift], "k", lazy.layout.shuffle_up(),
-            desc="Move window up"),
+            desc="Move window up/backward"),
 
         Key([mod], "n", lazy.layout.normalize(),
             desc="Reset all window sizes"),
