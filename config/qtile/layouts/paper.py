@@ -7,7 +7,6 @@ from libqtile.log_utils import logger
 
 # TODO: keep window widths on reset
 # TODO: niri-like horizontal scrolling offset (don't necessarily center the windows)
-# TODO: hide windows that aren't visible (I suppose that improves performance?)
 
 @dataclass
 class ClientAttrs:
@@ -72,16 +71,27 @@ class Paper(_SimpleLayoutBase):
 
         # position the client in question according to its designated width, "abstract" location and offset
         (client_x, client_y, client_w, client_h) = client_rects[client_idx]
-        client.unhide()
-        client.place(
+
+        final_rect = (
             screen_rect.x + client_x + render_offset_x,
             screen_rect.y + client_y,
             client_w,
             client_h,
-            self.border_width,
-            self.border_focus if client.has_focus else self.border_normal,
-            margin=self.margin,
         )
+
+        too_on_left = (final_rect[0] + final_rect[2]) < screen_rect.x
+        too_on_right = final_rect[0] > screen_rect.x + screen_rect.width
+
+        if too_on_left or too_on_right:
+            client.hide()
+        else:
+            client.unhide()
+            client.place(
+                *final_rect,
+                self.border_width,
+                self.border_focus if client.has_focus else self.border_normal,
+                margin=self.margin,
+            )
 
     def add_client(self, client: Window) -> None:
         self.client_attrs[client] = ClientAttrs(width=None)
