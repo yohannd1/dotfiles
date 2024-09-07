@@ -29,8 +29,9 @@ layout_theme_cfg = dict(
 
 layouts = [
     Paper(
-        default_width_factor=0.95,
-        max_if_only=True,
+        default_width_factor=0.6,
+        max_if_single_window=True,
+        center_all=False,
         **layout_theme_cfg,
     ),
     layout.MonadTall(**layout_theme_cfg),

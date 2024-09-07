@@ -2,11 +2,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from libqtile.command.base import expose_command
-from libqtile.layout.base import _SimpleLayoutBase
+from libqtile.layout.base import _SimpleLayoutBase, Window
 from libqtile.log_utils import logger
+from libqtile.config import ScreenRect
 
 # TODO: keep window widths on reset
-# TODO: niri-like horizontal scrolling offset (don't necessarily center the windows)
 
 @dataclass
 class ClientAttrs:
@@ -19,7 +19,8 @@ class Paper(_SimpleLayoutBase):
         ("border_normal", "#000000", "Border colour(s) for the window when not focused"),
         ("border_width", 0, "Border width."),
         ("default_width_factor", 0.65, "Default width for windows, as a factor of the screen width"),
-        ("max_if_only", False, "Maximize it if it is the only window available")
+        ("max_if_single_window", False, "Maximize it if it is the only window available"),
+        ("center_all", False, "Automatically center the focused window"),
     ]
 
     def __init__(self, **config):
@@ -27,6 +28,11 @@ class Paper(_SimpleLayoutBase):
         self.add_defaults(Paper.defaults)
         self.client_attrs = {}
         self.screen_rect = None
+
+        self.last_client = None
+        self.last_idx = None
+        self.anchor = "center"
+        self.pos_x = 0
 
     def configure(self, client: Window, screen_rect: ScreenRect) -> None:
         try:
@@ -36,7 +42,7 @@ class Paper(_SimpleLayoutBase):
             return
 
         # if it is the only window (and the option is on), just render the window as if we were on the Max layout
-        if len(self.clients) == 1 and self.max_if_only:
+        if len(self.clients) == 1 and self.max_if_single_window:
             client.unhide()
             client.place(
                 screen_rect.x,
@@ -63,17 +69,19 @@ class Paper(_SimpleLayoutBase):
             client_rects[i] = (cur_x, 0, attrs.width, screen_rect.height - self.border_width * 2)
             cur_x += attrs.width
 
-        # get the current client's centered position and use it to calculate the render offset
+        # get the current client's centered position and use it to calculate the x offset
+        assert self.clients.current_client is not None
         focus_idx = self.clients.index(self.clients.current_client)
-        (focus_x, _, focus_w, _) = client_rects[focus_idx]
-        # render_offset_x = int(focus_x + focus_w / 2)
-        render_offset_x = int(-focus_x + (screen_rect.width - focus_w) / 2) # i'm not sure how to explain this...
+        focus_rect = client_rects[focus_idx]
+
+        self._update_anchor(focus_idx)
+        self._update_position(focus_rect, screen_rect)
 
         # position the client in question according to its designated width, "abstract" location and offset
         (client_x, client_y, client_w, client_h) = client_rects[client_idx]
-
+        offset_x = int(-self.pos_x)
         final_rect = (
-            screen_rect.x + client_x + render_offset_x,
+            screen_rect.x + client_x + offset_x,
             screen_rect.y + client_y,
             client_w,
             client_h,
@@ -93,7 +101,61 @@ class Paper(_SimpleLayoutBase):
                 margin=self.margin,
             )
 
-    def add_client(self, client: Window) -> None:
+        self.last_client = self.clients.current_client
+        self.last_idx = focus_idx
+
+    def _update_anchor(
+        self,
+        focus_idx: int,
+    ) -> None:
+        if self.center_all:
+            self.anchor = "center"
+            return
+
+        if self.clients.current_client == self.last_client:
+            if self.last_idx < focus_idx:
+                self.anchor = "right"
+            elif self.last_idx > focus_idx:
+                self.anchor = "left"
+            else:
+                # nothing happened - keep the previous anchor
+                pass
+        else:
+            try:
+                last_client_cur_idx = self.clients.index(self.last_client)
+                if last_client_cur_idx < focus_idx:
+                    self.anchor = "right"
+                elif last_client_cur_idx > focus_idx:
+                    self.anchor = "left"
+            except ValueError:
+                # do nothing I guess?
+                pass
+
+    def _update_position(
+        self,
+        focus_rect: tuple[int, int, int, int],
+        screen_rect: ScreenRect,
+    ) -> None:
+        (focus_x, _, focus_w, _) = focus_rect
+
+        if self.anchor == "center":
+            self.pos_x = focus_x - screen_rect.width / 2 + focus_w / 2
+        elif self.anchor == "left":
+            rightmost = focus_x
+            self.pos_x = min(self.pos_x, rightmost)
+        elif self.anchor == "right":
+            leftmost = focus_x + focus_w - screen_rect.width + self.border_width
+            self.pos_x = max(self.pos_x, leftmost)
+        else:
+            raise ValueError(f"unknown anchor: {self.anchor}")
+        pass
+
+    def add_client(
+        self,
+        client: Window,
+        offset_to_current: int = 0,
+        client_position: str | None = None,
+    ) -> None:
         self.client_attrs[client] = ClientAttrs(width=None)
         return super().add_client(client, 1)
 
@@ -132,6 +194,9 @@ class Paper(_SimpleLayoutBase):
             return
 
         attrs = self.client_attrs[self.clients.current_client]
+        if attrs.width is None:
+            logger.error("tried to change width of a client whose width hasn't been yet calculated")
+            return
         attrs.width = max(0, attrs.width + amount)
 
         self.group.layout_all() # toggle re-layout
