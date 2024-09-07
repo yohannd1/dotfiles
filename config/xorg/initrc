@@ -11,6 +11,9 @@ exists() { command -v "$1" >/dev/null 2>/dev/null; }
 printf >&2 "Display: %s\n" "$DISPLAY"
 printf >&2 "Session folder: $XSESSIONDIR\n"
 
+# Set up the monitors as soon as possible
+dotf.common.monitor-setup
+
 # In this config, the WM env var has the basename of the window manager, for
 # easy recognition.
 #

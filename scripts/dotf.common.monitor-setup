@@ -1,0 +1,27 @@
+#!/usr/bin/env sh
+
+if xrandr | grep -q 'HDMI1 connected'; then
+  hasHdmi=1
+fi
+
+calc() { echo "$*" | bc; }
+
+# FIXME: read these options from elsewhere (dotcfg maybe?)
+dualMonitor=
+builtinDisplay1080p=1
+
+getBuiltinDisplayScale() {
+  [ "$builtinDisplay1080p" ] && calc 'scale=5; 1920/1366' || echo 1.0
+}
+
+if [ "$hasHdmi" ]; then
+  xrandr --output HDMI1 --mode 1920x1080
+
+  if [ "$dualMonitor" ]; then
+    xrandr --output eDP1 --mode 1366x768 --scale $(getBuiltinDisplayScale)
+  else
+    xrandr --output eDP1 --off
+  fi
+else
+  xrandr --output eDP1 --mode 1366x768 --scale $(getBuiltinDisplayScale)
+fi
