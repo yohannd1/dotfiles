@@ -213,4 +213,4 @@ class Paper(_SimpleLayoutBase):
         """Shuffle the client down the stack"""
         self.clients.shuffle_down()
         self.group.layout_all()
-        self.group.focus(self.clients[self.focused])
+        self.group.focus(self.clients[self.clients.current_client])

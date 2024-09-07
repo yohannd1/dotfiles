@@ -8,9 +8,9 @@ fi
 script="$DOTFILES/scripts/$1"
 "$EDITOR" "$script"
 
-if [ -e "$script" ]; then
-  printf >&2 "script exists: chmod-ing it\n"
+if [ -e "$script" ] && [ ! -x "$script" ]; then
+  printf >&2 "script detected: chmod-ing it\n"
   chmod +x "$script"
-else
+elif [ ! -e "$script" ]; then
   printf >&2 "script does not exist: aborting\n"
 fi

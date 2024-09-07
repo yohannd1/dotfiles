@@ -34,7 +34,7 @@ layouts = [
         center_all=False,
         **layout_theme_cfg,
     ),
-    layout.MonadTall(**layout_theme_cfg),
+    # layout.MonadTall(**layout_theme_cfg),
     layout.Max(**layout_theme_cfg),
     # layout.MonadWide(**layout_theme_cfg),
     # layout.Zoomy(**layout_theme_cfg),

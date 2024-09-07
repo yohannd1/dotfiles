@@ -327,6 +327,7 @@ case "$1" in
         cd "$dir"
         nimble build # `check` doesn't seem to work well
         ;;
+      sh) shellcheck "$file" ;;
       lua) luacheck "$file" ;;
       rust) rustc "$file" -o "$tmp/exe" ;;
       nim) nim compile --out:"out" --outdir:"$tmp" "$file" ;;
