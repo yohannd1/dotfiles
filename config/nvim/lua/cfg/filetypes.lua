@@ -326,7 +326,7 @@ ft.java = function()
   local found = vim.fs.root(0, "gradlew") ~= nil
   vim.b.rifle_ft = found and "@gradlew" or "java"
 
-  vim.b.format_command = "google-java-format --aosp - 2>/dev/null"
+  vim.b.format_command = "google-java-format --aosp -"
 
   addSnippet("m", [[
     public class Main {

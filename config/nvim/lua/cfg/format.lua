@@ -14,17 +14,14 @@ M.formatBuffer = function()
     return
   end
 
-  local lines = vim.fn.getline(1, "$")
+  local buf_contents = table.concat(vim.fn.getline(1, "$"), "\n")
+  local result = vim.system(
+    { "sh", "-c", format_command },
+    { text = true, stdin = buf_contents }
+  ):wait()
 
-  local tmp_in_file = vim.fn.tempname()
-  vim.fn.writefile(lines, tmp_in_file)
-
-  local cmd = ("%s < %s"):format(format_command, tmp_in_file)
-  local output = vim.fn.systemlist(cmd)
-
-  vim.fn.delete(tmp_in_file)
-
-  local successful = vim.v.shell_error == 0
+  -- local successful = vim.v.shell_error == 0
+  local successful = result.code == 0
   if successful then
     local w = utils.uni_win.get("aux")
     local b = utils.uni_buf.get("format_errors")
@@ -39,7 +36,7 @@ M.formatBuffer = function()
     local c_line = vim.fn.line(".")
     local c_col = vim.fn.col(".")
     utils.doKeys("ggdG")
-    vim.fn.setline(1, output)
+    vim.fn.setline(1, vim.split(result.stdout, "\n", { trimempty = true }))
     utils.doKeys(("%dGzt"):format(l_win_top))
     utils.doKeys(("%dG%d|"):format(c_line, c_col))
   else
@@ -51,7 +48,7 @@ M.formatBuffer = function()
       vim.opt_local.modifiable = true
       vim.cmd([[ normal! ggdG ]])
       append("$", "Formatting failed:")
-      for _, line in ipairs(output) do
+      for _, line in ipairs(vim.split(result.stderr, "\n", { trimempty = true })) do
         append("$", "  " .. line)
       end
       utils.doKeys("ggdd")
