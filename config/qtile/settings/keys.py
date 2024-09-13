@@ -84,7 +84,7 @@ def make_keyboard_map(cfg) -> list:
                 desc="Switch to group {}".format(i.name)),
 
             # mod1 + shift + letter of group = switch to & move focused window to group
-            Key([mod, "shift"], i.name, lazy.window.togroup(i.name, switch_group=False),
+            Key([mod, shift], i.name, lazy.window.togroup(i.name, switch_group=False),
                 desc="Move focused window to group {}".format(i.name)),
         ]
 
@@ -106,11 +106,17 @@ def make_mouse_map(cfg) -> list:
         Click([mod], "Button4",
               *prev_window_actions),
 
+        Click([mod, shift], "Button4",
+              lazy.layout.shuffle_up()),
+
+        Click([mod, shift], "Button5",
+              lazy.layout.shuffle_down()),
+
         Drag([mod], "Button1",
              lazy.window.set_position_floating(),
              start=lazy.window.get_position()),
 
-        Drag([mod, "shift"], "Button1",
+        Drag([mod, shift], "Button1",
              lazy.window.set_size_floating(),
              start=lazy.window.get_size()),
     ]

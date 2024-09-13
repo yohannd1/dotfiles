@@ -198,7 +198,7 @@ local T_ALL = {t_xres, t_dots}
 
 local enable_ligatures = false
 local font_size = 1.2
-local font_name = "SourceCodePro"
+local font_name = "FiraCode"
 local font = getFontInfo(font_name, font_size)
 
 local fsize_term = font.base_size
@@ -206,7 +206,7 @@ local xft_font = longFontFormat(font.name, fsize_term)
 
 -- st (x11 terminal)
 decl {
-  {"st.alpha", "0.9"},
+  {"st.alpha", "0.8"},
   {"st.cursor", theme["base0D"]},
   {"st.font", xft_font},
   {"st.enableligatures", (enable_ligatures and font.supports_ligatures) and 1 or 0},
