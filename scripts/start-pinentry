@@ -3,7 +3,7 @@
 matches() { printf "%s" "$1" | grep -q "$2"; }
 exists() { command -v "$1" >/dev/null; }
 
-parent="$(dirname $0)"
+parent=$(dirname "$0")
 
 if ! exists jq; then
   printf >&2 "JQ NOT AVAILABLE - CAN'T PARSE PINENTRY_USER_DATA\n"

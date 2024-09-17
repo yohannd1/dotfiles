@@ -5,7 +5,7 @@
 # Terminate already running polybar instances and wait until all the processes
 # have been shut down
 killall -q polybar
-while pgrep -u $(id -ru) -x polybar >/dev/null; do
+while pgrep -u "$(id -ru)" -x polybar >/dev/null; do
   sleep 1
 done
 
@@ -16,7 +16,7 @@ else
   configPath="${XDG_CONFIG_HOME:-$HOME/.config}/polybar/config.ini"
 fi
 
-eval $(load-base16-theme --export)
+eval "$(load-base16-theme --export)"
 
 for m in $(xrandr --query | grep " connected" | cut -d" " -f1); do
   tempLog="$XSESSIONDIR/polybar-$m"

@@ -31,7 +31,7 @@ case $# in
         ln -s "${CLANG_FORMAT_C_CONFIG}" "$tmp/.clang-format"
 
         (
-          cd "$tmp"
+          cd "$tmp" || exit 1
           clang-format <&0
         )
 
@@ -51,7 +51,7 @@ case $# in
         ln -s "${CLANG_FORMAT_CPP_CONFIG}" "$tmp/.clang-format"
 
         (
-          cd "$tmp"
+          cd "$tmp" || exit 1
           clang-format <&0
         )
 

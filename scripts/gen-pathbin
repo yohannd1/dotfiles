@@ -6,9 +6,9 @@ mkdir -p "$cacheDir"
 
 msg() {
   if [ -t 2 ]; then
-    printf >&2 "$@"
+    printf >&2 "%s\n" "$*"
   else
-    notify-send "$(printf "$@")"
+    notify-send -- "$*"
   fi
 }
 

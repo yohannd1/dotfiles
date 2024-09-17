@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ $# != 0 ]; then
-  printf >&2 "%s\n" "Usage: $(basename $0)"
+  printf >&2 "%s\n" "Usage: $(basename "$0")"
   exit 1
 fi
 
@@ -10,13 +10,13 @@ is_git_dir() {
 }
 
 gitAddAll() {
-  (cd "$(realpath -m $(git rev-parse --git-dir)/..)" && git add -A)
+  (cd "$(realpath -m "$(git rev-parse --git-dir)/..")" && git add -A)
 }
 
 confirm() {
   local answer
   printf >&2 "%s [Y/n] " "$1"
-  read -n1 answer
+  read -r -n1 answer
   [ "$answer" != $'\n' ] && printf >&2 "\n"
   case "$answer" in
     y|Y|'') return 0 ;;
@@ -38,7 +38,7 @@ printf >&2 "Type 'h' for help.\n"
 while [ ! "$exit" ]; do
   # prompt
   printf >&2 "Command => "
-  read -n1 option
+  read -r -n1 option
   printf >&2 "\n"
 
   # parse option

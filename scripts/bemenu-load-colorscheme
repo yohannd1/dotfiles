@@ -1,18 +1,31 @@
 #!/usr/bin/env sh
 
 [ "$DOTCFG_SOCKET" ] || exit 0 # exit silently if the daemon isn't up
-# this adds a 20ms overhead :((
-#
-_bg="$(dotcfg send get:theme.base00)"
-_bgs="$(dotcfg send get:theme.base01)"
-_fg=$(dotcfg send get:theme.base05)
-_fgs=$(dotcfg send get:theme.base05)
 
-printf "%s '%s'\n" \
-  --fn "$(dotcfg send get:bemenu.font)" \
-  --tb "$_bg" --fb "$_bg" --nb "$_bg" \
-  --hb "$_bgs" --fbb "$_bg" --sb "$_bg" \
-  --ab "$_bg" --scb "$_bg" \
-  --tf "$_fg" --ff "$_fg" --nf "$_fg" \
-  --hf "$_fgs" --fbf "$_fg" --sf "$_fg" \
-  --af "$_fg" --scf "$_fg"
+request() {
+  dotcfg send \
+    get:theme.base00 \
+    get:theme.base01 \
+    get:theme.base05 \
+    get:theme.base05 \
+    get:bemenu.font
+}
+
+process() {
+  read -r _bg
+  read -r _bgs
+  read -r _fgs
+  read -r _fg
+  read -r _font
+
+  printf "%s '%s'\n" \
+    --fn "$_font" \
+    --tb "$_bg" --fb "$_bg" --nb "$_bg" \
+    --hb "$_bgs" --fbb "$_bg" --sb "$_bg" \
+    --ab "$_bg" --scb "$_bg" \
+    --tf "$_fg" --ff "$_fg" --nf "$_fg" \
+    --hf "$_fgs" --fbf "$_fg" --sf "$_fg" \
+    --af "$_fg" --scf "$_fg"
+}
+
+request | process

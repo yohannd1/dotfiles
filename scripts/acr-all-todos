@@ -2,16 +2,16 @@
 
 acr-list-titles \
   | sort -h \
-  | while read line; do
+  | while read -r line; do
     id=$(printf "%s" "$line" | awk '{ print $1 }') || return 1
     filename="$HOME/wiki/vimwiki/$id.acr"
 
-    rg '(^\s*([*-]\s+)?(\[ \]|\( \))|\b(TODO|FIXME)\b)' "$filename" | while read match; do
+    rg '(^\s*([*-]\s+)?(\[ \]|\( \))|\b(TODO|FIXME)\b)' "$filename" | while read -r match; do
       printf "%s:%s\n" "$id" "$match"
     done
   done \
   | fzagnostic \
-  | while read choice; do
+  | while read -r choice; do
     id=$(printf "%s\n" "$choice" | awk '{ split($0, arr, ":"); print arr[1] }') || return 1
     edit "$HOME/wiki/vimwiki/$id.acr"
   done

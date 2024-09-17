@@ -3,7 +3,7 @@
 # A wrapper for fzf and dmenu.
 # Bashisms: arrays.
 
-. "$(uselib std)"
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
 while getopts "p:h:m" o; do
   case "$o" in
@@ -11,7 +11,7 @@ while getopts "p:h:m" o; do
     h) hasHeight=1 height="$OPTARG" ;;
     m) multiSelect=1 ;;
     *)
-      printf >&2 "%s\n" "Usage: $(basename $0) [-p PROMPT] [-h HEIGHT] [-m]"
+      printf >&2 "%s\n" "Usage: $(basename "$0") [-p PROMPT] [-h HEIGHT] [-m]"
       exit 1
       ;;
   esac

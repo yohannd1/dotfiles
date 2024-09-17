@@ -22,13 +22,10 @@
 # License along with this program.
 # If not, see <http://www.gnu.org/licenses/>.
 
-. "$(uselib std)"
-depCheck xcalib
-
 TOGGLE_TEMP=/tmp/redscr-toggle
 
 showHelp() {
-  printf >&2 "Usage: %s %s\n" "$(basename $0)" "{ night [level] | invert | clear }"
+  printf >&2 "Usage: %s %s\n" "$(basename "$0")" "{ night [level] | invert | clear }"
   printf >&2 "%s\n" "In the night option, [level] defaults to 70."
   exit 1
 }

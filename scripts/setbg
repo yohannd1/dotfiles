@@ -1,7 +1,7 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 if [ $# != 0 ]; then
-  printf >&2 "Usage: %s\n" "$(basename $0)"
+  printf >&2 "Usage: %s\n" "$(basename "$0")"
   printf >&2 "Control is done via the following environment variables:\n"
   printf >&2 " %s : %s\n" "SETBG_IMG_DIR" "The directory where the wallpapers are located (if image)"
   printf >&2 " %s : %s\n" "SETBG_WALLPAPER_TYPE" "The type of background to be set."
@@ -49,7 +49,7 @@ case "$SETBG_WALLPAPER_TYPE" in
     ;;
   color)
     color=$(dotcfg send get:theme.base01) || {
-      printf >&2 "Could not get X resource '%s'\n" "$xresource"
+      printf >&2 "Failed to get background color\n"
       exit 1
     }
     setColor "$color" || exit 1

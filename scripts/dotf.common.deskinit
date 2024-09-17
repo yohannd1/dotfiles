@@ -91,5 +91,5 @@ if [ "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
   bn=$(dotcfg send get:hypr.border-normal)
 
   hyprctl keyword general:col.active_border "rgb($bf)"
-  hyprctl keyword general:col.inactive_border "rgb($ba)"
+  hyprctl keyword general:col.inactive_border "rgb($bn)"
 fi

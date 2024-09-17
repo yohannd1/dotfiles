@@ -7,14 +7,12 @@
 
 # Settings
 
-. "$(uselib std)"
-depCheck fzagnostic systemctl
-
 PROGNAME=$(basename "$0")
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
 main() {
   case $# in
-    0) local choice="$(fuzzyMatch)"
+    0) local choice=$(fuzzyMatch)
       if [ -n "$choice" ]; then
         main "$choice"
       else
@@ -88,7 +86,7 @@ action_lock() {
     trap - INT # restore ctrl-c if it is successful
 
   # if it's been more than 5 seconds since the lockscreen spawned and it died from an error, then shut down the system for security reasons
-  elif [ $(($end_time - $start_time)) -gt 5 ]; then
+  elif [ $((end_time - start_time)) -gt 5 ]; then
     notify-send "SHOULD POWEROFF"
     # systemctl poweroff
   fi

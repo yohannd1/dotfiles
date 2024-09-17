@@ -20,7 +20,7 @@ isDirectoryEmpty() { [ -z "$(ls -A "$1")" ]; }
 getBeforeSlash() { sed 's|^\([^/]\+/\).*$|\1|g'; }
 
 shouldExtractHere() {
-  read firstLine;
+  read -r firstLine
 
   # TODO: handle ./ (should be equivalent to no prefix)
   # return false if there's at least one file on the root.
@@ -28,7 +28,7 @@ shouldExtractHere() {
 
   require=$(printf "%s" "$firstLine" | getBeforeSlash)
 
-  while read line; do
+  while read -r line; do
     if printf "%s" "$line" | grep -qv '^'"$require"; then
       return 1
     fi
@@ -60,7 +60,7 @@ main() {
     *.7z) 7z x "$archive" ;;
     *.exe) cabextract "$archive" ;;
 
-    *) printf >&2 "%s: unknown extension\n" "$PROGNAME" "$extension"
+    *) printf >&2 "%s: unknown extension\n" "$PROGNAME"
        return 1
        ;;
   esac
@@ -108,20 +108,24 @@ fi
 
 printf >&2 "%s: analyzing file contents...\n" "$PROGNAME"
 
-if [ "$mode" = auto ]; then
-  mode=$(case "$archive" in
+getMode() {
+  case "$archive" in
     *.gpg) printf >&2 "%s: contents of archive cannot be looked up before decryption; MODE will default to 'new'\n" "$PROGNAME"
-           printf "new"
-           ;;
+      printf "new"
+      ;;
 
-     # FIXME: there apparently is a considerable slowdown on listing tar files... i think it reads the entire file. so I might abandon this for them and just assume the safest.
+    # FIXME: there apparently is a considerable slowdown on listing tar files... i think it reads the entire file. so I might abandon this for them and just assume the safest.
     *.tar|*.tar.bz2|*.tbz2|*.tar.gz|*.tgz|*.tar.xz|*.txz) tar -tf "$archive" | setModeFromInput ;;
     *.zip|*.7z) bsdtar --list --file "$archive" | setModeFromInput ;;
 
-    *) printf >&2 "%s: unknown listing method for extension; using default MODE 'new'\n" "$PROGNAME" "$extension"
-       printf "new"
-       ;;
-  esac)
+    *) printf >&2 "%s: unknown listing method for extension; using default MODE 'new'\n" "$PROGNAME"
+      printf "new"
+      ;;
+  esac
+}
+
+if [ "$mode" = auto ]; then
+  mode=$(getMode)
 fi
 
 printf >&2 "%s: current mode: %s\n" "$PROGNAME" "$mode"

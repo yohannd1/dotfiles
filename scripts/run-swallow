@@ -1,10 +1,7 @@
 #!/usr/bin/env sh
 
-. "$(uselib std)"
-depCheck xdo
-
 if [ $# = 0 ]; then
-  printf >&2 "Usage: %s" "$(basename $0) <program...>"
+  printf >&2 "Usage: %s" "$(basename "$0") <program...>"
   exit 1
 fi
 

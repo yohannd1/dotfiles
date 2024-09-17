@@ -1,30 +1,22 @@
 #!/usr/bin/env sh
 
-PLACEHOLDER="XXX"
+printf "    "
+for col in $(seq 0 15); do
+  printf "%3d" "$col"
+done
+printf " <- FG\n"
 
-for line in $(seq -1 15); do
-  if [ "$line" -eq -1 ]; then
-    printf "\t"
-    for col in $(seq 0 15); do
-      printf "\033[38;5;%dm" "$col"
-      printf "%d\t" "$col"
-      printf "\033[0m"
-    done
-    printf "<- FG\n"
-  else
+for line in $(seq 0 15); do
+  printf "%3d " "$line"
+
+  for col in $(seq 0 15); do
     printf "\033[48;5;%dm" "$line"
-    printf "%d\t" "$line"
+    printf "\033[38;5;%dm" "$col"
+    printf "XXX"
     printf "\033[0m"
+  done
 
-    for col in $(seq 0 15); do
-      printf "\033[48;5;%dm" "$line"
-      printf "\033[38;5;%dm" "$col"
-      printf "$PLACEHOLDER\t" "$line" "$col"
-      printf "\033[0m"
-    done
-
-    printf "\n"
-  fi
+  printf "\n"
 done
 
-printf "^^\n||\nBG\n"
+printf "  ^\n BG\n"

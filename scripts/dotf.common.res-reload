@@ -3,8 +3,6 @@
 set -e
 set -o pipefail
 
-PROGNAME=$(basename "$0")
-
 [ "$DISPLAY" ] && { gen-res xresources | xrdb; }
 gen-res dotcfg | dotcfg stdin-send >/dev/null
 gen-config "$@"

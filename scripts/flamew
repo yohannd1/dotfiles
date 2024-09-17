@@ -1,10 +1,7 @@
 #!/usr/bin/env sh
 
-. "$(uselib std)"
-depCheck flameshot date
-
 if [ $# != 1 ]; then
-  printf >&2 "%s\n" "Usage: $(basename $0) { gui | full | fullc }"
+  printf >&2 "%s\n" "Usage: $(basename "$0") { gui | full | fullc }"
   exit 1
 fi
 

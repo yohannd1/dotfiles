@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 if [ $# -lt 2 ]; then
-  printf >&2 "Usage: %s\n" "$(basename $0) <SED-PATTERN> <FILES...>"
+  printf >&2 "Usage: %s\n" "$(basename "$0") <SED-PATTERN> <FILES...>"
 fi
 
 SED_PATTERN="$1"; shift

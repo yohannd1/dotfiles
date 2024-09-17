@@ -3,17 +3,14 @@
 # starts an X server
 # TODO: add support for Xephyr
 
-. "$(uselib std)"
-depCheck startx
-
 calc() { printf "%s\n" "$1" | bc; }
 
 case $# in
   0) initrc="${XDG_CONFIG_HOME:-$HOME/.config}/xorg/initrc" ;;
   1) initrc="$1" ;;
   2)
-    printf >&2 "%s: invalid amount of argument\n" "$(basename $0)"
-    printf >&2 "Usage: %s\n" "$(basename $0) [INITRC]"
+    printf >&2 "%s: invalid amount of argument\n" "$(basename "$0")"
+    printf >&2 "Usage: %s\n" "$(basename "$0") [INITRC]"
     printf >&2 "INITRC defaults to %s if not specified.\n" '$XDG_CONFIG_HOME/xorg/initrc'
     exit 1
     ;;

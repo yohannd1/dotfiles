@@ -8,7 +8,7 @@ exists() { command -v "$1" >/dev/null 2>/dev/null; }
 set -e
 
 if [ $# != 3 ]; then
-  printf >&2 "Usage: %s\n" "$(basename $0) <ACTION> <FILETYPE> <FILENAME>"
+  printf >&2 "Usage: %s\n" "$(basename "$0") <ACTION> <FILETYPE> <FILENAME>"
   printf >&2 "The ACTION and FILETYPE fields are handled based on the code of this script.\n"
   exit 1
 fi
@@ -35,7 +35,7 @@ cleanup() {
 trap 'cleanup' EXIT
 
 die() {
-  printf >&2 "$@"
+  printf >&2 "%s\n" "$*"
   cleanup
   exit 1
 }
@@ -123,7 +123,7 @@ case "$1" in
       gdscript) godot -s "$file" --no-window ;;
       haskell)
         nameFull=${file%.*}
-        name=$(basename "$nameFull")
+        # name=$(basename "$nameFull")
 
         (
           cd "$tmp"
@@ -181,7 +181,7 @@ case "$1" in
         fi
         ;;
       latex|tex)
-        name=$(basename "${file%.*}")
+        # name=$(basename "${file%.*}")
 
         # pdflatex -output-directory "$tmp" "$file" </dev/null
 
@@ -268,7 +268,7 @@ case "$1" in
         printf >&2 "Opening HTML output...\n"
         open "file://$tmp/out.html"
         printf >&2 "Opened. Press enter to end (will delete temp files).\n"
-        read
+        read -r
         ;;
       *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
     esac ;;
@@ -327,7 +327,10 @@ case "$1" in
         cd "$dir"
         nimble build # `check` doesn't seem to work well
         ;;
-      sh) shellcheck "$file" ;;
+      sh)
+        shellcheck -x "$file" -Cnever \
+          -e SC2155,SC2002,SC2016
+        ;;
       lua) luacheck "$file" ;;
       rust) rustc "$file" -o "$tmp/exe" ;;
       nim) nim compile --out:"out" --outdir:"$tmp" "$file" ;;

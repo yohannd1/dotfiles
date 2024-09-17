@@ -3,13 +3,13 @@
 # A wrapper for reading user input, without choices.
 # Uses bash's readline on terminals, and fzagnostic elsewhere.
 
-. "$(uselib std)"
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
 while getopts "p:" o; do
   case "$o" in
     p) hasPrompt=1 prompt="$OPTARG" ;;
     *)
-      printf >&2 "%s\n" "Usage: $(basename $0) [-p PROMPT]"
+      printf >&2 "%s\n" "Usage: $(basename "$0") [-p PROMPT]"
       exit 1
       ;;
   esac
@@ -21,7 +21,7 @@ if [ ! -t 2 ] && exists fzagnostic; then
   true | fzagnostic "${args[@]}"
 elif [ -t 2 ]; then
   [ "$hasPrompt" ] && printf >&2 "%s" "$prompt"
-  read var
+  read -r var
   printf "%s\n" "$var"
 else
   printf >&2 "%s\n" "Could not read line."

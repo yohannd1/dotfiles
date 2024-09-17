@@ -11,7 +11,7 @@ depCheck gen-sxhkd sxhkd mktemp
 # get data folder based on current display
 dataFolder="$XSESSIONDIR/sxhkd"
 tempConf="$dataFolder/conf"
-tempLog="$dataFolder/log"
+# tempLog="$dataFolder/log"
 
 # cleanup / kill current sxhkd on this display if it exists
 if [ -d "$dataFolder" ]; then

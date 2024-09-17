@@ -1,10 +1,7 @@
 #!/usr/bin/env sh
 
-. "$(uselib std)"
-depCheck udisksctl
-
 showHelp() {
-  printf >&2 "Usage: %s\n" "$(basename $0) { -m | -u }"
+  printf >&2 "Usage: %s\n" "$(basename "$0") { -m | -u }"
   printf >&2 "Options:\n"
   printf >&2 "    -m    mount\n"
   printf >&2 "    -u    unmount\n"

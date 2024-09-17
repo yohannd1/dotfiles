@@ -7,7 +7,7 @@
 # make a mess.
 
 if [ $# = 0 ]; then
-  printf >&2 "%s\n" "Usage: $(basename $0) <PROGRAM> [ARGS...]"
+  printf >&2 "%s\n" "Usage: $(basename "$0") <PROGRAM> [ARGS...]"
   exit 1
 fi
 

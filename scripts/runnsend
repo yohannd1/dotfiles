@@ -2,7 +2,7 @@
 
 # Runs a command, and sends a notification based if a condition matches.
 
-. "$(uselib std)"
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
 if exists notify-send; then
   nsend() { notify-send -- "$1" "$2"; }
@@ -13,8 +13,10 @@ else
   depCheck notify-send termux-notification
 fi
 
+PROGNAME=$(basename "$0")
+
 if [ $# -lt 2 ]; then
-  printf >&2 "%s\n" "Usage: $(basename $0) <NOTIFY-IF> <PROGRAM> [ARGS...]"
+  printf >&2 "%s\n" "Usage: $PROGNAME <NOTIFY-IF> <PROGRAM> [ARGS...]"
   printf >&2 "%s\n" "where NOTIFY-IF := { error-and-output | error-or-output | error | output }"
   exit 1
 fi
@@ -27,7 +29,7 @@ case "$notifyIf" in
   error-or-output) ;;
   error|output) ;;
   *)
-    printf >&2 "Invalid option; use $(basename $0) --help\n"
+    printf >&2 "Invalid option; use %s --help\n" "$PROGNAME"
     exit 1
     ;;
 esac

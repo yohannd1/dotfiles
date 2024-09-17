@@ -7,7 +7,7 @@ fi
 
 MIDI_SOUNDFONT=${MIDI_SOUNDFONT:-/usr/share/soundfonts/default.sf2}
 
-synth_count=$(aconnect -o | grep -v '^ ' | wc -l)
+synth_count=$(aconnect -o | grep -cv '^ ')
 
 printf >&2 "Press Ctrl-C to stop playing\n"
 if [ "$synth_count" -gt 1 ]; then

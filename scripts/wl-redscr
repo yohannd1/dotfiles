@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 exists() { command -v "$1" >/dev/null; }
 prog=$(basename "$0")
@@ -9,7 +9,7 @@ showHelp() {
   printf >&2 "Usage: %s { toggle }\n" "$prog"
 }
 
-[ $# = 1 ] || [ "$1" == toggle ] || {
+[ $# = 1 ] || [ "$1" = toggle ] || {
   showHelp
   exit 2
 }

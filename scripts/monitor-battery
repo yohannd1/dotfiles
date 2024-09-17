@@ -8,17 +8,19 @@ LEVEL_CRITICAL=5
 LEVEL_LOW=20
 LEVEL_HIGH=90
 
+PROGNAME=$(basename "$0")
+
 die() {
-  printf >&2 "%s: %s\n" "$(basename $0)" "$*"
-  notify-send -u critical -- "$(basename $0): $*"
+  printf >&2 "%s: %s\n" "$PROGNAME" "$*"
+  notify-send -u critical -- "$PROGNAME: $*"
   exit 1
 }
 
 isCharging() { [ "$(cat $CHARGE_STATE_PATH)" = "Charging" ]; }
 
 warn() {
-  local msg="$(printf "%s (%02d%%)\n" "$2" "$level")"
-  notify-send -u "$1" -- "Battery level alert" "$msg"
+  _msg="$(printf "%s (%02d%%)\n" "$2" "$level")"
+  notify-send -u "$1" -- "Battery level alert" "$_msg"
 }
 
 [ -e "$BATTERY_PATH" ] || die "Battery file doesn't exist"

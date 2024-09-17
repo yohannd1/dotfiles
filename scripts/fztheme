@@ -1,18 +1,17 @@
 #!/usr/bin/env sh
 
-. "$(uselib std)"
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
 if [ $# != 0 ]; then
-  printf >&2 "Usage: %s\n" "$(basename $0)"
+  printf >&2 "Usage: %s\n" "$(basename "$0")"
 fi
 
 THEME_FILES_PATH=~/.config/dots/themes
 THEME_CFG_PATH=~/.local/share/dots/theme
 
 msg() {
-  _msg=$(printf "$@")
-  printf >&2 "%s\n" "$_msg"
-  notify-send -- "$_msg"
+  printf >&2 "%s\n" "$*"
+  notify-send -- "$*"
 }
 
 if [ -d "$THEME_FILES_PATH" ]; then

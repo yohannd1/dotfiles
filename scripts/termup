@@ -3,7 +3,7 @@
 # Pops up a new terminal window.
 
 if [ $# = 0 ]; then
-  printf >&2 "%s\n" "Usage: $(basename $0) [options] <command> [command...]"
+  printf >&2 "%s\n" "Usage: $(basename "$0") [options] <command> [command...]"
   printf >&2 "%s\n" "Available options:"
   printf >&2 "  %s\n" "-f, --float: set the class to 'float'"
   exit 1

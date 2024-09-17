@@ -2,8 +2,6 @@
 
 set -e
 
-here=$(dirname "$0")
-
 export PACK_DIR="$XDG_CACHE_HOME/nvim/apps/git"
 plugDir="$PACK_DIR/pack/vendor/opt/vim-fugitive"
 mkdir -p "$(dirname "$plugDir")"

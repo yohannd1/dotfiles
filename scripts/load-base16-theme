@@ -8,10 +8,10 @@ EXPORT_TAG=''
 PREFIX='#'
 
 main() {
-  while read line; do
+  while read -r line; do
     printf "%s" "$line" \
       | grep '^base0[a-fA-F0-9]:' \
-      | sed 's/^\(base0'$B16PAT'\): "\('$B16PAT'\{6\}\)"/'"$EXPORT_TAG"'\1="'"$PREFIX"'\2"/g' \
+      | sed 's/^\(base0'"$B16PAT"'\): "\('"$B16PAT"'\{6\}\)"/'"$EXPORT_TAG"'\1="'"$PREFIX"'\2"/g' \
       | sed 's|^\(base0[a-fA-F0-9]="#[a-fA-F0-9]\{6\}"\)\s*#.*$|\1|g'
   done
 }

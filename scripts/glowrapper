@@ -1,10 +1,7 @@
 #!/usr/bin/env sh
 
-. "$(uselib std)"
-depCheck glow
-
 if [ $# = 0 ]; then
-  printf >&2 "%s\n" "Usage: $(basename $0) <file> [extra_args]"
+  printf >&2 "%s\n" "Usage: $(basename "$0") <file> [extra_args]"
   exit 1
 fi
 

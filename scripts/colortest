@@ -4,6 +4,6 @@
 
 for i in {0..255}; do
   printf "\x1b[38;5;${i}m%03s\x1b[0m " "$i"
-  [[ $(($i % ${1:-10})) == 0 ]] && printf "\n"
+  [[ $((i % ${1:-10})) == 0 ]] && printf "\n"
 done
 printf "\n"

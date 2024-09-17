@@ -3,7 +3,7 @@
 # Runs "$@" and waits the user to press q.
 
 if [ $# = 0 ]; then
-  printf >&2 "%s\n" "Usage: $(basename $0) <ARGS...>"
+  printf >&2 "%s\n" "Usage: $(basename "$0") <ARGS...>"
   printf >&2 "Related env vars:\n"
   printf >&2 "  RUNREAD_PIPE : if set, the command is ran as piped, without interaction with the terminal."
   exit 1
@@ -23,7 +23,7 @@ while true; do
   trap SIGINT
   printf '\033[2 q'
   printf '\n#[ec: %d]# (q)uit (R)eload (s)hell: ' "$exitCode"
-  while read -sn1 ch; do
+  while read -r -sn1 ch; do
     case "$ch" in
       q) exit "$exitCode" ;;
       R) clear && break ;;

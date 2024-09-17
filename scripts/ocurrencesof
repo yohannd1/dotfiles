@@ -1,13 +1,12 @@
 #!/usr/bin/env sh
 
-. "$(uselib std)"
-depCheck rg fd
+PROGNAME=$(basename "$0")
 
 usage() {
-  printf >&2 "%s\n" "$(basename $0): checks for ocurrences of a pattern in
+  printf >&2 "%s\n" "$PROGNAME: checks for ocurrences of a pattern in
 filenames inside a directory and their contents.
 
-Usage: $(basename $0) <pattern> [directory]"
+Usage: $PROGNAME <pattern> [directory]"
 }
 
 case $# in

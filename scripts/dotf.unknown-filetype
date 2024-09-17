@@ -9,7 +9,7 @@ printf >&2 "What do you want to do about it?\n"
 while true; do
   printf >&2 "(n)nn or (s)hell on the folder; (e)dit; (q)uit: "
 
-  read -n1 ch
+  read -r -n1 ch
   case "$ch" in
     n)
       nnn "$(dirname "$1")"

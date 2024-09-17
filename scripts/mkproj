@@ -1,14 +1,11 @@
 #!/usr/bin/env sh
 
-. "$(uselib std)"
-depCheck git
-
 if [ $# != 1 ]; then
-  printf >&2 "Usage: %s\n" "$(basename $0) <project_folder>"
+  printf >&2 "Usage: %s\n" "$(basename "$0") <project_folder>"
 fi
 
 if [ -e "$1" ]; then
-  printf >&2 '"%s" already exists' "$1"
+  printf >&2 '"%s" already exists\n' "$1"
 fi
 
 mkdir -p "$1" && cd "$1" && git init

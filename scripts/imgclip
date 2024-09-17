@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+PROGNAME=$(basename "$0")
+
 if [ "$WAYLAND_DISPLAY" ]; then
   clipCopy() { wl-copy -t "$1" "$2"; }
 else
@@ -8,13 +10,13 @@ fi
 
 main() {
   if [ $# != 1 ]; then
-    printf >&2 "%s: %s\n" "$(basename $0)" "a tool to copy images to clipboard"
-    printf >&2 "Usage: %s\n" "$(basename $0) <FILE>"
+    printf >&2 "%s: %s\n" "$PROGNAME" "a tool to copy images to clipboard"
+    printf >&2 "Usage: %s\n" "$PROGNAME <FILE>"
     exit 1
   fi
 
   if [ ! -f "$1" ]; then
-    printf >&2 "%s: %s\n" "$(basename $0)" "file does not exist: $1"
+    printf >&2 "%s: %s\n" "$PROGNAME" "file does not exist: $1"
     exit 1
   fi
 
@@ -40,12 +42,10 @@ main() {
 }
 
 msg() {
-  _msg=$(echo "$@")
-
   if [ -t 2 ]; then
-    printf >&2 "%s\n" "$_msg"
+    printf >&2 "%s\n" "$*"
   else
-    notify-send "$_msg"
+    notify-send -- "$*"
   fi
 }
 

@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
+PROGNAME=$(basename "$0")
+
 usage() {
   cat >&2 <<EOF
-$(basename $0): find a file on parent directories and do something with it.
+$PROGNAME: find a file on parent directories and do something with it.
 
-Usage: $(basename $0) <FILE>
+Usage: $PROGNAME <FILE>
        { run-file | run-command }
        { current-dir | file-dir }
        <ARGS...>

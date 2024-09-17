@@ -20,7 +20,7 @@ fi
 dirname=$(dirname "$1")
 filename=$(basename "$1")
 no_ext=${filename%.*}
-ext=${filename##*.}
+# ext=${filename##*.}
 
 new_filename="$dirname/$no_ext.$2"
 

@@ -8,7 +8,7 @@ increment=${VOLUMECTL_INCREMENT:-2}
 exists() { command -v "$1" >/dev/null; }
 
 showHelp() {
-  printf >&2 "Usage: %s\n" "$(basename $0) { inc | dec | mute }"
+  printf >&2 "Usage: %s\n" "$(basename "$0") { inc | dec | mute }"
   exit 1
 }
 [ $# != 1 ] && showHelp

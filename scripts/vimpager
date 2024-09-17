@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-. "$(uselib std)"
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
 if exists nvim; then
   alias editor=nvim

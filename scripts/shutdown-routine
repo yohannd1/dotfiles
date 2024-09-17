@@ -16,5 +16,5 @@
 
 if test $? != 0; then
   printf >&2 "Press enter to exit... "
-  read _
+  read -r _
 fi

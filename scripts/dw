@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 
-. "$(uselib std)"
+PROGNAME=$(basename "$0")
 
-PROGNAME=$(basename $0)
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
 showHelp() {
   printf >&2 "Usage: %s\n" "$PROGNAME <url> [output_file]"
@@ -23,7 +23,7 @@ case $# in
 esac
 
 if [ "$output" != "-" ] && [ -e "$output" ]; then
-  printf >&2 '%s: output file "%s" already exists\n' "$(basename $0)" "$output"
+  printf >&2 '%s: output file "%s" already exists\n' "$PROGNAME" "$output"
   exit 2
 fi
 

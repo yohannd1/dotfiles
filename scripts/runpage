@@ -3,7 +3,7 @@
 # Runs "$@" and pipes it into less -R.
 
 if [ $# = 0 ]; then
-  printf >&2 "%s\n" "Usage: $(basename $0) <command> [command]"
+  printf >&2 "%s\n" "Usage: $(basename "$0") <command> [command]"
   exit 1
 fi
 

@@ -3,7 +3,7 @@
 MD_PREVIEW_MODE=1
 
 if [ $# != 1 ]; then
-  printf >&2 "%s\n" "Usage: $(basename $0) <file>"
+  printf >&2 "%s\n" "Usage: $(basename "$0") <file>"
   exit 1
 fi
 
@@ -31,7 +31,7 @@ case "$MD_PREVIEW_MODE" in
 
     # Delete old files stored in $MDEXPORTS
     if [ -e "$MDEXPORTS" ]; then
-      while read garbage; do
+      while read -r garbage; do
         [ -e "$garbage" ] && rm "$garbage"
       done < "$MDEXPORTS"
       rm "$MDEXPORTS"

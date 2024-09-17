@@ -4,13 +4,13 @@ getTodos() {
   id=$(printf "%s" "$1" | awk '{ print $1 }') || return 1
   filename="$HOME/wiki/vimwiki/$id.acr"
 
-  rg '(^\s*([*-]\s+)?(\[ \]|\( \))|\b(TODO|FIXME)\b)' "$filename" | while read match; do
+  rg '(^\s*([*-]\s+)?(\[ \]|\( \))|\b(TODO|FIXME)\b)' "$filename" | while read -r match; do
     printf "%s:%s\n" "$id" "$match"
   done
 }
 
 openChoice() {
-  read choice || exit 1
+  read -r choice || exit 1
   id=$(printf "%s\n" "$choice" | awk '{ split($0, arr, ":"); print arr[1] }') || exit 1
   "$EDITOR" "$HOME/wiki/vimwiki/$id.acr"
 }
@@ -18,6 +18,6 @@ openChoice() {
 acr-list-titles \
   | rg 'Journal' \
   | sort -h \
-  | while read line; do getTodos "$line"; done \
+  | while read -r line; do getTodos "$line"; done \
   | fzagnostic \
   | openChoice
