@@ -11,7 +11,7 @@ local font_presets = {
   },
   ["Terminus"] = {
     name = "Terminus",
-    base_size = 17,
+    base_size = 18,
   },
   ["Iosevka"] = {
     name = "Iosevka",
@@ -198,11 +198,15 @@ local T_ALL = {t_xres, t_dots}
 
 local enable_ligatures = false
 local font_size = 1.2
-local font_name = "FiraCode"
+local font_name = "Terminus"
 local font = getFontInfo(font_name, font_size)
 
 local fsize_term = font.base_size
 local xft_font = longFontFormat(font.name, fsize_term)
+
+local withAlpha = function(color, alpha)
+  return ("%s%02x"):format(color, math.floor(alpha * 255))
+end
 
 -- st (x11 terminal)
 decl {
@@ -352,7 +356,7 @@ decl {
   {"qtile.font-size", (font.base_size * 0.8)},
   {"qtile.border-focus", theme["base03"]},
   {"qtile.border-normal", theme["base00"]},
-  {"qtile.bar.bg", theme["base00"]},
+  {"qtile.bar.bg", withAlpha(theme["base00"], 0.3)},
   {"qtile.bar.fg", theme["base05"]},
   {"qtile.bar.fg.inactive", theme["base02"]},
 

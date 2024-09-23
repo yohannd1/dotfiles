@@ -22,14 +22,14 @@ mouse = make_mouse_map(cfg)
 
 layout_theme_cfg = dict(
     border_width=2,
-    margin=2,
+    margin=6,
     border_focus=get_res("qtile.border-focus", "#e1acff"),
     border_normal=get_res("qtile.border-normal", "#1D2330"),
 )
 
 layouts = [
     Paper(
-        default_width_factor=0.6,
+        default_width_factor=0.55,
         max_if_single_window=True,
         center_all=False,
         **layout_theme_cfg,
@@ -69,7 +69,7 @@ task_list = widget.TaskList(
     mouse_callbacks={
         "Button1": lambda: tasklist_window_select(task_list),
     },
-    max_title_width=200,
+    max_title_width=500,
     highlight_method="block",
     margin_y=0,
     stretch=True,
@@ -119,12 +119,12 @@ standard_bar = bar.Bar(
         widget.Clock(format="%Y-%m-%d %H:%M"),
         widget.Systray(),
     ],
-    size=20,
+    size=25,
     foreground=get_res("qtile.bar.fg", fallback="#FFFFFF"),
     background=get_res("qtile.bar.bg", fallback="#000000"),
 )
 
-screens = [Screen(top=standard_bar)]
+screens = [Screen(bottom=standard_bar)]
 
 dgroups_key_binder = None
 dgroups_app_rules = []  # type: List

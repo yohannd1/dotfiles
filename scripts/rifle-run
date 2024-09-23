@@ -56,21 +56,32 @@ getPython() {
     return
   fi
 
-  if exists python3; then
-    printf "%s" "python3"
-    _python_cache="python3"
-  elif exists python2; then
-    printf "%s" "python2"
-    _python_cache="python2"
-  elif exists python; then
-    printf "%s" "python"
-    _python_cache="python"
-  elif exists py; then
-    printf "%s" "py"
-    _python_cache="py"
-  else
-    die "Could not find a suitable python version\n"
+  programs=(python3 python py)
+  for p in "${programs[@]}"; do
+    exists "$p" || continue
+    _python_cache="$p"
+    printf "%s" "$p"
+    return
+  done
+
+  die "Could not find a suitable python version\n"
+}
+
+getLua() {
+  if [ "$_lua_cache" ]; then
+    printf "%s" "$_lua_cache"
+    return
   fi
+
+  programs=(lua5.4 lua5.3 lua)
+  for p in "${programs[@]}"; do
+    exists "$p" || continue
+    _lua_cache="$p"
+    printf "%s" "$p"
+    return
+  done
+
+  die "Could not find a suitable lua version\n"
 }
 
 fparent_pattern() {
@@ -197,7 +208,10 @@ case "$1" in
         ;;
       hy) hy "$file" ;;
       fsharp) fsharpi "$file" ;;
-      lua) lua "$file" ;;
+      lua)
+        lua=$(getLua)
+        "$lua" "$file"
+        ;;
       nim)
         nim compile --out:"out" --outdir:"$tmp" "$file"
         "$tmp/out"
