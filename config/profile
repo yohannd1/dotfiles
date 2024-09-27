@@ -43,6 +43,39 @@ isTermux || tty-loadcolors
 os=$(uname -o)
 printf >&2 "Uname: %s\n" "$os"
 
+_setupDotcfg() {
+  printf >&2 "*** Setting up dotcfg...\n"
+  _folder=$(mktemp -d /tmp/dotcfg.XXXXXX) || {
+    printf >&2 " * Failed to make temp directory\n"
+    return 1
+  }
+  _socket="$_folder/dotcfg.sock"
+  export DOTCFG_SOCKET="$_socket"
+  printf >&2 " *  Starting daemon\n"
+  dotcfg daemon >/dev/null 2>/dev/null & disown
+
+  printf >&2 " *  Waiting for daemon...\n"
+  _loaded=
+  for i in $(seq 0 10); do
+    sleep 0.1
+    [ -e "$_socket" ] && {
+      _loaded=1
+      break
+    }
+  done
+
+  [ "$_loaded" ] || {
+    printf >&2 " *  Timeout - daemon took too long to respond...\n"
+    return 1
+  }
+
+  printf >&2 " *  Loading settings into daemon...\n"
+  gen-res dotcfg | dotcfg stdin-send >/dev/null
+
+  printf >&2 " *  Done!\n"
+}
+
+# too disk-intensive to do every time it boots up on Termux
 if ! isTermux; then
   # update the date because clock problems
   exists ntpd && startjob "Clock Update" _updateClock
@@ -54,20 +87,13 @@ if ! isTermux; then
   printf >&2 "OK!\n"
 
   # set up dotcfg daemon and load config
-  {
-    printf >&2 "*** Setting up dotcfg..."
-    _socket=$(mktemp /tmp/dotcfg.XXXXXX.sock)
-    export DOTCFG_SOCKET="$_socket"
-    dotcfg daemon >/dev/null 2>/dev/null & disown
-    gen-res dotcfg | dotcfg stdin-send >/dev/null
-  }
+  _setupDotcfg
 
   # generate configs
-  # too disk-intensive to do every time it boots up on Termux
   printf >&2 "*** Generating config (sysm)...\n"
   sysm
 
-  # set up SSH keychaing
+  # set up SSH keychain
   # if [ -x /usr/bin/keychain ]; then
   #   eval "$(keychain --eval --ignore-missing ~/.ssh/id_rsa 2>/dev/null)"
   # fi
