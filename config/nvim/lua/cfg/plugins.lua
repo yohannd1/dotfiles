@@ -102,7 +102,7 @@ M.add({
 
       highlight = {
         enable = { "lua" },
-        disable = { "gitcommit", "bash", "PKGBUILD", "latex", "janet" },
+        disable = { "gitcommit", "bash", "PKGBUILD", "latex", "janet", "rust" },
         additional_vim_regex_highlighting = true,
       },
     }

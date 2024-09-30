@@ -13,6 +13,9 @@ super + Return
 super + shift + Return
     dotf.wrap.terminal -c float
 
+super + alt + g
+    xprop > ~/xprop_result.txt
+
 # program launcher
 super + space
     runnsend error-and-output fzrun

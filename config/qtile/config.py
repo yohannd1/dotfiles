@@ -29,7 +29,7 @@ layout_theme_cfg = dict(
 
 layouts = [
     Paper(
-        default_width_factor=0.55,
+        default_width_factor=0.5,
         max_if_single_window=True,
         center_all=False,
         **layout_theme_cfg,
@@ -135,13 +135,19 @@ floating_layout = layout.Floating(
     float_rules=[
         # Run the utility of `xprop` to see the wm class and name of an X client.
         *layout.Floating.default_float_rules,
-        Match(wm_class="confirmreset"),  # gitk
-        Match(wm_class="makebranch"),  # gitk
-        Match(wm_class="maketag"),  # gitk
-        Match(wm_class="ssh-askpass"),  # ssh-askpass
+
+        Match(wm_class="confirmreset"), # gitk
+        Match(wm_class="makebranch"), # gitk
+        Match(wm_class="maketag"), # gitk
+        Match(title="branchdialog"), # gitk
+
+        Match(wm_class="ssh-askpass"), # ssh-askpass
         Match(wm_class="float"),
-        Match(title="branchdialog"),  # gitk
-        Match(title="pinentry"),  # GPG key password entry
+        Match(title="pinentry"), # GPG key password entry
+
+        # Unity pop-ups
+        Match(title="UnityEditor.AddComponent.AddComponentWindow"),
+        Match(title="UnityEditor.PopupWindow"),
     ]
 )
 auto_fullscreen = False
