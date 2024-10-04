@@ -1,20 +1,24 @@
 # vim: ft=desktop
+
 [Default Applications]
+
+inode/directory=filemanager.desktop
+x-scheme-handler/file=filemanager.desktop
+
 image/jpeg=open.desktop
 image/png=open.desktop
+
 audio/x-wav=open.desktop
 audio/x-vgm=open.desktop
 audio/x-mpeg=open.desktop
 audio/ogg=open.desktop
-application/x-shockwave-flash=open.desktop
-text/html=browser.desktop
-inode/directory=filemanager.desktop
 
-x-scheme-handler/discord-455712169795780630=discord-455712169795780630.desktop
-x-scheme-handler/discord-430794114037055489=discord-430794114037055489.desktop
+text/html=browser.desktop
 x-scheme-handler/http=browser.desktop
 x-scheme-handler/https=browser.desktop
-x-scheme-handler/file=filemanager.desktop
+
+application/x-shockwave-flash=open.desktop
+
 x-scheme-handler/roblox-studio=roblox-studio.desktop
 x-scheme-handler/roblox-player=roblox-player.desktop
 application/x-roblox-rbxl=roblox-studio.desktop

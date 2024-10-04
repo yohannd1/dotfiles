@@ -124,7 +124,7 @@ standard_bar = bar.Bar(
     background=get_res("qtile.bar.bg", fallback="#000000"),
 )
 
-screens = [Screen(bottom=standard_bar)]
+screens = [Screen(top=standard_bar)]
 
 dgroups_key_binder = None
 dgroups_app_rules = []  # type: List

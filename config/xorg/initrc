@@ -64,6 +64,11 @@ case "$WM" in
     export XDG_CURRENT_DESKTOP="Budgie:GNOME"
     wm_cmd=(budgie-desktop)
     ;;
+  gnome)
+    export XDG_SESSION_TYPE=x11
+    export GDK_BACKEND=x11
+    wm_cmd=(gnome-session)
+    ;;
   *)
     printf >&2 'WARNING: window manager "%s" is not accounted for - this might cause problems.\n' "$WM"
     ;;

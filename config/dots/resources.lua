@@ -71,7 +71,7 @@ local font_presets = {
   },
   ["ShareTech"] = {
     name = "Share Tech Mono",
-    base_size = 16,
+    base_size = 17,
   },
   ["Unifont"] = {
     name = "Unifont",
@@ -198,7 +198,7 @@ local T_ALL = {t_xres, t_dots}
 
 local enable_ligatures = false
 local font_size = 1.2
-local font_name = "JetbrainsMono"
+local font_name = "ShareTech"
 local font = getFontInfo(font_name, font_size)
 
 local fsize_term = font.base_size

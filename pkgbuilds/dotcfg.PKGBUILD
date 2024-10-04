@@ -1,7 +1,7 @@
 # Based off the furnace-git one in the AUR
 
 pkgname=dotcfg
-pkgver=bc7ddc2
+pkgver=a99c374
 pkgrel=1
 epoch=1
 pkgdesc="Personal configuration daemon"

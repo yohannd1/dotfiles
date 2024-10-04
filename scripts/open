@@ -282,6 +282,9 @@
   (when (m :ext ["tex"])
     (t :pop ["rifle-run" "run" "tex" file]))
 
+  (when (m :ext ["acr"])
+    (t :pop ["rifle-run" "run" "acrylic" file]))
+
   (when (m :ext ["htm" "html" "xhtml" "mhtml"])
     (t :gui [BROWSER file])
     (t :runpage ["w3m" "-dump" file])
