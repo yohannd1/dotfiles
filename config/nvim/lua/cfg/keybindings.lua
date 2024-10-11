@@ -383,3 +383,4 @@ services.defKeyMenu({
 map("n", "<Leader>w", [[:lua require("cfg.utils").services.loadKeyMenu("wiki")<CR>]], arg_nr_s)
 
 map("n", "<Leader>l", [[:messages<CR>]], arg_nr)
+map("n", "<Leader>T", [[:terminal<CR>i]], arg_nr)

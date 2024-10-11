@@ -358,13 +358,14 @@ case "$1" in
       teal) tl check "$file" ;;
       python)
         python=$(getPython)
-        dmypy run --timeout 600 "$file" &
-        proc2="$!"
+
+        # dmypy run --timeout 600 "$file" &
+        # proc2="$!"
         "$python" -m pylint "$file" &
         proc1="$!"
 
         wait "$proc1"
-        wait "$proc2"
+        # wait "$proc2"
         ;;
       php)
         php-cs-fixer check "$file"
