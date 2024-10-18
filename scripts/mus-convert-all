@@ -18,7 +18,7 @@ done
 printf >&2 "Confirm? [y/N] "
 read -r answer
 
-case "$answer"
+case "$answer" in
   y|Y)
     for f in "${src_files[@]}"; do
       ffmpeg-convert "$f" "$dst_ext"

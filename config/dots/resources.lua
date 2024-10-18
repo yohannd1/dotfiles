@@ -32,7 +32,7 @@ local font_presets = {
   },
   ["Fixedsys"] = {
     name = "Fixedsys Excelsior",
-    base_size = 17,
+    base_size = 19,
     supports_ligatures = false, -- because of glitches
   },
   ["UbuntuMono"] = {
@@ -198,7 +198,7 @@ local T_ALL = {t_xres, t_dots}
 
 local enable_ligatures = false
 local font_size = 1.2
-local font_name = "ShareTech"
+local font_name = _randomFont
 local font = getFontInfo(font_name, font_size)
 
 local fsize_term = font.base_size
