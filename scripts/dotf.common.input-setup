@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+
+isXorg() { [ "$DISPLAY" ] && [ -z "$WAYLAND_DISPLAY" ]; }
+isWayland() { [ "$WAYLAND_DISPLAY" ]; }
+
+if isXorg; then
+  xinput set-prop "Synaptics TM3096-006" "libinput Tapping Enabled" 1 # Touchpad: tap to click (not working)
+  xinput set-prop "Synaptics TM3096-006" "libinput Natural Scrolling Enabled" 1 # Touchpad: natural scrolling
+elif isWayland; then
+  # TODO(river): enable natural scrolling as well
+  # TODO(river): fix touchpad scrolling in reverse direction
+  printf >&2 "TODO: actually configure wayland input...\n";
+fi

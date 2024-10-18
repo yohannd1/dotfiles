@@ -68,17 +68,7 @@ fi
 # disable power key turnoff
 systemd-inhibit --what=handle-power-key sleep infinity &
 
-# input mess
-if isXorg; then
-  xinput set-prop "Synaptics TM3096-006" "libinput Tapping Enabled" 1 # Touchpad: tap to click (not working)
-  xinput set-prop "Synaptics TM3096-006" "libinput Natural Scrolling Enabled" 1 # Touchpad: natural scrolling
-elif isWayland; then
-  # hyprland's input config is done on its own config file
-
-  # TODO(river): enable natural scrolling as well
-  # TODO(river): fix touchpad scrolling in reverse direction
-  :
-fi
+dotf.common.configure-input
 
 # yambar
 if isWayland; then
