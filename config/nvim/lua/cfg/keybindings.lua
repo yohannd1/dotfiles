@@ -231,12 +231,11 @@ map("n", "J", ":lua dummy.betterJoin()<CR>", arg_nr_s)
 map("v", "J", ":lua dummy.betterJoinVisual()<CR>", arg_nr_s)
 
 -- Terminal commands
+map("t", "<M-w>", "<C-\\><C-n>", arg_nr_s)
 map("t", "<C-w>.", "<C-\\><C-n>", arg_nr_s)
 map("t", "<C-w>q", "<C-\\><C-n><C-w>q", arg_nr_s)
 map("t", "<C-w><C-j>", "<C-j>", arg_nr_s)
 map("t", "<C-w><C-k>", "<C-k>", arg_nr_s)
-map("t", "<C-j>", "<C-\\><C-n>:lua dummy.bufSwitch('next')<CR>", arg_nr_s)
-map("t", "<C-k>", "<C-\\><C-n>:lua dummy.bufSwitch('prev')<CR>", arg_nr_s)
 forChars("hjkl", function(l)
   map("t", "<C-w>" .. l, "<C-\\><C-n><C-w>" .. l, arg_nr_s)
 end)

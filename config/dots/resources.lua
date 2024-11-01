@@ -1,5 +1,8 @@
 -- vim: fdm=marker foldenable
 -- FONT DEFS {{{
+
+-- TODO: find a way to check all font sizes to see if they are around the same
+
 local font_presets = {
   ["SourceCodePro"] = {
     name = "Source Code Pro Medium",
@@ -55,7 +58,7 @@ local font_presets = {
   },
   ["Sudo"] = {
     name = "Sudo",
-    base_size = 19,
+    base_size = 19.5,
   },
   ["Mononoki"] = {
     name = "Mononoki",
