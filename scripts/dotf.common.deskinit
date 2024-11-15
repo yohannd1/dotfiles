@@ -52,7 +52,7 @@ dunst -config "$XDG_CACHE_HOME/gen/dunstrc" &
 # blueman-applet &
 
 # battery status monitor (using notify-send)
-monitor-battery &
+# monitor-battery &
 
 # input method
 if isXorg; then

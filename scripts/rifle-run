@@ -234,7 +234,7 @@ case "$1" in
       dart) dart run "$file" ;;
       javascript)
         if exists deno; then
-          deno run "$file"
+          deno check "$file"
         elif exists nodejs; then
           nodejs "$file"
         else
@@ -244,6 +244,7 @@ case "$1" in
         ;;
       typescript)
         if exists deno; then
+          deno check "$file"
           deno run "$file"
         else
           printf >&2 "Could not find a known TS interpreter.\n"
@@ -359,9 +360,9 @@ case "$1" in
       python)
         python=$(getPython)
 
-        # dmypy run --timeout 600 "$file" &
         # proc2="$!"
-        "$python" -m pylint "$file" &
+        # "$python" -m pylint "$file" &
+        dmypy run --timeout 600 "$file" &
         proc1="$!"
 
         wait "$proc1"

@@ -87,10 +87,9 @@ local UNUSED_PLUGIN_COND = false
 -- Treesitter {{{
 M.add({
   source = "nvim-treesitter/nvim-treesitter",
-  condition = false,
   after = function()
     require("nvim-treesitter.configs").setup {
-      ensure_installed = { "lua" },
+      ensure_installed = { "lua", "python" },
 
       -- Install parsers synchronously (only applied to `ensure_installed`)
       sync_install = false,
@@ -101,7 +100,7 @@ M.add({
       ignore_install = {},
 
       highlight = {
-        enable = { "lua" },
+        enable = { "lua", "python" },
         disable = { "gitcommit", "bash", "PKGBUILD", "latex", "janet", "rust" },
         additional_vim_regex_highlighting = true,
       },
