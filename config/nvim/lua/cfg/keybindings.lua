@@ -156,6 +156,11 @@ map("v", "<Leader>s", [[:s/\v/g<Left><Left>]], arg_nr)
 map("n", "<Leader>S", [[:%s/<C-r>///g<Left><Left>]], arg_nr)
 map("v", "<Leader>S", [[:s/<C-r>///g<Left><Left>]], arg_nr)
 
+-- Normal global
+forChars("nv", function(m)
+  map(m, "<Leader>.", [[:g/./normal ]], arg_nr)
+end)
+
 -- I KEEP PRESSING K BUT I DONT WANT IT HELP
 forChars("nv", function(m)
   map(m, "K", "<Nop>", arg_nr)
