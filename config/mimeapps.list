@@ -1,24 +1,16 @@
-# vim: ft=desktop
-
 [Default Applications]
-
 inode/directory=filemanager.desktop
 x-scheme-handler/file=filemanager.desktop
-
 image/jpeg=open.desktop
 image/png=open.desktop
-
 audio/x-wav=open.desktop
 audio/x-vgm=open.desktop
 audio/x-mpeg=open.desktop
 audio/ogg=open.desktop
-
 text/html=browser.desktop
 x-scheme-handler/http=browser.desktop
 x-scheme-handler/https=browser.desktop
-
 application/x-shockwave-flash=open.desktop
-
 x-scheme-handler/roblox-studio=roblox-studio.desktop
 x-scheme-handler/roblox-player=roblox-player.desktop
 application/x-roblox-rbxl=roblox-studio.desktop
@@ -26,3 +18,12 @@ application/x-roblox-rbxlx=roblox-studio.desktop
 x-scheme-handler/msteams=teams.desktop
 x-scheme-handler/ror2mm=r2modman.desktop
 ror2mm=gale-handler.desktop
+application/xml=editor.desktop
+text/x-makefile=editor.desktop
+text/x-java=editor.desktop
+
+[Added Associations]
+application/xml=editor.desktop;
+text/x-makefile=editor.desktop;
+text/x-java=editor.desktop;
+application/vnd.openxmlformats-officedocument.wordprocessingml.document=libreoffice-writer.desktop;
