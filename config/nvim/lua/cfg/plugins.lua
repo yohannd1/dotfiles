@@ -100,8 +100,8 @@ M.add({
       ignore_install = {},
 
       highlight = {
-        enable = { "lua", "python" },
-        disable = { "gitcommit", "bash", "PKGBUILD", "latex", "janet", "rust" },
+        enable = { "lua", "python", "latex" },
+        disable = { "gitcommit", "bash", "PKGBUILD", "janet", "rust" },
         additional_vim_regex_highlighting = true,
       },
     }
@@ -394,7 +394,7 @@ M.add("zah/nim.vim")
 -- })
 
 M.add("janet-lang/janet.vim")
-M.add("lervag/vimtex")
+-- M.add("lervag/vimtex")
 M.add("cespare/vim-toml")
 M.add("neoclide/jsonc.vim")
 M.add("HerringtonDarkholme/yats.vim") -- typescript

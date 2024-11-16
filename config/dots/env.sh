@@ -58,6 +58,7 @@ export FILEMAN=nnn
 # SDKs and programming tools
 export GOPATH="$XDG_CACHE_HOME/go"
 export CARGO_HOME="$XDG_CACHE_HOME/cargo"
+export VCPGK_ROOT="$XDG_DATA_DIR/vcpkg"
 export RUSTUP_HOME="$XDG_CACHE_HOME/rustup"
 export GEM_HOME="$XDG_DATA_DIR/gem"
 export GEM_SPEC_CACHE="$XDG_CACHE_HOME/gem"
