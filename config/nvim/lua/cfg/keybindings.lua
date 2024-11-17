@@ -150,15 +150,31 @@ forChars("nv", function(m)
   map(m, "<Leader>?", "?\\v()<Left>", arg_nr)
 end)
 
--- Now for replacing
+-- Quick :substitute
 map("n", "<Leader>s", [[:%s/\v/g<Left><Left>]], arg_nr)
 map("v", "<Leader>s", [[:s/\v/g<Left><Left>]], arg_nr)
 map("n", "<Leader>S", [[:%s/<C-r>///g<Left><Left>]], arg_nr)
 map("v", "<Leader>S", [[:s/<C-r>///g<Left><Left>]], arg_nr)
 
--- Normal global
+-- Quick :global
 forChars("nv", function(m)
-  map(m, "<Leader>.", [[:g/./normal ]], arg_nr)
+  local callback = function()
+    local result = vim.fn.input({
+      prompt = "Query: ",
+      default = "",
+      cancelreturn = -1,
+    })
+
+    if result == -1 then
+      return ""
+    elseif result == "" then
+      result = "."
+    end
+
+    return (":g/%s/normal "):format(result)
+  end
+
+  vim.keymap.set(m, "<Leader>.", callback, {expr = true})
 end)
 
 -- I KEEP PRESSING K BUT I DONT WANT IT HELP
