@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
+isAndroid() { test "$(uname -o)" = Android; }
 
 if [ $# != 0 ]; then
   printf >&2 "Usage: %s\n" "$(basename "$0")"

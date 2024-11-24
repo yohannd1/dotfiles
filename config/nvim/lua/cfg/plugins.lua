@@ -250,9 +250,15 @@ M.add({
     })
     autopairs.enable()
 
-    -- don't allow single quotes pairing on lisp-types
+    -- don't allow single quotes pairing on some languages
     local sq_rule = autopairs.get_rules("'")[1]
-    sq_rule.not_filetypes = {"scheme", "lisp", "fennel", "janet", "clojure"}
+    sq_rule.not_filetypes = {
+      -- lisps
+      "scheme", "lisp", "fennel", "janet", "clojure",
+
+      -- acrylic my beloved
+      "acrylic",
+    }
     sq_rule:with_pair(conds.not_after_text("["))
 
     -- escape codes

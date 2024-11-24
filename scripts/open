@@ -263,12 +263,19 @@
     (t :pop ["rtorrent" file])
     (t :runpage ["transmission-show" "--" file]))
 
-  (mt :ext ["csv" "xlsx"]
+  (mt :ext ["ods" "csv" "xlsx"]
       :gui ["libreoffice" "--calc" file])
 
-  (mt :ext ["odt" "rtf" "docx" "doc" "odg" "ppt" "pptx"]
+  (mt :ext
+      [
+       "odt" "rtf" "docx" "doc" # text document
+       "ppt" "pptx" # presentation
+       "odg"
+       ]
       :gui ["libreoffice" file])
-  (mt :ext ["odt" "ods" "odp" "sxw"] :runpage ["odt2txt" file])
+
+  (mt :ext ["odt" "ods" "odp" "sxw"]
+      :runpage ["odt2txt" file])
 
   (mt :ext ["kra"] :gui ["krita" file])
   (mt :ext ["pxo"] :gui ["pixelorama" file])
