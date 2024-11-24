@@ -419,6 +419,16 @@ if ! isAndroid; then
   gpg-connect-agent updatestartuptty /bye >/dev/null
 fi
 
+get-network-info() {
+  printf >&2 "IPs:\n"
+  ifconfig 2>/dev/null | grep inet | awk '{ print "  " $2 }'
+  printf >&2 "User: %s\n" "$(whoami)"
+  printf >&2 "Public IP: "
+  curl ifconfig.me
+  printf >&2 "\n"
+}
+alias N='get-network-info'
+
 if [ "$_STARTUP_DEBUG_TIME" ] && [ -z "$_startup_time_shown" ]; then
   local current_time=$(date +"%s%3N")
   local time_elapsed=$(bc <<<"$current_time - $_STARTUP_DEBUG_TIME")
