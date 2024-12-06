@@ -371,6 +371,7 @@ map("n", "<Leader>rr", [[:Rifle run<CR>]], arg_nr_s)
 map("n", "<Leader>rb", [[:Rifle build<CR>]], arg_nr_s)
 map("n", "<Leader>rc", [[:Rifle check<CR>]], arg_nr_s)
 map("n", "<Leader>rt", [[:Rifle test<CR>]], arg_nr_s)
+map("n", "<Leader>rd", [[:Rifle debug<CR>]], arg_nr_s)
 
 -- wiki stuff
 services.defKeyMenu({

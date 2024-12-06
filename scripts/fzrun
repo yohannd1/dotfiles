@@ -35,7 +35,7 @@
   (when (= code 0)
     (def choice-s (-> stdout-r (:read math/int32-max) (string/trim)))
     (def [num s] (string/split " " choice-s 0 2))
-    [(-> num (scan-number) (assert) (- starting-number)) s]))
+    [(-> num (scan-number) (assert (string/format "%j is not a number" num)) (- starting-number)) s]))
 
 (defn readline-agnostic
   ```

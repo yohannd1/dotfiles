@@ -233,8 +233,8 @@
                   (m :mime ["application/pdf"])))
 
   (when (or is-pdf (m :ext ["djvu" "ps" "epub" "pdf"]))
-    (t :gui ["okular" file])
     (t :gui ["zathura" file])
+    (t :gui ["okular" file])
     (t :gui ["mupdf" file])
     )
 

@@ -21,7 +21,7 @@ keys = make_keyboard_map(cfg)
 mouse = make_mouse_map(cfg)
 
 layout_theme_cfg = dict(
-    border_width=2,
+    border_width=4,
     margin=6,
     border_focus=get_res("qtile.border-focus", "#e1acff"),
     border_normal=get_res("qtile.border-normal", "#1D2330"),
