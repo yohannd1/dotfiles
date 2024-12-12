@@ -68,6 +68,7 @@ export ZIGUP_PATH_LINK="$HOME/.local/bin/zig"
 export LUAROCKS_HOME="$HOME/.luarocks"
 export JANET_MODPATH="$HOME/.cache/janet"
 export JANET_BINPATH="$HOME/.local/bin"
+export ZSH_PLUGIN_PATH="$HOME/.cache/zsh-plugins"
 _exists sccache && export RUSTC_WRAPPER=sccache
 
 # configuration files/folders
