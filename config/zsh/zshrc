@@ -375,11 +375,9 @@ info() {
   command info --vi-keys "$@"
 }
 
-if ! isAndroid; then
-  sourceOneOf \
-    "$ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh" \
-    /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-fi
+sourceOneOf \
+  "$ZSH_PLUGIN_PATH/zsh-autosuggestions/zsh-autosuggestions.zsh" \
+  /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 _ept_canonicalize_str() {
   test $# = 1 || return 1
