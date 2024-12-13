@@ -112,18 +112,23 @@
       (var ret false)
       (each elem list
         (cond
-          (string? elem) (when (= src-str elem)
-                           (set ret true)
-                           (break))
-          (tuple? elem) (match elem
-                          [:begins str] (when (string/has-prefix? str src-str)
-                                          (set ret true)
-                                          (break))
-                          [:ends str] (when (string/has-suffix? str src-str)
-                                        (set ret true)
-                                        (break))
-                          _ (error (string "uhhhhhhhh")))
-          (error (string "Expected either tuple or string, got " elem))))
+          (string? elem)
+          (when (= src-str elem)
+            (set ret true)
+            (break))
+
+          (tuple? elem)
+          (match elem
+            [:begins str] (when (string/has-prefix? str src-str)
+                            (set ret true)
+                            (break))
+            [:ends str] (when (string/has-suffix? str src-str)
+                          (set ret true)
+                          (break))
+            _ (error (string "TODO: error message lol")))
+
+          (error (string "Expected either tuple or string, got " elem))
+          ))
       ret))
 
   (match mtype

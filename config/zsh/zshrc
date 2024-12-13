@@ -54,7 +54,6 @@ autoload -U colors && colors
 # "edit in editor" plugin config
 autoload -z edit-command-line
 zle -N edit-command-line
-bindkey -M vicmd "[" edit-command-line
 
 # completion plugin config
 autoload -U compinit # completion support
@@ -158,6 +157,7 @@ elif exists nnn; then
 fi
 
 bindkey -s '^P' '\e[C'
+bindkey '\e[' edit-command-line
 
 bindkey '^F' fzSelectFile
 zle -N fzSelectFile

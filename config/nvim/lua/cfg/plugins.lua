@@ -100,9 +100,9 @@ M.add({
       ignore_install = {},
 
       highlight = {
-        enable = { "lua", "python", "latex" },
+        enable = { "lua", "python", "latex", "cmake" },
         disable = { "gitcommit", "bash", "PKGBUILD", "janet", "rust" },
-        additional_vim_regex_highlighting = true,
+        additional_vim_regex_highlighting = false,
       },
     }
   end,
