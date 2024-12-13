@@ -70,7 +70,7 @@ local font_presets = {
   },
   ["IbmPlex"] = {
     name = "Ibm Plex Mono",
-    base_size = 14,
+    base_size = 15,
   },
   ["ShareTech"] = {
     name = "Share Tech Mono",
@@ -200,8 +200,8 @@ local T_ALL = {t_xres, t_dots}
 -- }}}
 
 local enable_ligatures = false
-local font_size = 1.3
-local font_name = "Mononoki"
+local font_size = 1.4
+local font_name = "IbmPlex"
 local font = getFontInfo(font_name, font_size)
 
 local fsize_term = font.base_size
