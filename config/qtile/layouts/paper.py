@@ -8,18 +8,32 @@ from libqtile.config import ScreenRect
 
 # TODO: keep window widths on reset
 
+
 @dataclass
 class ClientAttrs:
     width: int | None = None
+
 
 class Paper(_SimpleLayoutBase):
     defaults = [
         ("margin", 0, "Margin of the layout (int or list of ints [N E S W])"),
         ("border_focus", "#0000ff", "Border colour(s) for the window when focused"),
-        ("border_normal", "#000000", "Border colour(s) for the window when not focused"),
+        (
+            "border_normal",
+            "#000000",
+            "Border colour(s) for the window when not focused",
+        ),
         ("border_width", 0, "Border width."),
-        ("default_width_factor", 0.65, "Default width for windows, as a factor of the screen width"),
-        ("max_if_single_window", False, "Maximize it if it is the only window available"),
+        (
+            "default_width_factor",
+            0.65,
+            "Default width for windows, as a factor of the screen width",
+        ),
+        (
+            "max_if_single_window",
+            False,
+            "Maximize it if it is the only window available",
+        ),
         ("center_all", False, "Automatically center the focused window"),
     ]
 
@@ -59,14 +73,19 @@ class Paper(_SimpleLayoutBase):
         # TODO: optimize this (find a way to only calculate this when windows change position, size, order etc.)
         client_rects = [(0, 0, 0, 0) for _ in range(len(self.clients))]
         cur_x = 0
-        for (i, c) in enumerate(self.clients):
+        for i, c in enumerate(self.clients):
             attrs = self.client_attrs[c]
             if attrs.width is None:
                 attrs.width = int(screen_rect.width * self.default_width_factor)
 
             # width_factor = self.width_factor_big if self.client_attrs[c].is_big else self.width_factor_small
             # width = int(width_factor * screen_rect.width - self.border_width * 2)
-            client_rects[i] = (cur_x, 0, attrs.width, screen_rect.height - self.border_width * 2)
+            client_rects[i] = (
+                cur_x,
+                0,
+                attrs.width,
+                screen_rect.height - self.border_width * 2,
+            )
             cur_x += attrs.width
 
         # get the current client's centered position and use it to calculate the x offset
@@ -175,7 +194,7 @@ class Paper(_SimpleLayoutBase):
 
         index = self.clients.index(client)
         self.clients.remove(client)
-        index = min(len(self.clients) - 1, index) # force the index to be in range
+        index = min(len(self.clients) - 1, index)  # force the index to be in range
 
         new_focus = self.clients[index]
         return new_focus
@@ -195,11 +214,13 @@ class Paper(_SimpleLayoutBase):
 
         attrs = self.client_attrs[self.clients.current_client]
         if attrs.width is None:
-            logger.error("tried to change width of a client whose width hasn't been yet calculated")
+            logger.error(
+                "tried to change width of a client whose width hasn't been yet calculated"
+            )
             return
         attrs.width = max(0, attrs.width + amount)
 
-        self.group.layout_all() # toggle re-layout
+        self.group.layout_all()  # toggle re-layout
 
     @expose_command()
     def shuffle_up(self):
@@ -214,3 +235,17 @@ class Paper(_SimpleLayoutBase):
         self.clients.shuffle_down()
         self.group.layout_all()
         self.group.focus(self.clients[self.clients.current_client])
+
+    def focus_next(self, win: Window) -> Window | None:
+        """A version of focus_next that prevents wrapping over to the first client."""
+        cur_idx = self.clients.current_index
+        if cur_idx == len(self.clients) - 1:
+            return self.clients.current_client
+        return self.clients[cur_idx + 1]
+
+    def focus_previous(self, win: Window) -> Window | None:
+        """A version of focus_previous that prevents wrapping over to the last client."""
+        cur_idx = self.clients.current_index
+        if cur_idx == 0:
+            return self.clients.current_client
+        return self.clients[cur_idx - 1]
