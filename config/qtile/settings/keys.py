@@ -42,6 +42,8 @@ def make_keyboard_map(cfg) -> list:
 
         Key([mod, shift], "space", lazy.window.toggle_floating(),
             desc="toggle floating"),
+        Key([mod], "f", lazy.layout.toggle_focus_floating(),
+            desc="Toggle focus-floating"),
 
         Key([mod, shift], "j", lazy.layout.shuffle_down(),
             desc="Move window down/forward"),

@@ -236,16 +236,114 @@ class Paper(_SimpleLayoutBase):
         self.group.layout_all()
         self.group.focus(self.clients[self.clients.current_client])
 
-    def focus_next(self, win: Window) -> Window | None:
-        """A version of focus_next that prevents wrapping over to the first client."""
-        cur_idx = self.clients.current_index
-        if cur_idx == len(self.clients) - 1:
-            return self.clients.current_client
-        return self.clients[cur_idx + 1]
+    @expose_command("toggle_focus_floating")
+    def toggle_focus_floating(self) -> None:
+        """Jumps the focus to the "floating lane", or returns from it."""
 
-    def focus_previous(self, win: Window) -> Window | None:
-        """A version of focus_previous that prevents wrapping over to the last client."""
-        cur_idx = self.clients.current_index
-        if cur_idx == 0:
+        if (cur_client := self.clients.current_client) is None:
+            return
+
+        cur_idx = self.group.windows.index(self.clients.current_client)
+        desired_floating = not cur_client.floating
+        predicate = lambda w: w.floating == desired_floating
+
+        logger.warning(f"*** {self.group.windows}")
+
+        idx_next = self._find_next_window(
+            predicate, starting_index=cur_idx + 1, list_=self.group.windows
+        )
+        idx_prev = self._find_previous_window(
+            predicate, starting_index=cur_idx - 1, list_=self.group.windows
+        )
+
+        logger.warning(f"{idx_next=} {idx_prev=}")
+
+        if idx_next is None and idx_prev is None:
+            pass
+        elif idx_next is None:
+            self.group.windows[idx_prev].focus()
+        elif idx_prev is None:
+            self.group.windows[idx_next].focus()
+        else:
+            if (idx_next - cur_idx) <= (cur_idx - prev_idx):
+                self.group.windows[idx_next].focus()
+            else:
+                self.group.windows[idx_prev].focus()
+
+    def _find_next_window(
+        self,
+        predicate: Callable[[Window], bool],
+        starting_index: int | None = None,
+        list_: Sequence[Window] | None = None,
+    ) -> int | None:
+        """Find the nearest next window that satisfies `predicate(window)`.
+        `starting_index` defaults to the current window's index.
+        If none were found, returns None.
+        """
+
+        if list_ is None:
+            list_ = self.clients
+
+        if starting_index is not None:
+            i = starting_index
+        elif isinstance(list_, self.clients.__class__):
+            i = list_.current_index + 1
+        else:
+            raise ValueError("no way to figure out starting_index")
+
+        while i < len(list_):
+            if predicate(list_[i]):
+                return i
+            i += 1
+        return None
+
+    def _find_previous_window(
+        self,
+        predicate: Callable[[Window], bool],
+        starting_index: int | None = None,
+        list_: Sequence[Window] | None = None,
+    ) -> int | None:
+        """Find the nearest previous window that satisfies `predicate(window)`.
+        `starting_index` defaults to the current window's index.
+        If none were found, returns None.
+        """
+
+        if list_ is None:
+            list_ = self.clients
+
+        if starting_index is not None:
+            i = starting_index
+        elif isinstance(list_, self.clients.__class__):
+            i = list_.current_index - 1
+        else:
+            raise ValueError("no way to figure out starting_index")
+
+        while i >= 0:
+            if predicate(list_[i]):
+                return i
+            i -= 1
+        return None
+
+    def focus_next(self, _win: Window) -> Window | None:
+        """Focus the next window on the client list that has the same floating state as the current one.
+        If no next one is found until the end, keeps the current index.
+        """
+
+        desired_floating = self.clients.current_client.floating
+        predicate = lambda w: w.floating == desired_floating
+        if (index := self._find_next_window(predicate)) is not None:
+            return self.clients[index]
+        else:
             return self.clients.current_client
-        return self.clients[cur_idx - 1]
+
+    def focus_previous(self, _win: Window) -> Window | None:
+        """Focus the previous window on the client list that has the same floating state as the current one.
+        If no previous one is found until the start, keeps the current index.
+        """
+
+        desired_floating = self.clients.current_client.floating
+        predicate = lambda w: w.floating == desired_floating
+        if (index := self._find_previous_window(predicate)) is not None:
+            return self.clients[index]
+        else:
+            return self.clients.current_client
