@@ -256,8 +256,8 @@ M.add({
       -- lisps
       "scheme", "lisp", "fennel", "janet", "clojure",
 
-      -- acrylic my beloved
-      "acrylic",
+      -- prose formats
+      "acrylic", "markdown", "latex",
     }
     sq_rule:with_pair(conds.not_after_text("["))
 

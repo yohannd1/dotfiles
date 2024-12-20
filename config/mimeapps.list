@@ -2,7 +2,9 @@
 inode/directory=filemanager.desktop
 x-scheme-handler/file=filemanager.desktop
 image/jpeg=open.desktop
+image/webp=open.desktop
 image/png=open.desktop
+image/bmp=open.desktop
 audio/x-wav=open.desktop
 audio/x-vgm=open.desktop
 audio/x-mpeg=open.desktop
