@@ -174,8 +174,18 @@ forChars("nv", function(m)
     return (":g/%s/normal "):format(result)
   end
 
-  vim.keymap.set(m, "<Leader>.", callback, {expr = true})
+  vim.keymap.set(m, "<Leader>.", callback, { expr = true })
 end)
+
+-- Per-line macros for visual ranges
+vim.cmd([[
+xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
+
+function! ExecuteMacroOverVisualRange()
+  echo "@"
+  execute ":'<,'>normal @".nr2char(getchar())
+endfunction
+]])
 
 -- I KEEP PRESSING K BUT I DONT WANT IT HELP
 forChars("nv", function(m)
