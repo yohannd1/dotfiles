@@ -7,6 +7,7 @@
   (assert (file/open "/dev/null" :r)))
 
 (var *open-gui* (-> (os/getenv "OPEN_GUI" "") (length) (> 0)))
+(var *open-new-window* (-> (os/getenv "OPEN_NEW_WINDOW" "") (length) (> 0)))
 
 (defn get-prog-output [-args]
   (def (pipe-r pipe-w) (os/pipe))
@@ -175,10 +176,18 @@
             (m :ext ["txt" "log"]))
     (t :runpage ["cat" file]))
 
+  (defn try-browser []
+    (def args @[])
+    (when (and *open-new-window*
+               (or (= BROWSER "librewolf")
+                   (= BROWSER "firefox")))
+      (array/push args "--new-window"))
+    (t :gui [BROWSER ;args file]))
+
   # urls
   (mt :protocol ["vscode" "steam"] :xdg)
   (when (m :protocol ["http" "https"])
-    (t :gui [BROWSER file])
+    (try-browser)
     (t :tty [TERMBROWSER file]))
 
   # midi
@@ -299,7 +308,7 @@
     (t :pop ["rifle-run" "run" "acrylic" file]))
 
   (when (m :ext ["htm" "html" "xhtml" "mhtml"])
-    (t :gui [BROWSER file])
+    (try-browser)
     (t :runpage ["w3m" "-dump" file])
     (t :runpage ["lynx" "-dump" "--" file])
     (t :runpage ["elinks" "-dump" file]))

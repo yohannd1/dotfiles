@@ -343,8 +343,8 @@ end
 
 ft.tex = function()
   vim.b.rifle_ft = "tex"
-  vim.b.rifle_mode = "buffer"
-  vim.b.rifle_window_height = 8
+  vim.b.rifle_mode = "bg_buffer"
+  -- vim.b.rifle_window_height = 8
   setLocals { textwidth = 72 }
 
   addMSnippet("m", [[
@@ -491,6 +491,7 @@ end
 
 ft.acrylic = function()
   addSnippet("t", "%:title ")
+  vim.b.rifle_mode = "bg_buffer"
 
   vim.b.item_toggletodo_preferred_done = "x"
   vim.b.todo_queries = {

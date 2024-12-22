@@ -39,6 +39,11 @@ M.run = function(command)
       replace = true,
       create_fn = createRifleTerm,
     })
+  elseif rifle_mode == "bg_buffer" then
+    local current_buffer = vim.api.nvim_get_current_buf()
+    vim.cmd.enew()
+    vim.fn.termopen(utils.tableJoin(cmd_prefix, {runread_path}, cmd))
+    vim.api.nvim_set_current_buf(current_buffer)
   elseif rifle_mode == "silent" then
     vim.fn.jobstart(utils.tableJoin(cmd_prefix, cmd))
   else

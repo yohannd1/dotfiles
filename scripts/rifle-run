@@ -280,12 +280,17 @@ case "$1" in
         uxnemu "$tmp/out.rom"
         ;;
       acrylic)
-        ln -s ~/.local/share/katex "$tmp/katex"
-        acr2html "$file" -o "$tmp/out.html" -k katex/
-        printf >&2 "Opening HTML output...\n"
-        open "file://$tmp/out.html"
-        printf >&2 "Opened. Press enter to end (will delete temp files).\n"
-        read -r
+        export ACR_KATEX_PATH="$XDG_DATA_DIR/katex"
+        ln -s "$ACR_KATEX_PATH" "$tmp/katex"
+
+        FILE_TO_WATCH="$file" OUTPUT_FILE="$tmp/out.html" KATEX_PATH="katex/" \
+          acr-live-preview
+
+        # acr2html "$file" -o "$tmp/out.html" -k katex/
+        # printf >&2 "Opening HTML output...\n"
+        # open "file://$tmp/out.html"
+        # printf >&2 "Opened. Press enter to end (will delete temp files).\n"
+        # read -r
         ;;
       *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
     esac ;;

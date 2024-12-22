@@ -1,0 +1,155 @@
+#!/usr/bin/env python3
+
+import os
+from time import time, sleep
+from pathlib import Path
+from dataclasses import dataclass
+from typing import Callable
+
+from subprocess import Popen
+from threading import Thread, Lock
+
+from http.server import SimpleHTTPRequestHandler
+from socketserver import TCPServer
+
+from watchdog.events import FileSystemEvent, FileSystemEventHandler, FileModifiedEvent
+from watchdog.observers import Observer
+
+# TODO: refactor this into a more generic utility, or something. I'd like this to be a library, but how do I set up a proper local-to-dotfiles python library anyway?
+# TODO: timely API on the client-side that actually waits for changes before reloading
+
+opener = os.environ.get("OPENER") or "xdg-open"
+data_lock = Lock()
+compile_lock = Lock()
+
+
+@dataclass
+class Args:
+    file_to_watch: Path
+    output_file: Path
+    katex_path: Path
+    needs_reload: bool = False
+
+
+def wait_for_changes(
+    file_to_watch: Path, event_type, callback: Callable[[FileSystemEvent], None]
+) -> None:
+    class Handler(FileSystemEventHandler):
+        def on_any_event(self, event: FileSystemEvent) -> None:
+            if (
+                isinstance(event, FileModifiedEvent)
+                and Path(event.src_path) == file_to_watch
+            ):
+                callback(event)
+
+    observer = Observer()
+    observer.schedule(Handler(), file_to_watch.parent, recursive=False)
+    observer.start()
+    observer.join()
+
+
+def compile_file(args: Args) -> None:
+    c_args = ("acr2html", args.file_to_watch)
+    c_args += ("-o", args.output_file)
+    c_args += ("-k", args.katex_path)
+
+    os.environ["OPEN_NEW_WINDOW"] = "1"
+    assert Popen(c_args).wait() == 0
+
+    with args.output_file.open("a") as f:
+        inject = """
+        <script>
+            (async () => {
+                const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+                while (true) {
+                    await sleep(3000);
+
+                    const status_ = await fetch("/api/status").then(x => x.text());
+                    if (status_ === "true")
+                        window.location.reload();
+                }
+            })();
+        </script>
+        """
+        f.write(inject)
+
+
+def observer_thread(args: Args) -> None:
+    def callback(_) -> None:
+        print(f"File modified - {args.file_to_watch}")
+
+        # TODO: a more stable monitoring system... or something. This one ends up recompiling the same file multiple times on one change. That's awful. I think I can do something with queues (in another thread. A compile thread.)
+
+        if not compile_lock.acquire():
+            return
+
+        print(f"Recompiling.")
+
+        try:
+            compile_file(args)
+
+            with data_lock:
+                args.needs_reload = True
+        finally:
+            compile_lock.release()
+
+    wait_for_changes(args.file_to_watch, FileSystemEvent, callback)
+
+
+def server_thread(args: Args) -> None:
+    class Handler(SimpleHTTPRequestHandler):
+        def __init__(self, request, client_address, server):
+            super().__init__(
+                request, client_address, server, directory=args.output_file.parent
+            )
+
+        def do_GET(self):
+            if self.path == "/api/status":
+                self.send_response(200)
+                self.send_header("Content-type", "text/plain")
+                self.end_headers()
+
+                p = Path(self.path[1:])
+
+                with data_lock:
+                    self.wfile.write(
+                        bytes("true" if args.needs_reload else "false", "utf-8")
+                    )
+                    args.needs_reload = False
+            else:
+                super().do_GET()
+
+    with TCPServer(("localhost", 0), Handler) as httpd:
+        host, port = httpd.server_address
+        url = f"http://{host}:{port}"
+
+        print(f"Server opened at {url}")
+        _ = Popen([opener, f"{url}/{args.output_file.name}"])
+
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            print("KeyboardInterrupt received - server stopped")
+
+
+def main() -> None:
+    args = Args(
+        file_to_watch=Path(os.environ["FILE_TO_WATCH"]),
+        output_file=Path(os.environ["OUTPUT_FILE"]),
+        katex_path=Path(os.environ["KATEX_PATH"]),
+    )
+
+    compile_file(args)
+
+    thread_funcs = [observer_thread, server_thread]
+    threads = [Thread(target=f, args=(args,)) for f in thread_funcs]
+
+    for t in threads:
+        t.start()
+
+    for t in threads:
+        t.join()
+
+
+if __name__ == "__main__":
+    main()
