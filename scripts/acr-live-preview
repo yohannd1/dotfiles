@@ -4,10 +4,10 @@ import os
 from time import time, sleep
 from pathlib import Path
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Any, Optional
 
 from subprocess import Popen
-from queue import Queue
+from queue import Queue, Empty
 from threading import Thread, Lock
 
 from http.server import SimpleHTTPRequestHandler
@@ -17,10 +17,8 @@ from watchdog.events import FileSystemEvent, FileSystemEventHandler, FileModifie
 from watchdog.observers import Observer
 
 # TODO: refactor this into a more generic utility, or something. I'd like this to be a library, but how do I set up a proper local-to-dotfiles python library anyway?
-# TODO: timely API on the client-side that actually waits for changes before reloading
 
 opener = os.environ.get("OPENER") or "xdg-open"
-compile_lock = Lock()
 
 
 @dataclass
@@ -33,7 +31,7 @@ class Args:
 class Broadcaster(Thread):
     def __init__(self) -> None:
         super().__init__()
-        self._queue = Queue()
+        self._queue: Queue[Any] = Queue()
         self._consumers: set[Queue] = set()
 
     def add_consumer(self, consumer: Queue) -> None:
@@ -73,7 +71,9 @@ def wait_for_changes(
             ):
                 callback(event)
 
-    observer = Observer() # TODO: Observer inherits from Thread! I think I can do this more nicely then.
+    observer = (
+        Observer()
+    )  # TODO: Observer inherits from Thread! I think I can do this more nicely then.
     observer.schedule(Handler(), file_to_watch.parent, recursive=False)
     observer.start()
     observer.join()
@@ -108,22 +108,58 @@ def compile_file(args: Args) -> None:
             inject_html(file)
 
 
+class CompilerThread(Thread):
+    def __init__(self, args: Args):
+        super().__init__()
+        self._queue: Queue[Any] = Queue()
+        self._args = args
+
+    def request_compile(self) -> None:
+        self._queue.put("compile")
+
+    def request_open(self, path: str) -> None:
+        self._queue.put(("open", path))
+
+    def run(self) -> None:
+        while True:
+            compile = False
+            open_path = None
+
+            # wait for an item, then sleep for a while and get all that piled up
+            # this way we can detected duplicated "file modified" events and avoid recompiling multiple times in a short period
+            items = [self._queue.get()]
+            sleep(0.2)
+            while True:
+                try:
+                    items.append(self._queue.get(block=False))
+                except Empty:
+                    break
+
+            for item in items:
+                match item:
+                    case "compile":
+                        compile = True
+                    case ("open", path):
+                        open_path = path
+                    case _:
+                        pass  # FIXME: error!
+
+            if compile:
+                print("** Compiling **")
+                compile_file(self._args)
+                broadcaster.broadcast("send_reload")
+
+            if open_path is not None:
+                _ = Popen([opener, open_path])
+
+
+compiler: Optional[CompilerThread] = None
+
+
 def observer_thread(args: Args) -> None:
     def callback(_) -> None:
-        print(f"File modified - {args.file_to_watch}")
-
-        # TODO: a more stable monitoring system... or something. This one ends up recompiling the same file multiple times on one change. That's awful. I think I can do something with queues (in another thread. A compile thread.)
-
-        if not compile_lock.acquire():
-            return
-
-        print(f"Recompiling.")
-
-        try:
-            compile_file(args)
-            broadcaster.broadcast("send_reload")
-        finally:
-            compile_lock.release()
+        assert compiler is not None
+        compiler.request_compile()
 
     wait_for_changes(args.file_to_watch, FileSystemEvent, callback)
 
@@ -141,14 +177,14 @@ def server_thread(args: Args) -> None:
         def flush(self) -> None:
             self.wfile.flush()
 
-        def _api_stream(self) -> None:
+        def handle_sse_stream(self) -> None:
             self.send_response(200)
             self.send_header("Content-Type", "text/event-stream")
             self.send_header("Cache-Control", "no-cache")
             self.send_header("Connection", "keep-alive")
             self.end_headers()
 
-            queue = Queue()
+            queue: Queue[Any] = Queue()
             broadcaster.add_consumer(queue)
             try:
                 while True:
@@ -158,12 +194,14 @@ def server_thread(args: Args) -> None:
                             self.flush()
                         case "stop":
                             break
+            except BrokenPipeError:
+                print("SSE connection aborted")
             finally:
                 broadcaster.remove_consumer(queue)
 
         def do_GET(self) -> None:
             if self.path == "/api/stream":
-                self._api_stream()
+                self.handle_sse_stream()
                 return
 
             super().do_GET()
@@ -171,11 +209,20 @@ def server_thread(args: Args) -> None:
     class ThreadedServer(ThreadingMixIn, TCPServer): ...
 
     with ThreadedServer(("localhost", 0), Handler) as httpd:
-        host, port = httpd.server_address
+        host_r, port = httpd.server_address
+
+        if isinstance(host_r, bytes):
+            host = host_r.decode("utf-8")
+        else:
+            assert isinstance(host_r, str)
+            host = host_r
+
         url = f"http://{host}:{port}"
 
         print(f"Server opened at {url}")
-        _ = Popen([opener, f"{url}/{args.output_file.name}"])
+
+        assert compiler is not None
+        compiler.request_open(f"{url}/{args.output_file.name}")
 
         try:
             httpd.serve_forever()
@@ -190,7 +237,10 @@ def main() -> None:
         katex_path=Path(os.environ["KATEX_PATH"]),
     )
 
-    compile_file(args)
+    global compiler
+    compiler = CompilerThread(args)
+    compiler.start()
+    compiler.request_compile()
 
     thread_funcs = [observer_thread, server_thread]
     threads = [Thread(target=f, args=(args,)) for f in thread_funcs] + [broadcaster]
