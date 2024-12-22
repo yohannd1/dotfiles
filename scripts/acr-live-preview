@@ -28,7 +28,7 @@ class Args:
     katex_path: Path
 
 
-class Broadcaster(Thread):
+class BroadcasterThread(Thread):
     def __init__(self) -> None:
         super().__init__()
         self._queue: Queue[Any] = Queue()
@@ -57,26 +57,32 @@ class Broadcaster(Thread):
                     pass  # TODO: error? idk
 
 
-broadcaster = Broadcaster()
+broadcaster = BroadcasterThread()
 
 
-def wait_for_changes(
-    file_to_watch: Path, event_type, callback: Callable[[FileSystemEvent], None]
-) -> None:
-    class Handler(FileSystemEventHandler):
-        def on_any_event(self, event: FileSystemEvent) -> None:
-            if (
-                isinstance(event, FileModifiedEvent)
-                and Path(event.src_path) == file_to_watch
-            ):
-                callback(event)
+class ChangesMonitorThread(Observer):
+    def __init__(self, file_to_watch: Path):
+        super().__init__()
+        self._callbacks: list[tuple[Any, Callable]] = []
 
-    observer = (
-        Observer()
-    )  # TODO: Observer inherits from Thread! I think I can do this more nicely then.
-    observer.schedule(Handler(), file_to_watch.parent, recursive=False)
-    observer.start()
-    observer.join()
+        cmt = self
+
+        class Handler(FileSystemEventHandler):
+            def on_any_event(self, event: FileSystemEvent) -> None:
+                if Path(event.src_path) != file_to_watch:
+                    return
+
+                for event_type, callback in cmt._callbacks:
+                    if isinstance(event, event_type):
+                        callback(event)
+
+        super().schedule(Handler(), file_to_watch.parent, recursive=False)
+
+    def on_event(self, event_type) -> None:
+        def inner(func):
+            self._callbacks.append((event_type, func))
+
+        return inner
 
 
 def compile_file(args: Args) -> None:
@@ -156,14 +162,6 @@ class CompilerThread(Thread):
 compiler: Optional[CompilerThread] = None
 
 
-def observer_thread(args: Args) -> None:
-    def callback(_) -> None:
-        assert compiler is not None
-        compiler.request_compile()
-
-    wait_for_changes(args.file_to_watch, FileSystemEvent, callback)
-
-
 def server_thread(args: Args) -> None:
     class Handler(SimpleHTTPRequestHandler):
         def __init__(self, request, client_address, server):
@@ -239,11 +237,21 @@ def main() -> None:
 
     global compiler
     compiler = CompilerThread(args)
-    compiler.start()
     compiler.request_compile()
 
-    thread_funcs = [observer_thread, server_thread]
-    threads = [Thread(target=f, args=(args,)) for f in thread_funcs] + [broadcaster]
+    changes_monitor = ChangesMonitorThread(args.file_to_watch)
+
+    @changes_monitor.on_event(FileModifiedEvent)
+    def on_file_modified(_) -> None:
+        assert compiler is not None
+        compiler.request_compile()
+
+    threads = [
+        Thread(target=lambda: server_thread(args)),
+        broadcaster,
+        changes_monitor,
+        compiler,
+    ]
 
     for t in threads:
         t.start()
