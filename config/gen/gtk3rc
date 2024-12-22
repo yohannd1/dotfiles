@@ -1,7 +1,6 @@
 #!!# vim: ft=dosini
 
 [Settings]
-#!! printf "gtk-font-name = %s\n" "$(dotcfg send 'get:gtk3.font')"
 gtk-theme-name = Adwaita-dark
 gtk-application-prefer-dark-theme = 1
 gtk-decoration-layout = menu:

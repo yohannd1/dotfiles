@@ -53,8 +53,8 @@ class BroadcasterThread(Thread):
                 case ("broadcast", message):
                     for c in self._consumers:
                         c.put(message)
-                case _:
-                    pass  # TODO: error? idk
+                case unk:
+                    print(f"WARNING: got unknown item {unk}")
 
 
 broadcaster = BroadcasterThread()
@@ -147,8 +147,8 @@ class CompilerThread(Thread):
                         compile = True
                     case ("open", path):
                         open_path = path
-                    case _:
-                        pass  # FIXME: error!
+                    case unk:
+                        print(f"WARNING: got unknown item {unk}")
 
             if compile:
                 print("** Compiling **")

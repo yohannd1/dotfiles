@@ -95,7 +95,7 @@ if vim.g.neovide then
   vim.g.neovide_cursor_vfx_mode = "ripple"
 end
 
-vim.cmd([[ command! Fgitmerge /\v^(\<{4,}|\={4,}|\>{4,}) ]])
+vim.cmd([[command! Fgitmerge /\v^(\<{4,}|\={4,}|\>{4,})]])
 
 dummy.toggleVirtualEdit = function()
   local value = (vim.o.ve == "") and "all" or ""

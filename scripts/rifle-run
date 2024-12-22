@@ -369,7 +369,7 @@ case "$1" in
 
         # proc2="$!"
         # "$python" -m pylint "$file" &
-        dmypy run --timeout 600 "$file" &
+        dmypy --status-file "$tmp/dmypy.json" run --timeout 600 "$file" &
         proc1="$!"
 
         wait "$proc1"

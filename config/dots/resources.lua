@@ -18,7 +18,7 @@ local font_presets = {
   },
   ["Iosevka"] = {
     name = "Iosevka",
-    base_size = 16,
+    base_size = 16.5,
     supports_ligatures = true, -- FIXME: I don't think so?
   },
   ["FiraCode"] = {
@@ -201,7 +201,7 @@ local T_ALL = {t_xres, t_dots}
 
 local enable_ligatures = false
 local font_size = 1.4
-local font_name = "IbmPlex"
+local font_name = "Iosevka"
 local font = getFontInfo(font_name, font_size)
 
 local fsize_term = font.base_size
