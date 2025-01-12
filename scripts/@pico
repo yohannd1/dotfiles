@@ -4,10 +4,17 @@ set -e
 PROGNAME=$(basename "$0")
 
 showHelp() {
-  printf >&2 "Usage: %s { load <FILE> | stop }\n"
-  printf >&2 "  load <FILE>: loads the specified uf2 file and resets the pico\n"
-  printf >&2 "  stop: stops the pico, putting it into bootsel mode\n"
-  printf >&2 "picotool must be installed so this can work as intended\n"
+  cat >&2 <<EOF
+Usage: %s { load <FILE> | stop }
+  load <FILE>: loads the specified uf2 file and resets the pico
+  stop: stops the pico, putting it into bootsel mode
+
+Requirements for this to work:
+  - picotool must be installed
+  - if the program was compiled with pico-sdk via CMake:
+    - pico_enable_stdio_usb is ON in CMakeLists.txt
+    - stdio_init_all is called on the main function
+EOF
   exit 2
 }
 
