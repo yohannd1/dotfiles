@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+today_id=$(acw-today-journal)
+if test $? != 0; then
+  printf >&2 "Failed to get today's journal.\n"
+  exit 1
+fi
+
+exec "$EDITOR" "$WIKI/vimwiki/$today_id.wiki"
