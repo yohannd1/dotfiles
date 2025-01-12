@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+
+set -e
+PROGNAME=$(basename "$0")
+
+showHelp() {
+  printf >&2 "Usage: %s { load <FILE> | stop }\n"
+  printf >&2 "  load <FILE>: loads the specified uf2 file and resets the pico\n"
+  printf >&2 "  stop: stops the pico, putting it into bootsel mode\n"
+  printf >&2 "picotool must be installed so this can work as intended\n"
+  exit 2
+}
+
+[ $# = 0 ] && showHelp
+
+case "$1" in
+  load)
+    [ $# = 2 ] || showHelp
+    picotool load -uxf "$2"
+    ;;
+  stop)
+    [ $# = 1 ] || showHelp
+    picotool reboot -uf
+    ;;
+  *) showHelp ;;
+esac
