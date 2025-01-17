@@ -5,9 +5,10 @@ PROGNAME=$(basename "$0")
 
 showHelp() {
   cat >&2 <<EOF
-Usage: %s { load <FILE> | stop }
+Usage: %s { load <FILE> | stop | reboot }
   load <FILE>: loads the specified uf2 file and resets the pico
   stop: stops the pico, putting it into bootsel mode
+  reboot: restarts the current running program on the pico
 
 Requirements for this to work:
   - picotool must be installed
@@ -28,6 +29,10 @@ case "$1" in
   stop)
     [ $# = 1 ] || showHelp
     picotool reboot -uf
+    ;;
+  reboot)
+    [ $# = 1 ] || showHelp
+    picotool reboot -f
     ;;
   *) showHelp ;;
 esac
