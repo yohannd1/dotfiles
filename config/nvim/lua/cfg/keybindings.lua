@@ -383,6 +383,9 @@ map("n", "<Leader>rc", [[:Rifle check<CR>]], arg_nr_s)
 map("n", "<Leader>rt", [[:Rifle test<CR>]], arg_nr_s)
 map("n", "<Leader>rd", [[:Rifle debug<CR>]], arg_nr_s)
 
+dummy.plan_sidebar = utils.Sidebar.new("~/wiki/vimwiki/202407161554-F1C8E4.acr")
+map("n", "<Leader>c", [[:lua dummy.plan_sidebar:toggle()<CR>]], arg_nr_s)
+
 -- wiki stuff
 services.defKeyMenu({
   id = "wiki",
@@ -403,10 +406,10 @@ services.defKeyMenu({
     {
       name = "References",
       keys = {
-        {"R", "lua dummy.wikiFzInsertRef({after_cursor = false})", "add reference ←"},
-        {"r", "lua dummy.wikiFzInsertRef({after_cursor = true})", "add reference →"},
-        {"N", "lua dummy.wikiNewFileInsertRef({after_cursor = false})", "new note + add reference ←"},
-        {"n", "lua dummy.wikiNewFileInsertRef({after_cursor = true})", "new note + add reference →"},
+        {"R", "lua dummy.wikiFzInsertRef({ after_cursor = false })", "add reference ←"},
+        {"r", "lua dummy.wikiFzInsertRef({ after_cursor = true })", "add reference →"},
+        {"N", "lua dummy.wikiNewFileInsertRef({ after_cursor = false })", "new note + add reference ←"},
+        {"n", "lua dummy.wikiNewFileInsertRef({ after_cursor = true })", "new note + add reference →"},
       }
     },
   },

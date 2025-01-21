@@ -196,7 +196,6 @@ do
     else
       error(("Invalid split direction: %s"):format(dir))
     end
-    vim.cmd.enew()
   end
 
   local windows = {}
@@ -278,6 +277,24 @@ M.searchLiteral = function(query)
   -- :help /\V
   local escaped = "\\V" .. vim.fn.escape(query, "\\")
   return vim.fn.search(escaped) > 0
+end
+
+M.Sidebar = {}
+M.Sidebar.__mt = { __index = M.Sidebar }
+M.Sidebar.new = function(path)
+  local tbl = { path = path }
+  return setmetatable(tbl, M.Sidebar.__mt)
+end
+M.Sidebar.toggle = function(self)
+  local id = "sidebar"
+  local opts = { create_direction = "right" }
+
+  if M.uni_win.get(id) == nil then
+    M.uni_win.focus(id, opts)
+    vim.cmd(("edit %s"):format(self.path))
+  else
+    M.uni_win.delete(id)
+  end
 end
 
 return M
