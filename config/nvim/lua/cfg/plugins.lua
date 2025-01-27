@@ -258,6 +258,9 @@ M.add({
 
       -- prose formats
       "acrylic", "markdown", "latex",
+
+      -- some other languages
+      "rust",
     }
     sq_rule:with_pair(conds.not_after_text("["))
 

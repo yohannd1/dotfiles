@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+removeFirstColumn() { cut -d' ' -f2-; }
+
+acr-get-tags \
+  | removeFirstColumn \
+  | tr ' ' '\n' \
+  | sort | uniq

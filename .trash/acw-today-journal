@@ -1,0 +1,119 @@
+#!/usr/bin/env lua
+
+local fileExists = function(name)
+    local f = io.open(name, "r")
+    if f ~= nil then
+        f:close()
+        return true
+    else
+        return false
+    end
+end
+
+local quote = function(data)
+    return string.format("%q", data)
+end
+
+local ACW_WIKI_DIR = assert(os.getenv("ACW_WIKI_DIR"), "Wiki directory (ACW_WIKI_DIR) not specified")
+
+local XDG_CACHE_HOME = os.getenv("XDG_CACHE_HOME") or (os.getenv("HOME") .. "/.cache")
+local acw_cache_folder = XDG_CACHE_HOME .. "/acw"
+local cache_file = acw_cache_folder .. "/today-journal"
+local today_date = os.date("%Y%m%d")
+
+-- Regexes
+-- local ACW_ID_REGEX = "^" .. string.rep("%d", 12) .. "-" .. string.rep("[A-F0-9]", 6) .. "$"
+
+local findTodayEntry = function()
+    local journal_entries = {}
+    do
+        local handle = assert(io.popen("acr-list-titles"))
+        for line in handle:lines() do
+            local title = line:gsub("^%d+-[A-Z0-9]+ (.*)$", "%1")
+
+            if title:match("^Journal for %s*" .. os.date("%Y/%m/%d") .. "%s*$") then
+                local id = line:gsub("^(%d+-[A-Z0-9]+).*$", "%1")
+                table.insert(journal_entries, {id = id, title = title})
+                break
+            end
+        end
+        handle:close()
+    end
+
+    if #journal_entries == 0 then
+        io.stderr:write("No entries found\n")
+        os.exit(1)
+    elseif #journal_entries == 1 then
+        return journal_entries[1].id
+    else
+        io.stderr:write("Found more than one match! (Count: ", #journal_entries, ")\n")
+        io.stderr:write("Here they are:\n")
+        for _, match in ipairs(journal_entries) do
+            io.stderr:write(
+                " - (ID ",
+                quote(match.id),
+                ") ",
+                quote(match.title),
+                "\n"
+            )
+        end
+        os.exit(1)
+    end
+end
+
+local writeTodayEntry = function(entry_id)
+    os.execute(string.format("mkdir -p %q", acw_cache_folder))
+    local handle = assert(io.open(cache_file, "w"))
+    handle:write(today_date, "\n", entry_id, "\n")
+    handle:close()
+end
+
+local getEntryFromCache = function()
+    if not fileExists(cache_file) then
+        return nil
+    end
+
+    local cache_handle = assert(io.open(cache_file, "r"))
+
+    local the_date = cache_handle:read("*line")
+    if the_date == nil then
+        assert(nil, "_")
+    end
+    the_date = the_date:gsub("^%s*", ""):gsub("%s*$", "")
+
+    local the_id = cache_handle:read("*line"):gsub("^%s*", ""):gsub("%s*$", "")
+    if the_id == nil then
+        assert(nil, "_")
+    end
+
+    cache_handle:close()
+
+    if not the_date:match("^" .. string.rep("%d", 8) .. "$") then
+        return nil
+    end
+
+    if the_date ~= today_date then
+        return nil
+    end
+
+    local possible_today_journal = ACW_WIKI_DIR .. "/" .. the_id .. ".wiki"
+
+    -- FIXME: make the ACW_ID_REGEX work so we can use it here
+    -- if not the_id:match(ACW_ID_REGEX) then
+    --     return nil
+    -- end
+
+    if not fileExists(possible_today_journal) then
+        return nil
+    end
+
+    return the_id
+end
+
+local entry = getEntryFromCache()
+if entry == nil then
+    entry = findTodayEntry()
+    writeTodayEntry(entry)
+end
+
+io.stdout:write(entry, "\n")

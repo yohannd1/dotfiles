@@ -62,33 +62,43 @@ zmodload zsh/complist
 compinit
 _comp_options+=(globdots) # include hidden files in autocomplete
 
-precmd() {
-  # get current working directory
-  local cwd="$(pwd)"
-  if grep -q '^'"$HOME" <<<"$cwd"; then
-    cwd="$(sed 's/^'"$(sed 's|/|\\/|g' <<<"$HOME")"'/~/g' <<<"$cwd")"
+# configure prompt
+{
+  precmd() {
+    local cwdAbbreviated
+    cwdAbbreviated=$(pwd | awk -v patt="^$HOME" '{ gsub(foo, "~"); print }')
+
+    # set terminal title
+    setTitle "$(whoami)@${HOST}:$cwd"
+  }
+
+  _ps1Symbol="%F{13}λ "
+  _ps1PathIndicator="%F{3}[%F{12}%~%F{3}]"
+  _ps1ExitCodeIndicator="%(?.. %F{4}exit:%F{10}%?)"
+  _ps1JobCountIndicator="%(1j. %F{4}jobs:%F{10}%j.)"
+
+  if isAndroid; then
+    _ps1Home="%F{13}... "
+  else
+    _ps1Home='%F{13}%n%F{4}@%F{13}%m '
   fi
 
-  # set terminal title
-  setTitle "$(whoami)@${HOST}:$cwd"
-}
+  if [ "$SHELL_STACK" ]; then
+    _quotedShellStack=$(printf "%q" "$SHELL_STACK")
+    _ps1ShellStackIndicator=" %F{4}stack:%F{9}$_quotedShellStack"
+  else
+    _ps1ShellStackIndicator=""
+  fi
 
-# construct prompt string
-# _ps1Symbol="%F{13}λ: "
-_ps1Symbol="%F{13}$ "
-isAndroid && _ps1Home="%F{13}... " || _ps1Home='%F{13}%n%F{4}@%F{13}%m '
-[ "$SHELL_STACK" ] && _shellStackSym=" %F{4}stack:%F{9}$(printf "%q" "$SHELL_STACK")" || _shellStackSym=""
-# PS1="
-# %F{3}[ $_ps1Home%F{14}%~%(?.. %F{4}exit:%F{10}%?)$_shellStackSym %F{3}]
-# $_ps1Symbol%b%F{5}"
-PS1="
-%F{3}(%F{12}%~%F{3})$_shellStackSym%(?.. %F{4}exit:%F{10}%?)
+  PS1="
+${_ps1PathIndicator}${_ps1ExitCodeIndicator}${_ps1JobCountIndicator}${_ps1ShellStackIndicator}
 $_ps1Symbol%b%F{5}"
 
-PS2="%F{13}| %{$reset_color%}"
-# ! isAndroid && RPROMPT='%F{11}${SHELL_STACK}'
-# ! isAndroid && RPROMPT='%F{11}$(git-branch)'
-# [ "${NNNLVL:-0}" -ge 1 ] && PS1="%B%F{3}(%F{5}n%F{3})%b $PS1"
+  PS2="%F{13}| %{$reset_color%}"
+  # ! isAndroid && RPROMPT='%F{11}${SHELL_STACK}'
+  # ! isAndroid && RPROMPT='%F{11}$(git-branch)'
+  # [ "${NNNLVL:-0}" -ge 1 ] && PS1="%B%F{3}(%F{5}n%F{3})%b $PS1"
+}
 
 # use vim keys in tab completion menu
 bindkey -M menuselect 'h' vi-backward-char

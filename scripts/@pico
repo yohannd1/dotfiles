@@ -1,0 +1,38 @@
+#!/usr/bin/env sh
+
+set -e
+PROGNAME=$(basename "$0")
+
+showHelp() {
+  cat >&2 <<EOF
+Usage: %s { load <FILE> | stop | reboot }
+  load <FILE>: loads the specified uf2 file and resets the pico
+  stop: stops the pico, putting it into bootsel mode
+  reboot: restarts the current running program on the pico
+
+Requirements for this to work:
+  - picotool must be installed
+  - if the program was compiled with pico-sdk via CMake:
+    - pico_enable_stdio_usb is ON in CMakeLists.txt
+    - stdio_init_all is called on the main function
+EOF
+  exit 2
+}
+
+[ $# = 0 ] && showHelp
+
+case "$1" in
+  load)
+    [ $# = 2 ] || showHelp
+    picotool load -uxf "$2"
+    ;;
+  stop)
+    [ $# = 1 ] || showHelp
+    picotool reboot -uf
+    ;;
+  reboot)
+    [ $# = 1 ] || showHelp
+    picotool reboot -f
+    ;;
+  *) showHelp ;;
+esac

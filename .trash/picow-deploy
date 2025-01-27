@@ -1,0 +1,67 @@
+#!/usr/bin/env sh
+
+set -e
+
+BOOTSEL_BOOT_URL="https://github.com/illusiaDecafish/bootselBoot"
+PROGNAME=$(basename "$0")
+
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+die() { printf >&2 "%s\n" "$*"; exit 1; }
+
+main() {
+  if [ $# != 1 ]; then
+    printf >&2 "Usage: %s <UF2-FILE>\n" "$PROGNAME"
+    exit 2
+  fi
+
+  preparePath
+  printf >&2 "Partition path is %s\n" "$partPath"
+  printf >&2 "Copying %s to partition...\n" "$1"
+  cp "$1" -t "$partPath"
+}
+
+preparePath() {
+  # naive attempt at getting the path
+  getPartPath && return
+
+  # try to mount and then get the path
+  printf >&2 "Failed to find RPI-RP2 path; trying to mount it...\n"
+  NO_WAIT=1 mountPart && { getPartPath; return; }
+
+  # try to use bootsel as a last resort
+  printf >&2 "Did not find RPI-RP2 partition; trying to reset on bootsel...\n"
+  tryBootsel || exit 1
+  mountPart || die "Still failed to mount RPI-RP2 partition"
+  getPartPath || die "Still failed to find RPI-RP2 path"
+}
+
+getPartPath() {
+  partPath=$(lsblk -rpo "name,label,mountpoints" | awk '$2 == "RPI-RP2" { print $3 }')
+  [ "$partPath" ] && return 0 || return 1
+}
+
+mountPart() {
+  printf >&2 "Waiting to mount partition...\n"
+  while true; do
+    picoPartition=$(lsblk -rpo "name,label" | awk '$2 == "RPI-RP2" { print $1 }')
+    [ "$picoPartition" ] && break
+    [ -z "$picoPartition" ] && [ "$NO_WAIT" ] && return 1
+  done
+
+  printf >&2 "Pico partition is %s\n" "$picoPartition"
+  printf >&2 "Mounting...\n"
+  udisksctl mount -b "$picoPartition"
+}
+
+tryBootsel() {
+  if ! exists bootselBoot; then
+    printf >&2 "Warning: bootselBoot was not found on this system - you will have to manually put the device in bootsel mode.\n"
+    printf >&2 "If you want to download it: %s\n" "$BOOTSEL_BOOT_URL"
+    return 1
+  fi
+
+  printf >&2 "Running bootselBoot (via sudo) to guarantee the pico is reset...\n"
+  sudo "$(which bootselBoot)" # shenanigans. sorry
+}
+
+main "$@"

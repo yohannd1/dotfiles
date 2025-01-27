@@ -383,6 +383,9 @@ map("n", "<Leader>rc", [[:Rifle check<CR>]], arg_nr_s)
 map("n", "<Leader>rt", [[:Rifle test<CR>]], arg_nr_s)
 map("n", "<Leader>rd", [[:Rifle debug<CR>]], arg_nr_s)
 
+dummy.plan_sidebar = utils.Sidebar.new("~/wiki/vimwiki/202407161554-F1C8E4.acr")
+map("n", "<Leader>c", [[:lua dummy.plan_sidebar:toggle()<CR>]], arg_nr_s)
+
 -- wiki stuff
 services.defKeyMenu({
   id = "wiki",
@@ -394,7 +397,7 @@ services.defKeyMenu({
         {"w", "e ~/wiki/vimwiki/index.acr", "index"},
         {"s", "e ~/wiki/vimwiki/202105021825-E80938.acr", "scratchpad"},
         {"P", "e ~/wiki/vimwiki/202407161554-F1C8E4.acr", "plan"},
-        {"p", "e ~/wiki/vimwiki/202401151901-42E4FA.acr", "week plan (2024)"},
+        {"p", "e ~/wiki/vimwiki/202501061628-CB9C1A.acr", "week plan (2024)"},
         {"o", "lua dummy.wikiFzOpen({})", "search"},
         -- {"O", "lua dummy.wikiFzOpen({}, {'acw-get-projects'})", "select a project"},
       },
@@ -403,10 +406,10 @@ services.defKeyMenu({
     {
       name = "References",
       keys = {
-        {"R", "lua dummy.wikiFzInsertRef({after_cursor = false})", "add reference ←"},
-        {"r", "lua dummy.wikiFzInsertRef({after_cursor = true})", "add reference →"},
-        {"N", "lua dummy.wikiNewFileInsertRef({after_cursor = false})", "new note + add reference ←"},
-        {"n", "lua dummy.wikiNewFileInsertRef({after_cursor = true})", "new note + add reference →"},
+        {"R", "lua dummy.wikiFzInsertRef({ after_cursor = false })", "add reference ←"},
+        {"r", "lua dummy.wikiFzInsertRef({ after_cursor = true })", "add reference →"},
+        {"N", "lua dummy.wikiNewFileInsertRef({ after_cursor = false })", "new note + add reference ←"},
+        {"n", "lua dummy.wikiNewFileInsertRef({ after_cursor = true })", "new note + add reference →"},
       }
     },
   },
