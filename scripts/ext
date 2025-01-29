@@ -133,14 +133,19 @@ printf >&2 "%s: commencing extraction...\n" "$PROGNAME"
 
 case "$mode" in
   new)
-    directory="${archive%%.*}" ## remove extension
+    # remove extension
+    partA=$(dirname "$archive")
+    partB=$(basename "$archive")
+    directory="$partA/${partB%%.*}"
+
     if [ -d "$directory" ]; then
       # TODO: be able to somehow specify the extraction directory
       printf >&2 "%s: directory '%s' already exists\n" "$PROGNAME" "$directory"
       exit 1
+    else
+      mkdir "$directory" || exit 1
     fi
 
-    mkdir -p "$directory"
     (cd "$directory" && main) || {
       isDirectoryEmpty "$directory" && rm -r "$directory"
       exit 1
