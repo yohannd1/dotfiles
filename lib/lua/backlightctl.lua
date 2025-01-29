@@ -1,6 +1,3 @@
--- local is_wayland = os.getenv("WAYLAND_DISPLAY") ~= nil
--- local is_xorg = (not is_wayland) and (os.getenv("DISPLAY") ~= nil)
-
 local stringTrim = function(str)
   return str:gsub("^%s*(.-)%s*$", "%1")
 end

@@ -416,5 +416,25 @@ services.defKeyMenu({
 })
 map("n", "<Leader>w", [[:lua require("cfg.utils").services.loadKeyMenu("wiki")<CR>]], arg_nr_s)
 
+vim.api.nvim_create_user_command("Find", function(t)
+  assert(#t.fargs == 2, "Not 2 arguments provided.")
+  vim.cmd(("silent grep %s %s"):format(t.fargs[1], t.fargs[2]))
+  vim.cmd.copen()
+end, {nargs = "*"})
+
+local quickFixIsOpen = function()
+  local t = vim.fn.filter(vim.fn.getwininfo(), "v:val.quickfix && !v:val.loclist")
+  return #t > 0
+end
+
+dummy.toggleQuickFix = function()
+  if quickFixIsOpen() then
+    vim.cmd.cclose()
+  else
+    vim.cmd.copen()
+  end
+end
+
+map("n", "<Leader>q", [[:lua dummy.toggleQuickFix()<CR>]], arg_nr_s)
 map("n", "<Leader>l", [[:messages<CR>]], arg_nr)
 map("n", "<Leader>T", [[:terminal<CR>i]], arg_nr)

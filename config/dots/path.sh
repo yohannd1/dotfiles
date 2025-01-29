@@ -38,18 +38,16 @@ globpathadd "/opt"
 globpathadd "${XDG_CACHE_HOME:-$HOME/.cache}/packs"
 
 if [ "$LUAROCKS_HOME" ]; then
-  _luaPkgsAt() {
-    printf "%s/?.lua;%s/?/init.lua" "$1" "$1"
-  }
+  _luaPkgsAt() { printf "%s/?.lua;%s/?/init.lua" "$1" "$1"; }
 
   pathadd "$LUAROCKS_HOME/bin"
+  dotfLibDir="$DOTFILES/lib/lua"
 
   # Paths for lua 5.2 and on
   for luaVer in 2 3 4; do
     shareDir="$LUAROCKS_HOME/share/lua/5.${luaVer}"
     libDir="$LUAROCKS_HOME/lib/lua/5.${luaVer}"
     lrDir="$LUAROCKS_HOME/lib/luarocks/5.${luaVer}"
-    dotfLibDir="$DOTFILES/lib"
 
     eval "export LUA_PATH_5_${luaVer}='$(_luaPkgsAt "$shareDir");$(_luaPkgsAt "$libDir");$(_luaPkgsAt "$dotfLibDir");$(_luaPkgsAt "$lrDir");;'"
     eval "export LUA_CPATH_5_${luaVer}='$libDir/loadall.so;$libDir/?.so;;'"
@@ -57,6 +55,6 @@ if [ "$LUAROCKS_HOME" ]; then
 
   # Paths for lua 5.1
   libDir="$LUAROCKS_HOME/lib/lua/5.1"
-  eval "export LUA_PATH='$(_luaPkgsAt "$LUAROCKS_HOME/share/lua/5.1");$(_luaPkgsAt "$libDir");$(_luaPkgsAt "$DOTFILES/lib");;'"
+  eval "export LUA_PATH='$(_luaPkgsAt "$LUAROCKS_HOME/share/lua/5.1");$(_luaPkgsAt "$libDir");$(_luaPkgsAt "$dotfLibDir");;'"
   eval "export LUA_CPATH='$libDir/loadall.so;$libDir/?.so;;'"
 fi

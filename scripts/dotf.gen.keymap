@@ -1,0 +1,128 @@
+#!/usr/bin/env lua
+-- vim: ft=lua sw=2 foldmethod=marker foldmarker={{{,}}} foldenable
+
+-- Initialize API {{{
+
+local function fileExists(name)
+  local f = io.open(name, "r")
+  if f ~= nil then
+    f:close()
+    return true
+  else
+    return false
+  end
+end
+
+local all_keys = {}
+local api = {}
+
+api.is_wayland = os.getenv("WAYLAND_DISPLAY") ~= nil
+api.is_xorg = not api.is_wayland and os.getenv("DISPLAY") ~= nil
+api.wm = os.getenv("WM")
+api.keymap_target = os.getenv("KEYMAP_TARGET")
+
+local DOTFILES = os.getenv("DOTFILES")
+if DOTFILES == nil then
+  io.stderr:write("Failed to get DOTFILES env var.\n")
+  os.exit(1)
+end
+
+local keymap_path = DOTFILES .. "/config/dots/keymap.lua"
+if not fileExists(keymap_path) then
+  io.stderr:write(("File %q doesn't seem to exist. The configuration should be there.\n"):format(keymap_path))
+  os.exit(1)
+end
+
+local KeyBind = {}
+do
+  local mt = { __index = KeyBind }
+
+  KeyBind.new = function()
+    return setmetatable({}, mt)
+  end
+
+  local makeSetter = function(field, type_)
+    local err = string.format("Expected value of type %s", type_)
+    return function(self, arg)
+      assert(type(arg) == type_, err)
+      self[field] = arg
+      return self
+    end
+  end
+
+  local VALID_MODIFIERS = {"shift", "ctrl", "alt", "super"}
+
+  local has = function(haystack, needle)
+    for _, x in ipairs(haystack) do
+      if x == needle then
+        return true
+      end
+    end
+    return false
+  end
+
+  KeyBind.key = function(self, keydef)
+    local mods = {}
+    local key = nil
+
+    for word in keydef:gmatch("[^%s]+") do
+      if has(VALID_MODIFIERS, word) then
+        table.insert(mods, word)
+      else
+        assert(key == nil, "More than one key specified!")
+        key = word
+      end
+    end
+
+    assert(key ~= nil, "No key specified!")
+
+    self.mods = mods
+    self.key = key
+    return self
+  end
+
+  KeyBind.desc = makeSetter("desc", "string")
+  KeyBind.map = makeSetter("map", "string")
+  KeyBind.cond = makeSetter("cond", "boolean")
+end
+
+api.key = function(key)
+  local kb = KeyBind.new():key(key)
+  table.insert(all_keys, kb)
+  return kb
+end
+-- }}}
+-- Target "sxhkd" {{{
+local sxhkd_render = function(keys, file)
+  local map = {}
+  map["enter"] = "Return"
+  map["ctrl"] = "control"
+
+  file:write("# vim: ft=conf\n")
+  file:write("# Note: this file was automatically generated.\n\n")
+
+  for _, kb in ipairs(keys) do
+    if kb.cond == nil or kb.cond then
+      local t1 = {}
+      for _, name in ipairs(kb.mods) do
+        table.insert(t1, map[name] or name)
+      end
+      table.insert(t1, map[kb.key] or kb.key)
+
+      file:write(table.concat(t1, " + "))
+      file:write("\n    ")
+      file:write(kb.map)
+      file:write("\n")
+    end
+  end
+end
+-- }}}
+
+loadfile(keymap_path)()(api) -- run the keymap
+
+if api.keymap_target == "sxhkd" then
+  sxhkd_render(all_keys, io.stdout)
+else
+  io.stderr:write(("Unknown target: %q\n"):format(api.keymap_target))
+  os.exit(1)
+end

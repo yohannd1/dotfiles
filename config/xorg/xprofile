@@ -17,7 +17,7 @@ case "$WM" in
       dwmblocks &
       pactl subscribe | grep --line-buffered "sink" | xargs -I'{}' pkill -RTMIN+10 dwmblocks >/dev/null 2>/dev/null &
     else
-      true # TODO: error
+      printf >&2 "Warning: no bar-block found for use with dwm\n"
     fi
     ;;
   pencil)
@@ -26,19 +26,10 @@ case "$WM" in
 esac
 
 # keybindings daemon
-case "$WM" in
-  bspwm)
-    start-sxhkd standard bspwm
-    ;;
-  *)
-    start-sxhkd standard
-    ;;
-esac &
+start-sxhkd &
 
 # compositor
-if [ "$WM" = dwm ]; then
-  sleep 3 # tray patch causes problems with compositor for some reason
+{
+  [ "$WM" = dwm ] && sleep 3 # tray patch causes problems with compositor for some reason
   start-compositor
-else
-  start-compositor
-fi &
+} &

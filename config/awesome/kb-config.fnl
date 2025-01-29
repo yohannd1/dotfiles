@@ -85,7 +85,8 @@
                   {:description "next layout"
                    :group "layout"})
 
-       (awful.key [mod-key ctrl alt] "s" #(awful.spawn.with_shell "start-sxhkd standard & notify-send 'sxhkd restarted!'")
+       ; TODO: import keys from dotf.gen.keymap instead of doing this
+       (awful.key [mod-key ctrl alt] "s" #(awful.spawn.with_shell "start-sxhkd & notify-send 'sxhkd restarted!'")
                   {:description "restart sxhkd"
                    :group "layout"})
 
