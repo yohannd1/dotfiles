@@ -26,7 +26,10 @@ case "$WM" in
 esac
 
 # keybindings daemon
-start-sxhkd &
+case "$WM" in
+  qtile) ;; # these don't need it
+  *) start-sxhkd & ;;
+esac
 
 # compositor
 {
