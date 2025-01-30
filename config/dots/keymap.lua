@@ -79,7 +79,7 @@ return function(api)
     :desc("open editor")
     :map("graphedit")
 
-  api.key("super y")
+  api.key("super t")
     :desc("toggle tray")
     :map([[ pkill stalonetray || stalonetray -c "$XDG_CACHE_HOME/gen/stalonetrayrc" ]])
 

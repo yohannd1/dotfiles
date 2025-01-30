@@ -92,11 +92,36 @@ api.key = function(key)
   return kb
 end
 -- }}}
+-- JSON exporter {{{
+local toJson
+toJson = function(val, file)
+  if val == nil then
+    file:write("null")
+  elseif type(val) == "string" then
+    file:write(("%q"):format(val))
+  elseif type(val) == "number" then
+    file:write(("%d"):format(val))
+  elseif type(val) == "table" then
+    -- TODO: this is only for array-type tables...
+    file:write("[")
+    for i, x in ipairs(val) do
+      toJson(x, file)
+      if i ~= #val then
+        file:write(", ")
+      end
+    end
+    file:write("]")
+  else
+    error(("Unsupported type: %q"):format(type(val)))
+  end
+end
+-- }}}
 -- Target "sxhkd" {{{
 local sxhkd_render = function(keys, file)
-  local map = {}
-  map["enter"] = "Return"
-  map["ctrl"] = "control"
+  local map = {
+    ["enter"] = "Return",
+    ["ctrl"] = "control",
+  }
 
   file:write("# vim: ft=conf\n")
   file:write("# Note: this file was automatically generated.\n\n")
@@ -117,11 +142,40 @@ local sxhkd_render = function(keys, file)
   end
 end
 -- }}}
+-- Target "qtile" {{{
+local qtile_render = function(keys, file)
+  local map = {
+    ["enter"] = "Return",
+    ["ctrl"] = "control",
+    ["super"] = "mod4",
+    ["alt"] = "mod1",
+  }
+
+  local tbl = {}
+  for _, kb in ipairs(keys) do
+    local mods = {}
+    for _, m in ipairs(kb.mods) do
+      table.insert(mods, map[m] or m)
+    end
+
+    local key = map[kb.key] or kb.key
+
+    table.insert(tbl, {mods, key, kb.desc, kb.map})
+  end
+  toJson(tbl, file)
+end
+-- }}}
 
 loadfile(keymap_path)()(api) -- run the keymap
 
-if api.keymap_target == "sxhkd" then
-  sxhkd_render(all_keys, io.stdout)
+local known_targets = {
+  sxhkd = sxhkd_render,
+  qtile = qtile_render,
+}
+
+local render_func = known_targets[api.keymap_target]
+if render_func ~= nil then
+  render_func(all_keys, io.stdout)
 else
   io.stderr:write(("Unknown target: %q\n"):format(api.keymap_target))
   os.exit(1)
