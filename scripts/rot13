@@ -14,7 +14,8 @@ while true do
     if line == nil then break end
 
     io.stdout:write(line:gsub(".", function(s)
-        local c = lookup[string.byte(s)]
+        local byte = string.byte(s)
+        local c = lookup[byte] or byte
 
         return string.char(c) or s
     end), "\n")

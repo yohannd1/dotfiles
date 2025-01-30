@@ -17,6 +17,7 @@ from watchdog.events import FileSystemEvent, FileSystemEventHandler, FileModifie
 from watchdog.observers import Observer
 
 # TODO: refactor this into a more generic utility, or something. I'd like this to be a library, but how do I set up a proper local-to-dotfiles python library anyway?
+# TODO: close everything when a KeyboardInterrupt is received
 
 opener = os.environ.get("OPENER") or "xdg-open"
 
