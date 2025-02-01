@@ -1,27 +1,72 @@
-#!/usr/bin/env sh
-
-if xrandr | grep -q 'HDMI1 connected'; then
-  hasHdmi=1
-fi
-
-calc() { echo "$*" | bc; }
+#!/usr/bin/env bash
 
 # FIXME: read these options from elsewhere (dotcfg maybe?)
-dualMonitor=
-builtinDisplay1080p=1
+USE_DUAL_MONITOR=
+USE_BUILTIN_1080P=1
+
+set -e
+
+isWayland() { [ "$WAYLAND_DISPLAY" ]; }
+isXorg() { ! isWayland && [ "$DISPLAY" ]; }
+calc() { printf "%s\n" "$*" | bc; }
+
+if isXorg; then
+  # Xorg API
+  (xrandr | grep -q 'HDMI1 connected') && hdmiDisplay='HDMI1'
+  defaultDisplay=$(xrandr | grep 'connected' | head -n1 | awk '{ print $1 }')
+  monSetConfig() {
+    [ $# = 1 ] || return 2
+    local args=()
+
+    args+=(--output "$1")
+
+    if [ "$arg_mode" ]; then
+      args+=(--mode "$arg_mode")
+    fi
+
+    if [ "$arg_scale" ]; then
+      args+=(--scale "$arg_scale")
+    fi
+
+    xrandr "${args[@]}"
+  }
+  monDisable() {
+    [ $# = 1 ] || return 2
+    xrandr --output "$1" --off
+  }
+elif isWayland && [ "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
+  # hyprctl API
+  (hyprctl monitors all | grep -q 'Monitor HDMI-A-1') && hdmiDisplay='HDMI-A-1'
+  defaultDisplay=$(hyprctl monitors all | grep '(ID 0):' | awk '{ print $2 }')
+  monSetConfig() {
+    [ $# = 1 ] || return 2
+
+    # invert scale (it's the inverse of the X scale)
+    # and add leading zero because `bc` isn't pedantic and `hyprland` is...
+    local scale='0'$(calc "scale=5; 1.0/${arg_scale:-1}")
+    hyprctl keyword monitor "$1,${arg_mode:-'auto'},${arg_offset:-auto},$scale"
+  }
+  monDisable() {
+    [ $# = 1 ] || return 2
+    hyprctl keyword monitor "$1,disable"
+  }
+else
+  printf >&2 "Failed to figure out what API to use...\n"
+  exit 1
+fi
 
 getBuiltinDisplayScale() {
-  [ "$builtinDisplay1080p" ] && calc 'scale=5; 1920/1366' || echo 1.0
+  [ "$USE_BUILTIN_1080P" ] && calc 'scale=5; 1920/1366' || echo 1.0
 }
 
-if [ "$hasHdmi" ]; then
-  xrandr --output HDMI1 --mode 1920x1080
+if [ "$hdmiDisplay" ]; then
+  arg_mode='1920x1080' arg_offset='0x0' monSetConfig "$hdmiDisplay"
 
-  if [ "$dualMonitor" ]; then
-    xrandr --output eDP1 --mode 1366x768 --scale "$(getBuiltinDisplayScale)"
+  if [ "$USE_DUAL_MONITOR" ]; then
+    arg_mode='1366x768' arg_scale=$(getBuiltinDisplayScale) monSetConfig "$defaultDisplay"
   else
-    xrandr --output eDP1 --off
+    monDisable "$defaultDisplay"
   fi
 else
-  xrandr --output eDP1 --mode 1366x768 --scale "$(getBuiltinDisplayScale)"
+  arg_mode='1366x768' arg_scale=$(getBuiltinDisplayScale) monSetConfig "$defaultDisplay"
 fi
