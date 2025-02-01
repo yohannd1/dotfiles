@@ -64,9 +64,10 @@ end
 
 local ft = {}
 local ext_ft = {}
+local ft_hooks = {}
 
 local initialize = function()
-  augroup("buffer_load", {clear = true})
+  augroup("buffer_load", { clear = true })
 
   autocmd({"BufNewFile", "BufReadPost"}, {
     pattern = "*",
@@ -82,6 +83,9 @@ local initialize = function()
           end
           break
         end
+      end
+      for _, f in ipairs(ft_hooks) do
+        f()
       end
     end
   })
@@ -163,6 +167,13 @@ ext_ft.tsx = function()
     setLocals { filetype = "xml" }
   end
 end
+
+table.insert(ft_hooks, function()
+  local filename = vim.fn.expand("%f")
+  if vim.endswith(filename, "hyprland.conf") then
+    vim.opt_local.filetype = "hyprlang"
+  end
+end)
 
 ft.actionscript = function()
   setLocals {
@@ -460,6 +471,7 @@ end
 
 ft.gdscript = function()
   setTabIndent(4)
+  vim.cmd([[ hi link @string.special.url.gdscript Function ]])
 end
 
 ft.d = function()
