@@ -49,7 +49,7 @@ local font_presets = {
   },
   ["SpaceMono"] = {
     name = "Space Mono Nerd Font",
-    base_size = 14,
+    base_size = 15,
     supports_ligatures = false, -- because of glitches (FIXME: confirm)
   },
   ["FantasqueSans"] = {
@@ -201,7 +201,7 @@ local T_ALL = {t_xres, t_dots}
 
 local enable_ligatures = false
 local font_size = 1.4
-local font_name = "CourierPrimeCode"
+local font_name = "Sudo"
 local font = getFontInfo(font_name, font_size)
 
 local fsize_term = font.base_size
@@ -213,7 +213,7 @@ end
 
 -- st (x11 terminal)
 decl {
-  {"st.alpha", "0.95"},
+  {"st.alpha", "0.7"},
   {"st.cursor", theme["base0D"]},
   {"st.font", xft_font},
   {"st.enableligatures", (enable_ligatures and font.supports_ligatures) and 1 or 0},

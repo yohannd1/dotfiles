@@ -2,7 +2,7 @@
 
 pkgname=furnace-git
 _truepkg=furnace
-pkgver=dev223.r342.g8fac1cd6e
+pkgver=dev223.r383.g215d77606
 pkgrel=1
 epoch=1
 pkgdesc="A multi-system chiptune tracker compatible with DefleMask modules"
@@ -18,7 +18,7 @@ sha256sums=()
 
 dir="$HOME/pj/code/furnace-fork"
 
-_dlog() {
+_log() {
   printf >&2 "[at %s] " "$PWD"
   printf >&2 -- "$@"
   printf >&2 "\n"
@@ -35,22 +35,26 @@ prepare() {
 }
 
 build() {
-  _dlog "BUILDING"
+  _log "BUILDING"
 
   mkdir -p build
   cd build
   if [ ! -f Makefile ]; then
-    _dlog "Makefile not found - running cmake..."
-    cmake -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_GUI=ON -DSYSTEM_FFTW=ON -DSYSTEM_FMT=OFF -DSYSTEM_ZLIB=ON -DSYSTEM_LIBSNDFILE=ON -DSYSTEM_SDL2=ON -DSYSTEM_RTMIDI=ON -DWITH_JACK=ON "$dir"
+    _log "Makefile not found - running cmake..."
+    cmake \
+      -DCMAKE_INSTALL_PREFIX=/usr \
+      -DCMAKE_BUILD_TYPE=Release
+      -DBUILD_GUI=ON -DSYSTEM_FFTW=ON -DSYSTEM_FMT=OFF -DSYSTEM_ZLIB=ON -DSYSTEM_LIBSNDFILE=ON -DSYSTEM_SDL2=ON -DSYSTEM_RTMIDI=ON -DWITH_JACK=ON \
+      "$dir"
   else
-    _dlog "Makefile found! Skipping to build"
+    _log "Makefile found! Skipping to build"
   fi
 
   cmake --build . -j$(nproc)
 }
 
 package() {
-  _dlog "PACKAGING"
+  _log "PACKAGING"
 
   DESTDIR="$pkgdir" cmake --install build
   cd "$dir"
