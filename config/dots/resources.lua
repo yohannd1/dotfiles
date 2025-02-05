@@ -213,7 +213,7 @@ end
 
 -- st (x11 terminal)
 decl {
-  {"st.alpha", "0.7"},
+  {"st.alpha", "0.75"},
   {"st.cursor", theme["base0D"]},
   {"st.font", xft_font},
   {"st.enableligatures", (enable_ligatures and font.supports_ligatures) and 1 or 0},
@@ -248,7 +248,7 @@ decl {
 -- waybar
 decl {
   {"waybar.font_family", font.name},
-  {"waybar.font_size", font.base_size * 0.9},
+  {"waybar.font_size", font.base_size * 0.8},
 
   targets = T_ALL,
 }
@@ -357,7 +357,7 @@ decl {
 decl {
   {"qtile.font-family", font.name},
   {"qtile.font-size", (font.base_size * 0.8)},
-  {"qtile.border-focus", theme["base03"]},
+  {"qtile.border-focus", theme["base04"]},
   {"qtile.border-normal", theme["base00"]},
   {"qtile.bar.bg", withAlpha(theme["base00"], 0.3)},
   {"qtile.bar.fg", theme["base05"]},

@@ -2,7 +2,7 @@
 
 pkgname=furnace-git
 _truepkg=furnace
-pkgver=dev223.r383.g215d77606
+pkgver=dev223.r390.gaae0fdd82
 pkgrel=1
 epoch=1
 pkgdesc="A multi-system chiptune tracker compatible with DefleMask modules"
@@ -39,18 +39,20 @@ build() {
 
   mkdir -p build
   cd build
-  if [ ! -f Makefile ]; then
-    _log "Makefile not found - running cmake..."
-    cmake \
-      -DCMAKE_INSTALL_PREFIX=/usr \
-      -DCMAKE_BUILD_TYPE=Release
-      -DBUILD_GUI=ON -DSYSTEM_FFTW=ON -DSYSTEM_FMT=OFF -DSYSTEM_ZLIB=ON -DSYSTEM_LIBSNDFILE=ON -DSYSTEM_SDL2=ON -DSYSTEM_RTMIDI=ON -DWITH_JACK=ON \
-      "$dir"
-  else
-    _log "Makefile found! Skipping to build"
-  fi
+  cmake \
+    -G Ninja \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_GUI=ON -DSYSTEM_FFTW=ON -DSYSTEM_FMT=OFF -DSYSTEM_ZLIB=ON -DSYSTEM_LIBSNDFILE=ON -DSYSTEM_SDL2=OFF -DSYSTEM_RTMIDI=ON -DWITH_JACK=ON \
+    "$dir"
 
-  cmake --build . -j$(nproc)
+  # if [ ! -f Makefile ]; then
+  #   _log "Makefile not found - running cmake..."
+  # else
+  #   _log "Makefile found! Skipping to build"
+  # fi
+
+  ninja
 }
 
 package() {

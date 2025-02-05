@@ -2,7 +2,7 @@
 {
     "layer": "bottom",
     "position": "top",
-    "height": 15,
+    "height": 12,
     "spacing": 0,
 
     "modules-left": [
@@ -62,4 +62,3 @@
         "icon-size": 10,
     },
 }
-

@@ -16,8 +16,8 @@ case "$1" in
   river)
     XKB_DEFAULT_LAYOUT="br" river
     ;;
-  Hyprland)
-    Hyprland
+  hyprland)
+    hyprland
     ;;
   dwl)
     (cd ~/pj/code/dwl-fork && make) && ~/pj/code/dwl-fork/dwl

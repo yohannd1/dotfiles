@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
 
-isXorg() { [ "$DISPLAY" ] && [ -z "$WAYLAND_DISPLAY" ]; }
-isWayland() { [ "$WAYLAND_DISPLAY" ]; }
+isXorg() { test "$DISPLAY" && test -z "$WAYLAND_DISPLAY"; }
+isWayland() { test "$WAYLAND_DISPLAY"; }
+isHyprland() { test "$HYPRLAND_INSTANCE_SIGNATURE"; }
 
 if isXorg; then
   xinput set-prop "Synaptics TM3096-006" "libinput Tapping Enabled" 1 # Touchpad: tap to click (not working)

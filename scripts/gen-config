@@ -10,7 +10,7 @@ main() {
   if _isAndroid; then
     ALL+=(termux)
   else
-    ALL+=(stalonetray dunst gtk3) # yambar waybar foot
+    ALL+=(stalonetray dunst gtk3 waybar foot) # yambar
   fi
 
   [ $# = 0 ] && targets=("${ALL[@]}")

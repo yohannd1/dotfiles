@@ -4,19 +4,10 @@
 
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
-isWayland() { test "$_uit" = wayland; }
-isXorg() { test "$_uit" = xorg; }
+isXorg() { test "$DISPLAY" && test -z "$WAYLAND_DISPLAY"; }
+isWayland() { test "$WAYLAND_DISPLAY"; }
 isHyprland() { test "$HYPRLAND_INSTANCE_SIGNATURE"; }
 isPipewire() { test "$_audiot" = pipewire; }
-
-if [ "$WAYLAND_DISPLAY" ]; then
-  _uit=wayland
-elif [ "$DISPLAY" ]; then
-  _uit=xorg
-else
-  printf >&2 "Not on wayland or xorg; aborting"
-  exit 1
-fi
 
 if pactl info | grep -q '^Server Name:.*PipeWire.*'; then
   _audiot=pipewire
@@ -68,7 +59,7 @@ fi
 # disable power key turnoff
 systemd-inhibit --what=handle-power-key sleep infinity &
 
-dotf.common.configure-input
+dotf.common.input-setup
 
 # yambar
 if isWayland; then
@@ -76,7 +67,7 @@ if isWayland; then
 fi
 
 # set colors for hyprland
-if [ "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
+if isHyprland; then
   bf=$(dotcfg send get:hypr.border-focus)
   bn=$(dotcfg send get:hypr.border-normal)
 
