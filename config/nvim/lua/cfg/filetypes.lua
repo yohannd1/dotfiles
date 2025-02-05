@@ -204,7 +204,7 @@ ft.c = function()
   setTabIndent(4)
   setLocals {
     foldmethod = "syntax",
-    commentstring = "/* %s */",
+    commentstring = "/* %s */", -- TODO: is there any way to figure out whether the current project is using C89 or C99? cuz this is awful...
     textwidth = 80,
     cinoptions = "g0,:0,l1,(1s"
   }
@@ -422,7 +422,7 @@ ft.python = function()
   addSnippet("c", [[from dataclasses import dataclass]])
   addSnippet("a", [[from abc import abstractmethod]])
   addSnippet("m", [[
-    def main():
+    def main() -> None:
       pass
 
     if __name__ == "__main__":
@@ -568,6 +568,10 @@ end
 
 ft.gsl = function()
   setTabIndent(4)
+end
+
+ft.cs = function()
+  setLocals { commentstring = "// %s" }
 end
 
 initialize()

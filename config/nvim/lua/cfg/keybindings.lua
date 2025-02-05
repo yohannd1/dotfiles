@@ -187,6 +187,9 @@ function! ExecuteMacroOverVisualRange()
 endfunction
 ]])
 
+-- Per-line dot
+map("x", ".", ":normal .<CR>", arg_nr)
+
 -- I KEEP PRESSING K BUT I DONT WANT IT HELP
 forChars("nv", function(m)
   map(m, "K", "<Nop>", arg_nr)
