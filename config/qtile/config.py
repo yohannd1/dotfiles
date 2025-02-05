@@ -1,4 +1,5 @@
 import os
+import re
 from typing import List
 
 from libqtile import bar, layout, widget, hook
@@ -21,8 +22,8 @@ keys = make_keyboard_map(cfg)
 mouse = make_mouse_map(cfg)
 
 layout_theme_cfg = dict(
-    border_width=4,
-    margin=6,
+    margin=7,
+    border_width=2,
     border_focus=get_res("qtile.border-focus", "#e1acff"),
     border_normal=get_res("qtile.border-normal", "#1D2330"),
 )
@@ -126,6 +127,23 @@ standard_bar = bar.Bar(
 
 screens = [Screen(top=standard_bar)]
 
+unity_matchers = [
+    re.compile(r"^UnityEditor\."),
+    re.compile(r"^Select "),
+]
+
+def is_unity_floating(win) -> bool:
+    wm_class = win.get_wm_class()
+
+    if not wm_class or wm_class[0] != "Unity":
+        return False
+
+    for r in unity_matchers:
+        if r.match(win.name) is not None:
+            return True
+
+    return False
+
 dgroups_key_binder = None
 dgroups_app_rules = []  # type: List
 follow_mouse_focus = False
@@ -142,13 +160,12 @@ floating_layout = layout.Floating(
         Match(title="branchdialog"), # gitk
 
         Match(wm_class="ssh-askpass"), # ssh-askpass
-        Match(wm_class="float"),
+        Match(wm_class="float"), # generic floating stuff
         Match(title="pinentry"), # GPG key password entry
 
-        # Unity pop-ups
-        Match(title="UnityEditor.AddComponent.AddComponentWindow"),
-        Match(title="UnityEditor.PopupWindow"),
-    ]
+        Match(func=is_unity_floating), # Unity Editor
+    ],
+    **layout_theme_cfg,
 )
 auto_fullscreen = False
 focus_on_window_activation = "smart"
