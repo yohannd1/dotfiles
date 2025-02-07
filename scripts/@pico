@@ -43,7 +43,7 @@ case "$1" in
       sleep 0.2
       printf >&2 "."
     done
-    printf >&2 " - found!\n"
+    printf >&2 " done!\n"
     picocom --echo "$fd"
     ;;
   *) showHelp ;;

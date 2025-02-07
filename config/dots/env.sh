@@ -109,6 +109,7 @@ export OPEN_ALT=dotf.unknown-filetype
 export OPEN_FALLBACK_SILENT=1
 _isAndroid || export GTK_THEME="Adwaita-dark"
 export QT_STYLE_OVERRIDE="Adwaita-Dark"
+export PYTHON_BASIC_REPL=1 # weird thing that happened but i dont care that much tbh - https://github.com/python/cpython/issues/118840
 
 # nnn config
 {
