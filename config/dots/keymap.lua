@@ -85,7 +85,7 @@ return function(api)
 
   api.key("super alt c")
     :desc("open calendar")
-    :map("dotf.wrap.terminal -c float -g 65x10 -e runread cal -3")
+    :map("dotf.wrap.terminal -c float -g 75x10 -e runread cal -w -3")
 
   api.key("super alt m")
     :desc("open mixer")

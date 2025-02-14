@@ -23,7 +23,7 @@ local font_presets = {
   },
   ["FiraCode"] = {
     name = "Fira Code Medium",
-    base_size = 14.5,
+    base_size = 15,
   },
   ["CascadiaCode"] = {
     name = "Cascadia Code",
@@ -49,8 +49,8 @@ local font_presets = {
   },
   ["SpaceMono"] = {
     name = "Space Mono Nerd Font",
-    base_size = 15,
-    supports_ligatures = false, -- because of glitches (FIXME: confirm)
+    base_size = 15.5,
+    supports_ligatures = false,
   },
   ["FantasqueSans"] = {
     name = "Fantasque Sans Mono",
@@ -201,7 +201,7 @@ local T_ALL = {t_xres, t_dots}
 
 local enable_ligatures = false
 local font_size = 1.4
-local font_name = "RobotoMono"
+local font_name = "SpaceMono"
 local font = getFontInfo(font_name, font_size)
 
 local fsize_term = font.base_size
