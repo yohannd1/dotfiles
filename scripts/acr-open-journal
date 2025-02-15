@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+set -e
+
+today=$(date +'%Y/%m/%d')
+id=$(acr-list-titles | grep "$today" | awk '{ print $1 }')
+
+"$EDITOR" "$ACR_WIKI_DIR/$id.acr"
