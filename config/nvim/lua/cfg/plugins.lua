@@ -525,10 +525,13 @@ M.afterPluginLoad = function()
     utils.addTextInLine(text, opts)
   end
 
+  -- Android is so wonky but I still use so I have to do this kinda hack.
+  local sc_acr_list_titles = ("%s/scripts/acr-list-titles"):format(vim.env.DOTFILES)
+
   dummy.wikiFzOpen = function()
     services.fuzzyPicker({
       prompt = "Search on wiki",
-      source = { command = {"acr-list-titles"} },
+      source = { command = {"lua", sc_acr_list_titles} },
       on_choice = function(choice)
         local name = vim.fn.split(choice)[1]
         vim.cmd.edit(("%s/%s.acr"):format(vim.g.acr_wiki_dir, name))
@@ -564,7 +567,7 @@ M.afterPluginLoad = function()
     local repr_string = opts.after_cursor and "after" or "before"
     services.fuzzyPicker({
       prompt = "Insert wiki file: " .. repr_string,
-      source = { command = {"acr-list-titles"} },
+      source = { command = {"lua", sc_acr_list_titles} },
       on_choice = function(choice)
         local name = vim.fn.split(choice)[1]
         wikiInsertRef(name, {

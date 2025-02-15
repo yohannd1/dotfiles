@@ -3,6 +3,8 @@
 
 local lfs = require("lfs")
 
+local unpack = _G.unpack or table.unpack
+
 local HOME = os.getenv("HOME") or error("_")
 local XDG_CACHE_HOME = os.getenv("XDG_CACHE_HOME") or (HOME .. "/.cache")
 
@@ -100,7 +102,7 @@ if fileExists(DATA_PATH) and last_gen_time >= wiki_mod_time then
     line = in_fd:read("*line")
     if line == nil then break end
 
-    local id, _, title = table.unpack(split(line, "\t"))
+    local id, _, title = unpack(split(line, "\t"))
     io.stdout:write(id, " ", title, "\n")
   end
 
