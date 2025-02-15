@@ -76,9 +76,9 @@ _comp_options+=(globdots) # include hidden files in autocomplete
   _ps1ExitCodeIndicator="%(?.. %F{4}exit:%F{10}%?)"
   _ps1JobCountIndicator="%(1j. %F{4}jobs:%F{10}%j.)"
 
-  _ps1UserIndicator="%F{10}@%m "
+  _ps1UserIndicator="%F{10}%n@%m "
   _ps1PathIndicator="%F{12}%~"
-  _ps1MainBox="%F{3}[${_ps1UserIndicator}${_ps1PathIndicator}%F{3}]"
+  _ps1MainBox="%F{3}[${_ps1PathIndicator}%F{3}]"
 
   if isAndroid; then
     _ps1Home="%F{13}... "
