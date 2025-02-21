@@ -116,7 +116,7 @@ elseif fileExists(DATA_PATH) then
       line = in_fd:read("*line")
       if line == nil then break end
 
-      local id, mod_time, title = table.unpack(split(line, "\t"))
+      local id, mod_time, title = unpack(split(line, "\t"))
       entries[id] = {mod_time = mod_time, title = title}
     end
     in_fd:close()
