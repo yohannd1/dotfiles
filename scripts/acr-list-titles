@@ -11,22 +11,14 @@ local XDG_CACHE_HOME = os.getenv("XDG_CACHE_HOME") or (HOME .. "/.cache")
 local ACW_CACHE_DIR = os.getenv("ACW_CACHE_DIR") or (XDG_CACHE_HOME .. "/acw")
 local DATA_PATH = ACW_CACHE_DIR .. "/list-titles-cache"
 
-local ACR_WIKI_DIR = HOME .. "/wiki/vimwiki"
-
+local ACR_WIKI_DIR = os.getenv("ACR_WIKI_DIR")
 if ACR_WIKI_DIR == nil or ACR_WIKI_DIR == "" then
   io.stderr:write("error: ACR_WIKI_DIR is not set\n")
   os.exit(1)
 end
 
 local function fileExists(file)
-  local ok, err, code = os.rename(file, file)
-  if not ok then
-    if code == 13 then
-      -- Permission denied, but it exists
-      return true
-    end
-  end
-  return ok, err
+  return lfs.attributes(file) ~= nil
 end
 
 local function isDirectory(path)
@@ -89,6 +81,7 @@ end
 local last_gen_time = fileExists(DATA_PATH)
   and lfs.attributes(DATA_PATH, "modification")
   or 0
+
 local wiki_mod_time = assert(lfs.attributes(ACR_WIKI_DIR, "modification"))
 
 if fileExists(DATA_PATH) and last_gen_time >= wiki_mod_time then
