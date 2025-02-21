@@ -2,7 +2,7 @@
 
 set -e
 
-today=$(date +'%Y/%m/%d')
+today=$(date +'%Y/%m/%d' -d "last saturday")
 id=$(acr-list-titles | grep "$today" | awk '{ print $1 }')
 
 "$EDITOR" "$ACR_WIKI_DIR/$id.acr"
