@@ -5,7 +5,7 @@ if [ $# != 0 ]; then
   exit 1
 fi
 
-is_git_dir() {
+isGitDir() {
   [ -d .git ] || git rev-parse --git-dir 2>/dev/null >/dev/null
 }
 
@@ -24,13 +24,11 @@ confirm() {
   esac
 }
 
-if ! is_git_dir; then
-  printf >&2 "This directory is not part of a git repository.\n"
+if ! isGitDir; then
+  printf >&2 "Error: the current directory is not part of a git repository.\n"
+  printf >&2 "You are at: %s\n" "$PWD"
   exit 1
 fi
-
-# show status
-# git status -sb
 
 # show help message
 printf >&2 "Type 'h' for help.\n"
@@ -43,6 +41,20 @@ while [ ! "$exit" ]; do
 
   # parse option
   case "$option" in
+    a)
+      git status -u --short \
+        | awk '($1 != "A") { print }' \
+        | cut -d' ' -f2- \
+        | fzagnostic -m \
+        | xargs -I{} git add {}
+      ;;
+    A)
+      git status -u --short \
+        | awk '($1 == "A") { print }' \
+        | cut -d' ' -f2- \
+        | fzagnostic -m \
+        | xargs -I{} git reset {}
+      ;;
     b)
       git branch -a | cat
       printf "Current branch: %s\n" "$(git rev-parse --abbrev-ref HEAD)"
@@ -76,23 +88,24 @@ while [ ! "$exit" ]; do
     "") exit=0 ;;
     t) tig ;;
     h) cat >&2 <<EOF ;;
-  i     info (git status -sb)
-  a     stage all changes
+  a     select files to add (stage)
+  A     select files to reset (unstage)
+  b     list branches
   c     commit
-  c     stage all changes and commit
+  C     stage all changes and commit
   d     show diff
-  p     pull
-  s     push
-  S     set upstream + push
+  f     fetch
+  h     show this message
+  i     info (git status -sb)
   l     log (compact)
   L     log (full)
-  f     fetch
-  b     list branches
-  r     list remotes
+  p     pull
   q     exit
-  ESC   exit
-  h     show this message
+  r     list remotes
+  s     push
+  S     set upstream + push
   t     open tig
+  ESC   exit
 EOF
     *) printf 'Invalid option: %q\n' "$option" ;;
   esac
