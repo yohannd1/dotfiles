@@ -459,3 +459,21 @@ if [ "$_STARTUP_DEBUG_TIME" ] && [ -z "$_startup_time_shown" ]; then
   _startup_time_shown=1
 fi
 
+xamppctl() {
+  case "$1" in
+    start) sudo xampp start ;;
+    stop) sudo xampp stop ;;
+    restart) "$0" stop; "$0" start ;;
+    *) printf >&2 "Invalid option: %s\n" "$1"; return 1 ;;
+  esac
+}
+
+sdu() { du -shc "$@" | sort -h; }
+
+ytdl() {
+  exists yt-dlp && { yt-dlp "$@"; return "$?"; }
+  exists youtube-dl && { youtube-dl "$@"; return "$?"; }
+  return 1
+}
+
+findTodos() { rg '\b(TODO|FIXME|XXX)\b'; }

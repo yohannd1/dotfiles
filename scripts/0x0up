@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+prog=$(basename "$0")
+
+if [ $# != 1 ]; then
+  printf >&2 "Usage: %s <FILE>\n" "$prog"
+  exit 2
+fi
+
+if [ -f "$1" ]; then
+  printf >&2 "Error: file #{%s} doesn't exist\n" "$1"
+  exit 1
+fi
+
+printf >&2 "To upload: %s\n" "$(file "$1")"
+printf >&2 "Continue? [y/N] "
+
+read -rk1 char
+printf "\n"
+
+case "$char" in
+  Y|y) ;;
+  N|n) exit 1 ;;
+  " "|$'\n'|$'\0'|$'\t') exit 1 ;;
+esac
+
+curl -F file=@"$1" "https://0x0.st/"
