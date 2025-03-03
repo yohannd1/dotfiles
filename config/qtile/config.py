@@ -115,7 +115,14 @@ standard_bar = bar.Bar(
         #     format="BAT {percent:.0%}",
         # ),
 
-        widget.Volume(fmt="vol: {}"),
+        widget.Volume(
+            fmt="vol: {}",
+
+            get_volume_command=r""" pactl list sinks | grep '^[[:space:]]Volume:' | awk '{ print $5 }' """,
+
+            check_mute_command=r""" pactl list sinks | grep '^[[:space:]]Mute:' | awk '{ print $2 }' """,
+            check_mute_string="yes",
+        ),
         widget.TextBox("|"),
         widget.Clock(format="%Y-%m-%d %H:%M"),
         widget.Systray(),
