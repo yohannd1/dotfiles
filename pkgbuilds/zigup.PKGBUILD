@@ -1,7 +1,7 @@
 # Based off the furnace-git one in the AUR
 
 pkgname=zigup
-pkgver=d0b471d
+pkgver=570255f
 pkgrel=1
 epoch=1
 pkgdesc="Fork of zigup"
