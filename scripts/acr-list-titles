@@ -8,8 +8,8 @@ local unpack = _G.unpack or table.unpack
 local HOME = os.getenv("HOME") or error("_")
 local XDG_CACHE_HOME = os.getenv("XDG_CACHE_HOME") or (HOME .. "/.cache")
 
-local ACW_CACHE_DIR = os.getenv("ACW_CACHE_DIR") or (XDG_CACHE_HOME .. "/acw")
-local DATA_PATH = ACW_CACHE_DIR .. "/list-titles-cache"
+local ACR_CACHE_DIR = os.getenv("ACR_CACHE_DIR") or (XDG_CACHE_HOME .. "/acr")
+local title_cache_path = ACR_CACHE_DIR .. "/list-titles-cache"
 
 local ACR_WIKI_DIR = os.getenv("ACR_WIKI_DIR")
 if ACR_WIKI_DIR == nil or ACR_WIKI_DIR == "" then
@@ -78,17 +78,21 @@ local function split(text, separator)
   return result
 end
 
-local last_gen_time = fileExists(DATA_PATH)
-  and lfs.attributes(DATA_PATH, "modification")
+local last_gen_time = fileExists(title_cache_path)
+  and lfs.attributes(title_cache_path, "modification")
   or 0
 
 local wiki_mod_time = assert(lfs.attributes(ACR_WIKI_DIR, "modification"))
 
-if fileExists(DATA_PATH) and last_gen_time >= wiki_mod_time then
+-- Try to make the cache dir
+local ok, err = lfs.mkdir(ACR_CACHE_DIR)
+assert(ok or (err == "File exists"), err)
+
+if fileExists(title_cache_path) and last_gen_time >= wiki_mod_time then
   -- The data file path exists and it's updated.
   -- Just parse the file and output its contents, as nothing here seems to have been modified recently.
 
-  local in_fd = assert(io.open(DATA_PATH, "r"))
+  local in_fd = assert(io.open(title_cache_path, "r"))
 
   local line
   while true do
@@ -100,7 +104,7 @@ if fileExists(DATA_PATH) and last_gen_time >= wiki_mod_time then
   end
 
   in_fd:close()
-elseif fileExists(DATA_PATH) then
+elseif fileExists(title_cache_path) then
   -- The data file exists but it's not updated.
   -- Open it and decide, for each file, if it's updated enough.
   -- TODO: delete entries of files that don't exist anymore
@@ -110,7 +114,7 @@ elseif fileExists(DATA_PATH) then
 
   do
     -- First of all, read the current existing data.
-    local in_fd = assert(io.open(DATA_PATH, "r"))
+    local in_fd = assert(io.open(title_cache_path, "r"))
     local line
     while true do
       line = in_fd:read("*line")
@@ -147,7 +151,7 @@ elseif fileExists(DATA_PATH) then
 
   -- For last, write back to the data file, if we need to.
   if should_rewrite then
-    local out_fd = assert(io.open(DATA_PATH, "w"))
+    local out_fd = assert(io.open(title_cache_path, "w"))
     for id, entry in pairs(entries) do
       out_fd:write(id, "\t", entry.mod_time, "\t", entry.title, "\n")
     end
@@ -157,7 +161,7 @@ else
   -- The data file doesn't exist at all.
   -- Generate the entire file, as we do not have it.
 
-  local out_fd = assert(io.open(DATA_PATH, "w"))
+  local out_fd = assert(io.open(title_cache_path, "w"))
   for file in fileIter(ACR_WIKI_DIR) do
     if file:match("%.acr$") then
       local file_path = ACR_WIKI_DIR .. "/" .. file

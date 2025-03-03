@@ -1,6 +1,12 @@
 import os, sys
 from pathlib import Path
 
+HOME = Path(os.environ["HOME"])
+
+def eprint(*args) -> None:
+    global sys
+    print(*args, file=sys.stderr)
+
 apps = []
 
 if m.is_android:
@@ -24,7 +30,7 @@ else:
         # "rofi",
         # "polybar",
 
-        "wezterm",
+        # "wezterm",
         # "alacritty",
     ]
 
@@ -41,14 +47,14 @@ apps += [
     "pulsemixer.cfg",
     "ripgreprc",
     "dots",
-    "lf",
+    # "lf",
     # "broot",
 ]
 
 for app in apps:
     m.link_conf(app, f"~/.config/{app}")
 
-m.link_conf("gdbinit", f"~/.gdbinit")
+m.link_conf("gdbinit", "~/.gdbinit")
 m.link_conf("profile", "~/.profile")
 m.link_conf("guile/guilerc", "~/.guile")
 m.link_conf("bash/bashrc", "~/.bashrc")
@@ -72,26 +78,31 @@ m.link_glob(DOTFILES / "desktop", "~/.local/share/applications")
 m.link_glob(DOTFILES / "config/kak", "~/.config/kak")
 # m.link_glob(DOTFILES / "config/vscode", "~/.config/Code/User")
 
-XDG_CACHE_HOME = Path(os.environ["XDG_CACHE_HOME"])
+try_xdg_cache_home = os.environ.get("XDG_CACHE_HOME")
+XDG_CACHE_HOME = Path(try_xdg_cache_home) if try_xdg_cache_home is not None else (HOME / ".cache")
+
 DOTS_CACHE = XDG_CACHE_HOME / "dots"
 
-print("Downloading/updating repos...", file=sys.stderr)
+repos_dir = DOTS_CACHE / "repos"
+repos_dir.mkdir(parents=True, exist_ok=True)
+eprint("Downloading/updating repos...")
 
-(DOTS_CACHE / "repos").mkdir(parents=True, exist_ok=True)
-REPOS = {
-    # "FlatColor": "https://github.com/YohananDiamond/FlatColor",
-}
-for (name, url) in REPOS.items():
-    print(f"Current repo: {name} ({url})", file=sys.stderr)
-    p = DOTS_CACHE / "repos" / name
-    if p.exists():
-        # os.system(f"cd {repr(str(p))} && git pull")
+def set_up_repo(name: str, url: str) -> None:
+    path = DOTS_CACHE / "repos" / name
+
+    eprintf(f"Will set up repo: {name} ({url}) into {path}")
+
+    if path.exists():
         pass
     else:
         os.system(f"git clone {repr(url)} {repr(str(p))}")
 
-Path("~/.themes").expanduser().mkdir(parents=True, exist_ok=True)
-m.link_glob(DOTS_CACHE / "repos/FlatColor", "~/.themes/FlatColor")
+set_up_flatcolor = False
+if set_up_flatcolor:
+    set_up_repo("FlatColor")
+    themes_path = HOME / ".themes"
+    themes_path.mkdir(parents=True, exist_ok=True)
+    m.link_glob(DOTS_CACHE / "repos/FlatColor", themes_path / "FlatColor")
 
 print("Generating config...", file=sys.stderr, end="")
 

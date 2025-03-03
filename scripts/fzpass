@@ -8,7 +8,7 @@ progName=$(basename "$0")
 showHelp() {
   printf >&2 "Usage: %s <TYPE> [OUTPUT]\n" "$progName"
   printf >&2 "  TYPE := { normal | otp }\n"
-  printf >&2 "  OUTPUT := { stdout | otp }, defaults to stdout\n"
+  printf >&2 "  OUTPUT := { stdout | copy }, defaults to stdout\n"
   exit 1
 }
 
