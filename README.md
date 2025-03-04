@@ -15,8 +15,11 @@ simply copying everything because not only it is very unsafe due to most
 scripts here being pretty buggy, but also because I believe it's better
 to only add to your system things that you understand.
 
-If you want to do it anyway, though (or if you're me! I also do this, to
-install the dotfiles on a new system), you can do:
+And it might also brick things! No guarantee, so please backup your
+system.
+
+If you want to do it anyway, though (or if you're me! I do this to
+bootstrap the dotfiles on a new machine), you can do:
 
 ```bash
 curl https://raw.githubusercontent.com/yohanandiamond/dotfiles/master/install > install.sh
@@ -24,19 +27,23 @@ cat install.sh # check it out before running...
 bash install.sh https $path_to_dotfiles
 ```
 
-It's still pretty buggy so remember to make your backups before doing
-anything, and it's probably a good idea to run this in a VM anyway.
-
 ## Folder structure
 
 * `config`: config files, mostly symlinked to `~` and `~/.config`.
 
-* `scripts`: executable files, added to PATH via `env.sh`.
+* `desktop`: .desktop files so some apps (mostly browsers) can respect my program choices.
 
 * `lib`: personal libraries for use with some scripting languages.
 
 * `patches`: some patches I usually would like to apply on a system. I
   currently have no way to automate this.
+
+* `pkgbuilds`: some pkgbuilds to install packages I use... kinda like a
+    personal AUR I guess
+
+* `scripts`: executable files, added to PATH via `env.sh`.
+
+* `share`: other generic resources
 
 * `.trash`: old files that I don't want to delete right now, but aren't
   being used in the repo. Might be unavailable if empty (due to how
