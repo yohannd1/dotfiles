@@ -115,15 +115,24 @@ standard_bar = bar.Bar(
         #     format="BAT {percent:.0%}",
         # ),
 
+        # out-volume (mic)
         widget.Volume(
-            fmt="vol: {}",
+            fmt="mic: {}",
+            get_volume_command=r""" pactl get-source-volume @DEFAULT_SOURCE@ | awk '{ print $5 }' """,
+            check_mute_command=r""" pactl get-source-mute @DEFAULT_SOURCE@ | awk '{ print $2 }' """,
+            check_mute_string="yes",
+        ),
+        widget.TextBox("|"),
 
+        # in-volume (speakers)
+        widget.Volume(
+            fmt="spk: {}",
             get_volume_command=r""" pactl list sinks | grep '^[[:space:]]Volume:' | awk '{ print $5 }' """,
-
             check_mute_command=r""" pactl list sinks | grep '^[[:space:]]Mute:' | awk '{ print $2 }' """,
             check_mute_string="yes",
         ),
         widget.TextBox("|"),
+
         widget.Clock(format="%Y-%m-%d %H:%M"),
         widget.Systray(),
     ],
