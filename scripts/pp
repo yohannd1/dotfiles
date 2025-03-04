@@ -1,8 +1,10 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #
 # pp - the text preprocessor
 # Originally by Joe Jenne (GNU GPL v3.0)
 # Original available at https://github.com/jhjn/pp
+#
+# Using bash because of \n issues...
 
 die() {
   echo >&2 "Error: $1"

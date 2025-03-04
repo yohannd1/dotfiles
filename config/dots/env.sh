@@ -173,4 +173,10 @@ if [ -r ~/.config/dircolors ]; then
   eval "$(dircolors -b ~/.config/dircolors)"
 fi
 
+case "$HOST" in
+  core2)
+    export QT_SCALE_FACTOR=1.15
+    ;;
+esac
+
 export NO_COLOR=1

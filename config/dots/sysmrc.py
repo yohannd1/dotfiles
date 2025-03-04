@@ -34,10 +34,10 @@ else:
         # "alacritty",
     ]
 
-    # for i in {2, 4}:
-    #     origin = DOTFILES / f"config/gtk-{i}.0"
-    #     if origin.is_dir():
-    #         m.link_glob(origin, f"~/.config/gtk-{i}.0")
+    for i in {2, 4}:
+        origin = DOTFILES / f"config/gtk-{i}.0"
+        if origin.is_dir():
+            m.link_glob(origin, f"~/.config/gtk-{i}.0")
 
 apps += [
     "irb",
