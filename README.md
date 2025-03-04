@@ -1,7 +1,7 @@
 **Welcome to my dotfiles repo!**
 
-This repository contains most of my config files and scripts (not all,
-though).
+This repository contains most of my the config files I've decided to
+make public. It also contains a whole lot of scripts.
 
 ## Dependencies
 
@@ -9,21 +9,19 @@ though).
 
 ## Installation
 
-This repo is very unstable. I really recommend taking a look only at
-files that interest you instead of simply copying everything because
-not only it is very unsafe due to most scripts here being pretty
-buggy, but also because I believe it's better to only add to your
-system things that you understand, instead of making it confusing with
-the imense amount of bloat that would come with getting all scripts
-from here.
+This repo is unstable, as I keep changing it constantly. I really
+recommend taking a look only at files that interest you instead of
+simply copying everything because not only it is very unsafe due to most
+scripts here being pretty buggy, but also because I believe it's better
+to only add to your system things that you understand.
 
-But if you want to do it anyway (or if you're me! I also do this, to install the
-dotfiles on a new system), you can do:
+If you want to do it anyway, though (or if you're me! I also do this, to
+install the dotfiles on a new system), you can do:
 
 ```bash
-curl https://raw.githubusercontent.com/yohanandiamond/dotfiles/master/install > install
-chmod +x install
-./install https path-to-dotfiles
+curl https://raw.githubusercontent.com/yohanandiamond/dotfiles/master/install > install.sh
+cat install.sh # check it out before running...
+bash install.sh https $path_to_dotfiles
 ```
 
 It's still pretty buggy so remember to make your backups before doing
@@ -51,8 +49,7 @@ inspiration from to build my dotfiles. There are lots of more places
 that inspired me, though - specially from r/unixporn and r/vim - and
 even though I can't possibly remember them all, I'd like to thank them.
 It has been a pretty cool experience to make, well, pretty much my own
-operating system, even though I didn't code the Linux kernel or
-something.
+"operating system" (obviously not from scratch...).
 
 * https://github.com/denysdovhan/dotfiles
 
@@ -62,4 +59,6 @@ something.
 
 * https://gist.github.com/sooop/8dc424e13c6fe2e2a663
 
-  (It's Steve Losh (sjl)'s vimrc. The [original file](https://bitbucket.org/sjl/dotfiles/src/tip/vim/vimrc) seems to be down.)
+  (It's Steve Losh (sjl)'s vimrc. The [original
+  file](https://bitbucket.org/sjl/dotfiles/src/tip/vim/vimrc) and repo
+  were deleted.)
