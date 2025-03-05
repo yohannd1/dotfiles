@@ -1,6 +1,10 @@
 #!/usr/bin/env sh
 
 printf >&2 "note: using wrapper script\n"
+
+binPath=~/.local/bin
+mkdir -p "$binPath"
+
 zigup "$@" \
   --install-dir ~/.cache/zigup \
-  --path-link ~/.local/bin/zig
+  --path-link "$binPath/zig"

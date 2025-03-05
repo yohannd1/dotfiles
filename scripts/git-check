@@ -46,6 +46,7 @@ while [ ! "$exit" ]; do
         | awk '($1 != "A") { print }' \
         | cut -d' ' -f2- \
         | fzagnostic -m \
+        | cut -d' ' -f2- \
         | xargs -I{} git add {}
       ;;
     A)
@@ -53,6 +54,7 @@ while [ ! "$exit" ]; do
         | awk '($1 == "A") { print }' \
         | cut -d' ' -f2- \
         | fzagnostic -m \
+        | cut -d' ' -f2- \
         | xargs -I{} git reset {}
       ;;
     b)
