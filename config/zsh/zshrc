@@ -27,9 +27,8 @@ sourceOneOf() {
   return 1
 }
 
-eval "$(lua "$DOTFILES/lib/z.lua" --init zsh enhanced once echo fzf)" || {
-  printf >&2 "error: failed to load z.lua\n"
-}
+eval "$(lua "$DOTFILES/lib/z.lua" --init zsh enhanced once echo fzf)" \
+  || printf >&2 "error: failed to load z.lua\n"
 
 # Load some other libraries
 sourceIf "$XDG_CONFIG_HOME/dots/env.sh"
@@ -110,30 +109,30 @@ bindkey -M menuselect 'l' vi-forward-char
 bindkey -M menuselect 'j' vi-down-line-or-history
 bindkey -v '^?' backward-delete-char
 
-function -update-mode-prompt {
+zshrc_updateRightPrompt() {
   isAndroid && return
+
   RPS1="${${KEYMAP/vicmd/[:N]}/(main|viins)}"
   RPS2=$RPS1
   zle reset-prompt
 }
 
-# change cursor shape for different vi modes
-function zle-keymap-select {
+zle-keymap-select() {
+  # change cursor shape for different vi modes
   if [ "$KEYMAP" = vicmd ] || [ "$1" = "block" ]; then
     printf '\033[1 q'
   elif [ "$KEYMAP" = main ] || [ "$KEYMAP" = viins ] \
          || [ "$KEYMAP" = '' ] || [ "$1" = 'beam' ]; then
     printf '\033[5 q'
   fi
-  -update-mode-prompt
+  zshrc_updateRightPrompt
 }
-
-function zle-line-init {
-  zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
-  -update-mode-prompt
-}
-
 zle -N zle-keymap-select
+
+zle-line-init() {
+  zle -K viins # initiate `vi insert` as keymap
+  # zshrc_updateRightPrompt # XXX: uncommenting this line glitches output when zsh-autosuggestions is not loaded... why??
+}
 zle -N zle-line-init
 
 fzhistoryGen() {
