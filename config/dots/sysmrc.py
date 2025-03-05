@@ -3,9 +3,9 @@ from pathlib import Path
 
 HOME = Path(os.environ["HOME"])
 
-def eprint(*args) -> None:
+def eprint(*args, **kwargs) -> None:
     global sys
-    print(*args, file=sys.stderr)
+    print(*args, file=sys.stderr, **kwargs)
 
 apps = []
 
@@ -90,7 +90,7 @@ eprint("Downloading/updating repos...")
 def set_up_repo(name: str, url: str) -> None:
     path = DOTS_CACHE / "repos" / name
 
-    eprintf(f"Will set up repo: {name} ({url}) into {path}")
+    eprint(f"Will set up repo: {name} ({url}) into {path}")
 
     if path.exists():
         pass
@@ -105,8 +105,8 @@ if set_up_flatcolor:
     m.link_glob(DOTS_CACHE / "repos/FlatColor", themes_path / "FlatColor")
 
 if os.system("which dotcfg >/dev/null 2>/dev/null") == 0:
-    print("Generating config...", file=sys.stderr, end="")
+    eprint("Generating config...", end="")
     os.system(DOTFILES / "scripts/gen-config")
-    print(" done!", file=sys.stderr)
+    eprint(" done!")
 else:
-    printf("dotcfg not found - skipping config generation. Please install it ASAP!")
+    eprint("dotcfg not found - skipping config generation. Please install it ASAP!")
