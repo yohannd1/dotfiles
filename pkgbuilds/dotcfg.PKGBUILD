@@ -15,7 +15,7 @@ license=('GPL')
 source=()
 sha256sums=()
 
-dir="$HOME/pj/code/dotcfg"
+dir=${SOURCE_DIR:-$HOME/pj/code/dotcfg}
 
 pkgver() {
   cd "$dir"

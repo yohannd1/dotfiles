@@ -13,7 +13,7 @@ license=('GPL')
 source=()
 sha256sums=()
 
-dir="$HOME/pj/code/sxiv-fork"
+dir=${SOURCE_DIR:-$HOME/pj/code/sxiv-fork}
 
 pkgver() {
   cd "$dir"
