@@ -277,13 +277,15 @@
     (t :pop ["rtorrent" file])
     (t :runpage ["transmission-show" "--" file]))
 
-  (mt :ext ["ods" "csv" "xlsx"]
-      :gui ["libreoffice" "--calc" file])
+  (when (m :ext ["csv"])
+    (t :pop ["csvlens" file])
+    (t :gui ["libreoffice" "--calc" file]))
 
   (mt :ext
       [
        "odt" "rtf" "docx" "doc" # text document
        "ppt" "pptx" # presentation
+       "ods" "xlsx" # spreadsheet
        "odg"
        ]
       :gui ["libreoffice" file])
