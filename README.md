@@ -5,7 +5,7 @@ make public. It also contains a whole lot of scripts.
 
 ## Dependencies
 
-- https://github.com/YohananDiamond/dotcfg
+- https://github.com/yohannd1/dotcfg
 
 ## Installation
 
@@ -22,7 +22,7 @@ If you want to do it anyway, though (or if you're me! I do this to
 bootstrap the dotfiles on a new machine), you can do:
 
 ```bash
-curl https://raw.githubusercontent.com/yohanandiamond/dotfiles/master/install > install.sh
+curl https://raw.githubusercontent.com/yohannd1/dotfiles/master/install > install.sh
 cat install.sh # check it out before running...
 bash install.sh https $path_to_dotfiles
 ```
