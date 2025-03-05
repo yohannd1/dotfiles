@@ -79,6 +79,11 @@ case "$1" in
       && mkdir -p ~/.local/share/dots \
       && echo "$(realpath -m "$2")" > ~/.local/share/dots/dotpath \
       && echo "gruvbox-dark-medium" > ~/.local/share/dots/theme \
-      && DOTFILES="$2" "$2/scripts/sysm"
+      && {
+        export DOTFILES="$2"
+        . "$DOTFILES/config/dots/env.sh"
+        . "$DOTFILES/config/dots/path.sh"
+        sysm
+      }
     ;;
 esac

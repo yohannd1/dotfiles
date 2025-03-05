@@ -104,9 +104,9 @@ if set_up_flatcolor:
     themes_path.mkdir(parents=True, exist_ok=True)
     m.link_glob(DOTS_CACHE / "repos/FlatColor", themes_path / "FlatColor")
 
-print("Generating config...", file=sys.stderr, end="")
-
-# general config
-os.system(DOTFILES / "scripts/gen-config")
-
-print(" done!", file=sys.stderr)
+if os.system("which dotcfg >/dev/null 2>/dev/null") == 0:
+    print("Generating config...", file=sys.stderr, end="")
+    os.system(DOTFILES / "scripts/gen-config")
+    print(" done!", file=sys.stderr)
+else:
+    printf("dotcfg not found - skipping config generation. Please install it ASAP!")

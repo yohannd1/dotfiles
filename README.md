@@ -22,9 +22,9 @@ If you want to do it anyway, though (or if you're me! I do this to
 bootstrap the dotfiles on a new machine), you can do:
 
 ```bash
-curl https://raw.githubusercontent.com/yohannd1/dotfiles/master/install > install.sh
-cat install.sh # check it out before running...
-bash install.sh https $path_to_dotfiles
+curl https://raw.githubusercontent.com/yohannd1/dotfiles/master/install.bash > install.bash
+cat install.bash # check it out before running...
+bash install.bash https $path_to_dotfiles
 ```
 
 ## Folder structure
