@@ -1,60 +1,69 @@
+# vim: ft=conf
+#
+# Useful reference: https://gist.github.com/matsubo/8012c260f76f1dad3ad9
+# Also see tigrc(5)
+
 set line-graphics = auto
 set tab-size = 8
 
 bind generic g none
 bind generic G none
-bind main G move-last-line
-bind stage G move-last-line
-bind main G move-last-line
 bind generic G move-last-line
 bind generic gg move-first-line
 bind generic gG move-last-line
 bind generic gk move-first-line
 bind generic gj move-last-line
 
-# Color Settings
-color "---"			blue	default
-color "diff --"			yellow	default
-color "--- "			yellow	default
-color "+++ "			yellow	default
+# better bindings for the sections...
+bind generic l view-main
+bind generic L view-log
+
+# set main-view = date:relative-compact author:yes title:yes
+set main-view = line-number:no id:no date:relative-compact author:full commit-title:yes,graph,refs,overflow=no
+
+color "Author: "		7	default
+color "Commit: "		7	default
+color "Tagger: "		7	default
+color "Merge: "			7	default
+color "Date: "			7	default
+color "AuthorDate: "		7	default
+color "CommitDate: "		7	default
+color "TaggerDate: "		7	default
+color "Refs: "			7	default
+color "Reflog: "		7	default
+color "Reflog message: "	7	default
+color "---"			2	default
+color "diff --"			3	default
+color "--- "			3	default
+color "+++ "			3	default
 color "@@"			magenta	default
-color "+"			green	default
-color " +"			green	default
-color "-"			red	default
-color " -"			red	default
+color "+"			11	default
+color " +"			11	default
+color "-"			8	default
+color " -"			8	default
 color "index "			blue	default
-color "old file mode "		yellow	default
-color "new file mode "		yellow	default
-color "deleted file mode "	yellow	default
-color "copy from "		yellow	default
-color "copy to "		yellow	default
-color "rename from "		yellow	default
-color "rename to "		yellow	default
-color "similarity "		yellow	default
-color "dissimilarity "		yellow	default
+color "old file mode "		7	default
+color "new file mode "		7	default
+color "deleted file mode "	7	default
+color "copy from "		7	default
+color "copy to "		7	default
+color "rename from "		7	default
+color "rename to "		7	default
+color "similarity "		7	default
+color "dissimilarity "		7	default
 color "\ No newline at end of file"	blue	default
 color "diff-tree "		blue	default
-color "Author: "		cyan	default
-color "Commit: "		magenta	default
-color "Tagger: "		magenta	default
-color "Merge: "			blue	default
-color "Date: "			yellow	default
-color "AuthorDate: "		yellow	default
-color "CommitDate: "		yellow	default
-color "TaggerDate: "		yellow	default
-color "Refs: "			red	default
-color "Reflog: "		red	default
-color "Reflog message: "	yellow	default
 color "stash@{"			magenta	default
-color "commit "			green	default
-color "parent "			blue	default
-color "tree "			blue	default
-color "author "			4	default
+color "commit "			6	default
+color "parent "			6	default
+color "tree "			6	default
+color "author "			6	default
 color "committer "		magenta	default
-color "    Signed-off-by"	yellow	default
-color "    Acked-by"		yellow	default
-color "    Tested-by"		yellow	default
-color "    Reviewed-by"		yellow	default
+color "    Signed-off-by"	7	default
+color "    Acked-by"		7	default
+color "    Tested-by"		7	default
+color "    Reviewed-by"		7	default
+
 color default			default	default	normal
 color cursor			6	2	
 color status			green	default
@@ -90,6 +99,9 @@ color help-action		yellow	default
 color diff-stat			blue	default
 color diff-add-highlight	green	default	standout
 color diff-del-highlight	red	default	standout
+color graph-commit		blue	default
+color search-result		black	yellow
+
 color palette-0			magenta	default
 color palette-1			yellow	default
 color palette-2			cyan	default
@@ -104,7 +116,3 @@ color palette-10		green	default	bold
 color palette-11		default	default	bold
 color palette-12		white	default	bold
 color palette-13		red	default	bold
-color graph-commit		blue	default
-color search-result		black	yellow
-
-# vim: ft=conf

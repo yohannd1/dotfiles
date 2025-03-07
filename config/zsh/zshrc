@@ -331,26 +331,25 @@ make() {
   fi
 }
 
+# fs tool aliases
 alias ls='ls --color=auto'
 alias l='ls -l'
 alias la='ls -A'
 alias du='du -shc'
 
-alias p3='python3'
-alias pip='python -m pip'
-alias jl='julia'
-alias g='git-check'
 alias e='$EDITOR'
-alias jpdo='LANG=ja_JP.UTF8 LC_ALL=ja_JP'
+
+alias g='git-check'
+alias G='tig status'
+
+alias p3='python3'
+alias pip='python3 -m pip'
 
 alias sy='dotsync'
 alias of='openfork'
 
 # sg() { dbus-launch --exit-with-session river-start; }
 sg() { WM=qtile start-xserver; }
-
-editRecentf() { filehist select "$EDITOR"; }
-alias er='editRecentf'
 
 if exists nvim; then
   alias vi='nvim' vim='nvim'
@@ -361,25 +360,6 @@ fi
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
-
-alias ..='go-up'
-go-up() {
-  for i in {1.."${1:-1}"}; do
-    cd ..
-  done
-}
-
-tmux-nest() {
-  TMUX= tmux "$@"
-}
-
-# poor man's clifm
-# cd() {
-#   builtin cd "$@" \
-#     && printf "\n" \
-#     && ls -F \
-#     && printf "------------------------------\n"
-# }
 
 # A wrapper for the `info` command
 info() {
@@ -408,7 +388,6 @@ _ept_canonicalize_str() {
   esac
 }
 
-# Translation aliases
 epic-translate() {
   local src dest text
 
