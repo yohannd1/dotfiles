@@ -55,7 +55,7 @@ return function(api)
   api.key("super comma"):desc("decrease volume"):map("volumectl dec")
   api.key("super period"):desc("increase volume"):map("volumectl inc")
   api.key("super y"):desc("toggle mute (speakers)"):map("volumectl togglemute")
-  api.key("super ctrl y"):desc("toggle mute (mic)"):map("pactl set-source-mute @DEFAULT_SOURCE@ toggle")
+  api.key("super x"):desc("toggle mute (mic)"):map("pactl set-source-mute @DEFAULT_SOURCE@ toggle")
 
   api.key("super alt comma"):desc("previous in player"):map("playerctl previous")
   api.key("super alt period"):desc("next in player"):map("playerctl next")

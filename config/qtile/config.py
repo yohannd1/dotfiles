@@ -63,8 +63,11 @@ def tasklist_window_select(tl):
         window.group.focus(window, False)
 
 @hook.subscribe.client_focus
-def on_client_focus(window):
-    window.bring_to_front()
+def on_client_focus(window) -> None:
+    # XXX: this doesn't work well with some GTK popups (specially on VirtualBox)
+    # at least checking if it's floating minimizes the issue (?)
+    if window.floating:
+        window.bring_to_front()
 
 task_list = widget.TaskList(
     mouse_callbacks={

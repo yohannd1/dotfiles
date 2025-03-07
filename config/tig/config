@@ -19,7 +19,7 @@ bind generic l view-main
 bind generic L view-log
 
 # set main-view = date:relative-compact author:yes title:yes
-set main-view = line-number:no id:no date:relative-compact author:full commit-title:yes,graph,refs,overflow=no
+set main-view = line-number:no id:no date:custom,format="%Y-%m-%d %H:%M" author:full commit-title:yes,graph,refs,overflow=no
 
 color "Author: "		7	default
 color "Commit: "		7	default
