@@ -44,6 +44,11 @@ os=$(uname -o)
 printf >&2 "Uname: %s\n" "$os"
 
 _setupDotcfg() {
+  if ! exists dotcfg; then
+    printf >&2 "*** WARNING: dotcfg not found!\n"
+    return 1
+  fi
+
   printf >&2 "*** Setting up dotcfg...\n"
   _folder=$(mktemp -d /tmp/dotcfg.XXXXXX) || {
     printf >&2 " * Failed to make temp directory\n"

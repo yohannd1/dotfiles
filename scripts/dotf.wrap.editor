@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-isTerminal() { [ -t 0 ] && [ -t 1 ] && [ -t 2 ]; }
+isTerminal() { [ -t 2 ]; }
 isWayland() { [ "$WAYLAND_DISPLAY" ]; }
 isXorg() { ! isWayland && [ "$DISPLAY" ]; }
 

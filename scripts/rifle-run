@@ -148,7 +148,11 @@ case "$1" in
         ;;
       buzz) buzz "$file" ;;
       c) gcc "$file" -o "$tmp/exe" "${cflags_c[@]}" && "$tmp/exe" ;;
-      d) dmd -run "$file" ;;
+      d)
+        dmd -run "$file"
+        # gdc "$file" -o "$tmp/exe" && "$tmp/exe"
+        # ldc --run "$file"
+        ;;
       cpp|c++|cc) g++ "$file" -o "$tmp/exe" -std=c++20 "${cflags_c[@]}" && "$tmp/exe" ;;
       cs|csharp) mcs "$file" -out:"$tmp/exe" && mono "$tmp/exe" ;;
       clojure) clojure "$file" ;;

@@ -64,14 +64,14 @@
         :ext ext} self)
 
   (defn prog-exists [progn]
-    (= 0 (os/execute ["sh" "-c" (string "command -v " progn)] :p {:out (dev-null) :err (dev-null)})))
+    (def args ["which" progn])
+    (def pipes {:out (dev-null) :err (dev-null)})
+    (-> (os/execute args :p pipes) (= 0)))
 
   (defn condit-open [prog]
     (when (prog-exists (-args 0))
       (if *open-gui*
-        (do
-          (os/exit (os/execute (array/concat @[] prog -args)
-                               :p {:in (dev-null) :err stdout})))
+        (os/exit (os/execute [;prog ;-args] :p {:in (dev-null) :err stdout}))
         (os/exit (os/execute -args :p)))))
 
   (match -type

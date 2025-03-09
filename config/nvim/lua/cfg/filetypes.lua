@@ -477,6 +477,7 @@ end
 ft.d = function()
   setSpaceIndent(4)
   vim.b.format_command = "dfmt"
+  setLocals { commentstring = "// %s" }
 end
 
 ft.json = function()

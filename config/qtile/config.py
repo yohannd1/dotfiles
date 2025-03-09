@@ -63,8 +63,11 @@ def tasklist_window_select(tl):
         window.group.focus(window, False)
 
 @hook.subscribe.client_focus
-def on_client_focus(window):
-    window.bring_to_front()
+def on_client_focus(window) -> None:
+    # XXX: this doesn't work well with some GTK popups (specially on VirtualBox)
+    # at least checking if it's floating minimizes the issue (?)
+    if window.floating:
+        window.bring_to_front()
 
 task_list = widget.TaskList(
     mouse_callbacks={
@@ -115,8 +118,24 @@ standard_bar = bar.Bar(
         #     format="BAT {percent:.0%}",
         # ),
 
-        widget.Volume(fmt="vol: {}"),
+        # out-volume (mic)
+        widget.Volume(
+            fmt="mic: {}",
+            get_volume_command=r""" pactl get-source-volume @DEFAULT_SOURCE@ | awk '{ print $5 }' """,
+            check_mute_command=r""" pactl get-source-mute @DEFAULT_SOURCE@ | awk '{ print $2 }' """,
+            check_mute_string="yes",
+        ),
         widget.TextBox("|"),
+
+        # in-volume (speakers)
+        widget.Volume(
+            fmt="spk: {}",
+            get_volume_command=r""" pactl list sinks | grep '^[[:space:]]Volume:' | awk '{ print $5 }' """,
+            check_mute_command=r""" pactl list sinks | grep '^[[:space:]]Mute:' | awk '{ print $2 }' """,
+            check_mute_string="yes",
+        ),
+        widget.TextBox("|"),
+
         widget.Clock(format="%Y-%m-%d %H:%M"),
         widget.Systray(),
     ],

@@ -3,7 +3,7 @@ pkgver=b1e742e
 pkgrel=1
 epoch=1
 pkgdesc="Fork of sxiv"
-url="https://github.com/YohananDiamond/sxiv-fork"
+url="https://github.com/yohannd1/sxiv-fork"
 depends=()
 makedepends=('git')
 optdepends=()
@@ -13,7 +13,7 @@ license=('GPL')
 source=()
 sha256sums=()
 
-dir="$HOME/pj/code/sxiv-fork"
+dir=${SOURCE_DIR:-$HOME/pj/code/sxiv-fork}
 
 pkgver() {
   cd "$dir"

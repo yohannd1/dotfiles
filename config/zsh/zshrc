@@ -27,9 +27,8 @@ sourceOneOf() {
   return 1
 }
 
-eval "$(lua "$DOTFILES/lib/z.lua" --init zsh enhanced once echo fzf)" || {
-  printf >&2 "error: failed to load z.lua\n"
-}
+eval "$(lua "$DOTFILES/lib/z.lua" --init zsh enhanced once echo fzf)" \
+  || printf >&2 "error: failed to load z.lua\n"
 
 # Load some other libraries
 sourceIf "$XDG_CONFIG_HOME/dots/env.sh"
@@ -110,30 +109,30 @@ bindkey -M menuselect 'l' vi-forward-char
 bindkey -M menuselect 'j' vi-down-line-or-history
 bindkey -v '^?' backward-delete-char
 
-function -update-mode-prompt {
+zshrc_updateRightPrompt() {
   isAndroid && return
+
   RPS1="${${KEYMAP/vicmd/[:N]}/(main|viins)}"
   RPS2=$RPS1
   zle reset-prompt
 }
 
-# change cursor shape for different vi modes
-function zle-keymap-select {
+zle-keymap-select() {
+  # change cursor shape for different vi modes
   if [ "$KEYMAP" = vicmd ] || [ "$1" = "block" ]; then
     printf '\033[1 q'
   elif [ "$KEYMAP" = main ] || [ "$KEYMAP" = viins ] \
          || [ "$KEYMAP" = '' ] || [ "$1" = 'beam' ]; then
     printf '\033[5 q'
   fi
-  -update-mode-prompt
+  zshrc_updateRightPrompt
 }
-
-function zle-line-init {
-  zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
-  -update-mode-prompt
-}
-
 zle -N zle-keymap-select
+
+zle-line-init() {
+  zle -K viins # initiate `vi insert` as keymap
+  # zshrc_updateRightPrompt # XXX: uncommenting this line glitches output when zsh-autosuggestions is not loaded... why??
+}
 zle -N zle-line-init
 
 fzhistoryGen() {
@@ -332,26 +331,25 @@ make() {
   fi
 }
 
+# fs tool aliases
 alias ls='ls --color=auto'
 alias l='ls -l'
 alias la='ls -A'
 alias du='du -shc'
 
-alias p3='python3'
-alias pip='python -m pip'
-alias jl='julia'
-alias g='git-check'
 alias e='$EDITOR'
-alias jpdo='LANG=ja_JP.UTF8 LC_ALL=ja_JP'
+
+alias g='git-check'
+alias G='tig status'
+
+alias p3='python3'
+alias pip='python3 -m pip'
 
 alias sy='dotsync'
 alias of='openfork'
 
 # sg() { dbus-launch --exit-with-session river-start; }
 sg() { WM=qtile start-xserver; }
-
-editRecentf() { filehist select "$EDITOR"; }
-alias er='editRecentf'
 
 if exists nvim; then
   alias vi='nvim' vim='nvim'
@@ -362,25 +360,6 @@ fi
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
-
-alias ..='go-up'
-go-up() {
-  for i in {1.."${1:-1}"}; do
-    cd ..
-  done
-}
-
-tmux-nest() {
-  TMUX= tmux "$@"
-}
-
-# poor man's clifm
-# cd() {
-#   builtin cd "$@" \
-#     && printf "\n" \
-#     && ls -F \
-#     && printf "------------------------------\n"
-# }
 
 # A wrapper for the `info` command
 info() {
@@ -409,7 +388,6 @@ _ept_canonicalize_str() {
   esac
 }
 
-# Translation aliases
 epic-translate() {
   local src dest text
 
@@ -459,3 +437,21 @@ if [ "$_STARTUP_DEBUG_TIME" ] && [ -z "$_startup_time_shown" ]; then
   _startup_time_shown=1
 fi
 
+xamppctl() {
+  case "$1" in
+    start) sudo xampp start ;;
+    stop) sudo xampp stop ;;
+    restart) "$0" stop; "$0" start ;;
+    *) printf >&2 "Invalid option: %s\n" "$1"; return 1 ;;
+  esac
+}
+
+sdu() { du -shc "$@" | sort -h; }
+
+ytdl() {
+  exists yt-dlp && { yt-dlp "$@"; return "$?"; }
+  exists youtube-dl && { youtube-dl "$@"; return "$?"; }
+  return 1
+}
+
+findTodos() { rg '\b(TODO|FIXME|XXX)\b'; }

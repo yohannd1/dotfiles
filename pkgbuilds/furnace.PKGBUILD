@@ -2,7 +2,7 @@
 
 pkgname=furnace-git
 _truepkg=furnace
-pkgver=dev223.r390.gaae0fdd82
+pkgver=aae0fdd82
 pkgrel=1
 epoch=1
 pkgdesc="A multi-system chiptune tracker compatible with DefleMask modules"
@@ -16,7 +16,7 @@ license=('GPL')
 source=()
 sha256sums=()
 
-dir="$HOME/pj/code/furnace-fork"
+dir=${SOURCE_DIR:-$HOME/pj/code/furnace-fork}
 
 _log() {
   printf >&2 "[at %s] " "$PWD"
@@ -26,8 +26,8 @@ _log() {
 
 pkgver() {
   cd "$dir"
-  # git co yohanan >/dev/null
-  git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
+  git rev-parse --short HEAD
+  # git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 prepare() {

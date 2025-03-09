@@ -27,8 +27,8 @@ usage() {
 [ $# != 2 ] && usage
 
 case "$1" in
-  https|https-shallow) DOTFILES_URL="https://github.com/YohananDiamond/dotfiles" ;;
-  ssh|https-to-ssh) DOTFILES_URL="git@github.com:yohanandiamond/dotfiles" ;;
+  https|https-shallow) DOTFILES_URL="https://github.com/yohannd1/dotfiles" ;;
+  ssh|https-to-ssh) DOTFILES_URL="git@github.com:yohannd1/dotfiles" ;;
   *)
     printf >&2 "Invalid ACTION: %s\n" "$1"
     printf >&2 "\n"
@@ -79,6 +79,11 @@ case "$1" in
       && mkdir -p ~/.local/share/dots \
       && echo "$(realpath -m "$2")" > ~/.local/share/dots/dotpath \
       && echo "gruvbox-dark-medium" > ~/.local/share/dots/theme \
-      && DOTFILES="$2" "$2/scripts/sysm"
+      && {
+        export DOTFILES="$2"
+        . "$DOTFILES/config/dots/env.sh"
+        . "$DOTFILES/config/dots/path.sh"
+        sysm
+      }
     ;;
 esac

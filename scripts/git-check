@@ -46,6 +46,7 @@ while [ ! "$exit" ]; do
         | awk '($1 != "A") { print }' \
         | cut -d' ' -f2- \
         | fzagnostic -m \
+        | cut -d' ' -f2- \
         | xargs -I{} git add {}
       ;;
     A)
@@ -53,6 +54,7 @@ while [ ! "$exit" ]; do
         | awk '($1 == "A") { print }' \
         | cut -d' ' -f2- \
         | fzagnostic -m \
+        | cut -d' ' -f2- \
         | xargs -I{} git reset {}
       ;;
     b)
@@ -86,7 +88,7 @@ while [ ! "$exit" ]; do
     "") clear ;;
     "") exit=0 ;;
     "") exit=0 ;;
-    t) tig ;;
+    t) tig status ;;
     h) cat >&2 <<EOF ;;
   a     select files to add (stage)
   A     select files to reset (unstage)
@@ -104,7 +106,7 @@ while [ ! "$exit" ]; do
   r     list remotes
   s     push
   S     set upstream + push
-  t     open tig
+  t     open tig (tig status)
   ESC   exit
 EOF
     *) printf 'Invalid option: %q\n' "$option" ;;

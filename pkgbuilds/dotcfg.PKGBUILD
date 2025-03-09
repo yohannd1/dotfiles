@@ -5,7 +5,7 @@ pkgver=a99c374
 pkgrel=1
 epoch=1
 pkgdesc="Personal configuration daemon"
-url="https://github.com/YohananDiamond/dotcfg"
+url="https://github.com/yohannd1/dotcfg"
 depends=()
 makedepends=('git' 'zig')
 optdepends=()
@@ -15,7 +15,7 @@ license=('GPL')
 source=()
 sha256sums=()
 
-dir="$HOME/pj/code/dotcfg"
+dir=${SOURCE_DIR:-$HOME/pj/code/dotcfg}
 
 pkgver() {
   cd "$dir"

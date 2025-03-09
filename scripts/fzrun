@@ -164,7 +164,7 @@
       (fn [] (edit-recent))]
 
      ;(match (file/open FZRUN-RECENT-CMDS :r)
-        nil nil
+        nil []
         f (->> (:read f :all)
                (string/split "\n")
                (map |(string/trim $))

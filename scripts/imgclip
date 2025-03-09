@@ -3,9 +3,9 @@
 PROGNAME=$(basename "$0")
 
 if [ "$WAYLAND_DISPLAY" ]; then
-  clipCopy() { wl-copy -t "$1" "$2"; }
+  readToClipboard() { wl-copy -t "$1"; }
 else
-  clipCopy() { xclip -sel clipboard -t "$1" "$2"; }
+  readToClipboard() { xclip -sel clip -t "$1"; }
 fi
 
 main() {
@@ -23,19 +23,19 @@ main() {
   type=$(file -b --mime-type "$1") || exit 1
 
   case "$type" in
-    image/png)
-      clipCopy "$type" "$1"
-      ;;
+    # utterly trivial compared to the other messes...
+    image/png) cat "$1" | readToClipboard "$type" ;;
 
-    image/jpeg)
-      newImg=$(mktemp '/tmp/XXXXXXXX.png') || exit 1
-      mogrify -format 'png' -write "$newImg" "$1"
-      main "$newImg"
-      rm -f "$newImg"
+    image/jpeg|image/webp|image/gif)
+      # firefox/chromium/xclip (not sure who exactly) struggle with jpeg for some weird reason, so we have to spoof the mimetype.
+      # in case I ever need it: there's also converting with `magick "$1" -quality 4 -format png - | readToClipboard 'image/png'`
+      # FIXME: is this needed in wayland? or is it just an issue with xclip?
+      cat "$1" | readToClipboard 'image/png'
       ;;
 
     *)
-      msg "Unknown type: $type"
+      msg "Warning: unknown type: $type - copying might not work!"
+      cat "$1" | readToClipboard 'image/png'
       exit 1
       ;;
   esac
