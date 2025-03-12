@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+progname=$(basename "$0")
+
+showHelp() {
+  printf >&2 "Usage: %s [--output <OUTPUT>] [--mode <MODE>] [--scale <SCALE>]\n" "$progname"
+  exit 2
+}
+
+[ $# = 0 ] && showHelp
+
+die() {
+  printf >&2 "%s\n" "$*"
+  exit 1
+}
+
+getArg() {
+  if [ $# = 0 ]; then
+    printf >&2 "Missing value for argument %s\n" "$1"
+    exit 2
+  fi
+  printf "%s\n" "$2"
+}
+
+if [ "$WAYLAND_DISPLAY" ]; then
+  printf >&2 "Wayland is not yet supported! Sorry\n"
+  exit 1
+elif [ "$DISPLAY" ]; then
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --output)
+        shift
+        arg_output=$(getArg '--output' "$1")
+        ;;
+
+      --scale)
+        die "Scale not yet supported"
+        ;;
+
+      --mode)
+        shift
+        arg_mode=$(getArg '--mode' "$1")
+        ;;
+
+      --help)
+        showHelp
+        ;;
+    esac
+    shift
+  done
+
+  args=()
+
+  if [ "$arg_output" ]; then
+    args+=(--output "$arg_output")
+  else
+    output=$(xrandr --listactivemonitors | tail +2 | head -n1 | awk '{ print $4 }')
+    args+=(--output "$output")
+  fi
+
+  [ "$arg_mode" ] && args+=(--mode "$arg_mode")
+
+  xrandr "${args[@]}"
+else
+  printf >&2 "Neither WAYLAND_DISPLAY nor DISPLAY is set.\n"
+  exit 1
+fi
