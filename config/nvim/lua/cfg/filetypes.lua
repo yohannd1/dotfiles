@@ -575,4 +575,16 @@ ft.cs = function()
   setLocals { commentstring = "// %s" }
 end
 
+ft.editorconfig = function()
+  addSnippet("m", [[
+    root = true
+
+    [*.{cc,hh}]
+    indent_style = space
+    indent_size = 4
+    trim_trailing_whitespace = true
+    insert_final_newline = true
+  ]])
+end
+
 initialize()

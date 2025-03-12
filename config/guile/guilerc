@@ -1,4 +1,5 @@
 ;; -*- mode: scheme -*-
+;; vim: ft=scheme
 
 (use-modules (ice-9 readline)
              (ice-9 history))
