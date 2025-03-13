@@ -65,10 +65,10 @@ _comp_options+=(globdots) # include hidden files in autocomplete
 {
   precmd() {
     local cwdAbbreviated
-    cwdAbbreviated=$(pwd | awk -v patt="^$HOME" '{ gsub(foo, "~"); print }')
+    cwdAbbreviated=$(pwd | awk -v patt="^$HOME" '{ gsub(patt, "~"); print }')
 
     # set terminal title
-    setTitle "$(whoami)@${HOST}:$cwd"
+    setTitle "$(whoami)@${HOST}:$cwdAbbreviated"
   }
 
   _ps1Symbol="%F{13}λ "

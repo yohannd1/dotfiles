@@ -38,7 +38,6 @@ export XDG_DATA_HOME="$XDG_DATA_DIR"
 export ACR_WIKI_DIR="$HOME/wiki/vimwiki"
 
 # global options
-export TERM=xterm-256color
 export EDITOR=dotf.wrap.editor
 export TERMUX_SHELL=zsh
 

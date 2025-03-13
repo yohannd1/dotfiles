@@ -61,6 +61,11 @@ systemd-inhibit --what=handle-power-key sleep infinity &
 
 dotf.common.input-setup
 
+# alt tab program! might be useful
+if isXorg; then
+  alttab -d 1
+fi
+
 # yambar
 if isWayland; then
   waybar &
