@@ -324,8 +324,9 @@ dummy.openCurrentWORD = function()
   local matchstr = vim.fn.matchstr
   local cword = vim.fn.expand("<cWORD>")
 
-  local url = matchstr(cword, [[\v(https?|www\.)://[a-zA-Z0-9/\-\.%_?#=&+~:()]+]])
-  if #url > 0 then
+  local url_result = matchstr(cword, [[\v(https?|www\.)://[a-zA-Z0-9/\-\.%_?#=&+~:()]+]])
+  if #url_result > 0 then
+    local url = cword
     print("Found URL: " .. url)
     local browser = assert(vim.env.BROWSER, "Could not find a suitable browser to open the WORD (set it via $BROWSER)")
 
@@ -420,10 +421,9 @@ services.defKeyMenu({
 map("n", "<Leader>w", [[:lua require("cfg.utils").services.loadKeyMenu("wiki")<CR>]], arg_nr_s)
 
 vim.api.nvim_create_user_command("Find", function(t)
-  assert(#t.fargs == 2, "Not 2 arguments provided.")
-  vim.cmd(("silent grep %s %s"):format(t.fargs[1], t.fargs[2]))
+  vim.cmd(("silent grep %s"):format(t.args))
   vim.cmd.copen()
-end, {nargs = "*"})
+end, { nargs = "*" })
 
 local quickFixIsOpen = function()
   local t = vim.fn.filter(vim.fn.getwininfo(), "v:val.quickfix && !v:val.loclist")
