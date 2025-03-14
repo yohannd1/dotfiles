@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+set -e
+
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
+if exists ldc; then LDC=ldc
+elif exists ldc2; then LDC=ldc2
+else
+  printf >&2 "Could not figure out LDC...\n"
+  exit 1
+fi
+
+cd "$DOTFILES/compiled"
+"$LDC" acr_list_titles.d --od=build/ --of=build/acr-list-titles
+cp build/acr-list-titles -t ~/.local/bin
