@@ -40,7 +40,7 @@ local font_presets = {
   },
   ["UbuntuMono"] = {
     name = "Ubuntu Mono",
-    base_size = 17,
+    base_size = 17.5,
     supports_ligatures = false,
   },
   ["RobotoMono"] = {
@@ -201,7 +201,7 @@ local T_ALL = {t_xres, t_dots}
 
 local enable_ligatures = false
 local font_size = 1.4
-local font_name = "CascadiaCode"
+local font_name = "UbuntuMono"
 local font = getFontInfo(font_name, font_size)
 
 local fsize_term = font.base_size
