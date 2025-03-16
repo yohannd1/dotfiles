@@ -13,6 +13,14 @@ local function fileExists(name)
   end
 end
 
+local tableSize = function(t)
+  local i = 0
+  for _, _ in pairs(t) do
+    i = i + 1
+  end
+  return i
+end
+
 local all_keys = {}
 local api = {}
 
@@ -27,7 +35,7 @@ if DOTFILES == nil then
   os.exit(1)
 end
 
-local keymap_path = DOTFILES .. "/config/dots/keymap.lua"
+local keymap_path = ("%s/config/dots/keymap.lua"):format(DOTFILES)
 if not fileExists(keymap_path) then
   io.stderr:write(("File %q doesn't seem to exist. The configuration should be there.\n"):format(keymap_path))
   os.exit(1)
@@ -102,15 +110,32 @@ toJson = function(val, file)
   elseif type(val) == "number" then
     file:write(("%d"):format(val))
   elseif type(val) == "table" then
-    -- TODO: this is only for array-type tables...
-    file:write("[")
-    for i, x in ipairs(val) do
-      toJson(x, file)
-      if i ~= #val then
-        file:write(", ")
+    local ts = tableSize(val)
+    local is_array = ts == #val
+
+    if is_array then
+      file:write("[")
+      for i, x in ipairs(val) do
+        toJson(x, file)
+        if i ~= #val then
+          file:write(", ")
+        end
       end
+      file:write("]")
+    else
+      file:write("{")
+      local i = 1
+      for k, v in pairs(val) do
+        toJson(k, file)
+        file:write(": ")
+        toJson(v, file)
+        if i ~= ts then
+          file:write(", ")
+        end
+        i = i + 1
+      end
+      file:write("}")
     end
-    file:write("]")
   else
     error(("Unsupported type: %q"):format(type(val)))
   end
@@ -175,8 +200,9 @@ local known_targets = {
 
 local render_func = known_targets[api.keymap_target]
 if render_func ~= nil then
-  render_func(all_keys, io.stdout)
+  -- render_func(all_keys, io.stdout)
+  toJson({a = 10, b = { 1, 2, 3 }}, io.stdout)
 else
-  io.stderr:write(("Unknown target: %q\n"):format(api.keymap_target))
+  io.stderr:write(("Unknown target: %q. Set it with KEYMAP_TARGET\n"):format(api.keymap_target))
   os.exit(1)
 end
