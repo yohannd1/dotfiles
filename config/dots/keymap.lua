@@ -25,15 +25,21 @@ return function(api)
     :desc("power menu")
     :map("runnsend error-and-output fzpow")
 
+  local screenshot_select_cmd = api.is_xorg
+    and "runnsend error ksnip -r"
+    or "runnsend error dotf.screenshot"
+
   api.key("super c")
     :desc("screenshot (with selection)")
-    :cond(api.is_xorg) -- TODO: use `dotf.screenshot` on wayland, idk
-    :map("runnsend error ksnip -r")
+    :map(screenshot_select_cmd)
+
+  local screenshot_full_cmd = api.is_xorg
+    and "runnsend error ksnip -f"
+    or "runnsend error dotf.screenshot --full"
 
   api.key("super shift c")
     :desc("screenshot (full screen)")
-    :cond(api.is_xorg) -- TODO: use `dotf.screenshot` on wayland, idk
-    :map("runnsend error ksnip -f")
+    :map(screenshot_full_cmd)
 
   api.key("super F10")
     :desc("mount menu")
@@ -55,7 +61,9 @@ return function(api)
   api.key("super comma"):desc("decrease volume"):map("volumectl dec")
   api.key("super period"):desc("increase volume"):map("volumectl inc")
   api.key("super y"):desc("toggle mute (speakers)"):map("volumectl togglemute")
-  api.key("super x"):desc("toggle mute (mic)"):map("pactl set-source-mute @DEFAULT_SOURCE@ toggle")
+
+  local mute_cmd = [[ pactl set-source-mute @DEFAULT_SOURCE@ toggle; notify-send "$(pactl get-source-mute @DEFAULT_SOURCE@)" ]]
+  api.key("super x"):desc("toggle mute (mic)"):map(mute_cmd)
 
   api.key("super alt comma"):desc("previous in player"):map("playerctl previous")
   api.key("super alt period"):desc("next in player"):map("playerctl next")

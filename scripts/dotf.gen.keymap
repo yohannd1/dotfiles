@@ -200,8 +200,7 @@ local known_targets = {
 
 local render_func = known_targets[api.keymap_target]
 if render_func ~= nil then
-  -- render_func(all_keys, io.stdout)
-  toJson({a = 10, b = { 1, 2, 3 }}, io.stdout)
+  render_func(all_keys, io.stdout)
 else
   io.stderr:write(("Unknown target: %q. Set it with KEYMAP_TARGET\n"):format(api.keymap_target))
   os.exit(1)
