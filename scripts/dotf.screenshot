@@ -5,6 +5,11 @@
 
 exists() { command -v "$1" >/dev/null; }
 
+if [ -z "$WAYLAND_DISPLAY" ]; then
+  printf >&2 "Not in Wayland!\n"
+  exit 1
+fi
+
 scrDir="$HOME/storage/pictures/screenshots/$(date +%Y-%m)"
 
 tmp=$(mktemp /tmp/screenshot.XXXXXX.png) || exit 1

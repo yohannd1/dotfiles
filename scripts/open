@@ -35,10 +35,12 @@
         out)))
 
   (def protocol
-    (let [r (peg/match peg-url-protocol file)]
-      (unless (nil? r) (r 0))))
+    (-?> (peg/match peg-url-protocol file) (in 0)))
 
-  (def ext (-?> (peg/match peg-file-ext file) (last) (string/ascii-lower)))
+  (def ext
+    (if (nil? protocol)
+      (-?> (peg/match peg-file-ext file) (last) (string/ascii-lower))
+      nil))
 
   @{:open-alt open-alt
     :file file
@@ -279,16 +281,16 @@
 
   (when (m :ext ["csv"])
     (t :pop ["csvlens" file])
-    (t :gui ["libreoffice" "--calc" file]))
+    (t :gui ["libreoffice" "--nologo" "--calc" file]))
 
   (mt :ext
       [
        "odt" "rtf" "docx" "doc" # text document
-       "ppt" "pptx" # presentation
-       "ods" "xlsx" # spreadsheet
-       "odg"
+       "pptx" "ppt" # presentation
+       "ods" "xlsx" "xls" # spreadsheet
+       "odg" # drawing
        ]
-      :gui ["libreoffice" file])
+      :gui ["libreoffice" "--nologo" file])
 
   (mt :ext ["odt" "ods" "odp" "sxw"]
       :runpage ["odt2txt" file])

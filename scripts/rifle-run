@@ -64,7 +64,7 @@ getPython() {
     return
   done
 
-  die "Could not find a suitable python version\n"
+  die "Could not find a suitable python version"
 }
 
 getLua() {
@@ -81,7 +81,7 @@ getLua() {
     return
   done
 
-  die "Could not find a suitable lua version\n"
+  die "Could not find a suitable lua version"
 }
 
 fparent_pattern() {
@@ -296,7 +296,7 @@ case "$1" in
         # printf >&2 "Opened. Press enter to end (will delete temp files).\n"
         # read -r
         ;;
-      *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
+      *) die "(action \"$1\") unhandled filetype: $2" ;;
     esac ;;
   build)
     case "$2" in
@@ -325,7 +325,7 @@ case "$1" in
         ln -s "$file" Main.java
         javac -encoding utf8 -d "$tmp" Main.java
         ;;
-      *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
+      *) die "(action \"$1\") unhandled filetype: $2" ;;
     esac ;;
   test)
     case "$2" in
@@ -340,7 +340,7 @@ case "$1" in
       @zig-build) fparent-run "build.zig" run-command file-dir zig build test --color off ;;
       zig) zig test "$file" --color off --cache-dir "$tmp" ;;
       rust) rustc --test "$file" -o "$tmp/exe" && "$tmp/exe" ;;
-      *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
+      *) die "(action \"$1\") unhandled filetype: $2" ;;
     esac ;;
   check)
     case "$2" in
@@ -382,7 +382,7 @@ case "$1" in
       php)
         php-cs-fixer check "$file"
         ;;
-      *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
+      *) die "(action \"$1\") unhandled filetype: $2" ;;
     esac ;;
   debug)
     case "$2" in
@@ -390,7 +390,7 @@ case "$1" in
         gcc "$file" -o "$tmp/exe" -g "${cflags_c[@]}"
         gdb "$tmp/exe"
         ;;
-      *) die '(action "%s") unhandled filetype: %s\n' "$1" "$2" ;;
+      *) die "(action \"$1\") unhandled filetype: $2" ;;
     esac ;;
-  *) die "Invalid action: %s\n" "$1" ;;
+  *) die "Invalid action: $1" ;;
 esac

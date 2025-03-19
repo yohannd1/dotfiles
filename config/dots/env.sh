@@ -175,6 +175,7 @@ fi
 case "$HOST" in
   core2)
     export QT_SCALE_FACTOR=1.15
+    export VOLUMECTL_INCREMENT=5
     ;;
 esac
 

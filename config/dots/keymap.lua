@@ -62,7 +62,7 @@ return function(api)
   api.key("super period"):desc("increase volume"):map("volumectl inc")
   api.key("super y"):desc("toggle mute (speakers)"):map("volumectl togglemute")
 
-  local mute_cmd = [[ pactl set-source-mute @DEFAULT_SOURCE@ toggle; notify-send "$(pactl get-source-mute @DEFAULT_SOURCE@)" ]]
+  local mute_cmd = [[ pactl set-source-mute @DEFAULT_SOURCE@ toggle; notify-send "$(pactl get-source-mute @DEFAULT_SOURCE@)" -t 1000 ]]
   api.key("super x"):desc("toggle mute (mic)"):map(mute_cmd)
 
   api.key("super alt comma"):desc("previous in player"):map("playerctl previous")
