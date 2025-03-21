@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+set -e
+
 WINEW_ARCH="${WINEW_ARCH:-32}" # default arch is 32 bits
 WINEW_RECENTF="${XDG_CACHE_HOME:-$HOME/.cache}/winew_recentf"
 WINEW_32_PREFIX="${WINEW_32_PREFIX:-$XDG_DATA_DIR/wine32}"
@@ -9,7 +11,7 @@ XDG_DATA_DIR="${XDG_DATA_DIR:-$HOME/.local/share}"
 PROGNAME=$(basename "$0")
 
 usage() {
-  printf >&2 "Usage: %s\n" "$PROGNAME { open <BIN> [ARGS...] | cmd | cfg | add-recent <BIN> | tricks <ARGS...> | server [ARGS...] | fwd [ARGS...] | desktop [ARGS...] }"
+  printf >&2 "Usage: %s\n" "$PROGNAME { open <BIN> [ARGS...] | cmd | cfg | add-recent <BIN> | tricks <ARGS...> | server [ARGS...] | fwd [ARGS...] | desktop [ARGS...] | path [ARGS...] }"
   printf >&2 "Environment variables:\n"
   printf >&2 "  WINEW_ARCH := { 32 | 64 }\n"
   printf >&2 "                (Default: 32)\n"
@@ -30,13 +32,15 @@ has_line() {
 }
 
 register_recent() {
+  p=$(realpath -m "$1")
+
   if [ -f "$WINEW_RECENTF" ]; then
-    if ! has_line "win$WINEW_ARCH $(realpath -m "$1")" < "$WINEW_RECENTF"; then
-      printf "win$WINEW_ARCH %s\n" "$(realpath -m "$1")" >> "$WINEW_RECENTF"
+    if ! has_line "win$WINEW_ARCH $p" <"$WINEW_RECENTF"; then
+      printf "win$WINEW_ARCH %s\n" "$p" >>"$WINEW_RECENTF"
     fi
   else
     mkdir -p "$(dirname "$WINEW_RECENTF")"
-    printf "win$WINEW_ARCH %s\n" "$(realpath -m "$1")" > "$WINEW_RECENTF"
+    printf "win$WINEW_ARCH %s\n" "$p" >"$WINEW_RECENTF"
   fi
 }
 
@@ -48,8 +52,11 @@ check_file_existence() {
 }
 
 launch_wine() {
-  cd "$(dirname "$1")" || return 1
-  WINEARCH="$next_winearch" WINEPREFIX="$next_wineprefix" wine "$@"
+  binDir=$(dirname "$1")
+  (
+    cd "$binDir"
+    WINEARCH="$next_winearch" WINEPREFIX="$next_wineprefix" wine "$@"
+  )
 }
 
 launch_shell() {
@@ -78,6 +85,10 @@ case "$1" in
   desktop)
     resolution=$(xrandr | awk '/\*/ { print $1 }') || resolution=800x600
     shift; launch_shell wine explorer /desktop=shell,"$resolution" "$@"
+    exit
+    ;;
+  path)
+    shift; launch_shell winepath "$@"
     exit
     ;;
   *) ;; # continue onwards

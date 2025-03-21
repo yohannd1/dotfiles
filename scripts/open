@@ -15,7 +15,9 @@
   (when (= code 0)
     (-> pipe-r (:read math/int32-max) (string/trim))))
 
-(defn state/init [file]
+(defn state/init [file-]
+  (var file file-)
+
   (def peg-url-protocol
     '{:a-z (choice (range "az") (range "AZ"))
       :main (* (capture (some :a-z)) "://")})
@@ -28,14 +30,18 @@
 
   (def open-alt (os/getenv "OPEN_ALT" "xdg-open"))
 
+  (var protocol
+    (-?> (peg/match peg-url-protocol file) (in 0)))
+
+  (when (= protocol "file")
+    (set protocol nil)
+    (set file (string/slice file (length "file://"))))
+
   (def mime
     (let [out (get-prog-output ["file" "--dereference" "--brief" "--mime-type" "--" file])]
       # TODO: proper error handling (but why the hell doesn't it return 1 when it errors??)
       (unless (or (nil? out) (string/has-prefix? "cannot" out))
         out)))
-
-  (def protocol
-    (-?> (peg/match peg-url-protocol file) (in 0)))
 
   (def ext
     (if (nil? protocol)
@@ -300,6 +306,7 @@
   (mt :ext ["blend"] :gui ["@blender" file])
   (mt :ext ["tic"] :gui ["tic80" file])
   (mt :ext ["rpy"] :pop [EDITOR file])
+  (mt :ext ["ipynb"] :pop ["jupyter" "lab" file]) # TODO: does this work
 
   (when (m :ext ["md"])
     # (t :runpage ["glowrapper" file])
