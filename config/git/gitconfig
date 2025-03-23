@@ -32,28 +32,11 @@
 [alias]
 	a = add
 	c = commit
-	ac = add-commit
-	cm = commit -m
-	sy = sync
-	l = log-compact
 	s = status -sb
 	b = branch
 	co = checkout
 
-	sync = !git pull && git push
-	add-commit = !git add . && git commit
-	log-compact = log --all --oneline
-	log-pretty = log --all --graph --decorate --oneline
-	log-statistic = log --stat --abbrev-commit
-
-	this = !git init && git add . && git commit -m 'Initial commit'
 	contrib = shortlog -sn
-
-[diff]
-	tool = nvim -d
-
-[merge]
-	tool = nvim -d
 
 [include]
 	path = ~/.gitconfig.local
