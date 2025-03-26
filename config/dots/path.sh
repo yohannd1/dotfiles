@@ -26,7 +26,7 @@ globpathadd() {
 pathadd ~/.local/bin
 pathadd ~/.nix-profile/bin
 [ "$DOTFILES" ] && pathadd "$DOTFILES/scripts"
-pathadd ~/storage/scripts
+pathadd ~/storage/local/scripts
 [ "$GOPATH" ] && pathadd "$GOPATH"
 [ "$CARGO_HOME" ] && pathadd "$CARGO_HOME/bin"
 pathadd "${GEM_HOME:-$HOME/.gem}/bin"

@@ -59,7 +59,7 @@
   "Try to open.
   `-type` can be
     :gui to block stdin and redirect stderr, useful for GUI apps;
-    :tty to directly open the program in the TTY;
+    :tty to directly open the program in the TTY, if possible;
     :pop to run as TTY if possible, but opening it via `termup` if not;
     :fallback to open the alt program specified by OPEN_ALT;
     :block to not run the file and exit immediately"
@@ -306,7 +306,7 @@
   (mt :ext ["blend"] :gui ["@blender" file])
   (mt :ext ["tic"] :gui ["tic80" file])
   (mt :ext ["rpy"] :pop [EDITOR file])
-  (mt :ext ["ipynb"] :pop ["jupyter" "lab" file]) # TODO: does this work
+  (mt :ext ["ipynb"] :gui ["codium" file]) # vscode is decent for notebooks
 
   (when (m :ext ["md"])
     # (t :runpage ["glowrapper" file])

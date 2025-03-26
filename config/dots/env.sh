@@ -139,7 +139,7 @@ _gcc_colors='error    = 01;38;5;8
 export GCC_COLORS=$(printf "%s" "$_gcc_colors" | tr -d ' ' | tr -d '\n')
 
 # dotfiles program options
-export DIR_BOOKMARKS=~/storage/share/bookmarks.sh
+export DIR_BOOKMARKS=~/storage/local/share/bookmarks.sh
 export FLAMEW_SCR_FOLDER=~/storage/pictures/screenshots
 export SETBG_WALLPAPER_TYPE="image"
 export BKMK_FILE="$WIKI/data/bookmarks.json"
@@ -178,5 +178,3 @@ case "$HOST" in
     export VOLUMECTL_INCREMENT=5
     ;;
 esac
-
-export NO_COLOR=1
