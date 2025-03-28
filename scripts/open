@@ -292,7 +292,7 @@
   (mt :ext
       [
        "odt" "rtf" "docx" "doc" # text document
-       "pptx" "ppt" # presentation
+       "odp" "pptx" "ppt" # presentation
        "ods" "xlsx" "xls" # spreadsheet
        "odg" # drawing
        ]

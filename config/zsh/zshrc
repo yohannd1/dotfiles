@@ -337,7 +337,8 @@ alias l='ls -l'
 alias la='ls -A'
 alias du='du -shc'
 
-alias e='$EDITOR'
+e() { "$EDITOR" "$@"; }
+se() { EDITOR=$(which "$EDITOR") sudoedit "$@"; } # yeah, workaround
 
 alias g='git-check'
 alias G='tig status'

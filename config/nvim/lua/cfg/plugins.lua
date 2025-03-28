@@ -80,7 +80,7 @@ end
 -- }}}
 
 local HOME = assert(os.getenv("HOME"), "could not get home directory")
-local pj_code = HOME .. "/pj/code"
+local pj_code = ("%s/pj/code"):format(HOME)
 
 local UNUSED_PLUGIN_COND = false
 
@@ -377,7 +377,7 @@ M.add({
 -- Automatic completion menu - fork of skywind3000/vim-auto-popmenu
 M.add({
   source = firstAvailableDir {
-    pj_code .. "/vim-auto-popmenu",
+    ("%s/vim-auto-popmenu"):format(pj_code),
     fallback = "yohannd1/vim-auto-popmenu",
   },
   before = function()
@@ -447,7 +447,7 @@ end
 M.add({
   name = "acrylic.vim",
   source = firstAvailableDir({
-    pj_code .. "/acrylic.vim",
+    ("%s/acrylic.vim"):format(pj_code),
     fallback = "yohannd1/acrylic.vim"
   }),
 })
@@ -477,6 +477,23 @@ M.add({
   before = function()
     vim.g.vaxe_lime_target = "flash"
   end
+})
+
+M.add({
+  source = "goerz/jupytext.nvim",
+  condition = not utils.os.is_android,
+  after = function()
+    require("jupytext").setup({
+      jupytext = "jupytext",
+      format = "markdown",
+      update = true,
+      filetype = require("jupytext").get_filetype,
+      new_template = require("jupytext").default_new_template(),
+      sync_patterns = { "*.md", "*.py", "*.jl", "*.R", "*.Rmd", "*.qmd" },
+      autosync = true,
+      handle_url_schemes = true,
+    })
+  end,
 })
 
 -- M.add("alaviss/nim.nvim")
@@ -528,7 +545,7 @@ M.add("lepture/vim-jinja")
 -- }}}
 -- Hydra {{{
 M.add({
-  source = firstAvailableDir { pj_code .. "/vim-hydra-fork", fallback = "yohannd1/vim-hydra-fork" },
+  source = firstAvailableDir { ("%s/vim-hydra-fork"):format(pj_code), fallback = "yohannd1/vim-hydra-fork" },
   after = function()
     services.defKeyMenu = function(opts)
       local id = assert(opts.id, "Missing id")
