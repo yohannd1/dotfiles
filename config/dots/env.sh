@@ -173,6 +173,9 @@ if [ -r ~/.config/dircolors ]; then
 fi
 
 case "$HOST" in
+  core)
+    export USE_BUILTIN_1080P=
+    ;;
   core2)
     export QT_SCALE_FACTOR=1.15
     export VOLUMECTL_INCREMENT=5
