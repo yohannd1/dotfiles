@@ -376,6 +376,8 @@ services.defKeyMenu({
     keys = {
       {"v", "e $VIM_INIT", "init.vim"},
       {"r", "e $DOTFILES/config/dots/resources.lua", "resources.lua"},
+      {"e", "e $DOTFILES/config/dots/env.sh", "env.sh"},
+      {"p", "e $DOTFILES/config/dots/path.sh", "path.sh"},
     },
   }},
 })
