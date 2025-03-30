@@ -172,11 +172,17 @@ if [ -r ~/.config/dircolors ]; then
   eval "$(dircolors -b ~/.config/dircolors)"
 fi
 
+# system-specific config
+RESLUA_ENABLE_LIGATURES=false
 case "$HOST" in
   core)
     export USE_BUILTIN_1080P=
+    export RESLUA_FONT_SIZE=1.25
+    export RESLUA_FONT_NAME="CascadiaCode"
     ;;
   core2)
+    export RESLUA_FONT_SIZE=1.4
+    export RESLUA_FONT_NAME="SourceCodePro"
     export QT_SCALE_FACTOR=1.15
     export VOLUMECTL_INCREMENT=5
     ;;
