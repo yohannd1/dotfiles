@@ -420,11 +420,6 @@ services.defKeyMenu({
 })
 map("n", "<Leader>w", [[:lua require("cfg.utils").services.loadKeyMenu("wiki")<CR>]], arg_nr_s)
 
-vim.api.nvim_create_user_command("Find", function(t)
-  vim.cmd(("silent grep %s"):format(t.args))
-  vim.cmd.copen()
-end, { nargs = "*" })
-
 local quickFixIsOpen = function()
   local t = vim.fn.filter(vim.fn.getwininfo(), "v:val.quickfix && !v:val.loclist")
   return #t > 0

@@ -278,6 +278,18 @@ end
 
 vim.g.rifle_split_direction = utils.os.is_android and "down" or "right"
 
+vim.api.nvim_create_user_command("Find", function(t)
+  vim.cmd(("silent grep %s"):format(t.args))
+  vim.cmd.copen()
+end, { nargs = "*" })
+
+vim.api.nvim_create_user_command("AcrMentionedIn", function(t)
+  local parent_dir = vim.fn.expand("%:h")
+  local current_path = vim.fn.expand("%f")
+  vim.cmd(("Find %q %q"):format(current_path:gsub("%.acr$", ""), parent_dir))
+  vim.cmd.copen()
+end, { nargs = "*" })
+
 -- TODO: inside neovim, replace the $EDITOR with a wrapper script that connects
 -- to the current neovim instance, opens a buffer, and waits for the buffer to
 -- unload before exiting.
