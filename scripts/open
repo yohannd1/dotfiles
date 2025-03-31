@@ -15,7 +15,9 @@
   (when (= code 0)
     (-> pipe-r (:read math/int32-max) (string/trim))))
 
-(defn state/init [file]
+(defn state/init [file-]
+  (var file file-)
+
   (def peg-url-protocol
     '{:a-z (choice (range "az") (range "AZ"))
       :main (* (capture (some :a-z)) "://")})
@@ -28,17 +30,23 @@
 
   (def open-alt (os/getenv "OPEN_ALT" "xdg-open"))
 
+  (var protocol
+    (-?> (peg/match peg-url-protocol file) (in 0)))
+
+  (when (= protocol "file")
+    (set protocol nil)
+    (set file (string/slice file (length "file://"))))
+
   (def mime
     (let [out (get-prog-output ["file" "--dereference" "--brief" "--mime-type" "--" file])]
       # TODO: proper error handling (but why the hell doesn't it return 1 when it errors??)
       (unless (or (nil? out) (string/has-prefix? "cannot" out))
         out)))
 
-  (def protocol
-    (let [r (peg/match peg-url-protocol file)]
-      (unless (nil? r) (r 0))))
-
-  (def ext (-?> (peg/match peg-file-ext file) (last) (string/ascii-lower)))
+  (def ext
+    (if (nil? protocol)
+      (-?> (peg/match peg-file-ext file) (last) (string/ascii-lower))
+      nil))
 
   @{:open-alt open-alt
     :file file
@@ -51,7 +59,7 @@
   "Try to open.
   `-type` can be
     :gui to block stdin and redirect stderr, useful for GUI apps;
-    :tty to directly open the program in the TTY;
+    :tty to directly open the program in the TTY, if possible;
     :pop to run as TTY if possible, but opening it via `termup` if not;
     :fallback to open the alt program specified by OPEN_ALT;
     :block to not run the file and exit immediately"
@@ -279,16 +287,16 @@
 
   (when (m :ext ["csv"])
     (t :pop ["csvlens" file])
-    (t :gui ["libreoffice" "--calc" file]))
+    (t :gui ["libreoffice" "--nologo" "--calc" file]))
 
   (mt :ext
       [
        "odt" "rtf" "docx" "doc" # text document
-       "ppt" "pptx" # presentation
-       "ods" "xlsx" # spreadsheet
-       "odg"
+       "odp" "pptx" "ppt" # presentation
+       "ods" "xlsx" "xls" # spreadsheet
+       "odg" # drawing
        ]
-      :gui ["libreoffice" file])
+      :gui ["libreoffice" "--nologo" file])
 
   (mt :ext ["odt" "ods" "odp" "sxw"]
       :runpage ["odt2txt" file])
@@ -298,6 +306,7 @@
   (mt :ext ["blend"] :gui ["@blender" file])
   (mt :ext ["tic"] :gui ["tic80" file])
   (mt :ext ["rpy"] :pop [EDITOR file])
+  (mt :ext ["ipynb"] :gui ["codium" file]) # vscode is decent for notebooks
 
   (when (m :ext ["md"])
     # (t :runpage ["glowrapper" file])

@@ -105,42 +105,51 @@
 (defn edit-recent []
   (os/exit (os/execute [EDITOR FZRUN-RECENT-CMDS] :p)))
 
+(defn file-exists? [path]
+  (-> path (os/stat :mode) (truthy?)))
+
 (defn package-menu []
   (def entries @[])
   (each pkg (os/dir FZRUN-PACKAGES-FOLDER)
     (def pkg-f (string FZRUN-PACKAGES-FOLDER "/" pkg))
-    (when (= :directory (os/stat pkg-f :mode))
-      (-?>> ["Pkg.toml" "App.toml" "Game.toml"]
-           (map |(string pkg-f "/" $))
-           (find |(-> $ (os/stat :mode) (truthy?)))
-           (|(-?>
-               (file/open $ :rn)
-               (:read :all)
-               (toml->janet) # TODO: start using either (parse-all) for janet-style files or just do a basic config format. i don't want to use a separate library just for this
+    (def possible-names ["Pkg.toml" "App.toml" "Game.toml"])
 
-               # TODO: move most of this into something that runs after the entry has been selected. It would make this faster I think
-               (|(let [config (or (in $ :config) {})
-                       exec-dir (or (in $ :exec-dir) pkg-f)]
-                   (if-let [entries-raw (in $ :entry)]
-                     (each e entries-raw
-                       (put e :config config)
-                       (put e :exec-dir exec-dir)
-                       (array/push entries e))
-                     ))))))))
+    (when (= :directory (os/stat pkg-f :mode))
+      (as?->
+        possible-names .x
+        (map |(string pkg-f "/" $) .x)
+        (find file-exists? .x)
+        (file/open .x :rn)
+        (:read .x :all)
+
+        # TODO: start using either (parse-all) for janet-style files or just do a basic config format. I don't want to use a separate library just for this.
+        (toml->janet .x)
+
+        (if-let [entries-raw (in .x :entry)]
+          (loop [er :in entries-raw]
+            (set (er :config) (in .x :config {}))
+            (set (er :exec-dir) (in .x :exec-dir pkg-f))
+            (array/push entries er)
+            ))
+        )))
 
   (match (fzagnostic (->> entries (map |($ :name)))
                      :prompt "Package: "
                      :starting-number 50)
     nil (os/exit 1)
-    [n _] (let [entry (in entries n)
-                config (in entry :config)
-                env (in entry :env {})
-                exec-dir (in entry :exec-dir)]
-            (each [k v] (pairs env)
-              (os/setenv (string k) v))
-            (os/cd exec-dir)
-            (-> entry (in :command) (run-shell false)))
-    _ (error "Unexpected"))
+
+    [n _]
+    (let [entry (in entries n)
+          config (in entry :config)
+          env (in entry :env {})
+          exec-dir (in entry :exec-dir)]
+      (each [k v] (pairs env)
+        (os/setenv (string k) v))
+      (os/cd exec-dir)
+      (-> entry (in :command) (run-shell false)))
+
+    _
+    (error "Unexpected"))
   )
 
 (defn main [&]

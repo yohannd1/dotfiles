@@ -32,7 +32,7 @@ eval "$(lua "$DOTFILES/lib/z.lua" --init zsh enhanced once echo fzf)" \
 
 # Load some other libraries
 sourceIf "$XDG_CONFIG_HOME/dots/env.sh"
-sourceIf ~/storage/share/zshrc.personal
+sourceIf ~/storage/local/config/zshrc.personal
 
 # general options
 setopt interactivecomments # can use '#' for comments in interactive
@@ -337,7 +337,8 @@ alias l='ls -l'
 alias la='ls -A'
 alias du='du -shc'
 
-alias e='$EDITOR'
+e() { "$EDITOR" "$@"; }
+se() { EDITOR=$(which "$EDITOR") sudoedit "$@"; } # yeah, workaround
 
 alias g='git-check'
 alias G='tig status'

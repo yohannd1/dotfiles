@@ -139,7 +139,7 @@ _gcc_colors='error    = 01;38;5;8
 export GCC_COLORS=$(printf "%s" "$_gcc_colors" | tr -d ' ' | tr -d '\n')
 
 # dotfiles program options
-export DIR_BOOKMARKS=~/storage/share/bookmarks.sh
+export DIR_BOOKMARKS=~/storage/local/share/bookmarks.sh
 export FLAMEW_SCR_FOLDER=~/storage/pictures/screenshots
 export SETBG_WALLPAPER_TYPE="image"
 export BKMK_FILE="$WIKI/data/bookmarks.json"
@@ -172,10 +172,18 @@ if [ -r ~/.config/dircolors ]; then
   eval "$(dircolors -b ~/.config/dircolors)"
 fi
 
+# system-specific config
+RESLUA_ENABLE_LIGATURES=false
 case "$HOST" in
+  core)
+    export USE_BUILTIN_1080P=
+    export RESLUA_FONT_SIZE=1.25
+    export RESLUA_FONT_NAME="CascadiaCode"
+    ;;
   core2)
+    export RESLUA_FONT_SIZE=1.4
+    export RESLUA_FONT_NAME="SourceCodePro"
     export QT_SCALE_FACTOR=1.15
+    export VOLUMECTL_INCREMENT=5
     ;;
 esac
-
-export NO_COLOR=1

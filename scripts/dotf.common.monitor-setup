@@ -2,7 +2,6 @@
 
 # FIXME: read these options from elsewhere (dotcfg maybe?)
 USE_DUAL_MONITOR=
-USE_BUILTIN_1080P=1
 
 set -e
 

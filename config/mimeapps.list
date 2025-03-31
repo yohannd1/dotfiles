@@ -23,6 +23,8 @@ ror2mm=gale-handler.desktop
 application/xml=editor.desktop
 text/x-makefile=editor.desktop
 text/x-java=editor.desktop
+x-scheme-handler/discord=vesktop.desktop
+x-scheme-handler/discord-719647875465871400=discord-719647875465871400.desktop
 
 [Added Associations]
 application/xml=editor.desktop;

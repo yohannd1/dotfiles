@@ -93,14 +93,24 @@ def compile_file(args: Args) -> None:
 
     os.environ["OPEN_NEW_WINDOW"] = "1"
 
-    def inject_html(file) -> None:
-        file.write(
-            """<script>
-            const es = new EventSource("/api/stream");
-            es.onmessage = (_) => window.location.reload();
-            // es.onmessage = (e) => console.log(e.data); // debugging
-        </script>"""
+    js_to_inject = """
+    <script>
+    const es = new EventSource("/api/stream");
+    es.onmessage = (_) => window.location.reload();
+    es.onerror = (e) => {
+        debug.error("EventSource error:");
+        debug.error(e);
+        setTimeout(
+            () => alert("An error ocurred! See console for info."),
+            1500
         )
+
+    };
+    </script>
+    """
+
+    def inject_html(file) -> None:
+        file.write(js_to_inject)
 
     exit_code = Popen(c_args).wait()
 

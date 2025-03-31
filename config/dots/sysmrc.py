@@ -22,6 +22,7 @@ else:
         # "bspwm",
 
         "sxhkd",
+        "MangoHud",
         "picom",
         "zathura",
         "taskwarrior",

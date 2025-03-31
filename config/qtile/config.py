@@ -76,6 +76,7 @@ task_list = widget.TaskList(
     max_title_width=500,
     highlight_method="block",
     margin_y=0,
+    margin_x=20,
     stretch=True,
     icon_size=0,
 )

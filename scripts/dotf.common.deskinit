@@ -63,8 +63,9 @@ dotf.common.input-setup
 
 # alt tab program! might be useful
 if isXorg; then
+  sleep 5
   alttab -d 1
-fi
+fi &
 
 # yambar
 if isWayland; then

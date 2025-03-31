@@ -40,7 +40,7 @@ local font_presets = {
   },
   ["UbuntuMono"] = {
     name = "Ubuntu Mono",
-    base_size = 17,
+    base_size = 17.5,
     supports_ligatures = false,
   },
   ["RobotoMono"] = {
@@ -199,9 +199,9 @@ end
 local T_ALL = {t_xres, t_dots}
 -- }}}
 
-local enable_ligatures = false
-local font_size = 1.4
-local font_name = "CascadiaCode"
+local enable_ligatures = (os.getenv("RESLUA_ENABLE_LIGATURES") or "") ~= ""
+local font_size = tonumber(os.getenv("RESLUA_FONT_SIZE") or 1.2)
+local font_name = os.getenv("RESLUA_FONT_NAME") or "SourceCodePro"
 local font = getFontInfo(font_name, font_size)
 
 local fsize_term = font.base_size
