@@ -66,10 +66,10 @@ void main() {
         struct CacheEntry {
             SysTime modTime;
             string title;
-        };
+        }
 
         bool shouldWriteCache = false;
-        auto cache = new CacheEntry[NoteId];
+        CacheEntry[NoteId] cache;
 
         // Read the existing data in the cache
         cacheFilePath
