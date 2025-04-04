@@ -38,7 +38,11 @@ export XDG_DATA_HOME="$XDG_DATA_DIR"
 export ACR_WIKI_DIR="$HOME/wiki/vimwiki"
 
 # global options
-export EDITOR=dotf.wrap.editor
+if _isAndroid; then
+  export EDITOR=nvim # not sure yet but nnn struggles with dotf.wrap.editor. Probably crap android exec stuff...
+else
+  export EDITOR=dotf.wrap.editor
+fi
 export TERMUX_SHELL=zsh
 
 export WAYLAND_TERMINAL=foot
