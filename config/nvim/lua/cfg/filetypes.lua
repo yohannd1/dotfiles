@@ -333,10 +333,10 @@ ft.rust = function()
   ]])
 end
 
+vim.g.java_ignore_javadoc = true -- has to be before loading the buffer
 ft.java = function()
   local found = vim.fs.root(0, "gradlew") ~= nil
   vim.b.rifle_ft = found and "@gradlew" or "java"
-
   vim.b.format_command = "google-java-format --aosp -"
 
   addSnippet("m", [[

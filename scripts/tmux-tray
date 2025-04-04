@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-SESSION_NAME="main"
+SESSION_NAME="${SESSION_NAME:-main}"
 
 hasSession() { tmux ls | grep -q '^'"$SESSION_NAME"': '; }
 

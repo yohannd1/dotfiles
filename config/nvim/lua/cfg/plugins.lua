@@ -90,17 +90,13 @@ M.add({
   after = function()
     require("nvim-treesitter.configs").setup {
       ensure_installed = { "lua", "python" },
-
-      -- Install parsers synchronously (only applied to `ensure_installed`)
       sync_install = false,
 
-      -- Automatically install missing parsers when entering buffer
       auto_install = false,
-
       ignore_install = {},
 
       highlight = {
-        enable = { "lua", "python", "latex", "cmake" },
+        enable = { "lua", "python", "latex", "cmake", "java" },
         disable = { "gitcommit", "bash", "PKGBUILD", "janet", "rust" },
         additional_vim_regex_highlighting = false,
       },
