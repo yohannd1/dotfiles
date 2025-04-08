@@ -212,6 +212,11 @@ forChars("ic", function(m)
   vim.keymap.set(m, "<C-u>'", function()
     return "``````" .. "<Left>" .. "<Left>" .. "<Left>"
   end, {expr = true})
+
+  -- Android hardware keyboard pain
+  vim.keymap.set(m, "<C-u>c", function()
+    return "``" .. "<Left>"
+  end, {expr = true})
 end)
 
 -- Buffer navigation

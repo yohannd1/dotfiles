@@ -458,5 +458,5 @@ ytdl() {
 findTodos() { rg '\b(TODO|FIXME|XXX)\b'; }
 
 if isAndroid && exists tmux && [ -z "$TMUX" ]; then
-  tmux
+  SESSION_NAME=android tmux-tray
 fi
