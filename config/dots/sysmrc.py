@@ -78,6 +78,7 @@ m.link_glob(DOTFILES / "config/emacs", "~/.emacs.d")
 m.link_glob(DOTFILES / "desktop", "~/.local/share/applications")
 m.link_glob(DOTFILES / "config/kak", "~/.config/kak")
 # m.link_glob(DOTFILES / "config/vscode", "~/.config/Code/User")
+m.link_glob(DOTFILES / "config/vscode", "~/.config/VSCodium/User")
 
 try_xdg_cache_home = os.environ.get("XDG_CACHE_HOME")
 XDG_CACHE_HOME = Path(try_xdg_cache_home) if try_xdg_cache_home is not None else (HOME / ".cache")

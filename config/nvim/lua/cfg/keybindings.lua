@@ -443,3 +443,19 @@ end
 map("n", "<Leader>q", [[:lua dummy.toggleQuickFix()<CR>]], arg_nr_s)
 map("n", "<Leader>l", [[:messages<CR>]], arg_nr)
 map("n", "<Leader>T", [[:terminal<CR>i]], arg_nr)
+
+services.defKeyMenu({
+  id = "buffer",
+  title = "Buffer navigation",
+  single_command = false,
+  keymaps = {{
+    name = "Operations",
+    keys = {
+      {"j", "lua dummy.bufSwitch('next')", "next"},
+      {"k", "lua dummy.bufSwitch('prev')", "previous"},
+      {"d", "bd", "delete"},
+      {"w", "w", "save"},
+    },
+  }}
+})
+map("n", "<Leader>B", [[:lua require("cfg.utils").services.loadKeyMenu("buffer")<CR>]], arg_nr_s)

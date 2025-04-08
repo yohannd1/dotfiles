@@ -90,17 +90,13 @@ M.add({
   after = function()
     require("nvim-treesitter.configs").setup {
       ensure_installed = { "lua", "python" },
-
-      -- Install parsers synchronously (only applied to `ensure_installed`)
       sync_install = false,
 
-      -- Automatically install missing parsers when entering buffer
       auto_install = false,
-
       ignore_install = {},
 
       highlight = {
-        enable = { "lua", "python", "latex", "cmake" },
+        enable = { "lua", "python", "latex", "cmake", "java" },
         disable = { "gitcommit", "bash", "PKGBUILD", "janet", "rust" },
         additional_vim_regex_highlighting = false,
       },
@@ -552,6 +548,9 @@ M.add({
       local title = assert(opts.title, "Missing title")
       local keymaps = assert(opts.keymaps, "Missing keymaps")
 
+      local single_command = opts.single_command
+      if single_command == nil then single_command = true end
+
       vim.fn["hydra#hydras#register"]({
         name = id,
         title = title,
@@ -559,7 +558,7 @@ M.add({
         exit_key = "q",
         feed_key = false,
         foreign_key = true,
-        single_command = true,
+        single_command = single_command,
         position = "s:bottom_right",
         keymap = keymaps,
       })
@@ -623,7 +622,7 @@ M.afterPluginLoad = function()
   vim.g.acr_wiki_dir = os.getenv("ACR_WIKI_DIR")
 
   local wikiInsertRef = function(ref, opts)
-    local text = "@ref(" .. ref .. ")"
+    local text = ("@ref(%s)"):format(ref)
     utils.addTextInLine(text, opts)
   end
 
