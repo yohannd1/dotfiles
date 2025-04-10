@@ -6,8 +6,12 @@ from math import *
 from random import *
 from pathlib import Path
 
-dcos = lambda x: cos(radians(x))
-dsin = lambda x: sin(radians(x))
-dtan = lambda x: tan(radians(x))
+def dcos(x: float) -> float: return cos(radians(x))
+def dsin(x: float) -> float: return sin(radians(x))
+def dtan(x: float) -> float: return tan(radians(x))
 
 xor = op.xor
+
+def res_ratio(x: int, y: int) -> tuple[int, int]:
+    div = gcd(x, y)
+    return (x // div, y // div)
