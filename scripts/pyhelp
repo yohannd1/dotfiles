@@ -2,18 +2,30 @@
 
 import sys
 
-def show_help():
-    print("Usage: pyhelp <VALUE>")
+def help_and_exit():
+    from pathlib import Path
+    progname = Path(sys.argv[0]).name
+    print("Usage: {progname} <PATH-OR-MODULE>")
     sys.exit(2)
+
+def get_or_import(key: str):
+    g = globals()
+    return g[key] if key in g else __import__(key)
 
 def main(args: list[str]) -> None:
     if len(args) != 2:
-        show_help()
+        help_and_exit()
 
-    ls = args[1].split(".")
-    raise NotImplementedError("TODO: recursively try and access/import till the end")
+    split1 = args[1].split(":")
+    if len(split1) == 1:
+        help(get_or_import(split1[0]))
+    else:
+        mod_name, var = split1
 
-    help(__import__(args[1]))
+        x = get_or_import(mod_name)
+        for value in var.split("."):
+            x = getattr(x, value)
+        help(x)
 
 if __name__ == "__main__":
     main(sys.argv)
