@@ -374,7 +374,7 @@ M.add({
 M.add({
   source = firstAvailableDir {
     ("%s/vim-auto-popmenu"):format(pj_code),
-    fallback = "yohannd1/vim-auto-popmenu",
+    fallback = "yohannd1/vim-auto-popmenu-fork",
   },
   before = function()
     vim.g.apc_default_state = 1
