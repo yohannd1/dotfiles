@@ -1,1 +1,3 @@
 set style enabled off
+set debuginfod enabled off
+set history save on

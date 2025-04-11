@@ -16,6 +16,8 @@ def main(args: list[str]) -> None:
     if len(args) != 2:
         help_and_exit()
 
+    # TODO: make work on multiple-path modules (I think I need to __import__ the entire string and then do the getattr loop later)
+
     split1 = args[1].split(":")
     if len(split1) == 1:
         help(get_or_import(split1[0]))

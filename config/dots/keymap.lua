@@ -96,6 +96,10 @@ return function(api)
     :desc("open calendar")
     :map([[ dotf.wrap.terminal -c float -g 75x10 -e runread cal -w -3 ]])
 
+  api.key("super m")
+    :desc("open system monitor")
+    :map("dotf.wrap.terminal -c float -e btop")
+
   api.key("super alt m")
     :desc("open mixer")
     :map("dotf.wrap.terminal -c float -e pulsemixer")

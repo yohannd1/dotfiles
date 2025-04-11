@@ -101,7 +101,7 @@ def set_up_repo(name: str, url: str) -> None:
 
 set_up_flatcolor = False
 if set_up_flatcolor:
-    set_up_repo("FlatColor")
+    set_up_repo("FlatColor", "https://github.com/yohannd1/FlatColor-fork")
     themes_path = HOME / ".themes"
     themes_path.mkdir(parents=True, exist_ok=True)
     m.link_glob(DOTS_CACHE / "repos/FlatColor", themes_path / "FlatColor")

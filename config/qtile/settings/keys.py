@@ -12,15 +12,8 @@ mod = "mod4"
 ctrl = "control"
 shift = "shift"
 
-next_window_actions = [
-    lazy.group.next_window(),
-    lazy.window.bring_to_front(),
-]
-
-prev_window_actions = [
-    lazy.group.prev_window(),
-    lazy.window.bring_to_front(),
-]
+next_window_actions = [lazy.group.next_window()]
+prev_window_actions = [lazy.group.prev_window()]
 
 
 def load_general_keymap(cfg) -> list[Key]:
@@ -43,6 +36,7 @@ def load_general_keymap(cfg) -> list[Key]:
             for (mods, key, desc, command) in parsed
         ]
 
+
 def make_keyboard_map(cfg) -> list[Key]:
     keys = []
 
@@ -60,8 +54,8 @@ def make_keyboard_map(cfg) -> list[Key]:
             [mod],
             "f",
             lazy.layout.toggle_focus_floating(),
-            desc="Toggle focus-floating",
         ),
+        Key([mod], "v", lazy.window.bring_to_front()),
         Key(
             [mod, shift],
             "j",
@@ -83,10 +77,8 @@ def make_keyboard_map(cfg) -> list[Key]:
             lazy.window.toggle_fullscreen(),
             desc="Toggle fullscreen window",
         ),
-
         Key([mod], "u", manual_updates, desc="Manual update"),
         Key([mod, alt], "space", switch_to_window, desc="Switch to window"),
-
         # Key([mod], "Return", lazy.spawn(cfg.terminal),
         #     desc="Spawn terminal"),
     ]
