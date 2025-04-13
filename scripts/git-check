@@ -69,8 +69,7 @@ while [ ! "$exit" ]; do
           | fzagnostic) \
         && git checkout "$selectedBranch"
       ;;
-    c) git commit ;;
-    C) gitAddAll && git commit ;;
+    c|C) git commit ;;
     d) git diff HEAD ;;
     f) git fetch ;;
     i) git status -sb ;;
@@ -93,8 +92,7 @@ while [ ! "$exit" ]; do
   a     select files to add (stage)
   A     select files to reset (unstage)
   b     list branches
-  c     commit
-  C     stage all changes and commit
+  c, C  commit
   d     show diff
   f     fetch
   h     show this message
