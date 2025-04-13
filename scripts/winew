@@ -3,24 +3,41 @@
 set -e
 
 WINEW_ARCH="${WINEW_ARCH:-32}" # default arch is 32 bits
-WINEW_RECENTF="${XDG_CACHE_HOME:-$HOME/.cache}/winew_recentf"
 WINEW_32_PREFIX="${WINEW_32_PREFIX:-$XDG_DATA_DIR/wine32}"
 WINEW_64_PREFIX="${WINEW_64_PREFIX:-$XDG_DATA_DIR/wine64}"
 XDG_DATA_DIR="${XDG_DATA_DIR:-$HOME/.local/share}"
 
-PROGNAME=$(basename "$0")
+progname=$(basename "$0")
 
-usage() {
-  printf >&2 "Usage: %s\n" "$PROGNAME { open <BIN> [ARGS...] | cmd | cfg | add-recent <BIN> | tricks <ARGS...> | server [ARGS...] | fwd [ARGS...] | desktop [ARGS...] | path [ARGS...] }"
-  printf >&2 "Environment variables:\n"
-  printf >&2 "  WINEW_ARCH := { 32 | 64 }\n"
-  printf >&2 "                (Default: 32)\n"
-  exit 1
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+is_x11() { [ "$DISPLAY" ] && [ -z "$WAYLAND_DISPLAY" ]; }
+
+show_help() {
+cat >&2 <<EOF
+Usage:
+  $progname open <PROGRAM> [ARGS...]
+    Performs Unix->DOS path conversion (TODO: actually do this lol)
+    TODO: does this work on absolute paths?
+  $progname cmd
+  $progname cfg
+  $progname add-recent <BIN>
+  $progname tricks <ARGS...>
+  $progname server [ARGS...]
+  $progname fwd [ARGS...]
+  $progname desktop [ARGS...]
+  $progname path [ARGS...]
+
+Used environment variables:
+  WINEW_ARCH := { 32 | 64 } (Default: 32)
+  WINEW_32_PREFIX: path to the 32-bit wine prefix
+  WINEW_64_PREFIX: path to the 64-bit wine prefix
+EOF
+  exit 2
 }
 
 has_line() {
   if [ $# != 1 ]; then
-    printf >&2 "%s: invalid amount of arguments\n" "$PROGNAME"
+    printf >&2 "%s: invalid amount of arguments\n" "$progname"
     return 1
   fi
 
@@ -31,93 +48,81 @@ has_line() {
   return 1
 }
 
-register_recent() {
-  p=$(realpath -m "$1")
-
-  if [ -f "$WINEW_RECENTF" ]; then
-    if ! has_line "win$WINEW_ARCH $p" <"$WINEW_RECENTF"; then
-      printf "win$WINEW_ARCH %s\n" "$p" >>"$WINEW_RECENTF"
-    fi
-  else
-    mkdir -p "$(dirname "$WINEW_RECENTF")"
-    printf "win$WINEW_ARCH %s\n" "$p" >"$WINEW_RECENTF"
-  fi
-}
-
-check_file_existence() {
-  if [ ! -f "$1" ]; then
-    printf >&2 "File not found: %s\n" "$1"
-    exit 1
-  fi
-}
-
-launch_wine() {
-  binDir=$(dirname "$1")
-  (
-    cd "$binDir"
-    WINEARCH="$next_winearch" WINEPREFIX="$next_wineprefix" wine "$@"
-  )
-}
-
-launch_shell() {
-  WINEARCH="$next_winearch" WINEPREFIX="$next_wineprefix" "$@"
+exec_wine() {
+  echo "HELLO HELLO"
+  pwd
+  exec wine "$@"
 }
 
 case "$WINEW_ARCH" in
-  32) next_winearch="win32" next_wineprefix="$WINEW_32_PREFIX" ;;
-  64) next_winearch="win64" next_wineprefix="$WINEW_64_PREFIX" ;;
+  32) export WINEARCH="win32" WINEPREFIX="$WINEW_32_PREFIX" ;;
+  64) export WINEARCH="win64" WINEPREFIX="$WINEW_64_PREFIX" ;;
   *)
     printf >&2 "Unknown arch: %s\n" "$WINEW_ARCH"
-    usage
+    show_help
     ;;
 esac
 
-# handle loose commands
+[ $# = 0 ] && show_help
+
 case "$1" in
-  fwd)
-    shift; launch_wine "$@"
-    exit
+  cmd)
+    [ $# != 1 ] && show_help
+    exec_wine cmd
     ;;
-  server)
-    shift; launch_shell wineserver "$@"
-    exit
-    ;;
-  desktop)
-    resolution=$(xrandr | awk '/\*/ { print $1 }') || resolution=800x600
-    shift; launch_shell wine explorer /desktop=shell,"$resolution" "$@"
-    exit
-    ;;
-  path)
-    shift; launch_shell winepath "$@"
-    exit
-    ;;
-  *) ;; # continue onwards
-esac
 
-case $# in
-  1) case "$1" in
-       cmd) launch_wine "cmd" ;;
-       cfg) launch_shell winecfg ;;
-       server) shift; launch_shell wineserver "$@" ;;
-       fwd) shift; launch_wine "$@" ;;
-       *) usage ;;
-     esac
-     ;;
-  2) case "$1" in
-       open) check_file_existence "$2" && launch_wine "$2" ;;
-       add-recent) check_file_existence "$2" && register_recent "$2" ;;
-       tricks) launch_shell winetricks "$2" ;;
-       server) shift; launch_shell wineserver "$@" ;;
-       fwd) shift; launch_wine "$@" ;;
-       *) usage ;;
-     esac
-     ;;
-  *) case "$1" in
-       tricks) shift; launch_shell winetricks "$@" ;;
-       open) check_file_existence "$2" && shift && launch_wine "$@" ;;
-       server) shift; launch_shell wineserver "$@" ;;
-       fwd) shift; launch_wine "$@" ;;
-       *) usage ;;
-     esac
-     ;;
+  cfg)
+    [ $# != 1 ] && show_help
+    exec winecfg
+    ;;
+
+  desktop)
+    [ $# != 1 ] && show_help
+    resolution=800x600
+    if is_x11 && exists xrandr; then
+      resolution=$(xrandr | awk '/\*/ { print $1 }') || resolution=800x600
+    fi
+
+    shift
+    exec wine explorer /desktop="shell,$resolution" "$@"
+    ;;
+
+  fwd)
+    shift
+    exec_wine "$@"
+    exit
+    ;;
+
+  open)
+    [ $# -lt 2 ] && show_help
+    shift
+    program_unix="$1"
+    if [ ! -e "$program_unix" ]; then
+      printf >&2 "error: program not found: %s\n" "$program_unix"
+      exit 1
+    fi
+    program_dos=$(winepath -w "$program_unix")
+    shift
+    exec_wine "$program_dos" "$@"
+    ;;
+
+  path)
+    shift
+    exec winepath "$@"
+    ;;
+
+  server)
+    shift
+    exec wineserver "$@"
+    ;;
+
+  tricks)
+    shift
+    exec winetricks "$@"
+    ;;
+
+  *)
+    printf >&2 "error: unknown command %s\n" "$1"
+    show_help
+    ;;
 esac
