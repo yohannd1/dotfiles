@@ -185,8 +185,8 @@ case "$HOST" in
     export RESLUA_FONT_NAME="CascadiaCode"
     ;;
   core2)
-    export RESLUA_FONT_SIZE=1.4
-    export RESLUA_FONT_NAME="SourceCodePro"
+    export RESLUA_FONT_SIZE=1.35
+    export RESLUA_FONT_NAME="SpaceMono"
     export QT_SCALE_FACTOR=1.15
     export VOLUMECTL_INCREMENT=5
     ;;
