@@ -49,8 +49,6 @@ has_line() {
 }
 
 exec_wine() {
-  echo "HELLO HELLO"
-  pwd
   exec wine "$@"
 }
 
