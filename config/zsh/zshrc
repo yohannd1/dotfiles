@@ -457,6 +457,8 @@ ytdl() {
 
 findTodos() { rg '\b(TODO|FIXME|XXX)\b'; }
 
+gS() { (git add . && git commit); git pull && git push; }
+
 if isAndroid && exists tmux && [ -z "$TMUX" ]; then
   SESSION_NAME=android tmux-tray
 fi
