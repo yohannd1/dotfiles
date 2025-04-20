@@ -1,0 +1,40 @@
+#!/usr/bin/env sh
+
+set -e
+
+progname=$(basename "$0")
+
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname { get-path | edit }
+EOF
+  exit 2
+}
+
+die() {
+  printf >&2 "%s: %s\n" "$progname" "$*"
+  exit 1
+}
+
+isSaturday() { [ "$(date +'%w')" = 6 ]; }
+
+getJournalPath() {
+  isSaturday && ref="today" || ref="last saturday"
+  today=$(date +'%Y/%m/%d' -d "$ref")
+  id=$(acr-list-titles | grep "$today" | awk '{ print $1 }')
+  if [ -z "$id" ]; then
+    die "could not find today's journal"
+  else
+    printf "%s\n" "$ACR_WIKI_DIR/$id.acr"
+  fi
+}
+
+[ $# != 1 ] && showHelp
+
+case "$1" in
+  get-path) getJournalPath ;;
+  edit)
+    path=$(getJournalPath)
+    "$EDITOR" "$path"
+    ;;
+esac

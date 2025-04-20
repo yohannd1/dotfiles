@@ -397,6 +397,13 @@ map("n", "<Leader>rd", [[:Rifle debug<CR>]], arg_nr_s)
 dummy.plan_sidebar = utils.Sidebar.new("~/wiki/vimwiki/202407161554-F1C8E4.acr")
 map("n", "<Leader>c", [[:lua dummy.plan_sidebar:toggle()<CR>]], arg_nr_s)
 
+dummy.wikiOpenJournal = function()
+  local result = vim.system({"acr-journal", "get-path"}, { text = true }):wait()
+  assert(result.code == 0, "command failed to run")
+  local path = vim.trim(result.stdout)
+  vim.cmd(("edit %s"):format(path))
+end
+
 -- wiki stuff
 services.defKeyMenu({
   id = "wiki",
@@ -410,6 +417,7 @@ services.defKeyMenu({
         {"P", "e ~/wiki/vimwiki/202407161554-F1C8E4.acr", "plan"},
         {"p", "e ~/wiki/vimwiki/202501061628-CB9C1A.acr", "week plan (2024)"},
         {"o", "lua dummy.wikiFzOpen({})", "search"},
+        {"j", "lua dummy.wikiOpenJournal({})", "journal"},
         -- {"O", "lua dummy.wikiFzOpen({}, {'acw-get-projects'})", "select a project"},
       },
     },
