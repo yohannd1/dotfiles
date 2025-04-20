@@ -324,7 +324,7 @@ ft.rust = function()
 
   local found = vim.fs.root(0, "Cargo.toml") ~= nil
   vim.b.rifle_ft = found and "@cargo" or "rust"
-  -- vim.b.format_command = "stdin-wrap rustfmt --edition 2021" -- FIXME: make this work properly....
+  vim.b.format_opts = { command = { "vim.cmd", "RustFmt" } }
 
   addMSnippet("m", [[
     fn main() {
