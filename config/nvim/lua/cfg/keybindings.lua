@@ -451,6 +451,7 @@ end
 map("n", "<Leader>q", [[:lua dummy.toggleQuickFix()<CR>]], arg_nr_s)
 map("n", "<Leader>l", [[:messages<CR>]], arg_nr)
 map("n", "<Leader>T", [[:terminal<CR>i]], arg_nr)
+map("n", "<Leader>[", [[:call jobstart(["tmux", "new-window"])<CR>]], arg_nr_s)
 
 services.defKeyMenu({
   id = "buffer",

@@ -2,7 +2,7 @@
 "
 " Cancel if this is not being sourced by NeoVim
 if !has("nvim")
-  echoerr "You are not using NeoVim; this configuration doesn't work properly with Vim."
+  echoerr "You are not using NeoVim; this configuration doesn't work properly with Vim. Sorry!"
   finish
 endif
 
@@ -13,7 +13,7 @@ lua _G.dummy = {}
 let g:config_root = resolve(expand("<sfile>:p:h"))
 
 " load plugin config
-lua require("cfg.plugins").init({ plugins = "all", root_path = vim.g.config_root .. "/plugged" })
+lua require("cfg.plugins").init({ plugins = "all", root_path = ("%s/plugged"):format(vim.g.config_root) })
 
 " load the rest of the config
 lua require("cfg.general")

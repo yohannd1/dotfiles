@@ -182,6 +182,7 @@ floating_layout = layout.Floating(
         Match(wm_class="ssh-askpass"), # ssh-askpass
         Match(wm_class="float"), # generic floating stuff
         Match(title="pinentry"), # GPG key password entry
+        Match(wm_class="zenity"),
 
         Match(func=is_unity_floating), # Unity Editor
     ],

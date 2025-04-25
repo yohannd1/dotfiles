@@ -283,7 +283,7 @@ vim.api.nvim_create_user_command("Find", function(t)
   vim.cmd.copen()
 end, { nargs = "*" })
 
-vim.api.nvim_create_user_command("AcrMentionedIn", function(t)
+vim.api.nvim_create_user_command("AcrMentionedIn", function(_t)
   local parent_dir = vim.fn.expand("%:h")
   local current_path = vim.fn.expand("%f")
   vim.cmd(("Find %q %q"):format(current_path:gsub("%.acr$", ""), parent_dir))

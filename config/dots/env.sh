@@ -72,7 +72,13 @@ export LUAROCKS_HOME="$HOME/.luarocks"
 export JANET_MODPATH="$HOME/.cache/janet"
 export JANET_BINPATH="$HOME/.local/bin"
 export ZSH_PLUGIN_PATH="$HOME/.cache/zsh-plugins"
-_exists sccache && export RUSTC_WRAPPER=sccache
+if _exists sccache; then
+  export RUSTC_WRAPPER=sccache
+fi
+if _exists ccache; then
+  export CMAKE_CXX_COMPILER_LAUNCHER=ccache
+  export CMAKE_C_COMPILER_LAUNCHER=ccache
+fi
 
 # configuration files/folders
 export _ZL_DATA="$XDG_DATA_DIR/zlua"
@@ -118,7 +124,7 @@ export PYTHON_BASIC_REPL=1 # weird thing that happened but i dont care that much
 {
   export NNN_OPENER="$OPENER"
   export NNN_TRASH=1
-  export NNN_OPTS="A"
+  export NNN_OPTS="Ar"
 
   # FIXME: not working fully... I'm confused.
   _BLK="0B" _CHR="0B" _DIR="04" _EXE="06" _REG="00" _HARDLINK="06" _SYMLINK="06" _MISSING="00" _ORPHAN="09" _FIFO="06" _SOCK="0B" _OTHER="06"
@@ -186,7 +192,7 @@ case "$HOST" in
     ;;
   core2)
     export RESLUA_FONT_SIZE=1.35
-    export RESLUA_FONT_NAME="SpaceMono"
+    export RESLUA_FONT_NAME="GoMono"
     export QT_SCALE_FACTOR=1.15
     export VOLUMECTL_INCREMENT=5
     ;;
