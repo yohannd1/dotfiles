@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+#
+# Wrapper for OnlyOffice because it struggles when I set the
+# QT_SCALE_FACTOR env var for anything other than 1.
+
+# TODO: make this depend on some env var for resolution (in case I am not on a 1080p screen)
+
+export QT_FONT_DPI=100
+export QT_SCREEN_SCALE_FACTORS=1
+export QT_SCALE_FACTOR=1
+exec onlyoffice-desktopeditors "$@"

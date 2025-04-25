@@ -289,9 +289,11 @@
     (t :pop ["csvlens" file])
     (t :gui ["libreoffice" "--nologo" "--calc" file]))
 
+  (mt :ext ["odt" "rtf" "docx" "doc"]
+      :gui ["@onlyoffice" file])
+
   (mt :ext
       [
-       "odt" "rtf" "docx" "doc" # text document
        "odp" "pptx" "ppt" # presentation
        "ods" "xlsx" "xls" # spreadsheet
        "odg" # drawing
