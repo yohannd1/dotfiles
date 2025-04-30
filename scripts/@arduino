@@ -1,0 +1,33 @@
+#!/usr/bin/env sh
+
+progname=$(basename "$0")
+
+set -e
+
+showHelp() {
+  printf >&2 "Usage: %s { build | run | monitor }\n" "$progname"
+  exit 2
+}
+
+if [ $# != 1 ]; then
+  showHelp
+fi
+
+# TODO: support other boards (some way to specify it i guess...)
+
+fqsn='arduino:avr:uno'
+port=/dev/ttyUSB0
+
+case "$1" in
+  build)
+    arduino-cli compile -b "$fqsn"
+    ;;
+  run)
+    arduino-cli compile -b "$fqsn"
+    arduino-cli upload -p "$port" -b "$fqsn"
+    ;;
+  monitor)
+    arduino-cli monitor -p "$port" -b "$fqsn"
+    ;;
+  *) showHelp ;;
+esac
