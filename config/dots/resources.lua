@@ -31,7 +31,7 @@ local font_presets = {
   },
   ["JetbrainsMono"] = {
     name = "JetBrains Mono",
-    base_size = 15,
+    base_size = 15.5,
   },
   ["Fixedsys"] = {
     name = "Fixedsys Excelsior",
@@ -114,7 +114,7 @@ local font_presets = {
   },
   ["GoMono"] = {
     name = "Go Mono",
-    base_size = 15,
+    base_size = 16,
   },
   ["CourierPrimeCode"] = {
     name = "Courier Prime Code",
