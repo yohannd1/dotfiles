@@ -10,7 +10,7 @@ main() {
   if _isAndroid; then
     ALL+=(termux)
   else
-    ALL+=(stalonetray dunst gtk3 waybar foot) # yambar
+    ALL+=(stalonetray dunst gtk3 waybar foot niri) # yambar
   fi
 
   [ $# = 0 ] && targets=("${ALL[@]}")
@@ -77,10 +77,15 @@ _t_wget() {
   [ "$WGETRC" ] && printf "hsts-file = %s" "$XDG_CACHE_HOME/wget-hsts" >"$WGETRC"
 }
 
+_t_niri() {
+  mkdir -p "$XDG_CONFIG_HOME/niri"
+  PP_PREFIX="//!!" gen "$DOTFILES/config/gen/niri-config.kdl" \
+    "$XDG_CONFIG_HOME/niri/config.kdl"
+}
+
 _t_termux() {
-  if [ -d ~/.termux ]; then
-    gen "$DOTFILES/config/gen/termux-colors" ~/.termux/colors.properties
-  fi
+  [ -d ~/.termux ] || return
+  gen "$DOTFILES/config/gen/termux-colors" ~/.termux/colors.properties
 }
 
 main "$@"

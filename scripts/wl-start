@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+set -e
+
 tty=$(tty)
 if printf "%s" "$tty" | grep -q '^/dev/tty'; then
   tty=${tty#/dev/tty}
@@ -20,13 +22,21 @@ case "$1" in
     hyprland
     ;;
   dwl)
-    (cd ~/pj/code/dwl-fork && make) && ~/pj/code/dwl-fork/dwl
+    dwlDir=~/pj/code/dwl-fork
+    (cd "$dwlDir" && make) # recompile if needed
+    "$dwlDir/dwl"
     ;;
   niri)
+    gen-config niri
     niri
     ;;
   qtile)
     qtile start -b wayland
+    ;;
+  plasma)
+    # big ass command...
+    /usr/lib/plasma-dbus-run-session-if-needed \
+      /usr/bin/startplasma-wayland
     ;;
   *)
     printf >&2 "Unknown Wayland compositor\n"
