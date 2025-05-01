@@ -1,5 +1,4 @@
 // TODO: set up xdg-desktop-portal-gtk
-// TODO: set up dotf.set-resolution to work with niri
 
 spawn-at-startup "dotf.common.deskinit"
 
@@ -199,8 +198,9 @@ animations {
 window-rule {
     match app-id=r#"^float$"#
     open-floating true
-    min-width 1000
-    min-height 750
+
+    default-column-width { fixed 1000; }
+    default-window-height { fixed 750; }
 }
 
 window-rule {
