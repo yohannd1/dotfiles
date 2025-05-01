@@ -91,7 +91,7 @@ M.addTextInLine = function(text, opts)
   local rebuilt = before .. text .. after
 
   vim.fn.setline(".", rebuilt)
-  vim.cmd("normal! " .. (str_pos+2) .. "|")
+  vim.cmd(("normal! %d|"):format(str_pos+2))
 end
 
 M.sourceIfPresent = function(path)
@@ -100,8 +100,9 @@ M.sourceIfPresent = function(path)
   end
 end
 
-M.map = function(m, lhs, rhs, args)
-  vim.api.nvim_set_keymap(m, lhs, rhs, args or {})
+M.map = function(m, lhs, rhs, opts)
+  opts = opts or {}
+  vim.keymap.set(m, lhs, rhs, opts)
 end
 
 M.forChars = function(chars, fn)
@@ -295,6 +296,17 @@ M.Sidebar.toggle = function(self)
   else
     M.uni_win.delete(id)
   end
+end
+
+M.lazy = function(f, ...)
+  local t = {...}
+  return function()
+    f(unpack(t))
+  end
+end
+
+M.editFile = function(path)
+  vim.cmd("edit " .. path)
 end
 
 return M

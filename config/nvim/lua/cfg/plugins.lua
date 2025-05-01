@@ -79,7 +79,7 @@ end
 
 -- }}}
 
-local HOME = assert(os.getenv("HOME"), "could not get home directory")
+local HOME = assert(vim.env.HOME, "could not get home directory")
 local pj_code = ("%s/pj/code"):format(HOME)
 
 local UNUSED_PLUGIN_COND = false
@@ -270,6 +270,7 @@ M.add({
 
 M.add("nvim-lua/popup.nvim")
 M.add("nvim-lua/plenary.nvim")
+M.add("folke/which-key.nvim")
 -- M.add("slakkenhuis/vim-margin")
 -- M.add("airblade/vim-gitgutter")
 -- }}}
@@ -619,7 +620,7 @@ M.afterPluginLoad = function()
   vim.g.PHP_default_indenting = 0
 
   -- acrylic related stuff
-  vim.g.acr_wiki_dir = os.getenv("ACR_WIKI_DIR")
+  vim.g.acr_wiki_dir = vim.env.ACR_WIKI_DIR
 
   local wikiInsertRef = function(ref, opts)
     local text = ("@ref(%s)"):format(ref)

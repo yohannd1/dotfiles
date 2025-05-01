@@ -113,11 +113,6 @@ dummy.bufSwitch = function(dir)
   vim.cmd([[ silent doautocmd User BufSwitch ]])
 end
 
--- TODO: improved snippet system (move into separate module ig)
-dummy.addSnippet = function(key, data)
-  vim.cmd(("nnoremap <silent> <buffer> <Leader>i%s i%s<Esc>"):format(key, data))
-end
-
 dummy.itemToggleTodo = function()
   local fn = vim.b.item_toggletodo_func or dummy.itemToggleTodoDefault
   fn()
