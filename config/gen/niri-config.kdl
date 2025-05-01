@@ -62,8 +62,19 @@ input {
 }
 
 output "HDMI-A-1" {
-    mode "1920x1080@74.973"
+    mode "1920x1080@75"
 }
+
+// manually create the workspaces so they don't stop existing all of a sudden
+workspace "1" {}
+workspace "2" {}
+workspace "3" {}
+workspace "4" {}
+workspace "5" {}
+workspace "6" {}
+workspace "7" {}
+workspace "8" {}
+workspace "9" {}
 
 // Settings that influence how windows are positioned and sized.
 // Find more information on the wiki:
@@ -287,6 +298,8 @@ binds {
     Mod+Tab { maximize-column; }
     Mod+Ctrl+Tab { center-column; }
 
+    Mod+Minus { focus-workspace-up; }
+    Mod+Equal { focus-workspace-down; }
     Mod+Shift+Minus { move-window-to-workspace-up; }
     Mod+Shift+Equal { move-window-to-workspace-down; }
 
