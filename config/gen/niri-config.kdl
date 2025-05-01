@@ -1,14 +1,12 @@
-// WARNING: this config is auto-generated with `gen-config`.
-// Do not edit this if it is in the ~/.config/niri folder.
-// TODO: maybe I wouldn't have to worry about this if I SET THE GODDAMN CONFIG ENV VAR
-
 // TODO: set up xdg-desktop-portal-gtk
-// TODO: set up waybar
-// TODO: set up xwayland
-// TODO: set up dotf.set-resolution
-// TODO: set up keybinding configuration
+// TODO: set up dotf.set-resolution to work with niri
 
-spawn-at-startup "sh" "-c" "dunst -config \"$XDG_CACHE_HOME/gen/dunstrc\""
+spawn-at-startup "dotf.common.deskinit"
+
+environment {
+    DISPLAY ":0"
+}
+spawn-at-startup "xwayland-satellite"
 
 // Input device configuration.
 // Find the full list of options on the wiki:
@@ -42,11 +40,8 @@ input {
     }
 
     mouse {
-        // off
-        // natural-scroll
-        // accel-speed 0.2
+        accel-speed 0.2
         // accel-profile "flat"
-        // scroll-method "no-scroll"
     }
 
     trackpoint {
@@ -201,10 +196,6 @@ animations {
     // slowdown 3.0
 }
 
-// Window rules let you adjust behavior for individual windows.
-// Find more information on the wiki:
-// https://github.com/YaLTeR/niri/wiki/Configuration:-Window-Rules
-
 window-rule {
     match app-id=r#"^float$"#
     open-floating true
@@ -212,9 +203,8 @@ window-rule {
     min-height 750
 }
 
-// Open the Firefox picture-in-picture player as floating by default.
 window-rule {
-    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+    match app-id=r#"(firefox|LibreWolf)$"# title="^Picture-in-Picture$"
     open-floating true
 }
 
@@ -296,6 +286,9 @@ binds {
 
     Mod+Tab { maximize-column; }
     Mod+Ctrl+Tab { center-column; }
+
+    Mod+Shift+Minus { move-window-to-workspace-up; }
+    Mod+Shift+Equal { move-window-to-workspace-down; }
 
     // Toggle tabbed column display mode.
     // Windows in this column will appear as vertical tabs,

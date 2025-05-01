@@ -28,7 +28,7 @@ case "$1" in
     ;;
   niri)
     gen-config niri
-    niri
+    NIRI_CONFIG="$XDG_CACHE_HOME/gen/niri-config.kdl" niri-session
     ;;
   qtile)
     qtile start -b wayland
