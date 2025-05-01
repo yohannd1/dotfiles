@@ -1,35 +1,29 @@
 #!/usr/bin/env bash
-# vim: fdm=marker
-
-# A simple script for power actions.
-# If no args are specified, fzagnostic is opened.
-# If an arg is provided, this script tries to choose said option.
-
-# Settings
+#
+# A script for power actions.
 
 PROGNAME=$(basename "$0")
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
 main() {
   case $# in
-    0) local choice=$(fuzzyMatch)
-      if [ -n "$choice" ]; then
-        main "$choice"
-      else
-        showHelp
-      fi ;;
+    0)
+      choice=$(fuzzyMenu) || exit 1
+      main "$choice"
+      ;;
 
-    1) case "$1" in
-        lock|exit|suspend|hibernate|reboot|shutdown|shutdown_now) \
-          eval "action_$1" ;;
+    1)
+      case "$1" in
+        lock|exit|suspend|hibernate|reboot|shutdown|shutdown_now) eval "action_$1" ;;
         *) showHelp ;;
-      esac ;;
+      esac
+      ;;
 
     *) showHelp ;;
   esac
 }
 
-fuzzyMatch() {
+fuzzyMenu() {
   fzagnostic -p "Power: " <<EOF
 lock
 exit
@@ -42,16 +36,18 @@ EOF
 }
 
 showHelp() {
-  printf >&2 "Usage: %s\n" \
-             "$PROGNAME [{lock | exit | suspend | hibernate | reboot | shutdown | shutdown_now}]"
-  printf >&2 "%s\n" "If no argument is specified, a fzagnostic pop-up is shown to select it manually."
+cat >&2 <<EOF
+Usage: $PROGNAME [{ lock | exit | suspend | hibernate | reboot | shutdown | shutdown_now }]
+If no argument is specified, a fzagnostic pop-up is shown to select it manually.
+EOF
+exit 2
 }
 
 isWayland() { [ "$WAYLAND_DISPLAY" ]; }
 isXorg() { ! isWayland && [ "$DISPLAY" ]; }
 
 action_lock() {
-  _getWaylockColors() {
+  _getLockColors() {
     c_init="0x$(dotcfg send get:theme_no_prefix.base01)" || return 1
     c_input="0x$(dotcfg send get:theme_no_prefix.base03)" || return 1
     c_fail="0x$(dotcfg send get:theme_no_prefix.base0F)" || return 1
@@ -61,16 +57,16 @@ action_lock() {
     _lock() { bslock; }
   elif isXorg && exists betterlockscreen; then
     _lock() { betterlockscreen -l; }
-  elif isWayland && exists waylock; then
-    if _getWaylockColors; then
-      waylock_args=(-init-color "$c_init" -input-color "$c_input" -fail-color "$c_fail")
-    else
-      waylock_args=()
-    fi
-
-    _lock() { waylock "${waylock_args[@]}"; }
+  elif isWayland && [ -z "$NIRI_SOCKET" ] && exists waylock; then
+    args=()
+    _getLockColors && args+=(-init-color "$c_init" -input-color "$c_input" -fail-color "$c_fail")
+    _lock() { waylock "${args[@]}"; }
+  elif isWayland && exists swaylock; then
+    args=()
+    _getLockColors && args+=(--color "$c_init")
+    _lock() { swaylock "${args[@]}"; }
   else
-    printf >&2 "No lockscreen program found.\n"
+    printf >&2 "No valid lockscreen program found.\n"
     return 1
   fi
 
@@ -84,11 +80,12 @@ action_lock() {
   if [ "$exit_code" = 0 ]; then
     [ "$WM" = dwm ] && pkill -RTMIN+1 dwmblocks
     trap - INT # restore ctrl-c if it is successful
-
-  # if it's been more than 5 seconds since the lockscreen spawned and it died from an error, then shut down the system for security reasons
-  elif [ $((end_time - start_time)) -gt 5 ]; then
-    notify-send "SHOULD POWEROFF"
-    # systemctl poweroff
+  elif [ $((end_time - start_time)) -le 2 ]; then
+    notify-send -u "Critical" "Lockscreen command died. Whoops!"
+  else
+    # it's been more than the time we set as "reasonable" for it dying; shut down the system for security reasons
+    notify-send -u "Critical" "Lockscreen command died too late! Shutting down."
+    systemctl poweroff
   fi
 }
 
