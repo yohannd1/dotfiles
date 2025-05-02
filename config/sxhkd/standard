@@ -70,7 +70,7 @@ super + {minus,equal}
 
 # toggle red screen
 super + F12
-    redscr toggle 90
+    dotf.wrap.redscreen toggle
 
 # show a report (time, current window, CPU usage, battery etc.)
 super + r

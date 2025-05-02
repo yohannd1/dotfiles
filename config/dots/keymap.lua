@@ -74,7 +74,7 @@ return function(api)
 
   api.key("super F12")
     :desc("toggle red screen")
-    :map("redscr toggle 90")
+    :map("runnsend error dotf.wrap.redscreen toggle")
 
   api.key("super r")
     :desc("show report")

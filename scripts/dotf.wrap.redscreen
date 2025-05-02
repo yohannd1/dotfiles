@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+
+set -e
+progname=$(basename "$0")
+
+exists() { command -v "$1" >/dev/null; }
+
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname { off | on | toggle }
+EOF
+  exit 2
+}
+
+[ $# != 1 ] && showHelp
+
+if [ "$WAYLAND_DISPLAY" ] && exists wl-gammarelay; then
+  if ! pgrep wl-gammarelay >/dev/null; then
+    # start it on the background
+    wl-gammarelay & disown
+  fi
+
+  prefix=(rs.wl-gammarelay / rs.wl.gammarelay)
+
+  offTemp=6500
+  onTemp=4000
+
+  _getTemp() {
+    busctl --user -- introspect "${prefix[@]}" \
+      | grep '\.Temperature' | awk '{ print $4 }'
+  }
+  _setTemp() { busctl --user -- set-property "${prefix[@]}" Temperature q "$1"; }
+
+  action_off() { _setTemp "$offTemp"; }
+  action_on() { _setTemp "$onTemp"; }
+  action_toggle() {
+    t=$(_getTemp)
+    if [ "$t" = "$offTemp" ]; then
+      action_on
+    else
+      action_off
+    fi
+  }
+elif [ "$DISPLAY" ] && exists xcalib; then
+  _togglePath=${TMPDIR:-/tmp}/redscreen-toggle
+  _toggleIntensity=80
+
+  action_on() {
+    xcalib \
+      -green 1 0 "$_toggleIntensity" \
+      -blue 1 0 "$_toggleIntensity" \
+      -alter
+    touch "$_togglePath"
+  }
+  action_off() {
+    xcalib -clear
+    rm -f "$_togglePath"
+  }
+  action_toggle() {
+    if [ -e "$_togglePath" ]; then
+      action_off
+    else
+      action_on
+    fi
+  }
+else
+  printf >&2 "failed to find a valid redscreen backend\n"
+  exit 1
+fi
+
+case "$1" in
+  on) action_on ;;
+  off) action_off ;;
+  toggle) action_toggle ;;
+  *)
+    printf >&2 'unknown argument "%s"\n' "$1"
+    showHelp
+    ;;
+esac

@@ -70,6 +70,7 @@ fi &
 # yambar
 if isWayland; then
   waybar &
+  wl-gammarelay &
 fi
 
 # set colors for hyprland

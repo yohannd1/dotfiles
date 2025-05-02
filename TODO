@@ -40,10 +40,9 @@ gui_essentials:
     xsettingsd
     fcitx5
     xinput
-    xcalib (for redscr)
+    xcalib or wl-gammarelay (for dotf.wrap.redscreen)
     xbacklight
     playerctl (for play-pause keybinding)
-    pulse-autoconf
 
 gui_extras:
     ksnip
