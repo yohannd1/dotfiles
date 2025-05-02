@@ -10,12 +10,14 @@
         "hyprland/workspaces",
         "dwl/tags",
         "sway/workspaces", "sway/mode",
+        "niri/workspaces",
     ],
     "modules-center": [
         "dwl/window",
         "river/window",
         "hyprland/window",
         "sway/window",
+        "niri/window",
     ],
     "modules-right": [
         // "wlr/taskbar",

@@ -2,8 +2,10 @@
 
 progname=$(basename "$0")
 
+set -e
+
 showHelp() {
-  printf >&2 "Usage: %s [--output <OUTPUT>] [--mode <MODE>] [--scale <SCALE>]\n" "$progname"
+  printf >&2 "Usage: %s [--output <OUTPUT>] [--mode <MODE>] [--scale <SCALE>] [--rate <RATE>]\n" "$progname"
   exit 2
 }
 
@@ -15,40 +17,14 @@ die() {
 }
 
 getArg() {
-  if [ $# = 0 ]; then
+  if [ $# -lt 2 ]; then
     printf >&2 "Missing value for argument %s\n" "$1"
     exit 2
   fi
   printf "%s\n" "$2"
 }
 
-if [ "$WAYLAND_DISPLAY" ]; then
-  printf >&2 "Wayland is not yet supported! Sorry\n"
-  exit 1
-elif [ "$DISPLAY" ]; then
-  while [ $# -gt 0 ]; do
-    case "$1" in
-      --output)
-        shift
-        arg_output=$(getArg '--output' "$1")
-        ;;
-
-      --scale)
-        die "Scale not yet supported"
-        ;;
-
-      --mode)
-        shift
-        arg_mode=$(getArg '--mode' "$1")
-        ;;
-
-      --help)
-        showHelp
-        ;;
-    esac
-    shift
-  done
-
+set_xrandr() {
   args=()
 
   if [ "$arg_output" ]; then
@@ -59,8 +35,73 @@ elif [ "$DISPLAY" ]; then
   fi
 
   [ "$arg_mode" ] && args+=(--mode "$arg_mode")
+  [ "$arg_rate" ] && args+=(-r "$arg_rate")
 
   xrandr "${args[@]}"
+}
+
+set_niri() {
+  if [ -z "$arg_output" ]; then
+    arg_output=$(niri msg --json outputs | jq -r '.[].name' | head -n1)
+  fi
+
+  if [ "$arg_mode" ] || [ "$arg_rate" ]; then
+    if [ -z "$arg_mode" ]; then
+      json=$(niri msg --json outputs)
+      curModeIdx=$(printf "%s" "$json" | jq -r '.[].current_mode' | head -n1)
+      modeStr=$(printf "%s" "$json" | jq -r --argjson i 16 '.[].modes[$i] | "\(.width)x\(.height)"')
+    else
+      modeStr="$arg_mode"
+    fi
+
+    if [ "$arg_rate" ]; then
+      modeStr="${modeStr}@${arg_rate}"
+    fi
+
+    niri msg output "$arg_output" mode "$modeStr"
+  fi
+}
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --output)
+      shift
+      arg_output=$(getArg '--output' "$1")
+      ;;
+
+    --scale)
+      die "Scale not yet supported"
+      ;;
+
+    --mode)
+      shift
+      arg_mode=$(getArg '--mode' "$1")
+      ;;
+
+    --rate)
+      shift
+      arg_rate=$(getArg '--rate' "$1")
+      ;;
+
+    --help)
+      showHelp
+      ;;
+
+    *)
+      printf >&2 "unknown parameter %s\n" "$1"
+      showHelp
+      ;;
+  esac
+  shift
+done
+
+if [ -z "$WAYLAND_DISPLAY" ] && [ "$DISPLAY" ]; then
+  set_xrandr
+elif [ "$WAYLAND_DISPLAY" ] && [ "$NIRI_SOCKET" ]; then
+  set_niri
+elif [ "$WAYLAND_DISPLAY" ]; then
+  printf >&2 "Unsupported compositor...\n"
+  exit 1
 else
   printf >&2 "Neither WAYLAND_DISPLAY nor DISPLAY is set.\n"
   exit 1

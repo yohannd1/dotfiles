@@ -141,8 +141,10 @@ toJson = function(val, file)
   end
 end
 -- }}}
--- Target "sxhkd" {{{
-local sxhkd_render = function(keys, file)
+
+local known_targets = {}
+
+known_targets.sxhkd = function(keys, file) -- {{{
   local map = {
     ["enter"] = "Return",
     ["ctrl"] = "control",
@@ -165,10 +167,8 @@ local sxhkd_render = function(keys, file)
       file:write("\n")
     end
   end
-end
--- }}}
--- Target "qtile" {{{
-local qtile_render = function(keys, file)
+end -- }}}
+known_targets.qtile = function(keys, file) -- {{{
   local map = {
     ["enter"] = "Return",
     ["ctrl"] = "control",
@@ -188,15 +188,40 @@ local qtile_render = function(keys, file)
     table.insert(tbl, {mods, key, kb.desc, kb.map})
   end
   toJson(tbl, file)
-end
--- }}}
+end -- }}}
+known_targets.niri = function(keys, file) -- {{{
+  local map = {
+    ["enter"] = "Return",
+    ["ctrl"] = "Ctrl",
+    ["super"] = "Super",
+    ["alt"] = "Alt",
+  }
 
-loadfile(keymap_path)()(api) -- run the keymap
+  local forEachKey = function(f)
+    for _, kb in ipairs(keys) do
+      if kb.cond == nil or kb.cond then
+        f(kb)
+      end
+    end
+  end
 
-local known_targets = {
-  sxhkd = sxhkd_render,
-  qtile = qtile_render,
-}
+  forEachKey(function (kb)
+    local t1 = {}
+    for _, name in ipairs(kb.mods) do
+      table.insert(t1, map[name] or name)
+    end
+    table.insert(t1, map[kb.key] or kb.key)
+
+    file:write(table.concat(t1, "+"))
+    if kb.desc ~= nil then
+      file:write((" hotkey-overlay-title=%q"):format(kb.desc))
+    end
+    file:write(([[ { spawn "sh" "-c" %q; }]]):format(kb.map))
+    file:write("\n")
+  end)
+end -- }}}
+
+loadfile(keymap_path)()(api) -- run the keymap definer(?)
 
 local render_func = known_targets[api.keymap_target]
 if render_func ~= nil then

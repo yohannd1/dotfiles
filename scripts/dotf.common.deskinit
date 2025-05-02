@@ -46,9 +46,9 @@ dunst -config "$XDG_CACHE_HOME/gen/dunstrc" &
 # monitor-battery &
 
 # input method
-if isXorg; then
-  fcitx5 -d
-fi
+# if isXorg; then
+#   fcitx5 -d
+# fi
 # TODO: how to provide this for wayland
 
 # pulse-autoconf

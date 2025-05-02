@@ -1,12 +1,15 @@
--- vim: foldenable foldmethod=marker foldmarker={{{,}}}
-
 local vim = _G.vim
 local dummy = _G.dummy
 local utils = require("cfg.utils")
-local services = utils.services
+local rifle = require("cfg.rifle")
 
+local services = utils.services
+local lazy = utils.lazy
 local map = utils.map
 local forChars = utils.forChars
+local editFile = utils.editFile
+
+local DOTFILES = vim.env.DOTFILES
 
 -- Quick binding arguments
 local arg_nr = { noremap = true }
@@ -17,11 +20,8 @@ local arg_s = { silent = true }
 vim.o.timeoutlen = 1000
 vim.o.ttimeoutlen = 10
 
--- Leader keys
-forChars("nv", function(m)
-  map(m, "<Space>", "<Leader>")
-  map(m, ",", "<Leader>")
-end)
+-- set leader key
+vim.g.mapleader = " "
 
 -- Soft wrap keybindings
 dummy.setSoftWrapBinds = function(enable)
@@ -36,7 +36,7 @@ dummy.setSoftWrapBinds = function(enable)
   end
 
   forChars(keys, function(k)
-    local opts = {noremap = true, expr = true}
+    local opts = { noremap = true, expr = true }
     forChars("nv", function(m)
       local fmt = string.format
       map(m, k, fmt([[v:count == 0 ? 'g%s' : '%s']], k, k), opts)
@@ -296,11 +296,11 @@ do
     end
   end
 
-  vim.keymap.set("i", "<C-j>", pv_check("<C-n>", "<C-j>"), {expr = true})
-  vim.keymap.set("i", "<C-k>", pv_check("<C-p>", "<C-k>"), {expr = true})
-  vim.keymap.set("i", "<Down>", pv_check("<C-n>", "<Down>"), {expr = true})
-  vim.keymap.set("i", "<Up>", pv_check("<C-p>", "<Up>"), {expr = true})
-  vim.keymap.set("i", "<C-m>", pv_check("<C-y>", "<C-m>"), {expr = true})
+  vim.keymap.set("i", "<C-j>", pv_check("<C-n>", "<C-j>"), { expr = true })
+  vim.keymap.set("i", "<C-k>", pv_check("<C-p>", "<C-k>"), { expr = true })
+  vim.keymap.set("i", "<Down>", pv_check("<C-n>", "<Down>"), { expr = true })
+  vim.keymap.set("i", "<Up>", pv_check("<C-p>", "<Up>"), { expr = true })
+  vim.keymap.set("i", "<C-m>", pv_check("<C-y>", "<C-m>"), { expr = true })
 end
 
 vim.cmd([[ map <C-m> <CR> ]])
@@ -358,82 +358,58 @@ map("n", "gf", ":lua dummy.openCurrentWORD()<CR>", arg_nr)
 
 map("n", "<Leader>bf", ":lua require('cfg.format').formatBuffer()<CR>", arg_nr)
 
-services.defKeyMenu({
-  id = "extrafind",
-  title = "Find",
-  keymaps = {{
-    name = "In buffer",
-    keys = {
-      {"t", "lua dummy.findTodos()", "TODOs (in buffer)"},
-      {"b", "lua require('telescope.builtin').buffers()", "buffers"},
-      {"h", "lua require('telescope.builtin').help_tags()", "help tags"},
-      {".", "lua require('telescope.builtin').find_files()", "files"},
-    },
-  }}
-})
-map("n", "<Leader>f", [[:lua require("cfg.utils").services.loadKeyMenu("extrafind")<CR>]], arg_nr_s)
+local telescope_builtin = require("telescope.builtin")
+map("n", "<Leader>ft", dummy.findTodos, { noremap = true, desc = "find TODOs (in buffer)" })
+map("n", "<Leader>fb", telescope_builtin.buffers, { noremap = true, desc = "find buffers" })
+map("n", "<Leader>fh", telescope_builtin.help_tags, { noremap = true, desc = "find help tags" })
+map("n", "<Leader>f.", telescope_builtin.find_files, { noremap = true, desc = "find files" })
 
-services.defKeyMenu({
-  id = "edit",
-  title = "Edit",
-  keymaps = {{
-    name = "Common files",
-    keys = {
-      {"v", "e $VIM_INIT", "init.vim"},
-      {"r", "e $DOTFILES/config/dots/resources.lua", "resources.lua"},
-      {"e", "e $DOTFILES/config/dots/env.sh", "env.sh"},
-      {"p", "e $DOTFILES/config/dots/path.sh", "path.sh"},
-    },
-  }},
-})
-map("n", "<Leader>e", [[:lua require("cfg.utils").services.loadKeyMenu("edit")<CR>]], arg_nr_s)
+for k, path in pairs({
+  v = vim.env.VIM_INIT,
+  r = ("%s/config/dots/resources.lua"):format(DOTFILES),
+  e = ("%s/config/dots/env.sh"):format(DOTFILES),
+  p = ("%s/config/dots/path.sh"):format(DOTFILES),
+}) do
+  local cmd = ("edit %s"):format(path)
+  local desc = ("edit: %s"):format(vim.fs.basename(path))
+  map("n", "<Leader>e" .. k, function() vim.cmd(cmd) end, { noremap = true, desc = desc })
+end
 
-map("n", "<Leader>rr", [[:Rifle run<CR>]], arg_nr_s)
-map("n", "<Leader>rb", [[:Rifle build<CR>]], arg_nr_s)
-map("n", "<Leader>rc", [[:Rifle check<CR>]], arg_nr_s)
-map("n", "<Leader>rt", [[:Rifle test<CR>]], arg_nr_s)
-map("n", "<Leader>rd", [[:Rifle debug<CR>]], arg_nr_s)
+local rifle_maps = { r = "run", b = "build", c = "check", t = "test", d = "debug" }
+for k, action in pairs(rifle_maps) do
+  local opts = { noremap = true, desc = ("rifle %s"):format(action) }
+  map("n", "<Leader>r" .. k, function() rifle.run(action) end, opts)
+end
 
-dummy.plan_sidebar = utils.Sidebar.new("~/wiki/vimwiki/202407161554-F1C8E4.acr")
+local getWikiPage = function(id)
+  return ("%s/%s.acr"):format(vim.g.acr_wiki_dir, id)
+end
+
+dummy.plan_sidebar = utils.Sidebar.new(getWikiPage("202407161554-F1C8E4"))
 map("n", "<Leader>c", [[:lua dummy.plan_sidebar:toggle()<CR>]], arg_nr_s)
 
 dummy.wikiOpenJournal = function()
   local result = vim.system({"acr-journal", "get-path"}, { text = true }):wait()
   assert(result.code == 0, "command failed to run")
-  local path = vim.trim(result.stdout)
-  vim.cmd(("edit %s"):format(path))
+  editFile(vim.trim(result.stdout))
 end
 
--- wiki stuff
-services.defKeyMenu({
-  id = "wiki",
-  title = "Wiki",
-  keymaps = {
-    {
-      name = "Open...",
-      keys = {
-        {"w", "e ~/wiki/vimwiki/index.acr", "index"},
-        {"s", "e ~/wiki/vimwiki/202105021825-E80938.acr", "scratchpad"},
-        {"P", "e ~/wiki/vimwiki/202407161554-F1C8E4.acr", "plan"},
-        {"p", "e ~/wiki/vimwiki/202501061628-CB9C1A.acr", "week plan (2024)"},
-        {"o", "lua dummy.wikiFzOpen({})", "search"},
-        {"j", "lua dummy.wikiOpenJournal({})", "journal"},
-        -- {"O", "lua dummy.wikiFzOpen({}, {'acw-get-projects'})", "select a project"},
-      },
-    },
-
-    {
-      name = "References",
-      keys = {
-        {"R", "lua dummy.wikiFzInsertRef({ after_cursor = false })", "add reference ←"},
-        {"r", "lua dummy.wikiFzInsertRef({ after_cursor = true })", "add reference →"},
-        {"N", "lua dummy.wikiNewFileInsertRef({ after_cursor = false })", "new note + add reference ←"},
-        {"n", "lua dummy.wikiNewFileInsertRef({ after_cursor = true })", "new note + add reference →"},
-      }
-    },
-  },
-})
-map("n", "<Leader>w", [[:lua require("cfg.utils").services.loadKeyMenu("wiki")<CR>]], arg_nr_s)
+-- wiki keybindings
+local wiki_mappings = {
+  {"w", lazy(editFile, getWikiPage("index")), "open index"},
+  {"s", lazy(editFile, getWikiPage("202105021825-E80938")), "open scratchpad"},
+  {"P", lazy(editFile, getWikiPage("202407161554-F1C8E4")), "open plan"},
+  {"p", lazy(editFile, getWikiPage("202501061628-CB9C1A")), "open week plan (2024)"},
+  {"o", lazy(dummy.wikiFzOpen, {}), "search on the wiki"},
+  {"j", lazy(dummy.wikiOpenJournal, {}), "open journal"},
+  {"R", lazy(dummy.wikiFzInsertRef, { after_cursor = false }), "add reference ←"},
+  {"r", lazy(dummy.wikiFzInsertRef, { after_cursor = true }), "add reference →"},
+  {"N", lazy(dummy.wikiNewFileInsertRef, { after_cursor = false }), "new note + add reference ←"},
+  {"n", lazy(dummy.wikiNewFileInsertRef, { after_cursor = true }), "new note + add reference →"},
+}
+for _, entry in ipairs(wiki_mappings) do
+  map("n", "<Leader>w" .. entry[1], entry[2], { noremap = true, desc = entry[3] })
+end
 
 local quickFixIsOpen = function()
   local t = vim.fn.filter(vim.fn.getwininfo(), "v:val.quickfix && !v:val.loclist")
@@ -448,11 +424,12 @@ dummy.toggleQuickFix = function()
   end
 end
 
-map("n", "<Leader>q", [[:lua dummy.toggleQuickFix()<CR>]], arg_nr_s)
+map("n", "<Leader>q", dummy.toggleQuickFix, { noremap = true, desc = "toggle quickfix" })
 map("n", "<Leader>l", [[:messages<CR>]], arg_nr)
 map("n", "<Leader>T", [[:terminal<CR>i]], arg_nr)
-map("n", "<Leader>[", [[:call jobstart(["tmux", "new-window"])<CR>]], arg_nr_s)
+map("n", "<Leader>[", lazy(vim.fn.jobstart, {"tmux", "new-window"}), { noremap = true, desc = "tmux: new tab" })
 
+-- TODO: find a way to use this without needing a keymenu...
 services.defKeyMenu({
   id = "buffer",
   title = "Buffer navigation",
@@ -467,4 +444,4 @@ services.defKeyMenu({
     },
   }}
 })
-map("n", "<Leader>B", [[:lua require("cfg.utils").services.loadKeyMenu("buffer")<CR>]], arg_nr_s)
+map("n", "<Leader>B", lazy(services.loadKeyMenu, "buffer"), arg_nr_s)
