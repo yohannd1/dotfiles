@@ -195,15 +195,12 @@ prefer-no-csd
 // You can also set this to null to disable saving screenshots to disk.
 screenshot-path null
 
-// Animation settings.
-// The wiki explains how to configure individual animations:
-// https://github.com/YaLTeR/niri/wiki/Configuration:-Animations
 animations {
-    // Uncomment to turn off all animations.
-    // off
+    slowdown 0.8
 
-    // Slow down all animations by this factor. Values below 1 speed them up instead.
-    // slowdown 3.0
+    workspace-switch {
+        off
+    }
 }
 
 window-rule {

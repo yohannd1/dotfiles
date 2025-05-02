@@ -3,6 +3,8 @@
 # Screenshot util.
 # Currently only supports wayland (because of dependency on slurp & grim)
 
+set -e
+
 exists() { command -v "$1" >/dev/null; }
 
 if [ -z "$WAYLAND_DISPLAY" ]; then

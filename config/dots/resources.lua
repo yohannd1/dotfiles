@@ -23,7 +23,7 @@ local font_presets = {
   },
   ["FiraCode"] = {
     name = "Fira Code Medium",
-    base_size = 15,
+    base_size = 15.5,
   },
   ["CascadiaCode"] = {
     name = "Cascadia Code",
@@ -200,7 +200,10 @@ local T_ALL = {t_xres, t_dots}
 -- }}}
 
 local enable_ligatures = (os.getenv("RESLUA_ENABLE_LIGATURES") or "") ~= ""
-local font_size = tonumber(os.getenv("RESLUA_FONT_SIZE") or 1.2)
+local wayland_scale_factor = os.getenv("WAYLAND_DISPLAY") and 1.025 or 1.0
+local font_size =
+  wayland_scale_factor
+  * tonumber(os.getenv("RESLUA_FONT_SIZE") or 1.2)
 local font_name = os.getenv("RESLUA_FONT_NAME") or "SourceCodePro"
 local font = getFontInfo(font_name, font_size)
 

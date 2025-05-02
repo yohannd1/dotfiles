@@ -19,12 +19,12 @@ if isWayland; then
   dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
 fi
 
-# config daemons
+# set up config
 if isXorg; then
   gen-res xresources | xrdb
 fi
 gen-res dotcfg | dotcfg stdin-send
-# isXorg && { xsettingsd &; }
+gen-config # we already run this in the login shell but it needs to know about wayland
 
 # set background
 setbg &

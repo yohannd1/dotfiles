@@ -349,8 +349,11 @@ alias pip='python3 -m pip'
 alias sy='dotsync'
 alias of='openfork'
 
-# sg() { dbus-launch --exit-with-session river-start; }
-sg() { WM=qtile start-xserver; }
+sg() {
+  # dbus-launch --exit-with-session river-start
+  # WM=qtile start-xserver
+  wl-start niri
+}
 
 if exists nvim; then
   alias vi='nvim' vim='nvim'
@@ -415,7 +418,7 @@ Td() { epic-translate "$1" "$1" "$2" 2>&1 | less; }
 P() { ps -eo pid,args | rg "$1"; }
 
 .r() { . "$DOTFILES/config/dots/env.sh" && dotf.common.res-reload; }
-.re() { .r && "$EDITOR"; }
+.re() { .r && dotf.wrap.terminal "$EDITOR"; }
 
 # FIXME: I'm not exactly sure how to do this, specially because it messes up if I'm trying to use more than one X server.
 if ! isAndroid; then
