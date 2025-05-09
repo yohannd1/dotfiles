@@ -18,12 +18,12 @@ local font_presets = {
   },
   ["Iosevka"] = {
     name = "Iosevka",
-    base_size = 16.5,
-    supports_ligatures = true, -- FIXME: I don't think so?
+    base_size = 17,
+    supports_ligatures = false,
   },
   ["FiraCode"] = {
     name = "Fira Code Medium",
-    base_size = 15.5,
+    base_size = 15.75,
   },
   ["CascadiaCode"] = {
     name = "Cascadia Code",
@@ -199,7 +199,7 @@ end
 local T_ALL = {t_xres, t_dots}
 -- }}}
 
-local enable_ligatures = (os.getenv("RESLUA_ENABLE_LIGATURES") or "") ~= ""
+local want_enable_ligatures = (os.getenv("RESLUA_ENABLE_LIGATURES") or "") ~= ""
 local wayland_scale_factor = os.getenv("WAYLAND_DISPLAY") and 1.025 or 1.0
 local font_size =
   wayland_scale_factor
@@ -214,12 +214,15 @@ local withAlpha = function(color, alpha)
   return ("%s%02x"):format(color, math.floor(alpha * 255))
 end
 
+local enable_ligatures = want_enable_ligatures and font.supports_ligatures
+local enable_ligatures_int = enable_ligatures and 1 or 0
+
 -- st (x11 terminal)
 decl {
   {"st.alpha", "0.75"},
   {"st.cursor", theme["base0D"]},
   {"st.font", xft_font},
-  {"st.enableligatures", (enable_ligatures and font.supports_ligatures) and 1 or 0},
+  {"st.enableligatures", enable_ligatures_int},
 
   targets = T_ALL,
 }
@@ -438,7 +441,7 @@ for i = 0, 15 do
   decl {
     {"theme." .. hex_id, color},
     {"theme_no_prefix." .. hex_id, color:sub(2)},
-    {"theme_rgb_csv." .. hex_id, r..","..g..","..b},
+    {"theme_rgb_csv." .. hex_id, ("%s,%s,%s"):format(r, g, b)},
 
     targets = T_ALL,
   }
