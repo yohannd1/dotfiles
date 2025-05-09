@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 
-prog=$(basename "$0")
+progname=$(basename "$0")
 
 if [ $# != 1 ]; then
-  printf >&2 "Usage: %s <FILE>\n" "$prog"
+  printf >&2 "Usage: %s <FILE>\n" "$progname"
   exit 2
 fi
 
-if [ -f "$1" ]; then
-  printf >&2 "Error: file #{%s} doesn't exist\n" "$1"
+if [ ! -f "$1" ]; then
+  printf >&2 "file '%s' doesn't exist\n" "$1"
   exit 1
 fi
 
 printf >&2 "To upload: %s\n" "$(file "$1")"
 printf >&2 "Continue? [y/N] "
 
-read -rk1 char
+read -r char
 printf "\n"
 
 case "$char" in

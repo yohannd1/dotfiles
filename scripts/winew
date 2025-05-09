@@ -12,6 +12,10 @@ progname=$(basename "$0")
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
 is_x11() { [ "$DISPLAY" ] && [ -z "$WAYLAND_DISPLAY" ]; }
 
+if [ "$WAYLAND_DISPLAY" ]; then
+  unset DISPLAY
+fi
+
 show_help() {
 cat >&2 <<EOF
 Usage:
@@ -75,7 +79,7 @@ case "$1" in
     ;;
 
   desktop)
-    [ $# != 1 ] && show_help
+    [ $# = 0 ] && show_help
     resolution=800x600
     if is_x11 && exists xrandr; then
       resolution=$(xrandr | awk '/\*/ { print $1 }') || resolution=800x600
