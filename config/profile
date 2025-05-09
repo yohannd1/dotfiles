@@ -80,6 +80,16 @@ _setupDotcfg() {
   printf >&2 " *  Done!\n"
 }
 
+# termux-only services
+if isTermux; then
+  # {
+  #   printf >&2 "*** Enabling wake lock...\n"
+  #   termux-wake-lock
+  #   printf >&2 " *  Done!...\n"
+  # } &
+  sshd # it uses port 8022 btw
+fi
+
 # too disk-intensive to do every time it boots up on Termux
 if ! isTermux; then
   # update the date because clock problems
@@ -104,3 +114,4 @@ if ! isTermux; then
   # fi
 fi
 
+isTermux && exists tmux && [ -z "$TMUX" ] && SESSION_NAME=android tmux-tray

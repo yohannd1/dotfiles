@@ -126,7 +126,11 @@ export PYTHON_BASIC_REPL=1 # weird thing that happened but i dont care that much
 {
   export NNN_OPENER="$OPENER"
   export NNN_TRASH=1
-  export NNN_OPTS="Ar"
+
+  export NNN_OPTS="A"
+  if _exists cpg; then
+    export NNN_OPTS="${NNN_OPTS}r"
+  fi
 
   # FIXME: not working fully... I'm confused.
   _BLK="0B" _CHR="0B" _DIR="04" _EXE="06" _REG="00" _HARDLINK="06" _SYMLINK="06" _MISSING="00" _ORPHAN="09" _FIFO="06" _SOCK="0B" _OTHER="06"
