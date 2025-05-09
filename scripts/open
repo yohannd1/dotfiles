@@ -8,6 +8,7 @@
 
 (var *open-gui* (-> (os/getenv "OPEN_GUI" "") (length) (> 0)))
 (var *open-new-window* (-> (os/getenv "OPEN_NEW_WINDOW" "") (length) (> 0)))
+(var *is-termux* (-> (os/getenv "TERMUX_APP_PID") (nil?) (not)))
 
 (defn get-prog-output [-args]
   (def (pipe-r pipe-w) (os/pipe))
@@ -164,7 +165,12 @@
     (os/exit 1))
 
   (def s (state/init (in args 0)))
-  (def {:file file} s)
+  (def file (in s :file))
+
+  (when (and *is-termux* *open-gui*)
+    # TODO: check if the path is externally-openable (a child of /storage/emulated/0 ig)
+    (def code (os/execute ["termux-open" file] :p))
+    (os/exit code))
 
   (defn t [-type &opt -arg] (state/try s -type -arg))
   (defn m [-type -arg] (state/match s -type -arg))
