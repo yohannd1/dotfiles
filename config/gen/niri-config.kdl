@@ -207,8 +207,14 @@ window-rule {
     match app-id=r#"^float$"#
     open-floating true
 
-    default-column-width { fixed 1000; }
+    default-column-width { fixed 1250; }
     default-window-height { fixed 750; }
+}
+
+window-rule {
+    match app-id=r#"satty"#
+    open-focused false
+    open-on-workspace "9"
 }
 
 window-rule {

@@ -2,7 +2,7 @@
 {
     "layer": "bottom",
     "position": "top",
-    "height": 12,
+    "height": 20,
     "spacing": 0,
 
     "modules-left": [
@@ -20,8 +20,9 @@
         "niri/window",
     ],
     "modules-right": [
-        // "wlr/taskbar",
-        "pulseaudio", "clock", "tray",
+        "pulseaudio",
+        "clock",
+        "tray",
     ],
 
     "hyprland/workspaces": {
@@ -55,12 +56,15 @@
     },
 
     "pulseaudio": {
-        // "scroll-step": 1, // %, can be a float
-        "format": "vol {volume}%",
+        "format": "{format_source}  vol {volume}%",
         "format-muted": "vol OFF",
+        "scroll-step": 5.0, // %, can be a float
+        "format-source": "mic {volume}%",
+        "format-source-muted": "mic OFF",
     },
 
     "wlr/taskbar": {
         "icon-size": 10,
+        "tooltip-format": "{title} | {app_id}",
     },
 }
