@@ -32,7 +32,7 @@ window#waybar {
 }
 
 #workspaces button.empty {
-    color: rgba(0.0, 0.0, 0.0, 0.0); /* hide it lol */
+    opacity: 0.05;
 }
 
 #tags button.occupied {

@@ -25,21 +25,13 @@ return function(api)
     :desc("power menu")
     :map("runnsend error-and-output fzpow")
 
-  local screenshot_select_cmd = api.is_xorg
-    and "runnsend error ksnip -r"
-    or "runnsend error dotf.screenshot"
-
   api.key("super c")
-    :desc("screenshot (with selection)")
-    :map(screenshot_select_cmd)
-
-  local screenshot_full_cmd = api.is_xorg
-    and "runnsend error ksnip -f"
-    or "runnsend error dotf.screenshot --full"
+    :desc("screenshot (and edit)")
+    :map("runnsend error-and-output dotf.screenshot edit")
 
   api.key("super shift c")
-    :desc("screenshot (full screen)")
-    :map(screenshot_full_cmd)
+    :desc("screenshot (and menu)")
+    :map("runnsend error-and-output dotf.screenshot menu")
 
   api.key("super F10")
     :desc("mount menu")
@@ -74,7 +66,7 @@ return function(api)
 
   api.key("super F12")
     :desc("toggle red screen")
-    :map("redscr toggle 90")
+    :map("runnsend error dotf.wrap.redscreen toggle")
 
   api.key("super r")
     :desc("show report")

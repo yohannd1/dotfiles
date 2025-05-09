@@ -1,16 +1,19 @@
 #!/usr/bin/env sh
-#
-# Screenshot util.
-# Currently only supports wayland (because of dependency on slurp & grim)
+
+set -e
+progname=$(basename "$0")
 
 exists() { command -v "$1" >/dev/null; }
 
-if [ -z "$WAYLAND_DISPLAY" ]; then
-  printf >&2 "WAYLAND_DISPLAY not set!\n"
-  exit 1
-fi
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname [MODE]
+Where MODE := { menu | edit }, defaults to 'menu'
+EOF
+  exit 2
+}
 
-scrDir="$HOME/storage/pictures/screenshots/$(date +%Y-%m)"
+[ $# -gt 1 ] && showHelp
 
 tmp=$(mktemp /tmp/screenshot.XXXXXX.png) || exit 1
 rmtemp() {
@@ -18,45 +21,55 @@ rmtemp() {
 }
 trap 'rmtemp' EXIT
 
-# TODO: take screenshot, then use slurp to trim (instead of selecting before taking screenshot)
+outDir="$HOME/storage/pictures/screenshots/$(date +%Y-%m)"
+outPath="$scrDir/$(date +%Y-%m-%d_%H%M%S).png"
 
-if [ "$1" = --full ]; then
-  grim -t png "$tmp" 2>/dev/null
+if [ -z "$WAYLAND_DISPLAY" ] && [ "$DISPLAY" ] && exists maim && exists satty; then
+  action_screenshot() { maim --format=png "$tmp"; }
+  action_edit() { satty -f "$tmp" -o "$outPath"; }
+elif [ "$WAYLAND_DISPLAY" ] && exists grim && exists satty; then
+  action_screenshot() { grim -t png "$tmp"; }
+  action_edit() { satty -f "$tmp" -o "$outPath"; }
 else
-  rectangle=$(slurp -b '#FFFFFF20' 2>/dev/null) || exit 1
-  grim -g "$rectangle" -t png "$tmp" 2>/dev/null
+  printf >&2 "failed to detect a good backend\n"
+  exit 1
 fi
 
-out_dir="$scrDir/$(date +%Y-%m-%d_%H%M%S).png"
-while true; do
-  choice=$(printf "edit\nsave\ncopy\nexit" | fzagnostic -p "Do what:") || exit 1
+_unused_oldMethod() {
+  rectangle=$(slurp -b '#FFFFFF20' 2>/dev/null) || exit 1
+  grim -g "$rectangle" -t png "$tmp" 2>/dev/null
+}
 
-  case "$choice" in
-    edit)
-      pinta_o=$(pinta "$tmp" 2>&1)
-      pinta_ec=$?
-
-      if [ "$pinta_ec" != 0 ]; then
-        printf >&2 "pinta exited not-very-gracefully:\n"
-        pritnf >&2 "$pinta_o"
+showMenu() {
+  while true; do
+    choice=$(printf 'edit\nsave\ncopy\nexit' | fzagnostic -p "Screenshot:") || exit
+    case "$choice" in
+      edit) action_edit ;;
+      save)
+        mv "$tmp" "$outPath"
+        printf >&2 "Screenshot saved to %s\n" "$outPath"
+        ;;
+      copy) imgclip "$tmp" ;;
+      exit) exit ;;
+      *)
+        printf >&2 "invalid option: %s\n" "$choice"
         exit 1
-      fi
-      ;;
-    save)
-      mkdir -p "$scrDir" || exit 1
-      mv "$tmp" "$out_dir" || exit 1
-      printf >&2 "Screenshot saved to %s\n" "$out_dir"
-      exit
-      ;;
-    copy)
-      wl-copy -t image/png < "$tmp"
-      ;;
-    exit)
-      exit 1
-      ;;
-    *)
-      printf >&2 "Invalid option: %s\n" "$choice"
-      exit 1
-      ;;
-  esac
-done
+        ;;
+    esac
+  done
+}
+
+case "$1" in
+  ""|menu)
+    action_screenshot
+    showMenu
+    ;;
+  edit)
+    action_screenshot
+    action_edit
+    ;;
+  *)
+    printf >&2 "invalid argument: %s\n" "$1"
+    showHelp
+    ;;
+esac
