@@ -41,6 +41,8 @@ set_xrandr() {
 }
 
 set_niri() {
+  # FIXME: setting the frame rate doesn't seem to work well if you don't specify the exact value. it just silently passes without doing nothing.
+
   if [ -z "$arg_output" ]; then
     arg_output=$(niri msg --json outputs | jq -r '.[].name' | head -n1)
   fi

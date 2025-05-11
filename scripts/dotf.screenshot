@@ -26,7 +26,8 @@ outPath="$outDir/$(date +%Y-%m-%d_%H%M%S).png"
 
 action_edit() {
   mkdir -p "$outDir"
-  satty -f "$tmp" -o "$outPath"
+  # specifying the copy command because of clipboard persistency issues - see https://github.com/gabm/Satty/issues/95
+  satty -f "$tmp" -o "$outPath" --copy-command 'dotf.wrap.clip copy'
 }
 
 if [ -z "$WAYLAND_DISPLAY" ] && [ "$DISPLAY" ] && exists maim && exists satty; then
