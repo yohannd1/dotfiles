@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+set -e
+progname=$(basename "$0")
+
+showHelp() {
+cat >&2 <<EOF
+Usage:
+  $progname copy [--type MIMETYPE]
+  $progname paste
+EOF
+  exit 2
+}
+
+[ $# = 0 ] && showHelp
+
+getArg() {
+  if [ $# -lt 2 ]; then
+    printf >&2 "missing value for argument %s\n" "$1"
+    exit 2
+  fi
+  printf "%s\n" "$2"
+}
+
+if [ "$WAYLAND_DISPLAY" ]; then
+  do_copy() {
+    args=()
+    [ "$arg_type" ] && args+=(-t "$arg_type")
+    wl-copy "${args[@]}"
+  }
+  do_paste() { wl-paste; }
+elif [ "$DISPLAY" ]; then
+  do_copy() {
+    args=()
+    [ "$arg_type" ] && args+=(-t "$arg_type")
+    xclip "${args[@]}" -sel clip
+  }
+  do_paste() { xclip -sel clip out; }
+else
+  printf >&2 "neither WAYLAND_DISPLAY nor DISPLAY are set...\n"
+  exit 1
+fi
+
+case "$1" in
+  copy)
+    shift # remove 'copy' arg
+    while [ $# -gt 0 ]; do
+      case "$1" in
+        --type)
+          shift
+          arg_type=$(getArg '--type' "$1")
+          ;;
+        *)
+          printf >&2 "unknown parameter: %s\n" "$1"
+          showHelp
+          ;;
+      esac
+      shift
+    done
+    do_copy
+    ;;
+  paste)
+    [ $# = 1 ] || showHelp
+    do_paste
+    ;;
+  *) showHelp ;;
+esac

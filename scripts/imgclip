@@ -1,22 +1,13 @@
 #!/usr/bin/env sh
 
-PROGNAME=$(basename "$0")
-
-if [ "$WAYLAND_DISPLAY" ]; then
-  readToClipboard() { wl-copy -t "$1"; }
-else
-  readToClipboard() { xclip -sel clip -t "$1"; }
-fi
+set -e
+progname=$(basename "$0")
 
 main() {
-  if [ $# != 1 ]; then
-    printf >&2 "%s: %s\n" "$PROGNAME" "a tool to copy images to clipboard"
-    printf >&2 "Usage: %s\n" "$PROGNAME <FILE>"
-    exit 1
-  fi
+  [ $# != 1 ] && showHelp
 
   if [ "$1" != "-" ] && [ ! -f "$1" ]; then
-    printf >&2 "%s: %s\n" "$PROGNAME" "file does not exist: $1"
+    printf >&2 "%s: %s\n" "$progname" "file does not exist: $1"
     exit 1
   fi
 
@@ -24,21 +15,29 @@ main() {
 
   case "$type" in
     # utterly trivial compared to the other messes...
-    image/png) cat "$1" | readToClipboard "$type" ;;
+    image/png) cat "$1" | dotf.wrap.clip copy --type "$type" ;;
 
     image/jpeg|image/webp|image/gif)
       # firefox/chromium/xclip (not sure who exactly) struggle with jpeg for some weird reason, so we have to spoof the mimetype.
-      # in case I ever need it: there's also converting with `magick "$1" -quality 4 -format png - | readToClipboard 'image/png'`
+      # in case I ever need it: there's also converting with `magick "$1" -quality 4 -format png - | dotf.wrap.clip copy --type 'image/png'`
       # FIXME: is this needed in wayland? or is it just an issue with xclip?
-      cat "$1" | readToClipboard 'image/png'
+      cat "$1" | dotf.wrap.clip copy --type 'image/png'
       ;;
 
     *)
-      msg "Warning: unknown type: $type - copying might not work!"
-      cat "$1" | readToClipboard 'image/png'
+      msg "warning: unknown type: $type - copying might not work!"
+      cat "$1" | dotf.wrap.clip copy --type 'image/png'
       exit 1
       ;;
   esac
+}
+
+showHelp() {
+  cat >&2 <<EOF
+$progname: a tool to copy images to the clipboard
+Usage: $progname <FILE>
+EOF
+  exit 2
 }
 
 msg() {
