@@ -69,3 +69,10 @@ It has been a pretty cool experience to make, well, pretty much my own
   (It's Steve Losh (sjl)'s vimrc. The [original
   file](https://bitbucket.org/sjl/dotfiles/src/tip/vim/vimrc) and repo
   were deleted.)
+
+## Milestones
+
+- Find a good compiled language for more complicated scripts
+    - Must be easy to compile
+    - Need to try out: vlang
+    - Tried out: dlang
