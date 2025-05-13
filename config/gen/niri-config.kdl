@@ -1,5 +1,3 @@
-// TODO: set up xdg-desktop-portal-gtk
-
 spawn-at-startup "dotf.common.deskinit"
 
 environment {
@@ -62,7 +60,7 @@ input {
 }
 
 output "HDMI-A-1" {
-    mode "1920x1080@75"
+    mode "1920x1080@74.973" // why so specific...
 }
 
 // manually create the workspaces so they don't stop existing all of a sudden
@@ -81,7 +79,7 @@ workspace "9" {}
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Layout
 layout {
     // Set gaps around windows in logical pixels.
-    gaps 12
+    gaps 8
 
     // When to center a column when changing focus, options are:
     // - "never", default behavior, focusing an off-screen column will keep at the left
@@ -104,34 +102,19 @@ layout {
     // Alternatively, you can override it with a window rule called
     // `draw-border-with-background`.
 
-    // You can change how the focus ring looks.
     focus-ring {
-        // Uncomment this line to disable the focus ring.
         // off
-
-        // How many logical pixels the ring extends out from the windows.
-        width 3
-
-        // Colors can be set in a variety of ways:
-        // - CSS named colors: "red"
-        // - RGB hex: "#rgb", "#rgba", "#rrggbb", "#rrggbbaa"
-        // - CSS-like notation: "rgb(255, 127, 0)", rgba(), hsl() and a few others.
-
+        width 2
 //!! printf 'inactive-color "%s"\n' "$base00"
 //!! printf 'active-color "%s"\n' "$base03"
     }
 
     // You can also add a border. It's similar to the focus ring, but always visible.
     border {
-        // The settings are the same as for the focus ring.
-        // If you enable the border, you probably want to disable the focus ring.
         off
-
-        width 4
-
-
-        // active-gradient from="#ffbb66" to="#ffc880" angle=45 relative-to="workspace-view"
-        // inactive-gradient from="#505050" to="#808080" angle=45 relative-to="workspace-view"
+        width 2
+//!! printf 'inactive-color "%s"\n' "$base00"
+//!! printf 'active-color "%s"\n' "$base03"
     }
 
     // You can enable drop shadows for windows.
@@ -171,29 +154,20 @@ layout {
         color "#0007"
     }
 
-    // Struts shrink the area occupied by windows, similarly to layer-shell panels.
-    // You can think of them as a kind of outer gaps. They are set in logical pixels.
+    // Basically outer gaps.
     // Left and right struts will cause the next window to the side to always be visible.
-    // Top and bottom struts will simply add outer gaps in addition to the area occupied by
-    // layer-shell panels and regular gaps.
     struts {
-        // left 64
-        // right 64
-        // top 64
-        // bottom 64
+        left 0
+        right 0
+        top 0
+        bottom 0
     }
 }
 
 // Ask the clients to omit their client-side decorations if possible.
 prefer-no-csd
 
-// You can change the path where screenshots are saved.
-// A ~ at the front will be expanded to the home directory.
-// The path is formatted with strftime(3) to give you the screenshot date and time.
-// screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
-
-// You can also set this to null to disable saving screenshots to disk.
-screenshot-path null
+screenshot-path null // I don't use niri screenshots :)
 
 animations {
     slowdown 0.8
