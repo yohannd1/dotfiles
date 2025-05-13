@@ -12,11 +12,6 @@ return function(api)
     :desc("open terminal (float)")
     :map("dotf.wrap.terminal -c float")
 
-  api.key("super alt g")
-    :cond(api.is_xorg)
-    :desc("xprop (result at home)")
-    :map("xprop > ~/xprop_result.txt")
-
   api.key("super space")
     :desc("program launcher")
     :map("runnsend error-and-output fzrun")
@@ -99,4 +94,14 @@ return function(api)
   api.key("super alt t")
     :desc("open tmux tray")
     :map("dotf.wrap.terminal -c float -e tmux-tray")
+
+  api.key("super alt g")
+    :desc("open current window menu")
+    :map("runnsend error-and-output dotf.cur-window")
+
+  -- TODO: make this into the above
+  -- api.key("super alt g")
+  --   :cond(api.is_xorg)
+  --   :desc("xprop (result at home)")
+  --   :map("xprop > ~/xprop_result.txt")
 end

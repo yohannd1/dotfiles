@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+#
+# Menu to interact with the current window
+
+set -e
+
+[ $# = 0 ] || exit 2
+
+if [ "$NIRI_SOCKET" ]; then
+  getInfo() {
+    _json=$(niri msg --json focused-window)
+
+    info_title=$(printf "%s" "$_json" | jq -r '.title')
+    info_pid=$(printf "%s" "$_json" | jq -r '.pid')
+  }
+elif [ -z "$WAYLAND_DISPLAY" ] && [ "$DISPLAY" ]; then
+  printf >&2 "TODO: implement this on X\n"
+  exit 1
+else
+  printf >&2 "Unknown backend...\n"
+  exit 1
+fi
+
+getInfo
+choice=$(printf "kill\nkill-CONT\nkill-9\n" | fzagnostic -p "$info_title:") || exit 1
+case "$choice" in
+  kill) kill "$info_pid" ;;
+  kill-9) kill -9 "$info_pid" ;;
+  kill-CONT) kill -CONT "$info_pid" ;;
+  *) exit 1 ;;
+esac
