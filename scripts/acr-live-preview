@@ -18,6 +18,7 @@ from watchdog.observers import Observer
 
 # TODO: refactor this into a more generic utility, or something. I'd like this to be a library, but how do I set up a proper local-to-dotfiles python library anyway?
 # TODO: close everything when a KeyboardInterrupt is received
+# TODO: option for timeout (so I don't need to feed 3 friggin KeyboardInterrupts for it to close...)
 
 opener = os.environ.get("OPENER") or "xdg-open"
 

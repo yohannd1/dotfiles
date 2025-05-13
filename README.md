@@ -74,5 +74,5 @@ It has been a pretty cool experience to make, well, pretty much my own
 
 - Find a good compiled language for more complicated scripts
     - Must be easy to compile
-    - Need to try out: vlang
+    - Need to try out: vlang (potentially immature), nim (~55MB install)
     - Tried out: dlang

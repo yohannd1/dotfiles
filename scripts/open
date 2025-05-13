@@ -249,10 +249,13 @@
 
   # music modules
   (mt :ext ["mod" "it" "s3m" "mptm"] :pop ["openmpt123" file])
-  (mt :ext ["nsf"] :pop ["nosefart" file])
   (mt :ext ["fur" "dmf"] :gui ["furnace" file])
   (mt :ext ["ptcop"] :gui ["@ptcollab" file])
   (mt :ext ["btm"] :gui ["BambooTracker" file])
+
+  # chiptune files
+  (mt :ext ["nsf"] :pop ["nosefart" file])
+  (mt :ext ["spc"] :gui ["vspcplay" file])
   (mt :ext ["vgm" "vgz"] :pop ["vgmplay" file])
 
   (mt :ext ["swf"] :gui ["flashplayer" file])
@@ -260,7 +263,7 @@
   (def is-pdf (or (m :ext ["pdf"])
                   (m :mime ["application/pdf"])))
 
-  (when (or is-pdf (m :ext ["djvu" "ps" "epub" "pdf"]))
+  (when (or is-pdf (m :ext ["djvu" "ps" "epub"]))
     (t :gui ["zathura" file])
     (t :gui ["okular" file])
     (t :gui ["mupdf" file])
