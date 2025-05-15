@@ -27,8 +27,12 @@ case "$1" in
     "$dwlDir/dwl"
     ;;
   niri)
+    if [ -z "$NIRI_CONFIG" ]; then
+      printf >&2 'error: $NIRI_CONFIG not set\n'
+      exit 1
+    fi
     gen-config niri
-    NIRI_CONFIG="$XDG_CACHE_HOME/gen/niri-config.kdl" niri-session
+    niri-session
     ;;
   qtile)
     qtile start -b wayland

@@ -79,8 +79,7 @@ _t_wget() {
 
 _t_niri() {
   mkdir -p "$XDG_CONFIG_HOME/niri"
-  PP_PREFIX="//!!" gen "$DOTFILES/config/gen/niri-config.kdl" \
-    "$XDG_CACHE_HOME/gen/niri-config.kdl"
+  PP_PREFIX="//!!" gen "$DOTFILES/config/gen/niri-config.kdl" "$NIRI_CONFIG"
 }
 
 _t_termux() {

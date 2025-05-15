@@ -168,6 +168,7 @@ export X_COMPOSITOR="picom"
 export FILEHIST_MAX_LIMIT=500
 export FILEHIST_NO_TIDY=1
 export EXT_DEFAULT_MODE="new"
+export NIRI_CONFIG="$XDG_CACHE_HOME/gen/niri.kdl"
 
 # prevent annoying timeouts on some GTK applications.
 # FIXME: is there any downside to this?
