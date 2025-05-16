@@ -331,12 +331,6 @@ make() {
   fi
 }
 
-# fs tool aliases
-alias ls='ls --color=auto'
-alias l='ls -l'
-alias la='ls -A'
-alias du='du -shc'
-
 e() { "$EDITOR" "$@"; }
 se() { EDITOR=$(which "$EDITOR") sudoedit "$@"; } # yeah, workaround
 
@@ -443,22 +437,46 @@ if [ "$_STARTUP_DEBUG_TIME" ] && [ -z "$_startup_time_shown" ]; then
   _startup_time_shown=1
 fi
 
-xamppctl() {
-  case "$1" in
-    start) sudo xampp start ;;
-    stop) sudo xampp stop ;;
-    restart) "$0" stop; "$0" start ;;
-    *) printf >&2 "Invalid option: %s\n" "$1"; return 1 ;;
-  esac
-}
+xampp-start() { sudo xampp start; }
+xampp-stop() { sudo xampp stop; }
+xampp-restart() { xampp-stop; xampp-start; }
 
-sdu() { du -shc "$@" | sort -h; }
+# file related
+ls() { command ls --color=auto "$@"; }
+l() { command ls -l "$@"; }
+la() { command ls -A "$@"; }
+du() { command du -shc "$@"; }
+sdu() { command du -shc "$@" | sort -h; }
 
+# music related
 ytdl() {
   exists yt-dlp && { yt-dlp "$@"; return "$?"; }
   exists youtube-dl && { youtube-dl "$@"; return "$?"; }
   return 1
 }
+alias M='mus'
+alias Mq='mus queue'
+alias Ma='mus add'
+alias Ms='mus shuf'
+alias Mp='mus play'
+mus-menu() {
+  while true; do
+    mus queue
+    printf >&2 "(Q)uit, (V)iew queue, (N)ext, (P)rev, (S)huffle\n"
+    printf >&2 "[q/v/n/p/s] "
+    read -k1 key
+    printf >&2 "\n"
+    case "$key" in
+      q|Q) return 0 ;;
+      v|V) clear && mus queue | less ;;
+      n|N) clear && mus next ;;
+      p|P) clear && mus prev ;;
+      s|S) clear && mus shuffle ;;
+      *) printf >&2 "Unknown command...\n" ;;
+    esac
+  done
+}
+alias Mm='mus menu'
 
 findTodos() { rg '\b(TODO|FIXME|XXX)\b'; }
 

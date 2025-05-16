@@ -22,8 +22,9 @@ else
 fi
 
 getInfo
-choice=$(printf "kill\nkill-CONT\nkill-9\n" | fzagnostic -p "$info_title:") || exit 1
+choice=$(printf "copy-pid\nkill\nkill-CONT\nkill-9\n" | fzagnostic -p "$info_title ($info_pid):") || exit 1
 case "$choice" in
+  copy-pid) printf "%s" "$info_pid" ;;
   kill) kill "$info_pid" ;;
   kill-9) kill -9 "$info_pid" ;;
   kill-CONT) kill -CONT "$info_pid" ;;

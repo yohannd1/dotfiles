@@ -388,7 +388,7 @@ case "$1" in
   debug)
     case "$2" in
       c)
-        gcc "$file" -o "$tmp/exe" -g "${cflags_c[@]}"
+        gcc -g "$file" -o "$tmp/exe" "${cflags_c[@]}"
         gdb "$tmp/exe"
         ;;
       *) die "(action \"$1\") unhandled filetype: $2" ;;

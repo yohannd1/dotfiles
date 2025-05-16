@@ -414,10 +414,11 @@ vim.cmd([[ hi link VimwikiXDone Dimmed ]])
 -- hl("VimwikiXDone",         "03", "NONE",   "", "")
 
 -- Acrylic
-hl("acrTaskTodo",          "0B",    "01",   "", "")
+hl("acrTaskTodo",          "0B",    "01",     "",       "")
+hl("acrInlineBold",        "0D",    "NONE",   "bold",   "")
 hl("acrUrl",               "09",    "NONE",   "italic", "")
-hl("acrRefInner",          "0C",    "NONE",   "bold", "")
-hl("acrRefDelimiter",      "03",    "NONE",   "", "")
+hl("acrRefInner",          "0C",    "NONE",   "bold",   "")
+hl("acrRefDelimiter",      "03",    "NONE",   "",       "")
 vim.cmd([[ hi link acrTaskDone Dimmed ]])
 
 -- Illuminate
