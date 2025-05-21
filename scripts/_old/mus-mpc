@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+
+# failed attempt at making a mpd/mpc wrapper...
+
+set -e
+progname=$(basename "$0")
+
+# we have to create a socket file because TCP sockets do not support 'file://'
+host="$XDG_DATA_DIR/mpd/mpd.sock"
+
+showHelp() {
+  cat >&2 <<EOF
+Usage:
+  $progname: same as $progname status
+  $progname add <FILE>: add FILE to the play queue
+  $progname next
+  $progname play
+  $progname prev
+  $progname queue
+  $progname start-daemon: start mpd
+  $progname status
+  $progname stop
+  $progname toggle: toggle play-pause
+  $progname ui: show ncmpcpp
+EOF
+  exit 2
+}
+
+[ $# = 0 ] && showHelp
+
+# TODO: generate mpd config & auto-start it here
+# maybe also auto-start https://github.com/natsukagami/mpd-mpris with the correct host
+
+# TODO: CLI small interface like git-check
+
+case "$1" in
+  add)
+    [ $# = 2 ] || showHelp
+    path="file://$(realpath "$2")"
+    mpc -h "$host" add "$path"
+    mpc -h "$host" play
+    ;;
+  next)
+    mpc -h "$host" next
+    ;;
+  play)
+    [ $# = 1 ] || showHelp
+    mpc -h "$host" play
+    ;;
+  prev)
+    mpc -h "$host" prev
+    ;;
+  queue)
+    [ $# = 1 ] || showHelp
+    mpc -h "$host" queue
+    ;;
+  stop)
+    [ $# = 1 ] || showHelp
+    mpc -h "$host" stop
+    ;;
+  start-daemon)
+    [ $# = 1 ] || showHelp
+    mpd & disown
+    ;;
+  status)
+    [ $# = 1 ] || showHelp
+    mpc -h "$host"
+    ;;
+  toggle)
+    [ $# = 1 ] || showHelp
+    mpc -h "$host" toggle
+    ;;
+  ui)
+    [ $# = 1 ] || showHelp
+    ncmpcpp -h "$host"
+    ;;
+  *)
+    printf >&2 "unknown command: '%s'\n" "$1"
+    exit 1
+    ;;
+esac
