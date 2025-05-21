@@ -297,6 +297,10 @@ case "$1" in
         # printf >&2 "Opened. Press enter to end (will delete temp files).\n"
         # read -r
         ;;
+      systemverilog)
+        iverilog -g2012 "$file" -o "$tmp/out"
+        "$tmp/out"
+        ;;
       *) die "(action \"$1\") unhandled filetype: $2" ;;
     esac ;;
   build)

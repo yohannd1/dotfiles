@@ -587,4 +587,23 @@ ft.editorconfig = function()
   ]])
 end
 
+ft.systemverilog = function()
+  snippets.register({
+    key = "m",
+    content = [[
+module m_top();
+    logic a, b;
+
+    initial begin
+        a = 10;
+        b = 15;
+        $display("Hello, world! a+b = %d", 10 + 15);
+        $finish;
+    end
+endmodule
+    ]],
+    reindent = false,
+  })
+end
+
 initialize()

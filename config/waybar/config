@@ -57,7 +57,7 @@
 
     "pulseaudio": {
         "format": "{format_source}  vol {volume}%",
-        "format-muted": "vol OFF",
+        "format-muted": "{format_source}  vol OFF",
         "scroll-step": 5.0, // %, can be a float
         "format-source": "mic {volume}%",
         "format-source-muted": "mic OFF",
