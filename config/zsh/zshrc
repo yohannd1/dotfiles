@@ -454,7 +454,6 @@ ytdl() {
   exists youtube-dl && { youtube-dl "$@"; return "$?"; }
   return 1
 }
-alias M='mus'
 alias Mq='mus queue'
 alias Ma='mus add'
 alias Ms='mus shuf'
@@ -476,7 +475,7 @@ mus-menu() {
     esac
   done
 }
-alias Mm='mus menu'
+alias M='mus-menu'
 
 findTodos() { rg '\b(TODO|FIXME|XXX)\b'; }
 

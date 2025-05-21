@@ -1,6 +1,7 @@
 #!/usr/bin/env janet
 
 (def TMPDIR (os/getenv "TMPDIR" "/tmp"))
+(def HOME (-> (os/getenv "HOME") (assert "no HOME set..?")))
 (def state-path (string/format "%s/mus.state" TMPDIR))
 (var *progname* nil)
 
@@ -8,7 +9,7 @@
   (:write stderr (-> "Usage: %s { add [FILES...] | queue | shuf | next [AMOUNT] | prev [AMOUNT] }\n" (string/format *progname*)))
   (os/exit 2))
 
-(defn path/base
+(defn path/basename
   "Get the base name (the last component) of a path."
   [path]
 
@@ -60,10 +61,8 @@
 (defn path/exists [path]
   (-> (os/stat path) (nil?) (not)))
 
-(defn open-state-file-write []
-  (if (path/exists state-path)
-    (os/open state-path :w)
-    (os/open state-path :cw)))
+(defn open-writable-state-file []
+  (file/open state-path :w))
 
 (defn file-get-lines [path]
   (def file (file/open path :r))
@@ -87,7 +86,7 @@
     ))
 
 (defn save-state [state]
-  (def file (open-state-file-write))
+  (def file (open-writable-state-file))
   (defer (:close file)
     (:write file (string/format "%d\n" (in state :index)))
     (each p (in state :queue)
@@ -95,7 +94,7 @@
       )))
 
 (defn main [arg0 & args]
-  (set *progname* (path/base arg0))
+  (set *progname* (path/basename arg0))
   (def args-len (length args))
 
   (when (= args-len 0) (show-help))
@@ -104,15 +103,31 @@
     "add"
     (do
       (def state (load-state))
-      (each fname (array/slice args 1)
+
+      (defn add-song [fname]
         (assert (path/exists fname) (string/format "file %s does not exist" fname))
         (def real (path/absolute fname))
         (def ext (path/extension real))
-
         (if (is-valid-ext ext)
           (array/push (in state :queue) real)
           (eprintf "warning: skipping %s (unsupported extension .%s)" fname ext)
           ))
+
+      (each arg (array/slice args 1)
+        (if (= arg "-")
+          (while (def fname (:read stdin :line))
+            (add-song (string/trim fname)))
+          (add-song arg)
+          ))
+
+      (save-state state)
+      )
+
+    "clear"
+    (do
+      (def state (load-state))
+      (set (state :index) 0)
+      (-> state (in :queue) (array/clear))
       (save-state state)
       )
 
@@ -123,13 +138,18 @@
       (loop [:let [index (in state :index)
                    queue (in state :queue)]
              [i path] :pairs queue]
+        # (def final-path
+        #   (if (string/has-prefix? HOME path)
+        #     (string/replace HOME "~" path)
+        #     path))
+        (def final-path (path/basename path))
         (def prefix
           (cond
             (< i index) "  "
             (= i index) "* "
             (> i index) "- "
             ))
-        (printf "%s%s" prefix path)
+        (printf "%s%s" prefix final-path)
         ))
 
     "shuffle"
@@ -178,12 +198,12 @@
           (def queue (in state :queue))
 
           (when (>= index (length queue))
+            (eprintf "no more songs to play.")
             (return 'loop))
 
           (def cur-song (in queue index))
+          (eprintf "playing %s..." cur-song)
           (os/execute ["mpv" "--no-video" cur-song] :p)
-
-          # FIXME: this is so race-condition-prone...
 
           (def state2 (load-state))
           (def cur-song2 (-> state2 (in :queue) (in (in state2 :index))))
