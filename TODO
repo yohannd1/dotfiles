@@ -23,7 +23,6 @@ post-install:
     fzf
     rg
     nnn
-    python pkgs: "toml"
     xclip
 
 gui_essentials:
@@ -53,4 +52,4 @@ TODO: my own proper logging dir for this shit
 TODO: ksnip config backup
 TODO: pulse-autoconf config backup
 
-TODO: relicensing! I stil like the WTFYWT license but I have code here that is derived from other repos.
+TODO: relicensing! I still like the WTFYWT license but I have code here that is derived from other repos.

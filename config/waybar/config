@@ -1,6 +1,6 @@
 // vim: ft=jsonc
 {
-    "layer": "bottom",
+    "layer": "top",
     "position": "bottom",
     "height": 20,
     "spacing": 0,
