@@ -33,9 +33,17 @@
 
   (def code (os/execute arglist :p {:in stdin-r :out stdout-w}))
   (when (= code 0)
-    (def choice-s (-> stdout-r (:read math/int32-max) (string/trim)))
-    (def [num s] (string/split " " choice-s 0 2))
-    [(-> num (scan-number) (assert (string/format "%j is not a number" num)) (- starting-number)) s]))
+    (def choice-raw (-> stdout-r (:read math/int32-max) (string/trim)))
+    (def [num-str rest] (string/split " " choice-raw 0 2))
+    (if-let [num (scan-number num-str)]
+      (do
+        [(- num starting-number) rest])
+      (do
+        (eprintf "error: %j is not a number" num-str)
+        (os/exit 1)
+        )
+      ))
+  )
 
 (defn readline-agnostic
   ```
@@ -185,5 +193,16 @@
      ])
 
   (match (fzagnostic (map (fn [[a b]] a) actions) :prompt "Run: ")
-    nil (os/exit 1)
-    [n _] (-> actions (in n) (in 1) (apply))))
+    nil
+    (os/exit 1)
+
+    [n _]
+    (if-let [act (get actions n)]
+      (-> act (in 1) (apply))
+      (do
+        (eprintf "error: out of range choice: %j" n)
+        (os/exit 1)
+        )
+      )
+    )
+  )
