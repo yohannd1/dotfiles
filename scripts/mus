@@ -6,7 +6,7 @@
 (var *progname* nil)
 
 (defn show-help []
-  (:write stderr (-> "Usage: %s { add [FILES...] | queue | shuf | next [AMOUNT] | prev [AMOUNT] }\n" (string/format *progname*)))
+  (:write stderr (-> "Usage: %s { add [FILES...] | queue | shuffle | next [AMOUNT] | prev [AMOUNT] }\n" (string/format *progname*)))
   (os/exit 2))
 
 (defn path/basename
@@ -15,22 +15,21 @@
 
   (as-> path .x (string/split "/" .x) (last .x)))
 
-(defn path/absolute
-  "Convert a path to absolute, if it isn't already."
-  [path]
-
-  (if (string/has-prefix? "/" path)
-    path
-    (string/format "%s/%s" (os/cwd) path)))
-
 (defn path/extension
   "Get the extension of a path."
   [path]
 
-  (as-> path .x (string/split "." .x) (last .x)))
+  (as->
+    path .x
+    (path/basename .x)
+    (string/split "." .x)
+    (if (-> .x (length) (<= 1))
+      nil
+      (last .x))
+    ))
 
 (defn tuple->set
-  "Convert a tuple into a set (struct with true entries)."
+  "Convert a tuple into a set (table with [`key` true] pairs)."
   [tup]
 
   (def tbl @{})
@@ -52,11 +51,19 @@
     )
   )
 
-(def valid-ext
-  (tuple->set ["mp3" "wav" "midi" "ogg" "mus" "m4a" "opus" "flac"]))
+(def get-ext-kind
+  (do
+    (def music-exts
+      (tuple->set ["mp3" "wav" "midi" "ogg""mus" "m4a" "opus" "flac" "ogx"]))
+    (def image-exts
+      (tuple->set ["png" "jpg" "jpeg"]))
 
-(defn is-valid-ext [ext]
-  (-> valid-ext (get ext) (truthy?)))
+    (fn [ext]
+      (cond
+        (-> music-exts (in ext)) :music
+        (-> image-exts (in ext)) :image
+        :unknown))
+    ))
 
 (defn path/exists [path]
   (-> (os/stat path) (nil?) (not)))
@@ -106,11 +113,13 @@
 
       (defn add-song [fname]
         (assert (path/exists fname) (string/format "file %s does not exist" fname))
-        (def real (path/absolute fname))
+        (def real (os/realpath fname))
         (def ext (path/extension real))
-        (if (is-valid-ext ext)
-          (array/push (in state :queue) real)
-          (eprintf "warning: skipping %s (unsupported extension .%s)" fname ext)
+
+        (case (get-ext-kind ext)
+          :music (array/push (in state :queue) real)
+          :image nil # do nothing
+          :unknown (eprintf "warning: skipping %s (unsupported extension %j)" fname ext)
           ))
 
       (each arg (array/slice args 1)
