@@ -31,7 +31,7 @@ setGlobals {
   hidden = true,
   title = true,
   number = true,
-  -- relativenumber = true,
+  relativenumber = true,
 
   backspace = "indent,eol,start",
   laststatus = 2,
