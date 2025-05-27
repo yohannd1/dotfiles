@@ -37,4 +37,6 @@
         "editor.insertSpaces": true
     },
     "jupyter.askForKernelRestart": false,
+    "workbench.startupEditor": "none",
+    "workbench.colorTheme": "Dracula Theme",
 }
