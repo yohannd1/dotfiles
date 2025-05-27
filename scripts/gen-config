@@ -1,29 +1,34 @@
 #!/usr/bin/env bash
 
+set -e
+
 . "$DOTFILES/config/dots/env.sh"
 eval "$(load-base16-theme --export)"
 
-pname=$(basename "$0")
+progname=$(basename "$0")
+
+MINIMUM=(wget)
+T_ANDROID=(termux)
+T_COMPUTER=(stalonetray dunst gtk3 waybar foot niri) # yambar
 
 main() {
-  ALL=(_init wget)
-  if _isAndroid; then
-    ALL+=(termux)
-  else
-    ALL+=(stalonetray dunst gtk3 waybar foot niri) # yambar
-  fi
+  def_targets=(_init)
 
-  [ $# = 0 ] && targets=("${ALL[@]}")
-  [ $# -gt 0 ] && targets=(_init "$@")
-  [ $# = 1 ] && [ "$1" = all ] && targets=("${ALL[@]}")
+  _isAndroid \
+    && def_targets+=("${T_ANDROID[@]}") \
+    || def_targets+=("${T_COMPUTER[@]}")
 
-  for t in "${targets[@]}"; do
+  [ $# = 0 ] && sel_targets=("${def_targets[@]}")
+  [ $# -gt 0 ] && sel_targets=(_init "$@")
+  [ $# = 1 ] && [ "$1" = all ] && sel_targets=("${def_targets[@]}")
+
+  for t in "${sel_targets[@]}"; do
     fn_name="_t_$t"
     if declare -f "$fn_name" >/dev/null; then
-      printf >&2 "%s: running target %s\n" "$pname" "$t"
+      printf >&2 "%s: running target %s\n" "$progname" "$t"
       eval "$fn_name"
     else
-      printf >&2 "%s: could not find target %s; skipping\n" "$pname" "$t"
+      printf >&2 "%s: could not find target %s; skipping\n" "$progname" "$t"
     fi
   done
 
