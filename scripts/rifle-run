@@ -298,7 +298,7 @@ case "$1" in
         # read -r
         ;;
       systemverilog)
-        iverilog -g2012 "$file" -o "$tmp/out"
+        iverilog -g2012 -o "$tmp/out" "$file"
         "$tmp/out"
         ;;
       *) die "(action \"$1\") unhandled filetype: $2" ;;
