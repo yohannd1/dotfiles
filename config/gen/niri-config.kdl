@@ -175,6 +175,7 @@ window-rule {
     default-window-height { fixed 750; }
 }
 
+// spawn screenshots on last workspace
 window-rule {
     match app-id=r#"satty"#
     open-focused false
@@ -186,10 +187,16 @@ window-rule {
     open-floating true
 }
 
-// Rounded corners
+// rounded corners
 window-rule {
     geometry-corner-radius 10
     clip-to-geometry true
+}
+
+// move staem notifications to a screen corner - source: https://github.com/YaLTeR/niri/wiki/Application-Issues
+window-rule {
+    match app-id="steam" title=r#"^notificationtoasts_\d+_desktop$"#
+    default-floating-position x=0 y=0 relative-to="top-right"
 }
 
 binds {

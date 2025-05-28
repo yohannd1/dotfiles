@@ -432,7 +432,7 @@ alias N='get-network-info'
 if [ "$_STARTUP_DEBUG_TIME" ] && [ -z "$_startup_time_shown" ]; then
   local current_time=$(date +"%s%3N")
   local time_elapsed=$(bc <<<"$current_time - $_STARTUP_DEBUG_TIME")
-  printf >&2 "Time elapsed since startup: %s ms\n" "$time_elapsed"
+  printf >&2 "Time elapsed since startup: %s ms " "$time_elapsed"
 
   _startup_time_shown=1
 fi
@@ -456,8 +456,9 @@ ytdl() {
 }
 alias Mq='mus queue'
 alias Ma='mus add'
-alias Ms='mus shuf'
+alias Ms='mus shuffle'
 alias Mp='mus play'
+alias Mc='mus clear'
 mus-menu() {
   while true; do
     mus queue

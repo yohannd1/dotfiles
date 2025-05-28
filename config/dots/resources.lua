@@ -45,7 +45,7 @@ local font_presets = {
   },
   ["RobotoMono"] = {
     name = "Roboto Mono Medium",
-    base_size = 15,
+    base_size = 15.9,
   },
   ["SpaceMono"] = {
     name = "Space Mono Nerd Font",
