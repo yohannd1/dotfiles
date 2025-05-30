@@ -591,7 +591,7 @@ ft.systemverilog = function()
   snippets.register({
     key = "m",
     content = [[
-module m_top();
+module m_top;
     logic a, b;
 
     initial begin

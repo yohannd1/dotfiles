@@ -49,11 +49,13 @@ return function(api)
   api.key("super period"):desc("increase volume"):map("volumectl inc")
   api.key("super y"):desc("toggle mute (speakers)"):map("volumectl togglemute")
 
+  api.key("super alt comma"):desc("decrease mic volume"):map("notify-send TODO")
+  api.key("super alt period"):desc("increase mic volume"):map("notify-send TODO")
   local mute_cmd = [[ pactl set-source-mute @DEFAULT_SOURCE@ toggle; notify-send "$(pactl get-source-mute @DEFAULT_SOURCE@)" -t 1000 ]]
   api.key("super x"):desc("toggle mute (mic)"):map(mute_cmd)
 
-  api.key("super alt comma"):desc("previous in player"):map("playerctl previous")
-  api.key("super alt period"):desc("next in player"):map("playerctl next")
+  -- api.key("super alt comma"):desc("previous in player"):map("playerctl previous")
+  -- api.key("super alt period"):desc("next in player"):map("playerctl next")
   api.key("super alt y"):desc("play/pause"):map("playerctl play-pause")
 
   api.key("super minus"):desc("decrease screen brightness"):map("backlightctl mod -10")
@@ -98,10 +100,4 @@ return function(api)
   api.key("super alt g")
     :desc("open current window menu")
     :map("runnsend error-and-output dotf.cur-window")
-
-  -- TODO: make this into the above
-  -- api.key("super alt g")
-  --   :cond(api.is_xorg)
-  --   :desc("xprop (result at home)")
-  --   :map("xprop > ~/xprop_result.txt")
 end
