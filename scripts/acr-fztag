@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+set -e
+[ $# = 1 ] || exit 2
+
+choice=$(acr-find-tag "$1" | fzagnostic)
+filename=$(printf "%s" "$choice" | cut -d' ' -f1)
+"$EDITOR" "$ACR_WIKI_DIR/$filename.acr"

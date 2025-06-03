@@ -1,0 +1,55 @@
+#!/usr/bin/env janet
+
+(defn die [code fmt & args]
+  (eprintf fmt ;args)
+  (os/exit code))
+
+(defn path/basename
+  "Get the base name (the last component) of a path."
+  [path]
+  (as-> path .x (string/split "/" .x) (last .x)))
+
+(defn main [arg0 & args]
+  (when (not= (length args) 1)
+    (die 2 "Usage: %s <TAG>" (path/basename arg0)))
+
+  (def wiki-dir (os/getenv "ACR_WIKI_DIR"))
+  (when (nil? wiki-dir)
+    (die 1 "error: ACR_WIKI_DIR is not set"))
+
+  (def tag (in args 0))
+
+  (each name (os/dir wiki-dir)
+    (def path (string wiki-dir "/" name))
+
+    (def fd (file/open path :r))
+    (defer (file/close fd)
+      (var found false)
+      (var title nil)
+
+      (each line (file/lines fd)
+        # stop going through the file if we went off the header
+        (unless (string/has-prefix? "%:" line)
+          (break))
+
+        (def title-prefix "%:title ")
+        (when (string/has-prefix? title-prefix line)
+          (set title (-> line (string/slice (length title-prefix)) (string/trim))))
+
+        # check for the tags if we found the line
+        (when (string/has-prefix? "%:tags " line)
+          (def tags
+            (as-> line .x
+                  (string/trim .x)
+                  (string/split " " .x)
+                  (array/slice .x 1)))
+          (when (find |(= $ tag) tags)
+            (set found true))
+          )
+        )
+
+      (when found
+        (:write stdout (string/slice name 0 -5) " " (or title "<NO TITLE>") "\n"))
+      )
+    )
+  )

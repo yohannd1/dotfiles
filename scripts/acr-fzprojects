@@ -1,6 +1,0 @@
-#!/usr/bin/env sh
-
-[ $# = 0 ] || exit 2
-choice=$(acr-get-projects | fzagnostic) || exit 1
-filename=$(printf "%s" "$choice" | awk '{ print $1 }')
-"$EDITOR" "$ACR_WIKI_DIR/$filename.acr"
