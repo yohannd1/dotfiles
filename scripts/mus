@@ -15,6 +15,13 @@
 
   (as-> path .x (string/split "/" .x) (last .x)))
 
+(defn path/is-dir [x]
+  (if-let [data (os/stat x)]
+    (-> data (in :mode) (= :directory))
+    false
+    )
+  )
+
 (defn path/extension
   "Get the extension of a path."
   [path]
@@ -113,14 +120,21 @@
 
       (defn add-song [fname]
         (assert (path/exists fname) (string/format "file %s does not exist" fname))
-        (def real (os/realpath fname))
-        (def ext (path/extension real))
 
-        (case (get-ext-kind ext)
-          :music (array/push (in state :queue) real)
-          :image nil # do nothing
-          :unknown (eprintf "warning: skipping %s (unsupported extension %j)" fname ext)
-          ))
+        (if (path/is-dir fname)
+          (loop [sub :in (os/dir fname)]
+            (add-song (string fname "/" sub)))
+          (do
+            (def real (os/realpath fname))
+            (def ext (path/extension real))
+
+            (case (get-ext-kind ext)
+              :music (array/push (in state :queue) real)
+              :image nil # do nothing
+              :unknown (eprintf "warning: skipping %s (unsupported extension %j)" fname ext)
+              ))
+          )
+        )
 
       (each arg (array/slice args 1)
         (if (= arg "-")
