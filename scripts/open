@@ -337,8 +337,10 @@
     (t :runpage ["jq" "--color-output" "." file])
     (t :runpage ["python3" "-m" "json.tool" "--" file]))
 
-  (when (m :ext ["vcd"])
+  (when (m :ext ["vcd" "ghw"])
     (t :gui ["gtkwave" file])
     (t :gui ["pulseview" "-c" file]))
+
+  (mt :ext ["asta"] :pop ["astah-uml" file])
 
   (t :fallback))
