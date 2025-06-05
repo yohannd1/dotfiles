@@ -114,4 +114,7 @@ if ! isTermux; then
   # fi
 fi
 
-isTermux && exists tmux && [ -z "$TMUX" ] && SESSION_NAME=android tmux-tray
+if isTermux; then
+  androidTermux() { SESSION_NAME=android tmux-tray; }
+  exists tmux && [ -z "$TMUX" ] && androidTermux
+fi
