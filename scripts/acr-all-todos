@@ -13,5 +13,5 @@ acr-list-titles \
   | fzagnostic \
   | while read -r choice; do
     id=$(printf "%s\n" "$choice" | awk '{ split($0, arr, ":"); print arr[1] }') || return 1
-    edit "$HOME/wiki/vimwiki/$id.acr"
+    "$EDITOR" "$HOME/wiki/vimwiki/$id.acr"
   done
