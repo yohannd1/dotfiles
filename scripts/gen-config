@@ -9,7 +9,8 @@ progname=$(basename "$0")
 
 MINIMUM=(wget)
 T_ANDROID=(termux)
-T_COMPUTER=(stalonetray dunst gtk3 waybar foot niri) # yambar
+T_COMPUTER=(stalonetray dunst gtk3 foot niri)
+# generated on demand: yambar waybar
 
 main() {
   def_targets=(_init)

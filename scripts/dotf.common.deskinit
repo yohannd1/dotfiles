@@ -67,9 +67,8 @@ if isXorg; then
   alttab -d 1
 fi &
 
-# yambar
 if isWayland; then
-  waybar &
+  @waybar &
   wl-gammarelay &
 fi
 
