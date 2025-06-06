@@ -8,7 +8,14 @@ case "$1" in
   python) pydoc "$2" ;;
   linux) man 2 "$2" ;;
   c) man 3 "$2" ;;
-  janet) janet -e "(doc $2)" | "$pager" ;;
+  janet)
+    validJanetSymbol() { printf "%s" "$1" | grep -q '[a-zA-Z0-9_\-\+\-\/\>\<]'; }
+    if ! validJanetSymbol "$2"; then
+      printf >&2 "error: invalid janet symbol: %s\n" "$2"
+    fi
+    janet -e "(doc $2)" | "$pager"
+    ;;
+  c++) cppman "$2" ;;
   *)
     printf >&2 "unknown backend %s\n" "$1"
     exit 2
