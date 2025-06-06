@@ -209,7 +209,7 @@ ft.c = function()
     cinoptions = "g0,:0,l1,(1s"
   }
 
-  vim.b.format_command = "clang-multicfg-format c"
+  vim.b.format_command = "fmt.clang c"
 
   addSnippet("s", "#include <stdio.h>")
   addMSnippet("m", [[
@@ -226,7 +226,7 @@ ft.cpp = function()
     cinoptions = "g0,:0,l1,(1s,N-s"
   }
 
-  vim.b.format_command = "clang-multicfg-format cpp"
+  vim.b.format_command = "fmt.clang c++"
 
   addSnippet("s", "#include <iostream>")
   addSnippet("v", "#include <vector>")
@@ -462,7 +462,7 @@ end
 
 ft.vlang = function()
   setTabIndent(4)
-  vim.b.format_command = "fmt-wrapper-v"
+  vim.b.format_command = "fmt.vlang"
 end
 
 ft.fennel = function()
