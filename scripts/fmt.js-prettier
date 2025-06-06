@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+set -e
+[ $# != 0 ] && exit 2
+
+tmp=$(mktemp XXXXXX.js)
+_cleanup() { rm -f "$tmp"; }
+trap '_cleanup' EXIT
+
+cat >"$tmp"
+prettier "$tmp" --config "$DOTFILES/config/prettierrc.json"

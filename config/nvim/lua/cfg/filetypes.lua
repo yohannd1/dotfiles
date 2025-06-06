@@ -409,7 +409,7 @@ ft.moon = function()
 end
 
 ft.javascript = function()
-  vim.b.format_command = "prettier-stdin"
+  vim.b.format_command = "fmt.js-prettier"
 end
 
 ft.python = function()
