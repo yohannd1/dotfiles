@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+[ $# = 2 ] || exit 2
+
+pager=${PAGER:-less}
+
+case "$1" in
+  python) pydoc "$2" ;;
+  linux) man 2 "$2" ;;
+  c) man 3 "$2" ;;
+  janet) janet -e "(doc $2)" | "$pager" ;;
+  *)
+    printf >&2 "unknown backend %s\n" "$1"
+    exit 2
+    ;;
+esac
