@@ -302,7 +302,7 @@ M.add({
       "acrylic", "markdown", "latex",
 
       -- some other languages
-      "rust",
+      "rust", "systemverilog", "verilog",
     }
     sq_rule:with_pair(conds.not_after_text("["))
 
