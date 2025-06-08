@@ -1,33 +1,36 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
+
+set -e
+progname=$(basename "$0")
 
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
 if [ $# != 2 ]; then
-  printf >&2 "Usage: %s <FILE> <NEW-FORMAT>\n" "$(basename "$0")"
-  exit 1
+  printf >&2 "Usage: %s <FILE> <NEW-FORMAT>\n" "$progname"
+  exit 2
 fi
 
-# TODO: validate "new-format" argument (just that it should match [\w.])
+new_format=$2
+if printf "%s" "$new_format" | grep -qv '^\w\+$'; then
+  printf >&2 "invalid format arg: %s\n" "$new_format"
+  exit 1
+fi
 
 if ! exists "trash-put"; then
   printf >&2 "error: 'trash-put' not found\n"
   exit 1
 fi
 
-# tmp_folder=$(mktemp -d "${TMP:-/tmp}/ffmpeg-convert-XXXXXX") || exit 1
-# trap 'rm -r "$tmp_folder"' EXIT
-
 dirname=$(dirname "$1")
 filename=$(basename "$1")
 no_ext=${filename%.*}
-# ext=${filename##*.}
 
-new_filename="$dirname/$no_ext.$2"
+new_filename="$dirname/$no_ext.$new_format"
 
 if [ -e "$new_filename" ]; then
   printf >&2 "Path to new filename already exists! (%s)\n" "$new_filename"
   exit 1
 fi
 
-ffmpeg -i "$1" "$new_filename" || exit 1
+ffmpeg -i "$1" "$new_filename"
 trash-put "$1"
