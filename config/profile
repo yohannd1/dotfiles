@@ -1,29 +1,32 @@
 #!/usr/bin/env bash
+#
+# shell profile - this is run at initial login, both on the computers and on
+# termux.
 
-# Shell Profile
-# This is run at login on a TTY.
+_exists() { command -v "$1" >/dev/null 2>/dev/null; }
+_isTermux() { [ "$(uname -o)" = Android ]; }
 
-exists() { command -v "$1" >/dev/null 2>/dev/null; }
-loggedSource() {
+_sourceLogged() {
   [ $# = 1 ] || return 1
   printf >&2 "Sourcing %s...\n" "$(basename "$1")"
   . "$1"
 }
-isTermux() {
-  [ "$(uname -o)" = Android ] || [ -d /data/data/com.termux ]
-}
 
 # load environment variables, set up $PATH and load libraries
-loggedSource ~/.config/dots/env.sh
-loggedSource ~/.config/dots/path.sh
+_sourceLogged ~/.config/dots/env.sh
+_sourceLogged ~/.config/dots/path.sh
 
-startjob() {
+# TODO: function for starting synchronous task (for logging improvement lol)
+
+_startJob() {
   local line
+  local job_name=$1
+  shift
 
-  printf >&2 'Starting job -> "%s"\n' "$1"
+  printf >&2 'Starting job -> "%s"\n' "$job_name"
 
-  "$2" 2>&1 | while read line; do
-    printf >&2 "\033[2K\r@job[%s] :: %s\n" "$1" "$line"
+  "$@" 2>&1 | while read line; do
+    printf >&2 "\033[2K\r@job[%s] :: %s\n" "$job_name" "$line"
   done &
 }
 
@@ -38,13 +41,13 @@ _updateClock() {
   fi
 }
 
-isTermux || tty-loadcolors
+_isTermux || tty-loadcolors
 
 os=$(uname -o)
 printf >&2 "Uname: %s\n" "$os"
 
 _setupDotcfg() {
-  if ! exists dotcfg; then
+  if ! _exists dotcfg; then
     printf >&2 "*** WARNING: dotcfg not found!\n"
     return 1
   fi
@@ -69,10 +72,10 @@ _setupDotcfg() {
     }
   done
 
-  [ "$_loaded" ] || {
+  if [ -z "$_loaded" ]; then
     printf >&2 " *  Timeout - daemon took too long to respond...\n"
     return 1
-  }
+  fi
 
   printf >&2 " *  Loading settings into daemon...\n"
   gen-res dotcfg | dotcfg stdin-send >/dev/null
@@ -81,19 +84,20 @@ _setupDotcfg() {
 }
 
 # termux-only services
-if isTermux; then
+if _isTermux; then
   # {
   #   printf >&2 "*** Enabling wake lock...\n"
   #   termux-wake-lock
-  #   printf >&2 " *  Done!...\n"
   # } &
-  sshd # it uses port 8022 btw
+  {
+    printf >&2 "*** Launching sshd...\n"
+    pgrep sshd >/dev/null || sshd # it uses port 8022 btw
+  } &
 fi
 
-# too disk-intensive to do every time it boots up on Termux
-if ! isTermux; then
+if ! _isTermux; then
   # update the date because clock problems
-  exists ntpd && startjob "Clock Update" _updateClock
+  _exists ntpd && _startJob "Clock Update" _updateClock
 
   # prepare GPG & SSH
   printf >&2 "*** Preparing GPG and SSH..."
@@ -104,17 +108,16 @@ if ! isTermux; then
   # set up dotcfg daemon and load config
   _setupDotcfg
 
-  # generate configs
-  printf >&2 "*** Generating config (sysm)...\n"
-  sysm
-
-  # set up SSH keychain
-  # if [ -x /usr/bin/keychain ]; then
-  #   eval "$(keychain --eval --ignore-missing ~/.ssh/id_rsa 2>/dev/null)"
-  # fi
+  bootMarker="${TMPDIR:-/tmp}/dotf.booted"
+  if [ -f "$bootMarker" ]; then
+    printf >&2 "*** Already booted - skipping sysm call\n"
+  else
+    printf >&2 "*** Running sysm...\n"
+    sysm && touch "$bootMarker"
+  fi
 fi
 
-if isTermux; then
+if _isTermux; then
   androidTermux() { SESSION_NAME=android tmux-tray; }
-  exists tmux && [ -z "$TMUX" ] && androidTermux
+  _exists tmux && [ -z "$TMUX" ] && androidTermux
 fi
