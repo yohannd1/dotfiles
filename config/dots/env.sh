@@ -88,7 +88,7 @@ export _ZL_FZF_HEIGHT="15" # no height limit!
 export WINEPREFIX="$XDG_DATA_DIR/wine32"
 export WINEW_32_PREFIX="$XDG_DATA_DIR/wine32"
 export WINEW_64_PREFIX="$XDG_DATA_DIR/wine64"
-export _JAVA_OPTIONS="-Djava.util.prefs.userRoot='$XDG_CONFIG_HOME/java' -Dawt.useSystemAAFontSettings=on -Dswing.aatext=true"
+export _JAVA_OPTIONS="-Djava.util.prefs.userRoot='$XDG_CONFIG_HOME/java' -Dawt.useSystemAAFontSettings=on -Dswing.aatext=true -Dawt.toolkit.name=WLToolkit -Dsun.java2d.vulkan=True"
 export JAVA_FONTS="/usr/share/fonts/TTF"
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export TASKRC="$XDG_CONFIG_HOME/taskwarrior/taskrc"
@@ -199,7 +199,7 @@ case "$HOST" in
     ;;
   core2)
     export RESLUA_FONT_SIZE=1.35
-    export RESLUA_FONT_NAME="RobotoMono"
+    export RESLUA_FONT_NAME="Iosevka"
     export QT_SCALE_FACTOR=1.15
     export VOLUMECTL_INCREMENT=5
     ;;

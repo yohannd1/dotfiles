@@ -27,7 +27,7 @@ local font_presets = {
   },
   ["CascadiaCode"] = {
     name = "Cascadia Code",
-    base_size = 15.5,
+    base_size = 16,
   },
   ["JetbrainsMono"] = {
     name = "JetBrains Mono",

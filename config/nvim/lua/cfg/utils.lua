@@ -292,7 +292,7 @@ M.Sidebar.toggle = function(self)
 
   if M.uni_win.get(id) == nil then
     M.uni_win.focus(id, opts)
-    vim.cmd(("edit %s"):format(self.path))
+    vim.cmd.edit(self.path)
   else
     M.uni_win.delete(id)
   end
@@ -306,7 +306,7 @@ M.lazy = function(f, ...)
 end
 
 M.editFile = function(path)
-  vim.cmd("edit " .. path)
+  vim.cmd.edit(path)
 end
 
 return M

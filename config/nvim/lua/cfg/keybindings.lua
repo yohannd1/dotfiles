@@ -370,9 +370,9 @@ for k, path in pairs({
   e = ("%s/config/dots/env.sh"):format(DOTFILES),
   p = ("%s/config/dots/path.sh"):format(DOTFILES),
 }) do
-  local cmd = ("edit %s"):format(path)
   local desc = ("edit: %s"):format(vim.fs.basename(path))
-  map("n", "<Leader>e" .. k, function() vim.cmd(cmd) end, { noremap = true, desc = desc })
+  local callback = function() vim.cmd.edit(path) end
+  map("n", "<Leader>e" .. k, callback, { noremap = true, desc = desc })
 end
 
 local rifle_maps = { r = "run", b = "build", c = "check", t = "test", d = "debug" }

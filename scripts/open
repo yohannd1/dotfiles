@@ -16,8 +16,30 @@
   (when (= code 0)
     (-> pipe-r (:read math/int32-max) (string/trim))))
 
-(defn state/init [file-]
-  (var file file-)
+(defn path/dirname [path]
+  (when (empty? path)
+    (break "."))
+
+  (var i (-> path (length) (- 1)))
+  (def chr-slash (chr "/"))
+  (while (and (> i 0) (-> (in path i) (not= chr-slash)))
+    (-- i))
+
+  (if (= i 0) "." (string/slice path 0 i)))
+
+(defn path/exists [path]
+  (-> (os/stat path) (truthy?)))
+
+(defn path/join [path x]
+  (if (= path "") x (string path "/" x)))
+
+(assert (= (path/dirname "foo/bar") "foo"))
+(assert (= (path/dirname "foo") "."))
+(assert (= (path/join "" "hello") "hello"))
+(assert (= (path/join "/foo/bar" "hello") "/foo/bar/hello"))
+
+(defn state/init [file-arg]
+  (var file file-arg)
 
   (def peg-url-protocol
     '{:a-z (choice (range "az") (range "AZ"))
@@ -211,8 +233,22 @@
 
   # project files
   (mt :ext ["drawio"] :gui ["drawio" file])
-  # (mt :ext ["godot"] :gui ["godot" "-e" file]) # FIXME: not working bruh
   (mt :ext ["yyp"] :gui ["GameMaker" file])
+
+  # godot project files
+  (when (m :ext ["godot"])
+    (def folder (path/dirname file))
+    (pp folder)
+    (def is-cs-project
+      (as-> (os/dir folder) .x
+            (filter |(string/has-suffix? ".csproj" $) .x)
+            (not (empty? .x)))
+      )
+    (if is-cs-project
+      (t :gui ["godot-mono" "-e" file])
+      (t :gui ["godot" "-e" file])
+      )
+    )
 
   # audio files
   (when (or (m :mime [[:begins "audio/"]])
@@ -337,8 +373,10 @@
     (t :runpage ["jq" "--color-output" "." file])
     (t :runpage ["python3" "-m" "json.tool" "--" file]))
 
-  (when (m :ext ["vcd"])
+  (when (m :ext ["vcd" "ghw"])
     (t :gui ["gtkwave" file])
     (t :gui ["pulseview" "-c" file]))
+
+  (mt :ext ["asta"] :pop ["astah-uml" file])
 
   (t :fallback))

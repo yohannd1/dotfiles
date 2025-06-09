@@ -5,11 +5,7 @@
 
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
-# uhhhh....
 export XDG_CURRENT_DESKTOP=river
-
-# Recommended packages to go with:
-# wl-clipboard swaybg yambar dunst foot light wl-gammarelay
 
 cBorderNormal=$(dotcfg send get:river.border-normal)
 cBorderFocus=$(dotcfg send get:river.border-focus)

@@ -117,13 +117,18 @@
     "add"
     (do
       (def state (load-state))
+      (def skip-dirs
+        (-> (os/getenv "SKIP_DIRS") (or "") (string/trim) (not= "")))
 
       (defn add-song [fname]
         (assert (path/exists fname) (string/format "file %s does not exist" fname))
 
         (if (path/is-dir fname)
-          (loop [sub :in (os/dir fname)]
-            (add-song (string fname "/" sub)))
+          (if skip-dirs
+            (eprintf "warning: skipping directory %s" fname)
+            (each sub (os/dir fname)
+              (add-song (string fname "/" sub)))
+            )
           (do
             (def real (os/realpath fname))
             (def ext (path/extension real))

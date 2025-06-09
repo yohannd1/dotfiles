@@ -193,10 +193,14 @@ window-rule {
     clip-to-geometry true
 }
 
-// move staem notifications to a screen corner - source: https://github.com/YaLTeR/niri/wiki/Application-Issues
+// make steam notifications not have a stroke
+//
+// source (mostly): https://github.com/YaLTeR/niri/wiki/Application-Issues
 window-rule {
     match app-id="steam" title=r#"^notificationtoasts_\d+_desktop$"#
     default-floating-position x=0 y=0 relative-to="top-right"
+    open-focused false
+    geometry-corner-radius 0
 }
 
 binds {

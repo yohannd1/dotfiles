@@ -209,17 +209,15 @@ end
 
 -- Pager mode
 dummy.pagerMode = function(filetype)
-  if filetype ~= nil then
-    vim.o.filetype = filetype
-  end
-  vim.cmd([[ setlocal ts=8 nomod nolist noma timeoutlen=0 nocursorline norelativenumber noshowcmd ]])
+  vim.o.filetype = filetype or ""
+  vim.cmd([[ setlocal ts=8 nomod nolist noma timeoutlen=0 nocursorline nonumber norelativenumber noshowcmd ]])
   local arg_nr_bs = { noremap = true, buffer = true, silent = true }
   map("n", "d", "<C-d>", arg_nr_bs)
   map("n", "u", "<C-u>", arg_nr_bs)
   map("n", "q", ":q<CR>", arg_nr_bs)
   map("n", "j", "<C-e>", arg_nr_bs)
   map("n", "k", "<C-y>", arg_nr_bs)
-  utils.doKey("M")
+  vim.cmd("normal! M")
 end
 vim.cmd([[ command! -nargs=* PagerMode call v:lua.dummy.pagerMode(<f-args>) ]])
 

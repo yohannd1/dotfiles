@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+
+set -ue
+progname=$(basename "$0")
+
+tmp=$(mktemp -d /tmp/ffmpeg-normalize-XXXXXX)
+_cleanup() {
+  rm -f "$tmp/*" || true
+  rmdir "$tmp"
+}
+trap '_cleanup' EXIT
+
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
+if [ $# != 1 ]; then
+  printf >&2 "Usage: %s <FILE>\n" "$progname"
+  exit 2
+fi
+
+if ! exists "trash-put"; then
+  printf >&2 "error: 'trash-put' not found\n"
+  exit 1
+fi
+
+filename=$(basename "$1")
+
+ffmpeg -i "$1" -filter:a "loudnorm=I=-12:LRA=14:TP=-0.5" "$tmp/$filename"
+trash-put "$1"
+mv "$tmp/$filename" "$1"
