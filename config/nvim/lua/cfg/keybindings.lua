@@ -2,6 +2,7 @@ local vim = _G.vim
 local dummy = _G.dummy
 local utils = require("cfg.utils")
 local rifle = require("cfg.rifle")
+local snippets = require("cfg.snippets")
 
 local services = utils.services
 local lazy = utils.lazy
@@ -445,3 +446,5 @@ services.defKeyMenu({
   }}
 })
 map("n", "<Leader>B", lazy(services.loadKeyMenu, "buffer"), arg_nr_s)
+
+map("n", "<Leader>i,", snippets.fuzzyMenu, arg_nr_s)

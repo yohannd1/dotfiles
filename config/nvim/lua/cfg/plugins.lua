@@ -162,6 +162,8 @@ M.add({
       local finder
       if source.command then
         finder = finders.new_oneshot_job(source.command, opts)
+      elseif source.func then
+        finder = finders.new_dynamic({ fn = source.func })
       else
         error("Unknown source type...")
       end

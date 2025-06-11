@@ -1,6 +1,9 @@
 local vim = _G.vim
+
 local utils = require("cfg.utils")
+
 local doKeys = utils.doKeys
+local services = utils.services
 
 local M = {}
 
@@ -74,6 +77,18 @@ M.use = function(key)
     assert(char_count > 0, "WHY IS THE CHAR COUNT <= 0")
     doKeys(("d%dl"):format(char_count))
   end
+end
+
+M.fuzzyMenu = function()
+  local snippets_list = {}
+  for k, _ in pairs(vim.b.snippets or {}) do
+    table.insert(snippets_list, k)
+  end
+  services.fuzzyPicker({
+    prompt = "Pick a snippet",
+    source = { func = function() return snippets_list end },
+    on_choice = function(choice) M.use(choice) end
+  })
 end
 
 return M
