@@ -18,12 +18,12 @@ _sourceLogged ~/.config/dots/path.sh
 
 # TODO: function for starting synchronous task (for logging improvement lol)
 
-_startJob() {
+_runAsync() {
   local line
   local job_name=$1
   shift
 
-  printf >&2 'Starting job -> "%s"\n' "$job_name"
+  printf >&2 'Starting job "%s"\n' "$job_name"
 
   "$@" 2>&1 | while read line; do
     printf >&2 "\033[2K\r@job[%s] :: %s\n" "$job_name" "$line"
@@ -97,7 +97,9 @@ fi
 
 if ! _isTermux; then
   # update the date because clock problems
-  _exists ntpd && _startJob "Clock Update" _updateClock
+  if _exists ntpd; then
+    _runAsync "Clock Update" _updateClock
+  fi
 
   # prepare GPG & SSH
   printf >&2 "*** Preparing GPG and SSH..."
