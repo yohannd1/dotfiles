@@ -48,6 +48,7 @@ apps += [
     "pulsemixer.cfg",
     "ripgreprc",
     "dots",
+    "mpv",
     # "lf",
     # "broot",
 ]
