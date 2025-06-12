@@ -6,7 +6,14 @@
 (var *progname* nil)
 
 (defn show-help []
-  (:write stderr (-> "Usage: %s { add [FILES...] | queue | shuffle | next [AMOUNT] | prev [AMOUNT] }\n" (string/format *progname*)))
+  (eprintf "Usage:")
+  (eprintf "  %s add [FILES...]" *progname*)
+  (eprintf "  %s clear" *progname*)
+  (eprintf "  %s current" *progname*)
+  (eprintf "  %s queue" *progname*)
+  (eprintf "  %s shuffle" *progname*)
+  (eprintf "  %s next [AMOUNT=1]" *progname*)
+  (eprintf "  %s prev [AMOUNT=1]" *progname*)
   (os/exit 2))
 
 (defn path/basename
@@ -159,6 +166,20 @@
       (save-state state)
       )
 
+    "current"
+    (do
+      (when (> args-len 1) (show-help))
+      (def state (load-state))
+      (def index (in state :index))
+      (def queue (in state :queue))
+      (if (< index (length queue))
+        (printf "%d %s" (inc index) (in queue index))
+        (do
+          (eprintf "queue is \"empty\"")
+          (os/exit 1))
+        )
+      )
+
     "queue"
     (do
       (when (> args-len 1) (show-help))
@@ -166,17 +187,12 @@
       (loop [:let [index (in state :index)
                    queue (in state :queue)]
              [i path] :pairs queue]
-        # (def final-path
-        #   (if (string/has-prefix? HOME path)
-        #     (string/replace HOME "~" path)
-        #     path))
         (def final-path (path/basename path))
         (def prefix
           (cond
             (< i index) "  "
             (= i index) "* "
-            (> i index) "- "
-            ))
+            (> i index) "- "))
         (printf "%s%s" prefix final-path)
         ))
 
@@ -230,8 +246,11 @@
             (return 'loop))
 
           (def cur-song (in queue index))
-          (eprintf "playing %s..." cur-song)
+
+          (eprintf "(%d of %d) playing %s\nfull path: %s" (inc index) (length queue) (path/basename cur-song) cur-song)
+
           (os/execute ["mpv" "--no-video" cur-song] :p)
+          (eprintf "\n")
 
           (def state2 (load-state))
           (def cur-song2 (-> state2 (in :queue) (in (in state2 :index))))
