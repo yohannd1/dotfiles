@@ -295,8 +295,8 @@ M.add({
     autopairs.enable()
 
     -- don't allow single quotes pairing on some languages
-    local sq_rule = autopairs.get_rules("'")[1]
-    sq_rule.not_filetypes = {
+    local single_quote_rule = autopairs.get_rules("'")[1]
+    single_quote_rule.not_filetypes = {
       -- lisps
       "scheme", "lisp", "fennel", "janet", "clojure",
 
@@ -306,7 +306,12 @@ M.add({
       -- some other languages
       "rust", "systemverilog", "verilog",
     }
-    sq_rule:with_pair(conds.not_after_text("["))
+    single_quote_rule:with_pair(conds.not_after_text("["))
+
+    local backtick_rule = autopairs.get_rules("`")[1]
+    backtick_rule.not_filetypes = {
+      "systemverilog", "verilog",
+    }
 
     -- escape codes
     local bs_code = autopairs.esc("<BS>")

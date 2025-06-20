@@ -587,23 +587,38 @@ ft.editorconfig = function()
   ]])
 end
 
+ft.verilog = function()
+  vim.b.format_command = "verible-verilog-format -"
+  vim.b.verilog_indent_modules = 1
+  setSpaceIndent(2)
+end
+
 ft.systemverilog = function()
+  vim.b.format_command = "verible-verilog-format -"
+  vim.b.verilog_indent_modules = 1
+  setSpaceIndent(2)
+
   snippets.register({
     key = "m",
     content = [[
 module m_top;
-    logic a, b;
+  integer a, b;
 
-    initial begin
-        a = 10;
-        b = 15;
-        $display("Hello, world! a+b = %d", 10 + 15);
-        $finish;
-    end
+  initial begin
+    a = 10;
+    b = 15;
+    $display("Hello, world! a+b = %d", a + b);
+    $finish;
+  end
 endmodule
     ]],
     reindent = false,
   })
+end
+
+ft.vhdl = function()
+  vim.g.vhdl_indent_genportmap = 0
+  vim.g.vhdl_indent_rhsassign = 0
 end
 
 initialize()
