@@ -1,17 +1,26 @@
 #!/usr/bin/env -S python3 -i
 # vim: ft=python
 
-import operator as op
+import sys
+import os
 from math import *
 from random import *
 from pathlib import Path
+
+from operator import xor
 
 def dcos(x: float) -> float: return cos(radians(x))
 def dsin(x: float) -> float: return sin(radians(x))
 def dtan(x: float) -> float: return tan(radians(x))
 
-xor = op.xor
-
 def res_ratio(x: int, y: int) -> tuple[int, int]:
     div = gcd(x, y)
     return (x // div, y // div)
+
+if len(sys.argv) == 1:
+    pass
+elif len(sys.argv) == 2:
+    print(eval(sys.argv[1]))
+    os._exit(0)
+else:
+    raise Exception("bad amount of arguments")
