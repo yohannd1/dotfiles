@@ -344,9 +344,8 @@ alias sy='dotsync'
 alias of='openfork'
 
 sg() {
-  # dbus-launch --exit-with-session river-start
-  # WM=qtile start-xserver
-  wl-start niri
+  # wl-start niri
+  WM=plasma start-xserver
 }
 
 if exists nvim; then

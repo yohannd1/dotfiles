@@ -69,6 +69,10 @@ case "$WM" in
     export GDK_BACKEND=x11
     wm_cmd=(gnome-session)
     ;;
+  plasma)
+    export DESKTOP_SESSION=plasma
+    wm_cmd=(startplasma-x11)
+    ;;
   *)
     printf >&2 'WARNING: window manager "%s" is not accounted for - this might cause problems.\n' "$WM"
     ;;

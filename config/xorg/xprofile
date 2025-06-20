@@ -31,8 +31,7 @@ case "$WM" in
   *) start-sxhkd & ;;
 esac
 
-# compositor
-{
+if [ "$WM" != plasma ]; then
   [ "$WM" = dwm ] && sleep 3 # tray patch causes problems with compositor for some reason
   start-compositor
-} &
+fi &
