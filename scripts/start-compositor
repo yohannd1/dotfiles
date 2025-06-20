@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-X_COMPOSITOR="${X_COMPOSITOR:-compton}"
+set -ue
 
 # TODO: don't kill compositors from other X servers
 pgrep "$X_COMPOSITOR" >/dev/null 2>/dev/null \

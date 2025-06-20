@@ -16,7 +16,8 @@ export XSESSIONDIR="/tmp/xsessions/wayland-$tty"
 
 case "$1" in
   river)
-    XKB_DEFAULT_LAYOUT="br" river
+    export XKB_DEFAULT_LAYOUT="br"
+    dbus-launch --exit-with-session river-start
     ;;
   hyprland)
     hyprland

@@ -221,7 +221,7 @@
     (t :gui [BROWSER ;args file]))
 
   # urls
-  (mt :protocol ["vscode" "steam"] :xdg)
+  (mt :protocol ["vscode" "steam" "appstream"] :xdg)
   (when (m :protocol ["http" "https"])
     (try-browser)
     (t :tty [TERMBROWSER file]))

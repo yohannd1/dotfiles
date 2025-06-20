@@ -3,42 +3,36 @@
 # a script that runs compile-test-run actions based on the specified filetype.
 # intented for editors like vim and emacs
 
+set -ue
+progname=$(basename "$0")
+
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname <ACTION> <FILETYPE> <FILENAME>
+ACTION := { run | build | test | check | debug }
+FILETYPE has too many values to list here. Check the script lol
+EOF
+  exit 2
+}
+
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
-set -e
-
-if [ $# != 3 ]; then
-  printf >&2 "Usage: %s\n" "$(basename "$0") <ACTION> <FILETYPE> <FILENAME>"
-  printf >&2 "The ACTION and FILETYPE fields are handled based on the code of this script.\n"
-  exit 1
-fi
-
-if [ -z "$3" ]; then
-  printf >&2 "Empty filename.\n"
-  exit 1
-else
-  file=$(realpath -m "$3") || exit 1
-fi
-
-tmp=$(mktemp -d) || {
-  printf >&2 "Could not generate temp file.\n"
+die() {
+  printf >&2 "fatal: %s\n" "$*"
   exit 1
 }
 
-printf >&2 "@[TEMP DIR: %s]\n\n" "$tmp"
+[ $# != 3 ] && showHelp
 
-cleanup() {
+file=$(realpath -m "$3")
+tmp=$(mktemp -d)
+_cleanup() {
   [ -d "$tmp" ] && rm -r "$tmp"
   return 0
 }
+trap '_cleanup' EXIT
 
-trap 'cleanup' EXIT
-
-die() {
-  printf >&2 "%s\n" "$*"
-  cleanup
-  exit 1
-}
+printf >&2 "@[TEMP DIR: %s]\n\n" "$tmp"
 
 getModelineCommand() {
   # USAGE: feed this with the file contents.
@@ -51,7 +45,7 @@ getModelineCommand() {
 readModeline() { head -n1; }
 
 getPython() {
-  if [ "$_python_cache" ]; then
+  if [ "${_python_cache:-}" ]; then
     printf "%s" "$_python_cache"
     return
   fi
@@ -64,7 +58,7 @@ getPython() {
     return
   done
 
-  die "Could not find a suitable python version"
+  die "could not find a suitable python version"
 }
 
 getLua() {
@@ -81,7 +75,7 @@ getLua() {
     return
   done
 
-  die "Could not find a suitable lua version"
+  die "could not find a suitable lua version"
 }
 
 fparent_pattern() {
@@ -300,6 +294,14 @@ case "$1" in
       systemverilog)
         iverilog -g2012 -o "$tmp/out" "$file"
         "$tmp/out"
+
+        # fdir=$(dirname "$file")
+        # fname=$(basename "$file")
+        # verilator --binary \
+        #   -j 0 -Wall \
+        #   --Mdir "$tmp" -I"$fdir" \
+        #   "$fname"
+        # "$tmp/V*"
         ;;
       *) die "(action \"$1\") unhandled filetype: $2" ;;
     esac ;;

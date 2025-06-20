@@ -35,7 +35,7 @@ elif [ "$DISPLAY" ]; then
     [ "$arg_type" ] && args+=(-t "$arg_type")
     xclip "${args[@]}" -sel clip
   }
-  do_paste() { xclip -sel clip out; }
+  do_paste() { xclip -o -sel clip; }
 else
   printf >&2 "neither WAYLAND_DISPLAY nor DISPLAY are set...\n"
   exit 1
