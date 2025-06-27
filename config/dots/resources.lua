@@ -254,7 +254,7 @@ decl {
 -- waybar
 decl {
   {"waybar.font_family", font.name},
-  {"waybar.font_size", font.base_size * 0.7},
+  {"waybar.font_size", font.base_size * 0.65},
 
   targets = T_ALL,
 }

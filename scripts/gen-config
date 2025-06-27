@@ -75,7 +75,7 @@ _t_yambar() {
 }
 
 _t_waybar() {
-  PP_PREFIX="/*!!" gen "$DOTFILES/config/gen/waybar-style.css" \
+  PP_PREFIX="!!" gen "$DOTFILES/config/gen/waybar-style.css" \
     "$XDG_CONFIG_HOME/waybar/style.css"
 }
 

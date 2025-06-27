@@ -1,79 +1,64 @@
-/*!! getColor() { dotcfg send "get:theme_rgb_csv.$1"; }
-/*!! _font_family=$(dotcfg send 'get:waybar.font_family')
-/*!! _font_size=$(dotcfg send 'get:waybar.font_size')
-/*!! base00=$(getColor base00)
-/*!! base01=$(getColor base01)
-/*!! base02=$(getColor base02)
-/*!! base03=$(getColor base03)
-/*!! base04=$(getColor base04)
-/*!! base05=$(getColor base05)
-/*!! base06=$(getColor base06)
-/* */
+!! getColor() { dotcfg send "get:theme_rgb_csv.$1"; }
+!! _font_family=$(dotcfg send 'get:waybar.font_family')
+!! _font_size=$(dotcfg send 'get:waybar.font_size')
+!! base00=$(getColor base00)
+!! base01=$(getColor base01)
+!! base02=$(getColor base02)
+!! base03=$(getColor base03)
+!! base04=$(getColor base04)
+!! base05=$(getColor base05)
+!! base06=$(getColor base06)
 
 * {
-/*!! printf "font-family: '%s', monospace;\n" "$_font_family"
-/* */
-/*!! printf "font-size: %spx;\n" "$_font_size"
-/* */
+!! printf "font-family: '%s', monospace;\n" "$_font_family"
+!! printf "font-size: %spx;\n" "$_font_size"
 }
 
 window#waybar {
-/*!! printf "background-color: rgba(%s,0.8);\n" "$base00"
-/* */
-/*!! printf "color: rgb(%s);\n" "$base05"
-/* */
+!! printf "background-color: rgba(%s,0.0);\n" "$base00"
+!! printf "color: rgb(%s);\n" "$base05"
 }
 
 #workspaces button, #tags button {
-    padding: 0 4px;
+    padding: 0px 4px;
     background-color: transparent;
-/*!! printf "color: rgba(%s,1.0);\n" "$base04"
-/* */
+!! printf "color: rgba(%s,1.0);\n" "$base04"
 }
 
 #workspaces button.empty {
-    opacity: 0.05;
+!! printf "color: rgba(%s,0.15);\n" "$base04"
 }
 
 #tags button.occupied {
-/*!! printf "color: rgb(%s);\n" "$base05"
-/* */
+!! printf "color: rgba(%s,1.0);\n" "$base05"
 }
 
 #workspaces button.active, #tags button.focused {
-/*!! printf "color: rgb(%s);\n" "$base06"
-/* */
-/*!! printf "background-color: rgb(%s);\n" "$base02"
-/* */
+!! printf "background-color: rgba(%s,0.6);\n" "$base03"
 }
 
 #window, #workspaces, #tags {
-    margin: 0 4px;
+    padding: 0px;
+    margin: 0px;
 }
 
-.modules-left {
-    margin-left: 0;
-}
+.modules-left { margin-left: 5px; }
+.modules-right { margin-right: 5px; }
 
-/* If workspaces is the leftmost module, omit left margin */
-.modules-left > widget:first-child > #workspaces,
-.modules-left > widget:first-child > #tags
-{
-    margin-left: 0;
-}
-
-/* If workspaces is the rightmost module, omit right margin */
-.modules-right > widget:last-child > #workspaces,
-.modules-right > widget:last-child > #tags
-{
-    margin-right: 0;
+.modules-left, .modules-right, .modules-center {
+!! printf "background-color: rgba(%s,0.8);\n" "$base02"
+    margin: 0px 5px;
+    padding: 0px 10px;
+    border-radius: 8px;
+    border-width: 2px;
+    border-style: solid;
+!! printf "border-color: rgba(%s,0.5);\n" "$base01"
 }
 
 #clock, #pulseaudio, #tray {
     padding: 0 10px;
-/*!! printf "color: rgba(%s,1.0);\n" "$base04"
-/*!! printf "background-color: rgb(%s);\n" "$base01"
-/* */
+!! printf "color: rgba(%s,1.0);\n" "$base04"
+!! printf "background-color: rgba(%s,0.0);\n" "$base01"
 }
 
 #tray > .passive {
