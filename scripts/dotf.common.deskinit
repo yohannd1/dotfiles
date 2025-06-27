@@ -13,10 +13,11 @@ if pactl info | grep -q '^Server Name:.*PipeWire.*'; then
   _audiot=pipewire
 fi
 
-# wayland <-> dbus stuff
+# set up dbus stuff
 if isWayland; then
   systemctl --user import-environment DISPLAY WAYLAND_DISPLAY
-  dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+  dbus-update-activation-environment \
+    --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
 fi
 
 # set up config
@@ -70,6 +71,12 @@ fi &
 if isWayland; then
   @waybar &
   wl-gammarelay &
+
+  if [ "$NIRI_SOCKET" ] && exists swayidle; then
+    swayidle -w \
+      timeout 120 'niri msg action power-off-monitors' \
+      timeout 300 'fzpow lock'
+  fi
 fi
 
 # set colors for hyprland
