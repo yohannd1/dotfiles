@@ -1,6 +1,17 @@
 #!/usr/bin/env sh
 
-[ $# = 2 ] || exit 2
+set -ue
+progname=$(basename "$0")
+
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname <BACKEND> <QUERY>
+BACKEND := { python | linux | c | janet | c++ | java }
+EOF
+  exit 2
+}
+
+[ $# = 2 ] || showHelp
 
 pager=${PAGER:-less}
 
@@ -16,8 +27,12 @@ case "$1" in
     janet -e "(doc $2)" | "$pager"
     ;;
   c++) cppman "$2" ;;
+  java)
+    # this one is really bad but it's something
+    javap -p "$2" | "$pager"
+    ;;
   *)
     printf >&2 "unknown backend %s\n" "$1"
-    exit 2
+    showHelp
     ;;
 esac
