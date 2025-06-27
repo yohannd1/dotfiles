@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+
+set -ue
+progname=$(basename "$0")
+
+isAndroid() { test "$(uname -o)" = Android; }
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname <PORT> <URL> [COMMAND]
+EOF
+  exit 2
+}
+
+if [ $# -lt 2 ] || [ $# -gt 3 ]; then
+  showHelp
+fi
+
+if exists gpg-connect-agent && ! isAndroid; then
+  gpg-connect-agent updatestartuptty /bye >/dev/null
+fi
+
+if [ $# = 3 ]; then
+  exec ssh "$2" -p "$1" "$3"
+else
+  exec ssh "$2" -p "$1"
+fi
