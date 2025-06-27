@@ -17,15 +17,15 @@ export XSESSIONDIR="/tmp/xsessions/wayland-$tty"
 case "$1" in
   river)
     export XKB_DEFAULT_LAYOUT="br"
-    dbus-launch --exit-with-session river-start
+    exec dbus-launch --exit-with-session river-start
     ;;
   hyprland)
-    hyprland
+    exec hyprland
     ;;
   dwl)
     dwlDir=~/pj/code/dwl-fork
     (cd "$dwlDir" && make) # recompile if needed
-    "$dwlDir/dwl"
+    exec "$dwlDir/dwl"
     ;;
   niri)
     if [ -z "$NIRI_CONFIG" ]; then
@@ -33,18 +33,22 @@ case "$1" in
       exit 1
     fi
     gen-config niri
-    niri-session
+    exec niri-session
     ;;
   qtile)
-    qtile start -b wayland
+    exec qtile start -b wayland
     ;;
   plasma)
     # big ass command...
-    /usr/lib/plasma-dbus-run-session-if-needed \
+    exec /usr/lib/plasma-dbus-run-session-if-needed \
       /usr/bin/startplasma-wayland
     ;;
+  gnome)
+    export XDG_SESSION_TYPE=wayland
+    exec dbus-run-session gnome-session
+    ;;
   *)
-    printf >&2 "Unknown Wayland compositor\n"
+    printf >&2 "Unknown Wayland compositor: %s\n" "$1"
     exit 1
     ;;
 esac

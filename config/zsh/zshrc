@@ -344,8 +344,8 @@ alias sy='dotsync'
 alias of='openfork'
 
 sg() {
-  # wl-start niri
-  WM=plasma start-xserver
+  # WM=plasma start-xserver
+  wl-start niri
 }
 
 if exists nvim; then
