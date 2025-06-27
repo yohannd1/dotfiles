@@ -53,6 +53,8 @@ action_lock() {
     c_fail="0x$(dotcfg send get:theme_no_prefix.base0F)" || return 1
   }
 
+  # TODO: standard way to check whether the screen is already locked (silently fail if it already is, I guess)
+
   if isXorg && exists bslock; then
     _lock() { bslock; }
   elif isXorg && exists betterlockscreen; then

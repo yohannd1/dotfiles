@@ -10,7 +10,7 @@ local font_presets = {
   },
   ["LiberationMono"] = {
     name = "Liberation Mono",
-    base_size = 15,
+    base_size = 16,
   },
   ["Terminus"] = {
     name = "Terminus",
@@ -219,7 +219,7 @@ local enable_ligatures_int = enable_ligatures and 1 or 0
 
 -- st (x11 terminal)
 decl {
-  {"st.alpha", "0.75"},
+  {"st.alpha", "0.9"},
   {"st.cursor", theme["base0D"]},
   {"st.font", xft_font},
   {"st.enableligatures", enable_ligatures_int},

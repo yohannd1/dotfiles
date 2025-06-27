@@ -13,10 +13,6 @@ text/html=browser.desktop
 x-scheme-handler/http=browser.desktop
 x-scheme-handler/https=browser.desktop
 application/x-shockwave-flash=open.desktop
-x-scheme-handler/roblox-studio=roblox-studio.desktop
-x-scheme-handler/roblox-player=roblox-player.desktop
-application/x-roblox-rbxl=roblox-studio.desktop
-application/x-roblox-rbxlx=roblox-studio.desktop
 x-scheme-handler/msteams=teams.desktop
 x-scheme-handler/ror2mm=r2modman.desktop
 ror2mm=gale-handler.desktop
@@ -24,8 +20,9 @@ application/xml=editor.desktop
 text/x-makefile=editor.desktop
 text/x-java=editor.desktop
 x-scheme-handler/discord=vesktop.desktop
-x-scheme-handler/discord-719647875465871400=discord-719647875465871400.desktop
 gale=gale-handler.desktop
+application/zip=filemanager.desktop
+application/x-7z-compressed=filemanager.desktop
 
 [Added Associations]
 application/xml=editor.desktop;
