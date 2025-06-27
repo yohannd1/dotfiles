@@ -283,6 +283,34 @@ vim.api.nvim_create_user_command("AcrMentionedIn", function(_t)
   vim.cmd.copen()
 end, { nargs = "*" })
 
+do
+  local num_val = 0
+
+  vim.api.nvim_create_user_command("NumRead", function(_t)
+    local n = tonumber(vim.fn.expand("<cword>"))
+    if n == nil then
+      error("hovered word is not a number")
+    else
+      num_val = n
+    end
+  end, { nargs = "*" })
+
+  local numDoSet = function(op)
+    vim.cmd(("normal! ciw%s"):format(num_val))
+    num_val = op(num_val)
+  end
+
+  local defNumDoSet = function(name, mapper)
+    vim.api.nvim_create_user_command(name, function(_t) numDoSet(mapper) end, { nargs = "*" })
+  end
+
+  local inc = function(x) return x + 1 end
+  defNumDoSet("NumSetInc", inc)
+
+  local dec = function(x) return x - 1 end
+  defNumDoSet("NumDecInc", dec)
+end
+
 -- TODO: inside neovim, replace the $EDITOR with a wrapper script that connects
 -- to the current neovim instance, opens a buffer, and waits for the buffer to
 -- unload before exiting.
