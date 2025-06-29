@@ -22,7 +22,21 @@ getArg() {
   printf "%s\n" "$2"
 }
 
-if [ "$WAYLAND_DISPLAY" ]; then
+isTermux() { [ "$(uname -o)" = Android ]; }
+
+if isTermux; then
+  die_termuxBad() {
+    printf >&2 "termux clipboard doesn't support arguments...\n"
+    exit 1
+  }
+  do_copy() {
+    [ "$arg_type" ] && die_termuxBad || true
+    termux-clipboard-set
+  }
+  do_paste() {
+    termux-clipboard-get
+  }
+elif [ "$WAYLAND_DISPLAY" ]; then
   do_copy() {
     args=()
     [ "$arg_type" ] && args+=(-t "$arg_type")
