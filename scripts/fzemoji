@@ -1,0 +1,27 @@
+#!/usr/bin/env sh
+
+set -ue
+progname=$(basename "$0")
+
+cacheHome=${XDG_CACHE_HOME:-$HOME/.cache}
+cachePath=${cacheHome}/fzemoji-cache.json
+emojiFileURL="https://raw.githubusercontent.com/chalda-pnuzig/emojis.json/refs/heads/master/src/list.only.modifiers.json"
+
+showHelp() {
+  cat >&2 <<EOF
+EOF
+  exit 2
+}
+
+[ $# = 0 ] || showHelp
+
+if [ ! -f "$cachePath" ]; then
+  curl -L --output "$cachePath" -- "$emojiFileURL"
+fi
+
+genEmojiList() {
+  jq -r '.emojis[] | "\(.emoji) \(.name)"' "$cachePath"
+}
+
+choice=$(genEmojiList | fzagnostic)
+printf "%s" "$choice" | cut -d' ' -f1 | tr -d '\n' | dotf.wrap.clip copy
