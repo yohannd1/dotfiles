@@ -430,7 +430,6 @@ map("n", "<Leader>l", [[:messages<CR>]], arg_nr)
 map("n", "<Leader>T", [[:terminal<CR>i]], arg_nr)
 map("n", "<Leader>[", lazy(vim.fn.jobstart, {"tmux", "new-window"}), { noremap = true, desc = "tmux: new tab" })
 
--- TODO: find a way to use this without needing a keymenu...
 services.defKeyMenu({
   id = "buffer",
   title = "Buffer navigation",
@@ -447,4 +446,42 @@ services.defKeyMenu({
 })
 map("n", "<Leader>B", lazy(services.loadKeyMenu, "buffer"), arg_nr_s)
 
+map("n", "<Leader>k", vim.cmd.bdelete, { noremap = true, desc = "delete buffer" })
+
+-- TODO: make this better! so it can replace key-menus like hydra
+-- map("n", "<Leader>B", function()
+--   local choices = {
+--     {"j", "next", lazy(dummy.bufSwitch, "next")},
+--     {"k", "prev", lazy(dummy.bufSwitch, "prev")},
+--     {"d", "delete", lazy(vim.cmd, "bdelete")},
+--     {"w", "write", lazy(vim.cmd, "write")},
+--   }
+
+--   -- build string for the confirm dialog
+--   local options_str = nil
+--   do
+--     local t = {}
+--     for _, x in ipairs(choices) do
+--       table.insert(t, ("&%s %s"):format(x[1], x[2]))
+--     end
+--     table.insert(t, "&q quit")
+--     options_str = table.concat(t, "\n")
+--   end
+
+--   while true do
+--     local c = vim.fn.confirm("", options_str)
+--     if c <= #choices then
+--       choices[c][3]() -- run the comand
+--     elseif c == #choices + 1 then
+--       break -- quit
+--     else
+--       print("Invalid choice...")
+--     end
+--   end
+-- end, arg_nr)
+
 map("n", "<Leader>i,", snippets.fuzzyMenu, arg_nr_s)
+
+map("n", "<Leader>gr", ":NumRead<CR>", arg_nr_s)
+map("n", "<Leader>g+", ":NumWriteInc<CR>", arg_nr_s)
+map("n", "<Leader>g-", ":NumWriteDec<CR>", arg_nr_s)
