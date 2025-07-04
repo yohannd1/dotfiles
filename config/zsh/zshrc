@@ -480,3 +480,7 @@ alias M='mus-menu'
 findTodos() { rg '\b(TODO|FIXME|XXX)\b'; }
 
 gS() { (git add . && git commit); git pull && git push; }
+
+# this is depressing
+clipX2W() { xclip -o -sel clip | wl-copy; }
+clipW2X() { wl-paste | xclip -sel clip; }
