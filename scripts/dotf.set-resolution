@@ -36,6 +36,7 @@ set_xrandr() {
 
   [ "$arg_mode" ] && args+=(--mode "$arg_mode")
   [ "$arg_rate" ] && args+=(-r "$arg_rate")
+  [ "$arg_scale" ] && die "Scale not yet supported on xrandr backend" || true
 
   xrandr "${args[@]}"
 }
@@ -56,12 +57,16 @@ set_niri() {
       modeStr="$arg_mode"
     fi
 
-    if [ "$arg_rate" ]; then
-      modeStr="${modeStr}@${arg_rate}"
-    fi
+    [ "$arg_rate" ] \
+      && modeStr="${modeStr}@${arg_rate}" \
+      || true
 
     niri msg output "$arg_output" mode "$modeStr"
   fi
+
+  [ "$arg_scale" ] \
+    && niri msg output "$arg_output" scale "$arg_scale" \
+    || true
 }
 
 while [ $# -gt 0 ]; do
@@ -72,7 +77,8 @@ while [ $# -gt 0 ]; do
       ;;
 
     --scale)
-      die "Scale not yet supported"
+      shift
+      arg_scale=$(getArg '--scale' "$1")
       ;;
 
     --mode)
