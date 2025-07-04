@@ -1,5 +1,5 @@
 _exists() { command -v "$1" >/dev/null 2>/dev/null; }
-_isAndroid() { test -d ~/.termux; } # miserable way to detect termux
+_isTermux() { [ "$(uname -o)" = Android ]; }
 
 # dotfiles dir
 _dotpath=~/.local/share/dots/dotpath
@@ -38,7 +38,7 @@ export XDG_DATA_HOME="$XDG_DATA_DIR"
 export ACR_WIKI_DIR="$HOME/wiki/vimwiki"
 
 # global options
-if _isAndroid; then
+if _isTermux; then
   export EDITOR=nvim # not sure yet but nnn struggles with dotf.wrap.editor. Probably crap android exec stuff...
 else
   export EDITOR=dotf.wrap.editor
@@ -50,7 +50,7 @@ export XORG_TERMINAL=st
 export TERMINAL=dotf.wrap.terminal
 
 export BROWSER=librewolf
-_isAndroid && export BROWSER=termux-open-url
+_isTermux && export BROWSER=termux-open-url
 
 export TERMBROWSER=w3m
 export PAGER=less
@@ -118,7 +118,7 @@ export FZF_DEFAULT_OPTS='
 export GREP_COLORS='ms=01;34:mc=01;34:sl=:cx=:fn=35:ln=32:bn=32:se=36'
 export OPEN_ALT=dotf.unknown-filetype
 export OPEN_FALLBACK_SILENT=1
-_isAndroid || export GTK_THEME="Adwaita-dark"
+_isTermux || export GTK_THEME="Adwaita-dark"
 export QT_STYLE_OVERRIDE="Adwaita-Dark"
 export PYTHON_BASIC_REPL=1 # weird thing that happened but i dont care that much tbh - https://github.com/python/cpython/issues/118840
 

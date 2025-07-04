@@ -288,11 +288,8 @@ do
 
   vim.api.nvim_create_user_command("NumRead", function(_t)
     local n = tonumber(vim.fn.expand("<cword>"))
-    if n == nil then
-      error("hovered word is not a number")
-    else
-      num_val = n
-    end
+    assert(n ~= nil, "hovered word is not a number")
+    num_val = n
   end, { nargs = "*" })
 
   local numDoSet = function(op)
@@ -301,14 +298,13 @@ do
   end
 
   local defNumDoSet = function(name, mapper)
-    vim.api.nvim_create_user_command(name, function(_t) numDoSet(mapper) end, { nargs = "*" })
+    vim.api.nvim_create_user_command(name, function(_t)
+      numDoSet(mapper)
+    end, { nargs = "*" })
   end
 
-  local inc = function(x) return x + 1 end
-  defNumDoSet("NumSetInc", inc)
-
-  local dec = function(x) return x - 1 end
-  defNumDoSet("NumDecInc", dec)
+  defNumDoSet("NumWriteInc", function(x) return x + 1 end)
+  defNumDoSet("NumWriteDec", function(x) return x - 1 end)
 end
 
 -- TODO: inside neovim, replace the $EDITOR with a wrapper script that connects
