@@ -1,0 +1,43 @@
+#!/usr/bin/env sh
+
+set -ue
+progname=$(basename "$0")
+
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+isWayland() { [ "$WAYLAND_DISPLAY" ]; }
+isXorg() { ! isWayland && [ "$DISPLAY" ]; }
+
+[ $# = 0 ] || exit 2
+
+_getLockColors() {
+  c_init="0x$(dotcfg send get:theme_no_prefix.base01)" || return 1
+  c_input="0x$(dotcfg send get:theme_no_prefix.base03)" || return 1
+  c_fail="0x$(dotcfg send get:theme_no_prefix.base0F)" || return 1
+}
+
+tryLock() {
+  [ $# -gt 0 ] || exit 2
+  if pgrep "$1" >/dev/null; then
+    printf >&2 "screen seems to be already locked; ignoring command\n"
+    exit 0
+  else
+    "$@"
+  fi
+}
+
+# FIXME: this can be an issue if multiple sessions are running at the same time, since the grep is system-wide.
+
+if isXorg && exists bslock; then
+  tryLock bslock
+elif isXorg && exists betterlockscreen; then
+  tryLock betterlockscreen -l
+elif isWayland && [ -z "$NIRI_SOCKET" ] && exists waylock; then
+  _getLockColors
+  tryLock waylock -init-color "$c_init" -input-color "$c_input" -fail-color "$c_fail"
+elif isWayland && exists swaylock; then
+  _getLockColors
+  tryLock swaylock --color "$c_init"
+else
+  printf >&2 "No valid lockscreen program found.\n"
+  return 1
+fi

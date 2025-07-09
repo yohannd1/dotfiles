@@ -75,7 +75,7 @@ if isWayland; then
   if [ "$NIRI_SOCKET" ] && exists swayidle; then
     swayidle -w \
       timeout 120 'niri msg action power-off-monitors' \
-      timeout 300 'fzpow lock'
+      timeout 300 'dotf.pow.lock'
   fi
 fi
 
