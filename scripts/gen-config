@@ -15,7 +15,7 @@ T_COMPUTER=(stalonetray dunst gtk3 foot niri)
 main() {
   def_targets=(_init)
 
-  _isAndroid \
+  _isTermux \
     && def_targets+=("${T_ANDROID[@]}") \
     || def_targets+=("${T_COMPUTER[@]}")
 
