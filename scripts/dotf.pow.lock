@@ -39,5 +39,5 @@ elif isWayland && exists swaylock; then
   tryLock swaylock --color "$c_init"
 else
   printf >&2 "No valid lockscreen program found.\n"
-  return 1
+  exit 1
 fi

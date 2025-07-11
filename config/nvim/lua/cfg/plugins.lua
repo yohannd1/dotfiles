@@ -692,9 +692,7 @@ M.afterPluginLoad = function()
     services.fuzzyPicker({
       prompt = "Open recent file",
       source = { command = {"filehist", "list"} },
-      on_choice = function(choice)
-        vim.cmd.edit(choice)
-      end
+      on_choice = vim.cmd.edit,
     })
   end
 end
