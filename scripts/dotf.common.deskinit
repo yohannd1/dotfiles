@@ -70,7 +70,6 @@ fi &
 
 if isWayland; then
   @waybar &
-  wl-gammarelay &
 
   if [ "$NIRI_SOCKET" ] && exists swayidle; then
     swayidle -w \
