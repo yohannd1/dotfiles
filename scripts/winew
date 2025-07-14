@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-set -e
+set -ue
 
 WINEW_ARCH="${WINEW_ARCH:-32}" # default arch is 32 bits
 WINEW_32_PREFIX="${WINEW_32_PREFIX:-$XDG_DATA_DIR/wine32}"
@@ -12,22 +12,27 @@ progname=$(basename "$0")
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
 is_x11() { [ "$DISPLAY" ] && [ -z "$WAYLAND_DISPLAY" ]; }
 
-if [ "$WAYLAND_DISPLAY" ]; then
-  unset DISPLAY
-fi
+# make sure the wayland version is used on wayland
+[ "$WAYLAND_DISPLAY" ] && unset DISPLAY || true
 
 show_help() {
 cat >&2 <<EOF
+$progname - dual-prefix wine wrapper/utility
+
 Usage:
   $progname open <PROGRAM> [ARGS...]
-    Performs Unix->DOS path conversion (TODO: actually do this lol)
-    TODO: does this work on absolute paths?
+    Performs Unix->DOS path conversion on PROGRAM, but not on ARGS.
   $progname cmd
+    Open wine's cmd.exe
   $progname cfg
+    Open winecfg
   $progname add-recent <BIN>
   $progname tricks <ARGS...>
   $progname server [ARGS...]
   $progname fwd [ARGS...]
+    Pass ARGS directly to wine
+  $progname fwd-sh [ARGS...]
+    Run ARGS directly to the host shell (useful for running a command with the environment set up)
   $progname desktop [ARGS...]
   $progname path [ARGS...]
 
@@ -92,6 +97,12 @@ case "$1" in
   fwd)
     shift
     exec_wine "$@"
+    exit
+    ;;
+
+  fwd-sh)
+    shift
+    "$@"
     exit
     ;;
 

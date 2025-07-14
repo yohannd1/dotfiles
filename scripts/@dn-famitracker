@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+
+set -ue
+
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname [MODULE-PATH]
+EOF
+  exit 2
+}
+
+if [ $# = 0 ]; then
+  wi64 fwd-sh Dn-FamiTracker
+elif [ $# = 1 ]; then
+  path=$(wi64 path -w "$1")
+  wi64 fwd-sh Dn-FamiTracker "$path"
+else
+  showHelp
+fi

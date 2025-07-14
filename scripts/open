@@ -238,7 +238,6 @@
   # godot project files
   (when (m :ext ["godot"])
     (def folder (path/dirname file))
-    (pp folder)
     (def is-cs-project
       (as-> (os/dir folder) .x
             (filter |(string/has-suffix? ".csproj" $) .x)
@@ -250,10 +249,13 @@
       )
     )
 
+  (def is-openmpt-compatible
+    (m :ext ["mod" "it" "s3m" "mptm"]))
+
   # audio files
-  (when (or (m :mime [[:begins "audio/"]])
-            (m :ext ["aac" "flac" "m4a" "mpa" "mp2" "mp3"
-                     "ogg" "wav" "wma"]))
+  (when (or (and (not is-openmpt-compatible)
+                 (m :mime [[:begins "audio/"]]))
+            (m :ext ["aac" "flac" "m4a" "mpa" "mp2" "mp3" "ogg" "wav" "wma"]))
     (t :pop ["mpv" "--no-video" file])
     (t :pop ["mocplay" file "opener"])
     (t :tty ["exiftool" file])
@@ -284,8 +286,11 @@
     (t :runpage ["exiftool" file]))
 
   # music modules
-  (mt :ext ["mod" "it" "s3m" "mptm"] :pop ["openmpt123" file])
+  (when is-openmpt-compatible
+    (t :gui ["@openmpt" file])
+    (t :pop ["openmpt123" file]))
   (mt :ext ["fur" "dmf"] :gui ["furnace" file])
+  (mt :ext ["dnm"] :gui ["@dn-famitracker" file])
   (mt :ext ["ptcop"] :gui ["@ptcollab" file])
   (mt :ext ["btm"] :gui ["BambooTracker" file])
 
@@ -378,5 +383,7 @@
     (t :gui ["pulseview" "-c" file]))
 
   (mt :ext ["asta"] :pop ["astah-uml" file])
+
+  (pp "hi ig...")
 
   (t :fallback))
