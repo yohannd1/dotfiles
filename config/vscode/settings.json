@@ -38,5 +38,6 @@
     },
     "jupyter.askForKernelRestart": false,
     "workbench.startupEditor": "none",
-    "workbench.colorTheme": "Dracula Theme",
+    "workbench.colorTheme": "Default Light Modern",
+    "editor.acceptSuggestionOnEnter": "off",
 }

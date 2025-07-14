@@ -91,8 +91,8 @@
   # (def isatty (= 0 (os/execute [SHELL "-c" "[ -t 2 ]"] :p)))
   (def isatty true)
   (def args (if isatty
-             [SHELL "-c" cmd]
-             ["tmux-bg-run" cmd]))
+              [SHELL "-c" cmd]
+              ["tmux-bg-run" cmd]))
   (os/exit (os/execute args :p)))
 
 (defn cmd-menu [add-to-recent]
@@ -192,7 +192,7 @@
                ))
      ])
 
-  (match (fzagnostic (map (fn [[a b]] a) actions) :prompt "Run: ")
+  (match (fzagnostic (map first actions) :prompt "Run: ")
     nil
     (os/exit 1)
 

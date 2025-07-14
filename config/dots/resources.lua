@@ -62,7 +62,7 @@ local font_presets = {
   },
   ["Mononoki"] = {
     name = "Mononoki",
-    base_size = 16,
+    base_size = 17,
   },
   ["Hack"] = {
     name = "Hack",
