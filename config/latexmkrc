@@ -1,0 +1,3 @@
+$pdf_previewer = 'openfork';
+$dvi_previewer = 'openfork';
+$ps_previewer = 'openfork';
