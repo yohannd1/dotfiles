@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+# vim: ft=sh
+
+set -ue
+progname=$(basename "$0")
+
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname <COMMAND> [ARGS...]
+EOF
+}
+
+[ $# = 0 ] && showHelp || true
+
+if [ -z "$TERMINAL" ]; then
+  printf >&2 "error: \$TERMINAL not set\n"
+  exit 1
+fi
+
+if [ "${D_RUN_FLOAT:-}" ]; then
+  unset D_RUN_FLOAT
+  exec "$TERMINAL" -c float -e d.run.contain "$@"
+else
+  exec "$TERMINAL" -e d.run.contain "$@"
+fi

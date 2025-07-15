@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+
+set -ue
+progname=$(basename "$0")
+
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname <COMMAND> [ARGS...]
+EOF
+}
+
+[ $# = 0 ] && showHelp || true
+
+export D_RUN_FLOAT=1
+exec d.trun "$@"

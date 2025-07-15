@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -u
+progname=$(basename "$0")
+
+showHelp() {
+  cat >&2 <<EOF
+$progname: a wrapper that prevents a failed command to immediately exit, requiring another keypress before exiting
+
+Usage: $progname <COMMAND> [ARGS...]
+EOF
+}
+
+[ $# = 0 ] && showHelp || true
+
+"$@"
+ec=$?
+
+if [ "$ec" != 0 ]; then
+  printf >&2 "\n(Command exited with code %d)" "$ec"
+  read -r -sn1 dummy
+fi
