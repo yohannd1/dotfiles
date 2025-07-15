@@ -48,39 +48,41 @@
   (def arg (get cli-args i))
   (cond
     # if currently parsing an option's args, let it be
-    (and (not current-opt)
-         (> args-till-pop 0)) (add-argument current-opt arg)
+    (and (not= current-opt nil))
+    (add-argument current-opt arg)
 
     # option: geometry
-    (= arg "-g") (do
-                   (set current-opt :geometry)
-                   (set args-till-pop 1))
+    (= arg "-g")
+    (do
+     (set current-opt :geometry)
+     (set args-till-pop 1))
 
     # option: class
-    (= arg "-c") (do
-                   (set current-opt :class)
-                   (set args-till-pop 1))
+    (= arg "-c")
+    (do
+      (set current-opt :class)
+      (set args-till-pop 1))
 
     # option: eval
-    (= arg "-e") (do
-                   (set current-opt :eval)
-                   (set args-till-pop 0))
+    (= arg "-e")
+    (do
+      (set current-opt :eval)
+      (set args-till-pop 0))
 
     true (add-argument current-opt arg)
     ))
 
-(def terminal (cond
-                WAYLAND-DISPLAY WAYLAND-TERMINAL
-                XORG-DISPLAY XORG-TERMINAL
-                true (error "Could not decide on terminal")))
+(def terminal
+  (cond
+    WAYLAND-DISPLAY WAYLAND-TERMINAL
+    XORG-DISPLAY XORG-TERMINAL
+    true (error "Could not decide on terminal")))
 
 (def exec-args
   (let [a-geo (get arguments :geometry)
         a-eval (get arguments :eval)
         a-class (get arguments :class)
-
-        args-eval (or a-eval ["tmux"])
-        ]
+        args-eval (or a-eval ["tmux"])]
 
     (cond
       (= terminal "foot")
@@ -88,6 +90,7 @@
        ;(if a-geo ["-W" ;a-geo] [])
        # open tmux as default hehe; this probably should be elsewhere
        ;(if a-class ["-a" ;a-class] [])
+       "--"
        ;args-eval
        ]
 
@@ -98,11 +101,12 @@
        ;args-eval]
 
       # all other terminals
-      true [terminal
-            ;(if a-geo ["-g" ;a-geo] [])
-            ;(if a-class ["-c" ;a-class] [])
-            ;args-eval
-            ]
+      true
+      [terminal
+       ;(if a-geo ["-g" ;a-geo] [])
+       ;(if a-class ["-c" ;a-class] [])
+       ;args-eval
+       ]
       )))
 
 (os/execute exec-args :p)
