@@ -73,14 +73,25 @@ m.link_conf("icons_default.theme", "~/.icons/default/index.theme")
 m.link_conf("radium/keybindings.conf", "~/.radium/keybindings.conf")
 m.link_conf("waybar/config", "~/.config/waybar/config")
 
-m.link_glob(DOTFILES / "config/qutebrowser", "~/.config/qutebrowser")
-# m.link_glob(DOTFILES / "config/furnace", "~/.config/furnace") # new backup system is incompatible with this
+# text editors
+m.link_glob(DOTFILES / "config/kak", "~/.config/kak")
 m.link_glob(DOTFILES / "config/nvim", "~/.config/nvim")
 m.link_glob(DOTFILES / "config/emacs", "~/.emacs.d")
-m.link_glob(DOTFILES / "desktop", "~/.local/share/applications")
-m.link_glob(DOTFILES / "config/kak", "~/.config/kak")
-# m.link_glob(DOTFILES / "config/vscode", "~/.config/Code/User")
-m.link_glob(DOTFILES / "config/vscode", "~/.config/VSCodium/User")
+
+if not m.is_android:
+    # desktop apps
+
+    # FIXME: dynamically detect valid profile folders (not that hard I think...)
+    m.link_conf("librewolf/overrides.js", "~/.librewolf/librewolf.overrides.cfg")
+    m.link_conf("librewolf/userChrome.css", "~/.librewolf/slyys373.default-default/chrome/userChrome.css")
+
+    m.link_glob(DOTFILES / "config/qutebrowser", "~/.config/qutebrowser")
+
+    # m.link_glob(DOTFILES / "config/furnace", "~/.config/furnace") # new backup system is incompatible with this
+    m.link_glob(DOTFILES / "desktop", "~/.local/share/applications")
+
+    # m.link_glob(DOTFILES / "config/vscode", "~/.config/Code/User")
+    m.link_glob(DOTFILES / "config/vscode", "~/.config/VSCodium/User")
 
 try_xdg_cache_home = os.environ.get("XDG_CACHE_HOME")
 XDG_CACHE_HOME = Path(try_xdg_cache_home) if try_xdg_cache_home is not None else (HOME / ".cache")

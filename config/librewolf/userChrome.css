@@ -1,0 +1,16 @@
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+*|*:root {
+    --tab-min-height: 30px !important;
+}
+
+/* Change tab height */
+#tabbrowser-tabs,
+#tabbrowser-tabs > #tabbrowser-arrowscrollbox,
+.tabbrowser-tabs .tabbrowser-tab,
+#urlbar-container,
+#search-container
+{
+    min-height: var(--tab-min-height) !important;
+    max-height: var(--tab-min-height) !important;
+}
