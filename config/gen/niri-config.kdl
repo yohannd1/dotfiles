@@ -2,6 +2,8 @@ spawn-at-startup "dotf.common.deskinit"
 
 environment {
     DISPLAY ":0"
+
+    _JAVA_AWT_WM_NONREPARENTING "1" // niri-specific fix for java apps
 }
 spawn-at-startup "xwayland-satellite"
 

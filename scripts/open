@@ -382,8 +382,6 @@
     (t :gui ["gtkwave" file])
     (t :gui ["pulseview" "-c" file]))
 
-  (mt :ext ["asta"] :pop ["astah-uml" file])
-
-  (pp "hi ig...")
+  (mt :ext ["asta"] :gui ["astah-uml" file])
 
   (t :fallback))
