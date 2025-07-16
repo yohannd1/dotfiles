@@ -621,4 +621,9 @@ ft.vhdl = function()
   vim.g.vhdl_indent_rhsassign = 0
 end
 
+ft.ysh = function()
+  setSpaceIndent(2)
+  setLocals { commentstring = "# %s" }
+end
+
 initialize()
