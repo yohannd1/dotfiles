@@ -1,86 +1,49 @@
-#!/usr/bin/env python3
+#!/usr/bin/env janet
 
-import os, sys, re
-from itertools import chain
-from pathlib import Path
-from typing import Optional
+(def acr-wiki-dir (os/getenv "ACR_WIKI_DIR"))
 
-def eprint(*args, **kwargs):
-    print(*args, **kwargs, file=sys.stderr)
+(defn path/basename
+  "Get the base name (the last component) of a path."
+  [path]
+  (as-> path .x (string/split "/" .x) (last .x)))
 
-def main() -> int:
-    # Really cheap command-line parsing
-    args = sys.argv[1:]
-    if len(args) > 1:
-        eprint(
-            "Usage:",
-            Path(sys.argv[0]).name,
-            "[PAGE_ID]",
-        )
-        eprint("If PAGE_ID is specified, only the ID of that page is returned.")
-        return 1
+(defn read-tag-line [path]
+  (label 'ret
+    (def file (file/open path :r))
+    (defer (:close file)
+      (each line (file/lines file)
+        (cond
+          (string/has-prefix? "%:tags" line) (return 'ret line)
+          (string/has-prefix? "%:" line) nil
+          (return 'ret nil))
+        ))
+    ))
 
-    if (ACR_WIKI_DIR := os.getenv("ACR_WIKI_DIR")) is None:
-        eprint("ACR_WIKI_DIR is not set; please set it with the path of your wiki")
-        return 1
-    ACR_WIKI_DIR = Path(ACR_WIKI_DIR)
+(defn print-in-format [id tag-line]
+  (def tags (-> tag-line (string/trim) (string/slice (length "%:tags "))))
+  (eprintf "%s %s" id tags))
 
-    for file in ACR_WIKI_DIR.glob("*.acr"):
-        page_id = file.stem
+(defn main [arg0 & args]
+  (def prog (path/basename arg0))
 
-        if len(args) == 1:
-            wanted_id = args[0]
-            if page_id != wanted_id:
-                continue
+  (case (length args)
+    0
+    (loop [name :in (os/dir acr-wiki-dir)
+           :when (string/has-suffix? ".acr" name)
+           :let [id (string/slice name 0 (-> name (length) (- 4)))
+                 path (string acr-wiki-dir "/" name)]]
+      (when (def tag-line (read-tag-line path))
+        (print-in-format id tag-line)))
 
-            with file.open("r") as f:
-                tags = get_tags(f)
-                print(page_id, " ".join(tags))
-                return 0
-        else:
-            with file.open("r") as f:
-                tags = get_tags(f)
-                print(page_id, " ".join(tags))
+    1
+    (let [id (in args 0)
+          path (string/format "%s/%s.acr" acr-wiki-dir id)]
+      (when (def tag-line (read-tag-line path))
+        (print-in-format id tag-line)))
 
-    # With an ID specified, we only get here if the specific page wasn't found
-    if len(args) == 1:
-        return 1
-
-    return 0
-
-RE_HEADER_LINE = re.compile(r"^%:([\w.]+) (.*)$")
-RE_SPACED_TAGS = re.compile(r"[^\s]+")
-
-def get_tags(handle) -> list[str]:
-    try:
-        # Let's check for empty lines before the header.
-        while True:
-            # `next` can be used to iterate over lines in a file
-            line = next(handle).strip()
-            if line != "":
-                break
-    except StopIteration:
-        # We reached the end of the file without finding the header!
-        # Let's return an empty list then.
-        return []
-
-    # At this point we still have the value in `line` because of python's weird scoping rules.
-    # To avoid code duplication let's just chain it back with the file lines iterator.
-    for line in chain([line], handle):
-        line = line.strip() # Stripping the line again yay.
-
-        # Check if it's a header line.
-        # If it's not, we reached the end of the header and thus there's no need to continue reading the file.
-        if (m := RE_HEADER_LINE.match(line)) is None:
-            break
-
-        # At this point in the code we have an actual header line, so let's get the data and check if it's what we want.
-        attr, val = m.groups()
-        if attr == "tags":
-            return RE_SPACED_TAGS.findall(val)
-
-    # If we got here, it means the header didn't have the `tags` line, so let's just return an empty list.
-    return []
-
-if __name__ == "__main__":
-    sys.exit(main())
+    (do
+      (eprintf "Usage: %s [PAGE_ID]" prog)
+      (os/exit 2)
+      )
+    )
+  )
