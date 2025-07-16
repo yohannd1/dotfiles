@@ -3,11 +3,11 @@
 This repository contains most of my the config files I've decided to
 make public. It also contains a whole lot of scripts.
 
-## Dependencies
+## dependencies
 
 - https://github.com/yohannd1/dotcfg
 
-## Installation
+## installation
 
 This repo is unstable, as I keep changing it constantly. I really
 recommend taking a look only at files that interest you instead of
@@ -27,7 +27,7 @@ cat install.bash # check it out before running...
 bash install.bash https $path_to_dotfiles
 ```
 
-## Folder structure
+## folder structure
 
 * `config`: config files, mostly symlinked to `~` and `~/.config`.
 
@@ -49,7 +49,7 @@ bash install.bash https $path_to_dotfiles
   being used in the repo. Might be unavailable if empty (due to how
   git works).
 
-## Inspiration / stuff I "stole"
+## inspirations & & stuff I "stole"
 
 The repos below are the ones I remember ~~stealing code~~ taking
 inspiration from to build my dotfiles. There are lots of more places
@@ -70,9 +70,27 @@ It has been a pretty cool experience to make, well, pretty much my own
   file](https://bitbucket.org/sjl/dotfiles/src/tip/vim/vimrc) and repo
   were deleted.)
 
-## Milestones
+## milestones
 
 - Find a good compiled language for more complicated scripts
-    - Must be easy to compile
-    - Need to try out: vlang (potentially immature), nim (~55MB install)
-    - Tried out: dlang
+  - Must be easy to compile
+  - Tried out `dlang`, will try `nim`
+- Make a system-agnostic local package builder
+  - Initial requirement is to generate pacman & apt packages.
+- Be more explicit about dependencies (see TODO file...)
+
+## script naming
+
+Since there is pretty much one global namespace for all scripts (the
+`$PATH`, I mean), I like to prefix some scripts. I'm thinking of a
+prefix scheme that is very short (for small command names) but still
+understandable, so here's an attempt:
+
+- `d.` for dotfiles-local problems (currently it's mostly `dotf.`);
+- `s.` for "service-providers" - a series of wrappers that decide which
+    underlying command to run based on the WM/DE (currently it's mostly
+    `dotf.wrap.` - what a mouthful...);
+- `@` for wrapper scripts for apps that have trouble launching or I like
+    to set up particularly (e.g. steam, since I like it to start up
+    silently and log into a specific file);
+- `,` for local scripts (they aren't here lol);
