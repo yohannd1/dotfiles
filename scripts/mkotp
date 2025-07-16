@@ -1,17 +1,18 @@
-#!/usr/bin/env python3
+#!/usr/bin/env sh
 
-import sys, argparse
-from pathlib import Path
+set -ue
+progname=$(basename "$0")
 
-p = argparse.ArgumentParser(
-    prog=Path(sys.argv[0]),
-    description="convert a simple OTP code from stdin into an otpauth:// url",
-)
+showHelp() {
+  cat >&2 <<EOF
+$progname: convert a simple OTP code from stdin into an otpauth:// url
 
-_ = p.parse_args(sys.argv[1:])
+Usage: $progname
+EOF
+  exit 2
+}
 
-# get input and remove spaces
-key = input().replace(" ", "")
+[ $# != 0 ] && showHelp || true
 
-# print out result
-print(f"otpauth://totp/dummy?secret={key}")
+key=$(tr -d ' ')
+printf "otpauth://totp/dummy?secret=%s\n" "$key"
