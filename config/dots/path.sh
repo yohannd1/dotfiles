@@ -1,46 +1,41 @@
-pathadd() {
-  [ $# != 1 ] && return 1
-  [ "$1" = "" ] && return
+#!/usr/bin/env sh
 
-  # I used to have a "normalization" thing here to replace '/' with '\/' but it seems grep doesn't care about that anymore? Or maybe it never did.
-
-  # Check if the path's there
-  if printf "%s" ":$PATH:" | grep -vq ":${1}:"; then
-    if printf "%s" "$PATH" | grep -vq ':$'; then
-      export PATH="${PATH}:"
-    fi
-
-    export PATH="${PATH}${1}"
-  fi
-}
-
-globpathadd() {
+_pathsh_glob() {
   [ -d "$1" ] || return 1
-
-  for pack in "$1"/*; do
-    pack_path=$(realpath -m "$pack/bin")
-    pathadd "$pack_path"
-  done
+  find "$(realpath "$1")" -maxdepth 1 -type d
 }
 
-pathadd ~/.local/bin
-pathadd ~/.nix-profile/bin
-[ "$DOTFILES" ] && pathadd "$DOTFILES/scripts"
-pathadd ~/storage/local/scripts
-[ "$GOPATH" ] && pathadd "$GOPATH"
-[ "$CARGO_HOME" ] && pathadd "$CARGO_HOME/bin"
-pathadd "${GEM_HOME:-$HOME/.gem}/bin"
-pathadd ~/.nimble/bin
-[ "$NPM_DIR" ] && pathadd "$NPM_DIR/bin"
-pathadd "$XDG_CONFIG_HOME/composer/vendor/bin"
+# this removes duplicates while still mantaining order
+_pathsh_noDup() { awk '!x[$0]++'; }
 
-globpathadd "/opt"
-globpathadd "${XDG_CACHE_HOME:-$HOME/.cache}/packs"
+_pathsh_printAll() {
+  echo ~/.local/bin
+  echo ~/.nix-profile/bin
+  [ "$DOTFILES" ] && echo "$DOTFILES/scripts"
+  echo ~/storage/local/scripts
+  [ "$GOPATH" ] && echo "$GOPATH"
+  [ "$CARGO_HOME" ] && echo "$CARGO_HOME/bin"
+  echo "${GEM_HOME:-$HOME/.gem}/bin"
+  echo ~/.nimble/bin
+  [ "$NPM_DIR" ] && echo "$NPM_DIR/bin"
+  echo "$XDG_CONFIG_HOME/composer/vendor/bin"
+  [ "$LUAROCKS_HOME" ] && echo "$LUAROCKS_HOME/bin"
+
+  _pathsh_glob "/opt"
+  _pathsh_glob "${XDG_CACHE_HOME:-$HOME/.cache}/packs"
+
+  # current values in PATH
+  printf "%s\n" "$PATH" | tr ':' '\n'
+}
+
+_pathsh_path=$(_pathsh_printAll) && {
+  PATH=$(printf "%s" "$_pathsh_path" | _pathsh_noDup | tr '\n' ':')
+  export PATH
+}
 
 if [ "$LUAROCKS_HOME" ]; then
   _luaPkgsAt() { printf "%s/?.lua;%s/?/init.lua" "$1" "$1"; }
 
-  pathadd "$LUAROCKS_HOME/bin"
   dotfLibDir="$DOTFILES/lib/lua"
 
   # Paths for lua 5.2 and on

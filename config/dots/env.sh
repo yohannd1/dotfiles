@@ -147,13 +147,13 @@ unset _pue
 
 export GPG_TTY=$(tty)
 
-_gcc_colors='error    = 01;38;5;8
-             :warning = 01;38;5;9
-             :note    = 01;38;5;12
-             :caret   = 01;32
-             :locus   = 01;38;5;4
-             :quote   = 03'
-export GCC_COLORS=$(printf "%s" "$_gcc_colors" | tr -d ' ' | tr -d '\n')
+_gcc_colors='error   = 01;38;5;8
+             warning = 01;38;5;9
+             note    = 01;38;5;12
+             caret   = 01;32
+             locus   = 01;38;5;4
+             quote   = 03'
+export GCC_COLORS=$(printf "%s" "$_gcc_colors" | tr '\n' ':' | tr -d ' ')
 
 # dotfiles program options
 export DIR_BOOKMARKS=~/storage/local/share/bookmarks.sh
@@ -171,19 +171,11 @@ export FILEHIST_NO_TIDY=1
 export EXT_DEFAULT_MODE="new"
 export NIRI_CONFIG="$XDG_CACHE_HOME/gen/niri.kdl"
 
-# prevent annoying timeouts on some GTK applications.
-# FIXME: is there any downside to this?
-# FIXME: IS THIS EVEN WORKING????????????
-# export GTK_USE_PORTAL=0
-
 # Input Method
 # export GTK_IM_MODULE=fcitx
 # export QT_IM_MODULE=fcitx
 # export SDL_IM_MODULE=fcitx
 # export XMODIFIERS='@im=fcitx'
-
-# because for some reason carla didn't add the /etc/ld.so.conf entry on my system
-export LD_LIBRARY_PATH='/usr/lib/carla'
 
 # dircolors
 if [ -r ~/.config/dircolors ]; then
@@ -200,7 +192,7 @@ case "$HOST" in
     ;;
   core2)
     export RESLUA_FONT_SIZE=1.35
-    export RESLUA_FONT_NAME="CascadiaCode"
+    export RESLUA_FONT_NAME="FiraCode"
     export QT_SCALE_FACTOR=1.15
     export VOLUMECTL_INCREMENT=5
     ;;
