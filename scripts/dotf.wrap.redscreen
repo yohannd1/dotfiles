@@ -18,6 +18,16 @@ if [ "$WAYLAND_DISPLAY" ] && exists wl-gammarelay; then
   if ! pgrep wl-gammarelay >/dev/null; then
     # start it on the background
     wl-gammarelay & disown
+
+    i=0
+    while ! pgrep wl-gammarelay >/dev/null 2>/dev/null; do
+      sleep 0.2
+      if [ "$i" -gt 25 ]; then
+        printf >&2 "Timed out waiting for wl-gammarelay to load...\n"
+        exit 1
+      fi
+      i=$((i + 1))
+    done
   fi
 
   prefix=(rs.wl-gammarelay / rs.wl.gammarelay)
