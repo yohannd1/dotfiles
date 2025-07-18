@@ -10,10 +10,12 @@ XDG_DATA_DIR="${XDG_DATA_DIR:-$HOME/.local/share}"
 progname=$(basename "$0")
 
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
-is_x11() { [ "$DISPLAY" ] && [ -z "$WAYLAND_DISPLAY" ]; }
+is_x11() { [ "${DISPLAY:-}" ] && [ -z "${WAYLAND_DISPLAY:-}" ]; }
 
 # make sure the wayland version is used on wayland
-[ "$WAYLAND_DISPLAY" ] && unset DISPLAY || true
+if [ "${WAYLAND_DISPLAY:-}" ] && [ -z "${NIRI_SOCKET:-}" ]; then
+  unset DISPLAY
+fi
 
 show_help() {
 cat >&2 <<EOF
