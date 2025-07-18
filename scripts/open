@@ -270,8 +270,10 @@
     (t :gui ["ardour6" file])
     )
   (when (m :ext ["mmp" "mmpz"])
-    (t :gui ["@lmms" file]) # a wrapper i have on my pc
+    (t :gui ["@lmms" file])
     (t :gui ["lmms" file]))
+  (mt :ext ["flp"] :gui ["@fl-studio" file])
+  (mt :ext ["zpj"] :gui ["zrythm" file])
   (mt :ext ["rad"] :gui ["radium" file])
 
   # image
