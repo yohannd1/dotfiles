@@ -187,7 +187,8 @@ case "$1" in
             fi
           done
 
-          printf >&2 "What interpreter do I use here???"
+          printf >&2 "What interpreter do I use here??? goddamnit\n"
+          printf >&2 "Tried these from the modeline: %s\n" "${possibleInterpreters[*]}"
           exit 1
         fi
         ;;
@@ -303,6 +304,7 @@ case "$1" in
         #   "$fname"
         # "$tmp/V*"
         ;;
+      ysh) ysh "$file" ;;
       *) die "(action \"$1\") unhandled filetype: $2" ;;
     esac ;;
   build)
@@ -389,6 +391,7 @@ case "$1" in
       php)
         php-cs-fixer check "$file"
         ;;
+      ysh) ysh -n "$file" ;;
       *) die "(action \"$1\") unhandled filetype: $2" ;;
     esac ;;
   debug)

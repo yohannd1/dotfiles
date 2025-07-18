@@ -38,6 +38,6 @@
     },
     "jupyter.askForKernelRestart": false,
     "workbench.startupEditor": "none",
-    "workbench.colorTheme": "Default Light Modern",
+    "workbench.colorTheme": "Solarized Dark",
     "editor.acceptSuggestionOnEnter": "off",
 }

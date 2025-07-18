@@ -149,7 +149,7 @@ fzhistory() {
 
 fzSelectFileGen() {
   local item
-  fd -tf | fzagnostic -m "$@" | while read item; do
+  fd | fzagnostic -m | while read item; do
     echo -n "${(q)item} "
   done
 }
@@ -408,7 +408,6 @@ epic-translate() {
 
 T() { epic-translate "$@" 2>&1 | less; }
 Td() { epic-translate "$1" "$1" "$2" 2>&1 | less; }
-P() { ps -eo pid,args | rg "$1"; }
 
 .r() { . "$DOTFILES/config/dots/env.sh" && dotf.common.res-reload; }
 .re() { .r && dotf.wrap.terminal "$EDITOR"; }
@@ -481,6 +480,19 @@ findTodos() { rg '\b(TODO|FIXME|XXX)\b'; }
 
 gS() { (git add . && git commit); git pull && git push; }
 
-# this is depressing
+# manual clipboard sync - this is depressing
 clipX2W() { xclip -o -sel clip | wl-copy; }
 clipW2X() { wl-paste | xclip -sel clip; }
+
+# proc list searches - might be the fastest & simplest way to do this
+procList() { ps -eo pid,args | tail +2 | sed 's/^ \+//g'; }
+procSearch() {
+  if [ $# = 0 ]; then
+    procList | fzagnostic
+  elif [ $# = 1 ]; then
+    procList | rg "$1"
+  else
+    return 2
+  fi
+}
+alias P='procSearch'

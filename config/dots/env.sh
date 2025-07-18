@@ -69,7 +69,8 @@ export GRADLE_USER_HOME="$XDG_DATA_HOME/gradle"
 export ZIGUP_INSTALL_DIR="$XDG_CACHE_HOME/zigup"
 export ZIGUP_PATH_LINK="$HOME/.local/bin/zig"
 export LUAROCKS_HOME="$HOME/.luarocks"
-export JANET_MODPATH="$XDG_CACHE_HOME/janet"
+export JANET_MODPATH="$XDG_CACHE_HOME/janet-modules"
+export JANET_PATH="/usr/lib/janet:$JANET_MODPATH"
 export JANET_BINPATH="$HOME/.local/bin"
 export ZSH_PLUGIN_PATH="$XDG_CACHE_HOME/zsh-plugins"
 export R_PROFILE_USER="$DOTFILES/config/Rprofile.R"
@@ -199,7 +200,7 @@ case "$HOST" in
     ;;
   core2)
     export RESLUA_FONT_SIZE=1.35
-    export RESLUA_FONT_NAME="JetbrainsMono"
+    export RESLUA_FONT_NAME="CascadiaCode"
     export QT_SCALE_FACTOR=1.15
     export VOLUMECTL_INCREMENT=5
     ;;
