@@ -3,13 +3,30 @@
 set -ue
 
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
-getPath() { printf "%s" "$PATH" | tr ':' '\n'; }
+
+debug() {
+  while read -r line; do
+    printf "%s\n" "$line"
+    printf >&2 "%s\n" "$line"
+  done
+}
+
+filterExists() {
+  while read -r line; do
+    if [ -e "$line" ]; then
+      printf "%s\n" "$line"
+    fi
+  done
+}
+getPath() { printf "%s" "$PATH" | tr ':' '\n' | filterExists; }
+
+mapBasename() { awk '{ n = split($0, a, "/"); print a[n] }'; }
 
 generateFileList() {
   if exists stest; then
     getPath | xargs stest -flx
   else
-    getPath | xargs -I{} find {} | xargs -I{} basename {}
+    getPath | xargs -I{} find {} | mapBasename
   fi
 }
 
