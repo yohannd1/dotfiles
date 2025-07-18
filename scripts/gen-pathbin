@@ -1,22 +1,16 @@
 #!/usr/bin/env sh
 
-cacheDir="${XDG_CACHE_HOME:-$HOME/.cache}"
-cacheFile="$cacheDir/pathbin"
-mkdir -p "$cacheDir"
+set -ue
 
-msg() {
-  if [ -t 2 ]; then
-    printf >&2 "%s\n" "$*"
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+getPath() { printf "%s" "$PATH" | tr ':' '\n'; }
+
+generateFileList() {
+  if exists stest; then
+    getPath | xargs stest -flx
   else
-    notify-send -- "$*"
+    getPath | xargs -I{} find {} | xargs -I{} basename {}
   fi
 }
 
-IFS=:
-if stest -dqr -n "$cacheFile" $PATH; then
-  stest -flx $PATH | sort -u | tee "$cacheFile" \
-    || msg "Failed to generate files\n"
-else
-  cat "$cacheFile"
-fi
-
+generateFileList | sort -u
