@@ -147,32 +147,26 @@ fzhistory() {
   print -z "$result"
 }
 
-fzSelectFileGen() {
-  local item
-  fd | fzagnostic -m | while read item; do
-    echo -n "${(q)item} "
-  done
-}
-
-fzSelectFile() {
-  LBUFFER="${LBUFFER}$(fzSelectFileGen)"
-  local ret="$?"
-  zle reset-prompt
-  return "$ret"
-}
-
 bindkey -s '^R' '\eS fzhistory\n'
-if [ "$FILEMAN" = "lf" ] && exists lf; then
-  bindkey -s '^o' '\eS lfAndCd\n'
-elif exists nnn; then
-  bindkey -s '^o' '\eS nnnAndCd\n'
-fi
+[ "$FILEMAN" = "lf" ] && exists lf && bindkey -s '^o' '\eS lfAndCd\n'
+[ "$FILEMAN" = "nnn" ] && exists nnn && bindkey -s '^o' '\eS nnnAndCd\n'
 
 bindkey -s '^P' '\e[C'
 bindkey '\e[' edit-command-line
 
-bindkey '^F' fzSelectFile
-zle -N fzSelectFile
+_fzselectGen() {
+  fd | fzagnostic -m | tr '\n' '\0' | xargs -0 -I{} printf "%q" {}
+}
+_bind_fzselect() {
+  LBUFFER="${LBUFFER}$(_fzselectGen)"
+  local ret="$?"
+  zle reset-prompt
+  return "$ret"
+}
+bindkey '^F' _bind_fzselect
+zle -N _bind_fzselect
+
+bindkey -s '^[w' '\eS w\n'
 
 lfAndCd() {
   local tmp=$(mktemp)
@@ -496,3 +490,57 @@ procSearch() {
   fi
 }
 alias P='procSearch'
+
+eachLine() {
+  tr '\n' '\0' | xargs -0 -I{} "$@"
+}
+
+findMap() {
+  [ $# -lt 2 ] && return 2
+  fd "$1" | tr '\n' '\0' | xargs -0 -I{} "${@:2}"
+}
+
+tbw() {
+  printf >&2 "NVME:\n"
+  sudo -n nvme smart-log /dev/nvme0 | grep 'Data Units Written'
+}
+
+_fm_run() {
+  "$@"
+  local ec=$?
+  if [ "$ec" != 0 ]; then
+    printf >&2 "(exit code %d)" "$ec"
+    read -k1
+  fi
+}
+
+_fm_genDirList() {
+  echo ".."
+  fd -td -d1
+}
+
+fm() {
+  ls -1
+
+  while true; do
+    printf >&2 "?> "
+    read -k1 char
+    case "$char" in
+      q||) return ;;
+      $) _fm_run "$SHELL" ;;
+      n|) _fm_run nnnAndCd ;;
+      ) clear ;;
+      w) w ;;
+      c)
+        printf >&2 "\n"
+        choice=$(_fm_genDirList | fzagnostic) \
+          && cd "$choice" \
+          && clear \
+          && ls -1
+        ;;
+      *)
+        printf >&2 "???\n"
+        ;;
+    esac
+  done
+}

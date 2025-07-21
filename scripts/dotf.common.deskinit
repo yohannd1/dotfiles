@@ -72,7 +72,7 @@ if isWayland; then
   @waybar &
 
   if [ "$NIRI_SOCKET" ] && exists swayidle; then
-    swayidle -w \
+    swayidle \
       timeout 120 'niri msg action power-off-monitors' \
       timeout 300 'dotf.pow.lock'
   fi

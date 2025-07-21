@@ -9,6 +9,8 @@ _pathsh_glob() {
 _pathsh_noDup() { awk '!x[$0]++'; }
 
 _pathsh_printAll() {
+  [ -d /usr/lib/ccache/bin ] && echo /usr/lib/ccache/bin
+
   echo ~/.local/bin
   echo ~/.nix-profile/bin
   [ "$DOTFILES" ] && echo "$DOTFILES/scripts"

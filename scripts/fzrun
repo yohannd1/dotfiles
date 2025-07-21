@@ -39,7 +39,7 @@
       (do
         [(- num starting-number) rest])
       (do
-        (eprintf "error: %j is not a number" num-str)
+        (eprintf "error: bad input (%j is not a number)" num-str)
         (os/exit 1)
         )
       ))

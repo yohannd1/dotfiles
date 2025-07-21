@@ -162,10 +162,15 @@ ext_ft.PKGBUILD = "PKGBUILD"
 ext_ft.rpy = "python"
 ext_ft.scrbl = "scribble"
 ext_ft.terra = "terra"
+ext_ft.xdc = "tcl" -- constraint files
 ext_ft.tsx = function()
   if vim.fn.getline(1):find("<?xml") == 1 then
     setLocals { filetype = "xml" }
   end
+end
+ext_ft.v = function()
+  local filetype = vim.fn.getline(1):find("module") == 1 and "verilog" or "vlang"
+  setLocals { filetype = filetype }
 end
 
 table.insert(ft_hooks, function()
