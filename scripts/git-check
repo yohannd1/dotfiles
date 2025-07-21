@@ -24,6 +24,12 @@ confirm() {
   esac
 }
 
+confirmRun() {
+  [ $# -gt 0 ] || exit 2
+  printf >&2 "Command to run: %s\n" "$*"
+  confirm "Run?" && "$@" || true
+}
+
 if ! isGitDir; then
   printf >&2 "Error: the current directory is not part of a git repository.\n"
   printf >&2 "You are at: %s\n" "$PWD"
@@ -76,13 +82,16 @@ while [ ! "$exit" ]; do
     l) git log --all --oneline ;;
     L) git log --all ;;
     p) git pull ;;
+    P)
+      current_branch=$(git branch --show-current) \
+        && confirmRun git pull --set-upstream origin "$current_branch"
+      ;;
     q) exit=0 ;;
     r) git remote -v ;;
     s) git push ;;
     S)
       current_branch=$(git branch --show-current) \
-        && confirm "Command to be ran: git push -u origin $current_branch" \
-        && git push -u origin "$current_branch"
+        && confirmRun git push -u origin "$current_branch"
       ;;
     "") clear ;;
     "") exit=0 ;;
