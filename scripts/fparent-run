@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
-PROGNAME=$(basename "$0")
+set -ue
+progname=$(basename "$0")
 
-usage() {
+showHelp() {
   cat >&2 <<EOF
-$PROGNAME: find a file on parent directories and do something with it.
+$progname: find a file on parent directories and do something with it.
 
-Usage: $PROGNAME <FILE>
+Usage: $progname <FILE>
        { run-file | run-command }
        { current-dir | file-dir }
        <ARGS...>
@@ -18,10 +19,10 @@ Explanations:
   file-dir: run the command/file on the script directory
 EOF
 
-  exit 1
+  exit 2
 }
 
-[ $# -lt 4 ] && usage
+[ $# -lt 4 ] && showHelp
 
 # get args
 file="$1"
@@ -32,33 +33,21 @@ shift 3
 # analyze args
 case "$actionType" in
   run-file|run-command) ;;
-  *) usage ;;
+  *) showHelp ;;
 esac
 case "$actionDir" in
   current-dir|file-dir) ;;
-  *) usage ;;
+  *) showHelp ;;
 esac
 
-# find the file
-path="$PWD"
-while :; do
-  if [ -f "$path/$file" ]; then
-    case "$actionType" in
-      run-file) [ -x "$path/$file" ] && break ;;
-      run-command) break ;;
-    esac
-  fi
-
-  [ "$path" = / ] && exit 1
-  path=$(realpath -m "$path/..")
-done
+fileDir=$(upfind "$file")
 
 case "$actionDir" in
   current-dir) ;;
-  file-dir) cd "$path" || exit 1 ;;
+  file-dir) cd "$fileDir" ;;
 esac
 
 case "$actionType" in
-  run-file) "$path/$file" "$@" ;;
+  run-file) "$fileDir/$file" "$@" ;;
   run-command) "$@" ;;
 esac

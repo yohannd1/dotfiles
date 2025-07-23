@@ -1,0 +1,27 @@
+#!/usr/bin/env sh
+
+set -ue
+progname=$(basename "$0")
+
+showHelp() {
+  cat >&2 <<EOF
+$progname: progressively search for a file on the current directory and on its parents.
+
+Usage: $progname <FILE>
+EOF
+
+  exit 2
+}
+
+[ $# = 1 ] || showHelp
+
+while true; do
+  if [ -e "$1" ]; then
+    pwd
+    exit 0
+  elif [ "$PWD" = / ]; then
+    exit 1
+  else
+    cd ..
+  fi
+done

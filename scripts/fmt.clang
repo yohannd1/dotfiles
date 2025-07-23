@@ -11,7 +11,7 @@ EOF
 }
 
 tryFormatInProject() {
-  if fparent-run ".clang-format" run-command file-dir true; then
+  if upfind '.clang-format' >/dev/null; then
     clang-format
     exit 0
   fi
