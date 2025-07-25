@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -e
+
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
+flags=()
+if [ "$WAYLAND_DISPLAY" ]; then
+  flags+=(--enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform=wayland)
+fi
+
+if exists codium; then
+  codium "$@" "${flags[@]}"
+elif exists code; then
+  code "$@" "${flags[@]}"
+else
+  printf >&2 "could not figure out what version of VSCode to use...\n"
+  exit 2
+fi
