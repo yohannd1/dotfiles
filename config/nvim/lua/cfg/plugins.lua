@@ -95,6 +95,10 @@ M.add({
       auto_install = false,
       ignore_install = {},
 
+      indent = {
+        enable = { "python" },
+      },
+
       highlight = {
         enable = { "lua", "python", "latex", "cmake", "java" },
         disable = { "gitcommit", "bash", "PKGBUILD", "janet", "rust" },
