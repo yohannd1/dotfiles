@@ -323,7 +323,7 @@ end
 
 ft.rust = function()
   setLocals {
-    foldmethod = "syntax",
+    -- foldmethod = "syntax",
     textwidth = 100,
   }
 

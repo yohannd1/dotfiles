@@ -100,8 +100,8 @@ M.add({
       },
 
       highlight = {
-        enable = { "lua", "python", "latex", "cmake", "java" },
-        disable = { "gitcommit", "bash", "PKGBUILD", "janet", "rust" },
+        enable = { "lua", "python", "latex", "cmake", "java", "rust" },
+        disable = { "gitcommit", "bash", "PKGBUILD", "janet" },
         additional_vim_regex_highlighting = false,
       },
     }
