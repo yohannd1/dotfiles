@@ -6,7 +6,7 @@ progname=$(basename "$0")
 showHelp() {
   cat >&2 <<EOF
 Usage: $progname <BACKEND> <QUERY>
-BACKEND := { python | linux | c | janet | c++ | java }
+BACKEND := { python | linux | c | janet | c++ | java | rust }
 EOF
   exit 2
 }
@@ -30,6 +30,10 @@ case "$1" in
   java)
     # this one is really bad but it's something
     javap -p "$2" | "$pager"
+    ;;
+  rust)
+    # FIXME: this opens it on the browser.. :(
+    rustup doc "$2"
     ;;
   *)
     printf >&2 "unknown backend %s\n" "$1"
