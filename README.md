@@ -5,7 +5,8 @@ make public. It also contains a whole lot of scripts.
 
 ## dependencies
 
-- https://github.com/yohannd1/dotcfg
+- https://github.com/yohannd1/dotcfg ( not essential but highly
+recommended - see [the PKGBUILD for it](pkgbuilds/dotcfg.PKGBUILD) );
 
 ## installation
 
