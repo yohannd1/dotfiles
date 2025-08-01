@@ -35,14 +35,19 @@ trap '_cleanup' EXIT
 printf >&2 "@[TEMP DIR: %s]\n\n" "$tmp"
 
 getModelineCommand() {
-  # USAGE: feed this with the file contents.
   modeline=$(head -n1)
   if printf "%s" "$modeline" | grep -q '^#!.*'; then
     printf "%s" "$modeline" | sed 's/^#!//g'
   fi
 }
 
-readModeline() { head -n1; }
+getJavaMainClass() {
+  grep '^public class ' | awk '{ print $3 }'
+}
+
+getHaxeMainClass() {
+  grep '^class ' | awk '{ print $2 }'
+}
 
 getPython() {
   if [ "${_python_cache:-}" ]; then
@@ -254,22 +259,22 @@ case "$1" in
         fi
         ;;
       java)
-        printf >&2 "[ Warning ] the class with the main method needs to be 'Main'\n" # TODO: fix this limitation
+        main=$(getJavaMainClass < "$file")
         cd "$tmp"
-        ln -s "$file" Main.java
-        javac -encoding utf8 -d "$tmp" Main.java
-        # maybe I could scan the compiled file here to find the entry point? idk
-        java Main
+        ln -s "$file" "$main.java"
+        javac -encoding utf8 -d "$tmp" "$main.java"
+        java "$main"
         ;;
       janet)
         janet "$file"
         ;;
       haxe)
-        printf >&2 "[ Warning ] the class with the main method needs to be 'Main'\n" # TODO: fix this limitation
+        main=$(getHaxeMainClass < "$file")
+        printf >&2 "[ Warning ] please put the main class as the top one on the file. Sorry...\n"
         cd "$tmp"
-        ln -s "$file" Main.hx
+        ln -s "$file" "$main.hx"
 
-        haxe --run Main --main Main
+        haxe --run "$main" --main "$main"
         ;;
       alda)
         alda stop # stop all other playback
@@ -285,12 +290,6 @@ case "$1" in
 
         FILE_TO_WATCH="$file" OUTPUT_FILE="$tmp/out.html" KATEX_PATH="katex/" \
           acr-live-preview
-
-        # acr2html "$file" -o "$tmp/out.html" -k katex/
-        # printf >&2 "Opening HTML output...\n"
-        # open "file://$tmp/out.html"
-        # printf >&2 "Opened. Press enter to end (will delete temp files).\n"
-        # read -r
         ;;
       systemverilog)
         iverilog -g2012 -o "$tmp/out" "$file"
@@ -329,10 +328,10 @@ case "$1" in
         nvim +PagerMode "$tmp/out"
         ;;
       java)
-        printf >&2 "[ Warning ] the class with the main method needs to be 'Main'\n" # TODO: fix this limitation
+        main=$(getJavaMainClass < "$file")
         cd "$tmp"
-        ln -s "$file" Main.java
-        javac -encoding utf8 -d "$tmp" Main.java
+        ln -s "$file" "$main.java"
+        javac -encoding utf8 -d "$tmp" "$main.java"
         ;;
       *) die "(action \"$1\") unhandled filetype: $2" ;;
     esac ;;
