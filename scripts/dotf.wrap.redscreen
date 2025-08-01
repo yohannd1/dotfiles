@@ -18,16 +18,6 @@ if [ "$WAYLAND_DISPLAY" ] && exists wl-gammarelay; then
   if ! pgrep wl-gammarelay >/dev/null; then
     # start it on the background
     wl-gammarelay & disown
-
-    i=0
-    while ! pgrep wl-gammarelay >/dev/null 2>/dev/null; do
-      sleep 0.2
-      if [ "$i" -gt 25 ]; then
-        printf >&2 "Timed out waiting for wl-gammarelay to load...\n"
-        exit 1
-      fi
-      i=$((i + 1))
-    done
   fi
 
   prefix=(rs.wl-gammarelay / rs.wl.gammarelay)
@@ -36,10 +26,12 @@ if [ "$WAYLAND_DISPLAY" ] && exists wl-gammarelay; then
   onTemp=4000
 
   _getTemp() {
-    busctl --user -- introspect "${prefix[@]}" \
+    busctl --user --timeout=3 -- introspect "${prefix[@]}" \
       | grep '\.Temperature' | awk '{ print $4 }'
   }
-  _setTemp() { busctl --user -- set-property "${prefix[@]}" Temperature q "$1"; }
+  _setTemp() {
+    busctl --user --timeout=3 -- set-property "${prefix[@]}" Temperature q "$1";
+  }
 
   action_off() { _setTemp "$offTemp"; }
   action_on() { _setTemp "$onTemp"; }
