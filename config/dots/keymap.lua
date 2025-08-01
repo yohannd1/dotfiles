@@ -83,19 +83,23 @@ return function(api)
 
   api.key("super alt c")
     :desc("open calendar")
-    :map([[ dotf.wrap.terminal -c float -g 75x10 -e runread cal -w -3 ]])
+    :map([[ dotf.wrap.terminal -c float-manual-size -g 74x10 -e runread cal -w -3 ]])
 
   api.key("super m")
     :desc("open system monitor")
-    :map("dotf.wrap.terminal -c float -e btop")
+    :map("dotf.wrap.terminal -c float-manual-size -g 95x27 -e btop")
 
   api.key("super alt m")
     :desc("open mixer")
     :map("dotf.wrap.terminal -c float -e pulsemixer")
 
+  -- api.key("super alt t")
+  --   :desc("open tmux tray")
+  --   :map("dotf.wrap.terminal -c float -e tmux-tray")
+
   api.key("super alt t")
-    :desc("open tmux tray")
-    :map("dotf.wrap.terminal -c float -e tmux-tray")
+    :desc("fztmux")
+    :map([[ "$TERMINAL" -c float -e fztmux ]])
 
   api.key("super alt g")
     :desc("open current window menu")

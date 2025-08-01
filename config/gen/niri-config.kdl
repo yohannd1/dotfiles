@@ -173,8 +173,15 @@ window-rule {
     match app-id=r#"^float$"#
     open-floating true
 
-    default-column-width { fixed 1250; }
-    default-window-height { fixed 750; }
+//!! _w=1250 _h=750
+//!! if [ "$(hostname)" = core ]; then _w=925; _h=575; fi
+//!! printf "default-column-width { fixed %d; }\n" "$_w"
+//!! printf "default-window-height { fixed %d; }\n" "$_h"
+}
+
+window-rule {
+    match app-id=r#"^float-manual-size$"#
+    open-floating true
 }
 
 // spawn (satty) screenshots floating on last workspace
