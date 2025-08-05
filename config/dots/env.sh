@@ -188,7 +188,7 @@ case "$HOST" in
   core)
     export USE_BUILTIN_1080P=
     export RESLUA_FONT_SIZE=1.25
-    export RESLUA_FONT_NAME="Mononoki"
+    export RESLUA_FONT_NAME="Iosevka"
     ;;
   core2)
     export RESLUA_FONT_SIZE=1.35

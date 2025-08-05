@@ -16,8 +16,6 @@ _sourceLogged() {
 _sourceLogged ~/.config/dots/env.sh
 _sourceLogged ~/.config/dots/path.sh
 
-# TODO: function for starting synchronous task (for logging improvement lol)
-
 _runAsync() {
   local line
   local job_name=$1

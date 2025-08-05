@@ -277,10 +277,10 @@ binds {
 
     Mod+A { toggle-overview; }
 
-    Mod+Minus { focus-workspace-up; }
-    Mod+Equal { focus-workspace-down; }
-    Mod+Shift+Minus { move-window-to-workspace-up; }
-    Mod+Shift+Equal { move-window-to-workspace-down; }
+    Mod+BracketLeft { focus-workspace-up; }
+    Mod+BracketRight { focus-workspace-down; }
+    Mod+Shift+BracketLeft { move-window-to-workspace-up; }
+    Mod+Shift+BracketRight { move-window-to-workspace-down; }
 
     // Toggle tabbed column display mode.
     // Windows in this column will appear as vertical tabs,

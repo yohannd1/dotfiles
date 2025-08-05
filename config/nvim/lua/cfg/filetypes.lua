@@ -624,6 +624,11 @@ end
 ft.vhdl = function()
   vim.g.vhdl_indent_genportmap = 0
   vim.g.vhdl_indent_rhsassign = 0
+  setLocals {
+    -- FIXME: what IS going on here
+    commentstring = "-- %s",
+    comments = "b:--,s:--,sO:* -,mO:*  ,exO:*/,s1:/*,mb:*,ex:*/",
+  }
 end
 
 ft.ysh = function()
