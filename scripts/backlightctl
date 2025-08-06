@@ -1,22 +1,100 @@
-#!/usr/bin/env lua
+#!/usr/bin/env sh
 
-local stderr = io.stderr
+set -ue
+progname=$(basename "$0")
 
-if #arg ~= 2 then
-  os.exit(1)
-end
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
-local first_arg = arg[1]
-if first_arg ~= "mod" then
-  os.exit(1)
-end
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname { get | set <VALUE> | mod <AMOUNT> }
+  VALUE has to be a positive integer.
+  AMOUNT has to be a signed integer, with + or - explicitly as the signal.
+EOF
+  exit 2
+}
 
-local second_arg = arg[2]
-local second_arg_n = tonumber(second_arg)
-if second_arg_n == nil then
-  stderr:write(string.format("Failed to parse argument #2: %d: expected number\n", second_arg_n))
-  os.exit(1)
-end
+validateValue() {
+  if printf "%s" "$1" | grep -qv '^[0-9]\+\(\.[0-9]\+\)\?$'; then
+    printf >&2 "not a valid value: %s\n" "$1"
+    exit 2
+  fi
+}
 
-local bctl = require("backlightctl")
-bctl.inc_dec(second_arg_n, {lower_limit = 0.5})
+validateAmount() {
+  if printf "%s" "$1" | grep -qv '^[-+][0-9]\+\(\.[0-9]\+\)\?$'; then
+    printf >&2 "not a valid amount: %s\n" "$1"
+    exit 2
+  fi
+}
+
+addAndClamp() {
+  [ $# = 3 ] || exit 2
+  awk -v x="$1" -v lower="$2" -v upper="$3" '{
+    $0 = $0 + x;
+    $0 = ($0 < lower) ? lower : $0;
+    $0 = (upper < $0) ? upper : $0;
+    print $0;
+  }'
+}
+
+if exists ddcutil && ddcutil --skip-ddc-checks detect | grep -q '^Display'; then
+  impl_get() {
+    ddcutil --skip-ddc-checks getvcp 16 --brief | awk '{
+      split($0, arr, " ");
+      cur = arr[4];
+      max = arr[5];
+      print 100 * (cur / max);
+    }'
+  }
+  impl_set() {
+    cur=$(echo "$1" | addAndClamp 0 1 100)
+    ddcutil --skip-ddc-checks setvcp 16 "$cur"
+    ddcutil --skip-ddc-checks setvcp 18 "$cur"
+    ddcutil --skip-ddc-checks setvcp 1a "$cur"
+  }
+  impl_mod() {
+    cur=$(impl_get | addAndClamp "$1" 1 100)
+    ddcutil --skip-ddc-checks setvcp 16 "$cur"
+    ddcutil --skip-ddc-checks setvcp 18 "$cur"
+    ddcutil --skip-ddc-checks setvcp 1a "$cur"
+  }
+elif exists light; then
+  # runCommand("light -s sysfs/backlight/auto -v3 -S " .. value)
+  # amount = amount * 0.4
+  # local args = (amount > 0) and ("-A " .. amount) or ("-U " .. -amount)
+  printf >&2 "TODO\n"
+  exit 1
+elif [ "${DISPLAY:-}" ] && [ -z "${WAYLAND_DISPLAY:-}" ] && exists xbacklight; then
+  impl_get() { xbacklight -get; }
+  impl_set() {
+    cur=$(echo "$1" | addAndClamp 0 0.5 100)
+    xbacklight -set "$cur"
+  }
+  impl_mod() {
+    cur=$(impl_get | addAndClamp "$1" 0.5 100)
+    xbacklight -set "$cur"
+  }
+fi
+
+if [ $# -lt 1 ] || [ $# -gt 2 ]; then
+  showHelp
+fi
+
+case "$1" in
+  set)
+    [ $# = 2 ] || showHelp
+    validateValue "$2"
+    impl_set "$2"
+    ;;
+  mod)
+    [ $# = 2 ] || showHelp
+    validateAmount "$2"
+    impl_mod "$2"
+    ;;
+  get)
+    [ $# = 1 ] || showHelp
+    impl_get
+    ;;
+  *) showHelp ;;
+esac
