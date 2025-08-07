@@ -629,6 +629,34 @@ ft.vhdl = function()
     commentstring = "-- %s",
     comments = "b:--,s:--,sO:* -,mO:*  ,exO:*/,s1:/*,mb:*,ex:*/",
   }
+
+  snippets.register({
+    key = "m",
+    content = [[
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+use ieee.numeric_std.all;
+
+library std;
+
+entity main is
+end entity main;
+
+architecture behavioral of main is
+    constant N : natural := 8;
+begin
+    process
+    begin
+        report "Hello, world! N = " & natural'image(N);
+
+        std.env.stop;
+        wait;
+    end process;
+end architecture;
+    ]],
+    reindent = false,
+  })
 end
 
 ft.ysh = function()

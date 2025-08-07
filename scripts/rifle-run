@@ -303,6 +303,13 @@ case "$1" in
         #   "$fname"
         # "$tmp/V*"
         ;;
+      vhdl)
+        cflags=(--std=08 -fsynopsys --workdir="$tmp")
+        ln -s "$file" "$tmp/src.vhd"
+        ghdl -a "${cflags[@]}" "$file"
+        ghdl -e "${cflags[@]}" main
+        ghdl -r "${cflags[@]}" main
+        ;;
       ysh) ysh "$file" ;;
       *) die "(action \"$1\") unhandled filetype: $2" ;;
     esac ;;
@@ -389,6 +396,9 @@ case "$1" in
         ;;
       php)
         php-cs-fixer check "$file"
+        ;;
+      vhdl)
+        ghdl -s "$file"
         ;;
       ysh) ysh -n "$file" ;;
       *) die "(action \"$1\") unhandled filetype: $2" ;;
