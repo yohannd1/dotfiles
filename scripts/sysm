@@ -12,6 +12,10 @@ DOTS_CONFIG = DOTFILES / "config/dots/sysmrc.py"
 LOCAL_CONFIG = HOME / "storage/local/config/sysmrc.py"
 
 class Manager:
+    is_linux: bool
+    is_android: bool
+    backup_path: Path
+
     def __init__(self):
         # platform checks
         self.is_linux = sys.platform.startswith("linux")
@@ -49,7 +53,7 @@ class Manager:
         new_path = Path(new).expanduser()
 
         if not origin_path.exists():
-            raise Exception(f"Origin path {origin_path} does not exist!")
+            raise FileNotFoundError(f"Origin path {origin_path} does not exist!")
 
         # cover existing files and symlinks (broken or not)
         if new_path.is_symlink() and new_path.resolve() == origin_path:
@@ -93,7 +97,7 @@ class Manager:
 
 def usage(args):
     eprint(f"Usage: {args[0]}")
-    exit(1)
+    sys.exit(1)
 
 def main(args):
     argc = len(args) - 1
@@ -115,18 +119,17 @@ def main(args):
         else:
             eprint(f"sysm: skipping (not found): {config}")
 
-def gen_backup_path():
+def gen_backup_path() -> Path:
     """Generate a path for backup. Does not check if it already exists."""
-    time_fmt = "{}-{}".format(
-        datetime.now().strftime("%Y-%m-%d"),
-        gen_random_string(5),
-    )
+    now_formatted = datetime.now().strftime("%Y-%m-%d")
+    random_suffix = gen_random_string(5)
+    time_fmt = f"{now_formatted}-{random_suffix}"
     return XDG_CACHE_HOME / "sysm-backups" / time_fmt
 
-def gen_random_string(length):
-    return str.join("", [random.choice(string.ascii_lowercase) for i in range(length)])
+def gen_random_string(length: int) -> str:
+    return str.join("", (random.choice(string.ascii_lowercase) for i in range(length)))
 
-def eprint(*args, **kwargs):
+def eprint(*args, **kwargs) -> None:
     print(*args, file=sys.stderr, **kwargs)
 
 if __name__ == "__main__":

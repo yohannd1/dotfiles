@@ -23,7 +23,7 @@ CONFIG_HOME = pathlib.Path(XDG_CONFIG_HOME)
 def main():
     args = create_argparser().parse_args(sys.argv[1:])
     templates_folder = pathlib.Path(
-        CONFIG_HOME / "sxhkd" if args.path == None
+        CONFIG_HOME / "sxhkd" if args.path is None
         else args.path[0]
     )
     output = ""
