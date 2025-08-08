@@ -23,7 +23,6 @@ _pathsh_printAll() {
   echo "$XDG_CONFIG_HOME/composer/vendor/bin"
   [ "$LUAROCKS_HOME" ] && echo "$LUAROCKS_HOME/bin"
 
-  _pathsh_glob "/opt"
   _pathsh_glob "${XDG_CACHE_HOME:-$HOME/.cache}/packs"
 
   # current values in PATH

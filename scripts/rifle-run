@@ -291,10 +291,12 @@ case "$1" in
         FILE_TO_WATCH="$file" OUTPUT_FILE="$tmp/out.html" KATEX_PATH="katex/" \
           acr-live-preview
         ;;
-      systemverilog)
+      systemverilog|verilog)
+        # with iverilog
         iverilog -g2012 -o "$tmp/out" "$file"
         "$tmp/out"
 
+        # with verilator
         # fdir=$(dirname "$file")
         # fname=$(basename "$file")
         # verilator --binary \
