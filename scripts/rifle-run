@@ -388,13 +388,26 @@ case "$1" in
       python)
         python=$(getPython)
 
-        # proc2="$!"
-        # "$python" -m pylint "$file" &
-        dmypy --status-file "$tmp/dmypy.json" run --timeout 600 "$file" &
+        pylint_args=(
+          --score n
+          "$file"
+        )
+        mypy_args=(
+          "$file"
+          --incremental
+          --cache-dir="$XDG_CACHE_HOME/mypy"
+          --cache-fine-grained
+          --no-color-output
+        )
+
+        { "$python" -m pylint "${pylint_args[@]}" || true; } &
         proc1="$!"
 
+        { "$python" -m mypy "${mypy_args[@]}" || true; } &
+        proc2="$!"
+
         wait "$proc1"
-        # wait "$proc2"
+        wait "$proc2"
         ;;
       php)
         php-cs-fixer check "$file"

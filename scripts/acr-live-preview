@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 
 import os
-from time import time, sleep
+import sys
+from time import sleep
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Callable, Any, Optional
 
-from subprocess import Popen
+from subprocess import Popen, PIPE
 from queue import Queue, Empty
-from threading import Thread, Lock
+from threading import Thread
 
 from http.server import SimpleHTTPRequestHandler
 from socketserver import TCPServer, ThreadingMixIn
@@ -63,9 +64,11 @@ broadcaster = BroadcasterThread()
 
 
 class ChangesMonitorThread(Observer):
+    callbacks: list[tuple[Any, Callable]]
+
     def __init__(self, file_to_watch: Path):
         super().__init__()
-        self._callbacks: list[tuple[Any, Callable]] = []
+        self.callbacks = []
 
         cmt = self
 
@@ -74,23 +77,24 @@ class ChangesMonitorThread(Observer):
                 if Path(event.src_path) != file_to_watch:
                     return
 
-                for event_type, callback in cmt._callbacks:
+                for event_type, callback in cmt.callbacks:
                     if isinstance(event, event_type):
                         callback(event)
 
         super().schedule(Handler(), file_to_watch.parent, recursive=False)
 
-    def on_event(self, event_type) -> None:
-        def inner(func):
-            self._callbacks.append((event_type, func))
+    def on_event(self, event_type) -> Callable[[Any], None]:
+        def inner(func) -> None:
+            self.callbacks.append((event_type, func))
 
         return inner
 
 
 def compile_file(args: Args) -> None:
-    c_args: tuple = ("acr2html", args.file_to_watch)
-    c_args += ("-o", args.output_file)
-    c_args += ("-k", args.katex_path)
+    c_args: list[str] = []
+    c_args += ["acr2html", str(args.file_to_watch)]
+    c_args += ["-o", str(args.output_file)]
+    c_args += ["-k", str(args.katex_path)]
 
     os.environ["OPEN_NEW_WINDOW"] = "1"
 
@@ -105,7 +109,6 @@ def compile_file(args: Args) -> None:
             () => alert("An error ocurred! See console for info."),
             1500
         )
-
     };
     </script>
     """
@@ -113,15 +116,40 @@ def compile_file(args: Args) -> None:
     def inject_html(file) -> None:
         file.write(js_to_inject)
 
-    exit_code = Popen(c_args).wait()
+    with Popen(c_args, stderr=PIPE) as proc:
+        exit_code = proc.wait()
+        assert proc.stderr is not None
+        stderr_output = proc.stderr.read().decode("utf-8")
+
+    print(
+        f"--- PROGRAM OUTPUT (stderr) ---\n{stderr_output}\n-------------------------------\n",
+        file=sys.stderr,
+    )
 
     if exit_code == 0:
         with args.output_file.open("a") as file:
             inject_html(file)
     else:
         with args.output_file.open("w") as file:
+            sanitized_stderr = stderr_output.replace("<", "&lt;").replace(">", "&gt;")
             file.write(
-                "<html><h2>An error ocurred! See live-preview output for details.</h2></html>"
+                "<DOCTYPE html>"
+                "<html>"
+                "<style>"
+                """
+                code, pre {
+                    white-space: pre-wrap;
+                    overflow-wrap: break-word;
+                    word-wrap: break-word;
+                    max-width: 100%;
+                }
+                """
+                "</style>"
+                "<h3>An error ocurred while parsing the file.</h3>"
+                "<p>Program output:</p>"
+                f"<pre><code>{sanitized_stderr}</code></pre>"
+                "<p>See the live-preview output for (potentially) more details.</p>"
+                "</html>"
             )
             inject_html(file)
 
@@ -140,7 +168,7 @@ class CompilerThread(Thread):
 
     def run(self) -> None:
         while True:
-            compile = False
+            wants_compile = False
             open_path = None
 
             # wait for an item, then sleep for a while and get all that piled up
@@ -156,19 +184,19 @@ class CompilerThread(Thread):
             for item in items:
                 match item:
                     case "compile":
-                        compile = True
+                        wants_compile = True
                     case ("open", path):
                         open_path = path
                     case unk:
                         print(f"WARNING: got unknown item {unk}")
 
-            if compile:
+            if wants_compile:
                 print("** Compiling **")
                 compile_file(self._args)
                 broadcaster.broadcast("send_reload")
 
             if open_path is not None:
-                _ = Popen([opener, open_path])
+                _ = Popen([opener, open_path]) # pylint: disable=consider-using-with
 
 
 compiler: Optional[CompilerThread] = None
@@ -200,7 +228,7 @@ def server_thread(args: Args) -> None:
                 while True:
                     match queue.get():
                         case "send_reload":
-                            self.send_utf8(f"data: reload\n\n")
+                            self.send_utf8("data: reload\n\n")
                             self.flush()
                         case "stop":
                             break
@@ -219,7 +247,7 @@ def server_thread(args: Args) -> None:
     class ThreadedServer(ThreadingMixIn, TCPServer): ...
 
     with ThreadedServer(("localhost", 0), Handler) as httpd:
-        host_r, port = httpd.server_address
+        host_r, port, *_ = httpd.server_address
 
         if isinstance(host_r, bytes):
             host = host_r.decode("utf-8")
@@ -258,7 +286,7 @@ def main() -> None:
         assert compiler is not None
         compiler.request_compile()
 
-    threads = [
+    threads: list[Thread] = [
         Thread(target=lambda: server_thread(args)),
         broadcaster,
         changes_monitor,
