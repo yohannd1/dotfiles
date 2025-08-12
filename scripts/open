@@ -392,6 +392,8 @@
     (t :gui ["gtkwave" file])
     (t :gui ["pulseview" "-c" file]))
 
+  (mt :ext ["gtkw"] :gui ["gtkwave" file])
+
   (mt :ext ["asta"] :gui ["astah-uml" file])
   (mt :ext ["dot"] :gui ["rifle-run" "run" "dot" file])
 

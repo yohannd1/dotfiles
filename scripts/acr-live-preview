@@ -135,6 +135,7 @@ def compile_file(args: Args) -> None:
             file.write(
                 "<DOCTYPE html>"
                 "<html>"
+                '<meta charset="utf-8"/>'
                 "<style>"
                 """
                 code, pre {
