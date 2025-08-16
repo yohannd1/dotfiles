@@ -169,7 +169,7 @@ ext_ft.tsx = function()
   end
 end
 ext_ft.v = function()
-  local filetype = vim.fn.getline(1):find("module") == 1 and "verilog" or "vlang"
+  local filetype = vim.fn.search("^module\\>") > 0 and "verilog" or "vlang"
   setLocals { filetype = filetype }
 end
 

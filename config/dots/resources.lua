@@ -119,7 +119,11 @@ local font_presets = {
   ["CourierPrimeCode"] = {
     name = "Courier Prime Code",
     base_size = 17,
-  }
+  },
+  ["Inconsolata"] = {
+    name = "Inconsolata Medium",
+    base_size = 19,
+  },
 }
 -- }}}
 -- PREPARATIONS {{{
