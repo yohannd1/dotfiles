@@ -10,7 +10,7 @@ usage() {
 XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 FILEHIST_FILE="${FILEHIST_FILE:-$XDG_CACHE_HOME/filehist}"
 FILEHIST_MAX_LIMIT="${FILEHIST_MAX_LIMIT:-150}"
-LOCKDIR="/tmp/filehist-lock"
+lock_path="${TMPDIR:-/tmp}/filehist-lock"
 
 existCheck() {
   if [ ! -e "$FILEHIST_FILE" ]; then
@@ -29,13 +29,13 @@ tidyHistory() {
   rm -f "$tmp"
 }
 
-if ! mkdir "$LOCKDIR" >/dev/null 2>/dev/null; then
-  printf >&2 "The lock (at %s) still exists! Maybe there is another instance of filehist running?\n" "$LOCKDIR"
+if ! mkdir "$lock_path" >/dev/null 2>/dev/null; then
+  printf >&2 "The lock (at %s) still exists! Maybe there is another instance of filehist running?\n" "$lock_path"
   exit 1
 fi
 
 # just to release the lock
-cleanup() { rmdir "$LOCKDIR"; }
+cleanup() { rmdir "$lock_path"; }
 trap 'cleanup' EXIT
 
 hasNoOcurrences() {
