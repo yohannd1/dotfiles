@@ -6,14 +6,16 @@
 (var *progname* nil)
 
 (defn show-help []
+  (eprintf "%s: a music playing utility" *progname*)
   (eprintf "Usage:")
   (eprintf "  %s add [FILES...]" *progname*)
   (eprintf "  %s clear" *progname*)
   (eprintf "  %s current" *progname*)
   (eprintf "  %s queue" *progname*)
   (eprintf "  %s shuffle" *progname*)
-  (eprintf "  %s next [AMOUNT=1]" *progname*)
-  (eprintf "  %s prev [AMOUNT=1]" *progname*)
+  (eprintf "    Shuffle the songs after the current one in the queue.")
+  (eprintf "  %s { next | prev } [AMOUNT]" *progname*)
+  (eprintf "    Go forward or backwards in the queue by AMOUNT (defaults to 1).")
   (os/exit 2))
 
 (defn path/basename
