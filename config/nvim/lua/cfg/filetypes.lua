@@ -243,6 +243,25 @@ ft.cpp = function()
   ]])
 end
 
+ft.dot = function()
+  snippets.register({
+    key = "m",
+    content = [[
+digraph G {
+    graph [layout=dot rankdir=LR]
+
+    vim [href="http://www.vim.org/"]
+    dot [href="http://www.graphviz.org/"]
+    vimdot [href="file:///usr/bin/vimdot"]
+
+    {vim dot} -> vimdot
+    vim -> dot
+}
+    ]],
+    reindent = false,
+  })
+end
+
 ft.sh = function()
   setSpaceIndent(2)
   setLocals {
@@ -426,13 +445,17 @@ ft.python = function()
 
   addSnippet("c", [[from dataclasses import dataclass]])
   addSnippet("a", [[from abc import abstractmethod]])
-  addSnippet("m", [[
-    def main() -> None:
-      pass
+  snippets.register({
+    key = "m",
+    content = [[
+def main() -> None:
+    pass
 
-    if __name__ == "__main__":
-      main()
-  ]])
+if __name__ == "__main__":
+    main()
+    ]],
+    reindent = false,
+  })
 end
 
 ft.yaml = function()
@@ -477,6 +500,17 @@ end
 ft.gdscript = function()
   setTabIndent(4)
   vim.cmd([[ hi link @string.special.url.gdscript Function ]])
+  snippets.register({
+    key = "m",
+    content = [[
+extends SceneTree
+
+func _init() -> void:
+	print("Hello, World!")
+	quit(0)
+    ]],
+    reindent = false,
+  })
 end
 
 ft.d = function()
