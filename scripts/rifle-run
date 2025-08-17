@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
 
-# a script that runs compile-test-run actions based on the specified filetype.
-# intented for editors like vim and emacs
-
 set -ue
 progname=$(basename "$0")
 
 showHelp() {
   cat >&2 <<EOF
+rifle-run: a script for performing common compilation, testing & running tasks
+on various filetypes. See the source code for more details.
+
 Usage: $progname <ACTION> <FILETYPE> <FILENAME>
-ACTION := { run | build | test | check | debug }
-FILETYPE has too many values to list here. Check the script lol
+where ACTION := { run | build | test | check | debug }
 EOF
   exit 2
 }
@@ -22,9 +21,12 @@ die() {
   exit 1
 }
 
-[ $# != 3 ] && showHelp
+[ $# = 3 ] || showHelp
 
+action="$1"
+lang="$2"
 file=$(realpath -m "$3")
+
 tmp=$(mktemp -d)
 _cleanup() {
   [ -d "$tmp" ] && rm -r "$tmp"
@@ -49,45 +51,21 @@ getHaxeMainClass() {
   grep '^class ' | awk '{ print $2 }'
 }
 
-getPython() {
-  if [ "${_python_cache:-}" ]; then
-    printf "%s" "$_python_cache"
-    return
-  fi
-
-  programs=(python3 python py)
-  for p in "${programs[@]}"; do
-    exists "$p" || continue
-    _python_cache="$p"
-    printf "%s" "$p"
-    return
+firstExists() {
+  for cmd in "$@"; do
+    if exists "$cmd"; then
+      printf "%s" "$cmd"
+      return 0
+    fi
   done
 
-  die "could not find a suitable python version"
-}
-
-getLua() {
-  if [ "$_lua_cache" ]; then
-    printf "%s" "$_lua_cache"
-    return
-  fi
-
-  programs=(lua5.4 lua5.3 lua)
-  for p in "${programs[@]}"; do
-    exists "$p" || continue
-    _lua_cache="$p"
-    printf "%s" "$p"
-    return
-  done
-
-  die "could not find a suitable lua version"
+  die "no available command - tried: $*"
 }
 
 fparent_pattern() {
   pattern="$1"
   path="$PWD"
 
-  # okay=0
   while :; do
     cd "$path"
 
@@ -105,330 +83,471 @@ fparent_pattern() {
   done
 }
 
-cflags_c=(-Wpedantic -Wall)
+_CFLAGS_C=(-Wpedantic -Wall)
+
+isLang() { [ "$lang" = "$1" ]; }
+
+if isLang '@cargo'; then
+  _do() {
+    cd "$(dirname "$file")"
+    fparent-run "Cargo.toml" run-command file-dir cargo "$@"
+  }
+  do_run() { _do run; }
+  do_build() { _do build; }
+  do_test() { _do test; }
+  do_check() { _do check; }
+
+elif isLang '@gradlew'; then
+  _do() {
+    cd "$(dirname "$file")"
+    fparent-run "gradlew" run-file script-dir "$@"
+  }
+  do_build() { _do build; }
+  do_run() { _do run; }
+
+elif isLang '@make'; then
+  _do() {
+    cd "$(dirname "$file")"
+    fparent-run "Makefile" run-command file-dir make "$@"
+  }
+  do_run() { _do run; }
+  do_build() { _do; }
+  do_test() { _do test; }
+  do_check() { _do check; }
+  do_debug() { _do debug; }
+
+elif isLang '@nimble'; then
+  _do() {
+    dir=$(fparent_pattern '\.nimble$')
+    cd "$dir"
+    nimble "$@"
+  }
+  do_run() { _do run; }
+  do_build() { _do build; }
+  do_test() { _do test; }
+
+elif isLang '@zig-build'; then
+  _do() {
+    cd "$(dirname "$file")"
+    fparent-run "build.zig" run-command file-dir zig build "$@" --color off
+  }
+  do_run() { _do run; }
+  do_build() { _do; }
+  do_test() { _do test; }
+
+elif isLang 'acrylic'; then
+  do_run() {
+    export ACR_KATEX_PATH="$XDG_DATA_DIR/katex"
+    ln -s "$ACR_KATEX_PATH" "$tmp/katex"
+
+    FILE_TO_WATCH="$file" OUTPUT_FILE="$tmp/out.html" KATEX_PATH="katex/" \
+      acr-live-preview
+  }
+
+elif isLang 'alda'; then
+  do_run() {
+    alda stop # stop all other playback
+    alda play --file "$file"
+  }
+
+elif isLang 'buzz'; then
+  do_run() { buzz "$file"; }
+
+elif isLang 'c'; then
+  do_build() {
+    gcc "$file" -o "$tmp/exe" "${_CFLAGS_C[@]}" "$@"
+  }
+  do_run() {
+    do_build
+    "$tmp/exe"
+  }
+  do_debug() {
+    do_build -g
+    gdb "$tmp/exe"
+  }
+
+elif isLang 'clojure'; then
+  # TODO: distinguish Clojure from ClojureScript? or nah
+  do_run() { clojure "$file"; }
+
+elif isLang 'cpp' || isLang 'cc' || isLang 'c++'; then
+  do_build() {
+    g++ "$file" -o "$tmp/exe" -std=c++20 "${_CFLAGS_C[@]}"
+  }
+  do_run() {
+    do_build
+    "$tmp/exe"
+  }
+  do_debug() {
+    do_build -g
+    gdb "$tmp/exe"
+  }
+  do_check() {
+    if exists clang-tidy; then
+      clang-tidy "$file"
+    else
+      die "could not find valid check program..."
+    fi
+  }
+
+elif isLang 'crystal'; then
+  do_build() { crystal build "$file" -o "$tmp/out"; }
+  do_run() { crystal run "$file"; }
+
+elif isLang 'cs' || isLang 'csharp'; then
+  do_build() {
+    mcs "$file" -out:"$tmp/exe"
+  }
+  do_run() {
+    do_build
+    mono "$tmp/exe"
+  }
+
+elif isLang 'd'; then
+  do_run() {
+    dmd -run "$file"
+    # gdc "$file" -o "$tmp/exe" && "$tmp/exe"
+    # ldc --run "$file"
+  }
+
+elif isLang 'dart'; then
+  do_run() { dart run "$file"; }
+
+elif isLang 'dot'; then
+  do_run() {
+    dot -Tsvg "$file" -o "$tmp/out.svg"
+    nohup dot -Txlib "$file" > "$tmp/dot.log" &
+  }
+
+elif isLang 'fennel'; then
+  do_build() { fennel --compile "$file"; }
+  do_run() { fennel "$file"; }
+
+elif isLang 'fsharp'; then
+  do_run() { fsharpi "$file"; }
+
+elif isLang 'gdscript'; then
+  do_run() { godot -s "$file" --headless; }
+
+elif isLang 'haskell'; then
+  do_build() {
+    (
+      cd "$tmp"
+      ln -s "$file" main.hs
+      ghc -o "$tmp/exe" -dynamic main.hs
+    )
+  }
+  do_run() {
+    do_build
+    "$tmp/exe"
+  }
+
+elif isLang 'haxe'; then
+  main=$(getHaxeMainClass < "$file")
+  printf >&2 "[ Warning ] please put the main class as the top one on the file. Sorry...\n"
+  do_build() {
+    (
+      cd "$tmp"
+      ln -s "$file" "$main.hx"
+    )
+  }
+  do_run() {
+    do_build
+    (
+      cd "$tmp"
+      haxe --run "$main" --main "$main"
+    )
+  }
+
+elif isLang 'html'; then
+  do_run() { openfork "$file"; }
+
+elif isLang 'hy'; then
+  do_run() { hy "$file"; }
+
+elif isLang 'janet'; then
+  do_build() { janet -c "$file" "$tmp/out.jimage"; }
+  do_run() { janet "$file"; }
+
+elif isLang 'java'; then
+  main=$(getJavaMainClass < "$file")
+  do_build() {
+    (
+      cd "$tmp"
+      ln -s "$file" "$main.java"
+      javac -encoding utf8 -d "$tmp" "$main.java"
+    )
+  }
+  do_run() {
+    do_build
+    (
+      cd "$tmp"
+      java "$main"
+    )
+  }
+
+elif isLang 'javascript'; then
+  js=$(firstExists deno nodejs)
+  case "$js" in
+    deno) deno run "$file" ;;
+    nodejs) nodejs "$file" ;;
+    *) exit 32 ;;
+  esac
+
+elif isLang 'julia'; then
+  do_run() { julia "$file"; }
+
+elif isLang 'latex' || isLang 'tex'; then
+  do_run() {
+    # name=$(basename "${file%.*}")
+
+    # pdflatex -output-directory "$tmp" "$file" </dev/null
+
+    # latexmk -pdf -outdir="$tmp" "$file" </dev/null
+    # OPEN_GUI=1 open "$tmp/$name.pdf"
+
+    # with live reload :)
+    latexmk -pvc -pdf -outdir="$tmp" "$file" </dev/null
+  }
+
+elif isLang 'lisp'; then
+  do_run() { sbcl --script "$file"; }
+
+elif isLang 'lua'; then
+  do_check() { luacheck "$file"; }
+  do_run() {
+    lua=$(firstExists lua5.4 lua5.3 lua)
+    "$lua" "$file";
+  }
+
+elif isLang 'markdown'; then
+  do_run() { md-preview "$file"; }
+
+elif isLang 'nim'; then
+  do_build() {
+    nim compile --out:"out" --outdir:"$tmp" "$file"
+  }
+  do_run() {
+    do_build
+    "$tmp/out"
+  }
+
+elif isLang 'moon'; then
+  do_build() { moonc -p "$file"; }
+  do_run() { moon "$file"; }
+
+elif isLang 'nelua'; then
+  do_run() { nelua "$file" --cache-dir "$tmp"; }
+
+elif isLang 'odin'; then
+  do_run() { odin run "$file" -file; }
+
+elif isLang 'php'; then
+  do_check() { php-cs-fixer check "$file"; }
+  do_run() { php "$file"; }
+
+elif isLang 'python'; then
+  python=$(firstExists python3 python py)
+
+  do_run() { "$python" "$file"; }
+  do_check() {
+    pylint_args=(--score n "$file")
+    mypy_args=(
+      "$file"
+      --incremental
+      --cache-dir="$XDG_CACHE_HOME/mypy"
+      --cache-fine-grained
+      --no-color-output
+    )
+
+    { "$python" -m pylint "${pylint_args[@]}" || true; } &
+    proc1="$!"
+
+    { "$python" -m mypy "${mypy_args[@]}" || true; } &
+    proc2="$!"
+
+    wait "$proc1"
+    wait "$proc2"
+  }
+
+elif isLang 'r'; then
+  do_run() { Rscript "$file"; }
+
+elif isLang 'racket'; then
+  do_run() { racket "$file"; }
+
+elif isLang 'ruby'; then
+  do_run() { ruby "$file"; }
+
+elif isLang 'rust'; then
+  do_test() {
+    rustc --test "$file" -o "$tmp/exe"
+    "$tmp/exe"
+  }
+  do_build() {
+    rustc "$file" -o "$tmp/exe"
+  }
+  do_run() {
+    do_build
+    "$tmp/exe"
+  }
+
+elif isLang 'teal'; then
+  do_check() {
+    tl check "$file"
+  }
+  do_build() {
+    tl gen "$file" --output "$tmp/out"
+    cat "$tmp/out"
+  }
+  do_run() {
+    tl run "$file"
+  }
+
+elif isLang 'scheme'; then
+  do_run() {
+    if [ -x "$file" ]; then
+      "$file"
+    else
+      command=$(getModelineCommand < "$file")
+      possibleInterpreters=(chicken-csi csi guile)
+      for i in "${possibleInterpreters[@]}"; do
+        if printf "%s" "$command" | grep -q "$i"; then
+          exec "$i" "$file"
+        fi
+      done
+      printf >&2 "What interpreter do I use here??? goddamnit\n"
+      printf >&2 "Tried these from the modeline: %s\n" "${possibleInterpreters[*]}"
+      exit 1
+    fi
+  }
+
+elif isLang 'sh'; then
+  do_check() {
+    shellcheck -x "$file" -Cnever \
+      -e SC2155,SC2002,SC2016
+  }
+  do_run() {
+    if [ -x "$file" ]; then
+      # execute file if it is executable
+      "$file"
+    else
+      # deduce modeline, if any
+      command=$(getModelineCommand < "$file")
+      if printf "%s" "$command" | grep -q 'bash$'; then
+        bash "$file"
+      elif printf "%s" "$command" | grep -q 'zsh$'; then
+        zsh "$file"
+      elif printf "%s" "$command" | grep -q 'fish$'; then
+        fish "$file"
+      else
+        sh "$file"
+      fi
+    fi
+  }
+
+elif isLang 'svg'; then
+  do_run() { openfork "$file"; }
+
+elif isLang 'systemverilog'; then
+  # with verilator
+  # fdir=$(dirname "$file")
+  # fname=$(basename "$file")
+  # verilator --binary \
+  #   -j 0 -Wall \
+  #   --Mdir "$tmp" -I"$fdir" \
+  #   "$fname"
+  # "$tmp/V*"
+
+  do_build() {
+    iverilog -g2012 -o "$tmp/out" "$file"
+  }
+  do_run() {
+    do_build
+    "$tmp/out"
+  }
+
+elif isLang 'terra'; then
+  do_run() { terra "$file"; }
+
+elif isLang 'typescript'; then
+  ts=$(firstExists deno)
+  case "$ts" in
+    deno)
+      deno check "$file"
+      deno run "$file"
+      ;;
+    *) exit 32 ;;
+  esac
+
+elif isLang 'uxntal'; then
+  do_build() {
+    uxnasm "$file" "$tmp/out.rom"
+  }
+  do_run() {
+    do_build
+    uxnemu "$tmp/out.rom"
+  }
+
+elif isLang 'verilog'; then
+  do_build() {
+    iverilog -g2005 -o "$tmp/out" "$file"
+  }
+  do_run() {
+    do_build
+    "$tmp/out"
+  }
+
+elif isLang 'vim'; then
+  do_run() {
+    vim=$(firstExists nvim vim)
+    "$vim" -u "$file"
+  }
+
+elif isLang 'vlang'; then
+  do_run() { v run "$file"; }
+
+elif isLang 'vhdl'; then
+  do_check() {
+    ghdl -s "$file"
+  }
+  do_run() {
+    cflags=(--std=08 -fsynopsys --workdir="$tmp")
+    ln -s "$file" "$tmp/src.vhd"
+    ghdl -a "${cflags[@]}" "$file"
+    ghdl -e "${cflags[@]}" main
+    ghdl -r "${cflags[@]}" main
+  }
+
+elif isLang 'ysh'; then
+  do_check() {
+    ysh -n "$file"
+  }
+  do_run() {
+    ysh "$file"
+  }
+
+elif isLang 'zig'; then
+  do_run() { zig run "$file" --color off --cache-dir "$tmp"; }
+  do_build() { zig build-exe "$file" --color off --cache-dir "$tmp"; }
+  do_test() { zig test "$file" --color off --cache-dir "$tmp"; }
+
+elif isLang 'zsh'; then
+  do_run() { zsh "$file"; }
+
+else
+  die "unknown language: $lang\n"
+fi
 
 case "$1" in
-  run)
-    case "$2" in
-      lisp) sbcl --script "$file" ;;
-      @make)
-        cd "$(dirname "$file")"
-        fparent-run "Makefile" run-command file-dir make run
-        ;;
-      @zig-build)
-        cd "$(dirname "$file")"
-        fparent-run "build.zig" run-command file-dir zig build run --color off
-        ;;
-      @cargo)
-        cd "$(dirname "$file")"
-        fparent-run "Cargo.toml" run-command file-dir cargo run
-        ;;
-      @nimble)
-        dir=$(fparent_pattern '\.nimble$') || exit 1
-        echo "$dir"
-        cd "$dir"
-        nimble run
-        ;;
-      @gradlew) fparent-run "gradlew" run-file script-dir run ;;
-      terra) terra "$file" ;;
-      rust) rustc "$file" -o "$tmp/exe" && "$tmp/exe" ;;
-      gdscript) godot -s "$file" --no-window ;;
-      haskell)
-        nameFull=${file%.*}
-        # name=$(basename "$nameFull")
-
-        (
-          cd "$tmp"
-          ghc -o "$tmp/exe" -dynamic "$file"
-          rm "$nameFull.o" "$nameFull.hi"
-        )
-
-        "$tmp/exe"
-        ;;
-      buzz) buzz "$file" ;;
-      c) gcc "$file" -o "$tmp/exe" "${cflags_c[@]}" && "$tmp/exe" ;;
-      d)
-        dmd -run "$file"
-        # gdc "$file" -o "$tmp/exe" && "$tmp/exe"
-        # ldc --run "$file"
-        ;;
-      cpp|c++|cc) g++ "$file" -o "$tmp/exe" -std=c++20 "${cflags_c[@]}" && "$tmp/exe" ;;
-      cs|csharp) mcs "$file" -out:"$tmp/exe" && mono "$tmp/exe" ;;
-      clojure) clojure "$file" ;;
-      markdown) md-preview "$file" ;;
-      php) php "$file" ;;
-      odin) odin run "$file" -file ;;
-      sh)
-        if [ -x "$file" ]; then
-          # execute file if it is executable
-          "$file"
-        else
-          # deduce modeline, if any
-          command=$(getModelineCommand < "$file")
-          if printf "%s" "$command" | grep -q 'bash$'; then
-            bash "$file"
-          elif printf "%s" "$command" | grep -q 'zsh$'; then
-            zsh "$file"
-          elif printf "%s" "$command" | grep -q 'fish$'; then
-            fish "$file"
-          else
-            sh "$file"
-          fi
-        fi
-        ;;
-      zsh) if [ -x "$file" ]; then "$file"; else zsh "$file"; fi ;;
-      julia) julia "$file" ;;
-      vim) nvim -u "$file" ;;
-      scheme)
-        if [ -x "$file" ]; then
-          "$file"
-        else
-          command=$(getModelineCommand < "$file")
-
-          possibleInterpreters=(chicken-csi csi guile)
-          for i in "${possibleInterpreters[@]}"; do
-            if printf "%s" "$command" | grep -q "$i"; then
-              exec "$i" "$file"
-            fi
-          done
-
-          printf >&2 "What interpreter do I use here??? goddamnit\n"
-          printf >&2 "Tried these from the modeline: %s\n" "${possibleInterpreters[*]}"
-          exit 1
-        fi
-        ;;
-      latex|tex)
-        # name=$(basename "${file%.*}")
-
-        # pdflatex -output-directory "$tmp" "$file" </dev/null
-
-        # latexmk -pdf -outdir="$tmp" "$file" </dev/null
-        # OPEN_GUI=1 open "$tmp/$name.pdf"
-
-        # with live reload :)
-        latexmk -pvc -pdf -outdir="$tmp" "$file" </dev/null
-        ;;
-      python)
-        python=$(getPython)
-        "$python" "$file"
-        ;;
-      hy) hy "$file" ;;
-      fsharp) fsharpi "$file" ;;
-      lua)
-        lua=$(getLua)
-        "$lua" "$file"
-        ;;
-      nim)
-        nim compile --out:"out" --outdir:"$tmp" "$file"
-        "$tmp/out"
-        ;;
-      ruby) ruby "$file" ;;
-      racket) racket "$file" ;;
-      html) openfork "$file" ;;
-      svg) openfork "$file" ;;
-      moon) moon "$file" ;;
-      teal) tl run "$file" ;;
-      r) Rscript "$file" ;;
-      dot)
-        dot -Tsvg "$file" -o "$tmp/out.svg"
-        open "$tmp/out.svg"
-        ;;
-      zig) zig run "$file" --color off --cache-dir "$tmp" ;;
-      fennel) fennel "$file" ;;
-      crystal) crystal run "$file" ;;
-      vlang) v run "$file" ;;
-      nelua) nelua "$file" --cache-dir "$tmp" ;;
-      dart) dart run "$file" ;;
-      javascript)
-        if exists deno; then
-          deno check "$file"
-        elif exists nodejs; then
-          nodejs "$file"
-        else
-          printf >&2 "Could not find a known JS interpreter.\n"
-          exit 1
-        fi
-        ;;
-      typescript)
-        if exists deno; then
-          deno check "$file"
-          deno run "$file"
-        else
-          printf >&2 "Could not find a known TS interpreter.\n"
-          exit 1
-        fi
-        ;;
-      java)
-        main=$(getJavaMainClass < "$file")
-        cd "$tmp"
-        ln -s "$file" "$main.java"
-        javac -encoding utf8 -d "$tmp" "$main.java"
-        java "$main"
-        ;;
-      janet)
-        janet "$file"
-        ;;
-      haxe)
-        main=$(getHaxeMainClass < "$file")
-        printf >&2 "[ Warning ] please put the main class as the top one on the file. Sorry...\n"
-        cd "$tmp"
-        ln -s "$file" "$main.hx"
-
-        haxe --run "$main" --main "$main"
-        ;;
-      alda)
-        alda stop # stop all other playback
-        alda play --file "$file"
-        ;;
-      uxntal)
-        uxnasm "$file" "$tmp/out.rom"
-        uxnemu "$tmp/out.rom"
-        ;;
-      acrylic)
-        export ACR_KATEX_PATH="$XDG_DATA_DIR/katex"
-        ln -s "$ACR_KATEX_PATH" "$tmp/katex"
-
-        FILE_TO_WATCH="$file" OUTPUT_FILE="$tmp/out.html" KATEX_PATH="katex/" \
-          acr-live-preview
-        ;;
-      verilog)
-        iverilog -g2005 -o "$tmp/out" "$file"
-        "$tmp/out"
-        ;;
-      systemverilog)
-        # with iverilog
-        iverilog -g2012 -o "$tmp/out" "$file"
-        "$tmp/out"
-
-        # with verilator
-        # fdir=$(dirname "$file")
-        # fname=$(basename "$file")
-        # verilator --binary \
-        #   -j 0 -Wall \
-        #   --Mdir "$tmp" -I"$fdir" \
-        #   "$fname"
-        # "$tmp/V*"
-        ;;
-      vhdl)
-        cflags=(--std=08 -fsynopsys --workdir="$tmp")
-        ln -s "$file" "$tmp/src.vhd"
-        ghdl -a "${cflags[@]}" "$file"
-        ghdl -e "${cflags[@]}" main
-        ghdl -r "${cflags[@]}" main
-        ;;
-      ysh) ysh "$file" ;;
-      *) die "(action \"$1\") unhandled filetype: $2" ;;
-    esac ;;
-  build)
-    case "$2" in
-      @make) fparent-run "Makefile" run-command file-dir make ;;
-      @cargo) fparent-run "Cargo.toml" run-command file-dir cargo build ;;
-      @nimble)
-        dir=$(fparent_pattern '\.nimble$') || exit 1
-        echo "$dir"
-        cd "$dir"
-        nimble build
-        ;;
-      @zig-build) fparent-run "build.zig" run-command file-dir zig build --color off ;;
-      zig) zig build-exe "$file" --color off --cache-dir "$tmp" ;;
-      @gradlew) fparent-run "gradlew" run-file script-dir build ;;
-      markdown) md-compile "$file" > "$HOME/$(basename "$file").$(date +%Y-%m-%d).html" ;;
-      fennel) fennel --compile "$file" 2>&1 | nvim +PagerMode ;;
-      moon) moonc -p "$file" 2>&1 | nvim +PagerMode ;;
-      crystal) crystal build "$file" -o "$tmp/out" ;;
-      teal)
-        tl gen "$file" --output "$tmp/out"
-        nvim +PagerMode "$tmp/out"
-        ;;
-      java)
-        main=$(getJavaMainClass < "$file")
-        cd "$tmp"
-        ln -s "$file" "$main.java"
-        javac -encoding utf8 -d "$tmp" "$main.java"
-        ;;
-      *) die "(action \"$1\") unhandled filetype: $2" ;;
-    esac ;;
-  test)
-    case "$2" in
-      @make) fparent-run "Makefile" run-command file-dir make test ;;
-      @cargo) fparent-run "Cargo.toml" run-command file-dir cargo test ;;
-      @nimble)
-        dir=$(fparent_pattern '\.nimble$') || exit 1
-        echo "$dir"
-        cd "$dir"
-        nimble test
-        ;;
-      @zig-build) fparent-run "build.zig" run-command file-dir zig build test --color off ;;
-      zig) zig test "$file" --color off --cache-dir "$tmp" ;;
-      rust) rustc --test "$file" -o "$tmp/exe" && "$tmp/exe" ;;
-      *) die "(action \"$1\") unhandled filetype: $2" ;;
-    esac ;;
-  check)
-    case "$2" in
-      @make) fparent-run "Makefile" run-command file-dir make check ;;
-      @zig-build) fparent-run "build.zig" run-command file-dir zig build --color off ;;
-      @cargo) fparent-run "Cargo.toml" run-command file-dir cargo check ;;
-      @nimble)
-        dir=$(fparent_pattern '\.nimble$') || exit 1
-        echo "$dir"
-        cd "$dir"
-        nimble build # `check` doesn't seem to work well
-        ;;
-      sh)
-        shellcheck -x "$file" -Cnever \
-          -e SC2155,SC2002,SC2016
-        ;;
-      lua) luacheck "$file" ;;
-      rust) rustc "$file" -o "$tmp/exe" ;;
-      nim) nim compile --out:"out" --outdir:"$tmp" "$file" ;;
-      cpp|c++|cc)
-        if exists clang-tidy; then
-          clang-tidy "$file"
-        else
-          g++ -c "$file" -o "$tmp/exe" -std=c++20 "${cflags_c[@]}"
-        fi
-        ;;
-      teal) tl check "$file" ;;
-      python)
-        python=$(getPython)
-
-        pylint_args=(
-          --score n
-          "$file"
-        )
-        mypy_args=(
-          "$file"
-          --incremental
-          --cache-dir="$XDG_CACHE_HOME/mypy"
-          --cache-fine-grained
-          --no-color-output
-        )
-
-        { "$python" -m pylint "${pylint_args[@]}" || true; } &
-        proc1="$!"
-
-        { "$python" -m mypy "${mypy_args[@]}" || true; } &
-        proc2="$!"
-
-        wait "$proc1"
-        wait "$proc2"
-        ;;
-      php)
-        php-cs-fixer check "$file"
-        ;;
-      vhdl)
-        ghdl -s "$file"
-        ;;
-      ysh) ysh -n "$file" ;;
-      *) die "(action \"$1\") unhandled filetype: $2" ;;
-    esac ;;
-  debug)
-    case "$2" in
-      c)
-        gcc -g "$file" -o "$tmp/exe" "${cflags_c[@]}"
-        gdb "$tmp/exe"
-        ;;
-      *) die "(action \"$1\") unhandled filetype: $2" ;;
-    esac ;;
-  *) die "Invalid action: $1" ;;
+  run|build|test|check|debug)
+    if declare -f "do_$action" >/dev/null; then
+      "do_$1"
+    else
+      die "action '$action' not defined for language '$lang'"
+    fi
+    ;;
+  *)
+    die "unknown action: $action"
+    ;;
 esac
