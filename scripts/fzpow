@@ -93,7 +93,7 @@ action_hibernate() {
 }
 
 action_reboot() { systemctl reboot; }
-action_shutdown() { termup -f shutdown-routine; }
+action_shutdown() { d.tpop shutdown-routine; }
 action_shutdown_now() { systemctl poweroff; }
 
 main "$@"

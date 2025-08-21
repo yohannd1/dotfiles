@@ -101,7 +101,7 @@
   `-type` can be
     :gui to block stdin and redirect stderr, useful for GUI apps;
     :tty to directly open the program in the TTY, if possible;
-    :pop to run as TTY if possible, but opening it via `termup` if not;
+    :pop to run as TTY if possible, but opening it via `d.tpop` if not;
     :fallback to open the alt program specified by OPEN_ALT;
     :block to not run the file and exit immediately"
   [self -type &opt -args]
@@ -128,8 +128,8 @@
            (os/exit (os/execute -args :p {:in (dev-null) :err stdout})))
     :tty (when (and (not *open-gui*) (prog-exists (-args 0)))
            (exec-and-exit -args))
-    :pop (condit-open ["termup" "-f"])
-    :runpage (condit-open ["termup" "-f" "runpage"])
+    :pop (condit-open ["d.tpop"])
+    :runpage (condit-open ["d.tpop" "runpage"])
     :fallback (os/exit (os/execute [open-alt file] :p))
     :xdg (do
            (os/setenv "VIA_OPEN" "1")

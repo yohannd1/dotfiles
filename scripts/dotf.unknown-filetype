@@ -1,4 +1,4 @@
-#!/usr/bin/env -S termup -f bash
+#!/usr/bin/env -S d.tpop bash
 # vim: ft=sh
 
 printf >&2 "Failed to open the following file:\n"

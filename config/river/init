@@ -95,8 +95,8 @@ riverctl map normal Super w spawn "setbg"
 riverctl map normal Super c spawn "runnsend error-and-output dotf.screenshot"
 riverctl map normal Super+Shift c spawn "runnsend error-and-output dotf.screenshot --full"
 
-riverctl map normal Super F10 spawn "termup -f runread fzmount -m"
-riverctl map normal Super+Shift F10 spawn "termup -f runread fzmount -u"
+riverctl map normal Super F10 spawn "d.tpop runread fzmount -m"
+riverctl map normal Super+Shift F10 spawn "d.tpop runread fzmount -u"
 
 riverctl map normal Super+Alt t spawn "dotf.wrap.tray"
 riverctl map normal Super+Alt o spawn "runnsend error-and-output fzpow"

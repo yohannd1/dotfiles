@@ -30,11 +30,11 @@ return function(api)
 
   api.key("super F10")
     :desc("mount menu")
-    :map("termup -f runread fzmount -m")
+    :map("d.tpop runread fzmount -m")
 
   api.key("super shift F10")
     :desc("unmount menu")
-    :map("termup -f runread fzmount -u")
+    :map("d.tpop runread fzmount -u")
 
   api.key("super w")
     :desc("reload wallpaper")

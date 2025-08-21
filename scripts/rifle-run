@@ -84,6 +84,7 @@ fparent_pattern() {
 }
 
 _CFLAGS_C=(-Wpedantic -Wall)
+_VERIBLE_LINT_RULES='-parameter-name-style'
 
 isLang() { [ "$lang" = "$1" ]; }
 
@@ -466,6 +467,9 @@ elif isLang 'systemverilog'; then
     do_build
     "$tmp/out"
   }
+  do_check() {
+    verible-verilog-lint --rules "$_VERIBLE_LINT_RULES" "$file"
+  }
 
 elif isLang 'terra'; then
   do_run() { terra "$file"; }
@@ -496,6 +500,10 @@ elif isLang 'verilog'; then
   do_run() {
     do_build
     "$tmp/out"
+  }
+  do_check() {
+    _VERIBLE_LINT_RULES="${_VERIBLE_LINT_RULES},-explicit-parameter-storage-type"
+    verible-verilog-lint --rules "$_VERIBLE_LINT_RULES" "$file"
   }
 
 elif isLang 'vim'; then

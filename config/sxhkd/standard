@@ -32,9 +32,9 @@ super + shift + c
 
 # mounting
 super + F10
-    termup -f runread fzmount -m
+    d.tpop runread fzmount -m
 super + shift + F10
-    termup -f runread fzmount -u
+    d.tpop runread fzmount -u
 
 # wallpaper
 super + w

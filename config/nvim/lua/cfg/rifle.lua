@@ -24,7 +24,7 @@ M.run = function(command)
   local cmd_prefix = utils.os.is_android and {"bash"} or {}
 
   if rifle_mode == "popup" then
-    local tbl = utils.tableJoin({"termup", runread_path}, cmd)
+    local tbl = utils.tableJoin({"d.trun", runread_path}, cmd)
     vim.fn.jobstart(tbl)
   elseif rifle_mode == "buffer" then
     local createRifleTerm = function()

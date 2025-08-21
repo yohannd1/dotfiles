@@ -12,7 +12,7 @@ launchClient() {
   if [ "$onGui" = 0 ]; then
     TERM=xterm-16color exec emacsclient -a "" -t "$@"
   else
-    TERM=xterm-16color exec termup runsane emacsclient -a "" -t "$@"
+    TERM=xterm-16color exec d.trun runsane emacsclient -a "" -t "$@"
     # exec emacsclient -a "" -c "$@"
   fi
 }
@@ -22,7 +22,7 @@ launchStandalone() {
     TERM=xterm-16color exec emacs -nw "$@"
   else
     # TERM=xterm-16color exec emacs "$@"
-    TERM=xterm-16color exec termup runsane emacs -nw "$@"
+    TERM=xterm-16color exec d.trun runsane emacs -nw "$@"
   fi
 }
 
