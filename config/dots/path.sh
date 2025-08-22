@@ -22,6 +22,7 @@ _pathsh_printAll() {
   [ "$NPM_DIR" ] && echo "$NPM_DIR/bin"
   echo "$XDG_CONFIG_HOME/composer/vendor/bin"
   [ "$LUAROCKS_HOME" ] && echo "$LUAROCKS_HOME/bin"
+  echo "$JANET_MODPATH/bin"
 
   _pathsh_glob "${XDG_CACHE_HOME:-$HOME/.cache}/packs"
 

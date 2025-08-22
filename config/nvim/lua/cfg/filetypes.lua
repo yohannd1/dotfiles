@@ -573,6 +573,7 @@ end
 
 ft.janet = function()
   vim.b.better_join_whitespace_matcher = lispJoinMatcher
+  vim.b.format_command = "janet-format"
 end
 
 ft.haxe = function()
