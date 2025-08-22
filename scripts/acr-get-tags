@@ -1,11 +1,8 @@
 #!/usr/bin/env janet
 
-(def acr-wiki-dir (os/getenv "ACR_WIKI_DIR"))
+(use dotf-path)
 
-(defn path/basename
-  "Get the base name (the last component) of a path."
-  [path]
-  (as-> path .x (string/split "/" .x) (last .x)))
+(def acr-wiki-dir (os/getenv "ACR_WIKI_DIR"))
 
 (defn read-tag-line [path]
   (label 'ret

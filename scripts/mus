@@ -1,5 +1,7 @@
 #!/usr/bin/env janet
 
+(use dotf-path)
+
 (def TMPDIR (os/getenv "TMPDIR" "/tmp"))
 (def HOME (-> (os/getenv "HOME") (assert "no HOME set..?")))
 (def state-path (string/format "%s/mus.state" TMPDIR))
@@ -17,32 +19,6 @@
   (eprintf "  %s { next | prev } [AMOUNT]" *progname*)
   (eprintf "    Go forward or backwards in the queue by AMOUNT (defaults to 1).")
   (os/exit 2))
-
-(defn path/basename
-  "Get the base name (the last component) of a path."
-  [path]
-
-  (as-> path .x (string/split "/" .x) (last .x)))
-
-(defn path/is-dir [x]
-  (if-let [data (os/stat x)]
-    (-> data (in :mode) (= :directory))
-    false
-    )
-  )
-
-(defn path/extension
-  "Get the extension of a path."
-  [path]
-
-  (as->
-    path .x
-    (path/basename .x)
-    (string/split "." .x)
-    (if (-> .x (length) (<= 1))
-      nil
-      (last .x))
-    ))
 
 (defn tuple->set
   "Convert a tuple into a set (table with [`key` true] pairs)."
@@ -81,9 +57,6 @@
         :unknown))
     ))
 
-(defn path/exists [path]
-  (-> (os/stat path) (nil?) (not)))
-
 (defn open-writable-state-file []
   (file/open state-path :w))
 
@@ -98,7 +71,7 @@
     ))
 
 (defn load-state []
-  (if (path/exists state-path)
+  (if (path/exists? state-path)
     (do
       (def contents (file-get-lines state-path))
       (def index (-> (in contents 0) (string/trim) (scan-number)))
@@ -130,9 +103,9 @@
         (-> (os/getenv "SKIP_DIRS") (or "") (string/trim) (not= "")))
 
       (defn add-song [fname]
-        (assert (path/exists fname) (string/format "file %s does not exist" fname))
+        (assert (path/exists? fname) (string/format "file %s does not exist" fname))
 
-        (if (path/is-dir fname)
+        (if (path/is-dir? fname)
           (if skip-dirs
             (eprintf "warning: skipping directory %s" fname)
             (each sub (os/dir fname)

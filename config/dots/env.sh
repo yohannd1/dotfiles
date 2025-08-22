@@ -70,11 +70,11 @@ export ZIGUP_INSTALL_DIR="$XDG_CACHE_HOME/zigup"
 export ZIGUP_PATH_LINK="$HOME/.local/bin/zig"
 export LUAROCKS_HOME="$HOME/.luarocks"
 export JANET_MODPATH="$XDG_CACHE_HOME/janet-modules"
-export JANET_PATH="/usr/lib/janet:$JANET_MODPATH"
+export JANET_PATH="$DOTFILES/lib/janet:$JANET_MODPATH:/usr/lib/janet"
 export JANET_BINPATH="$HOME/.local/bin"
 export ZSH_PLUGIN_PATH="$XDG_CACHE_HOME/zsh-plugins"
 export R_PROFILE_USER="$DOTFILES/config/Rprofile.R"
-export R_LIBS_USER="$XDG_CACHE_HOME/rlibs";
+export R_LIBS_USER="$XDG_CACHE_HOME/rlibs"
 if _exists sccache; then
   export RUSTC_WRAPPER=sccache
 fi
