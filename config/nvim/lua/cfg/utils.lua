@@ -185,6 +185,10 @@ end
 
 do
   local splitWindow = function(dir)
+    if dir == "auto" then
+      dir = (vim.o.lines * 2 < vim.o.columns) and "right" or "down"
+    end
+
     if dir == "down" then
       vim.cmd.split()
       vim.cmd.wincmd("j")
@@ -208,7 +212,7 @@ do
   end
   M.uni_win.focus = function(id, opts)
     opts = opts or {}
-    local create_direction = opts.create_direction or "down"
+    local create_direction = opts.create_direction or "auto"
 
     local w = windows[id]
     if w == nil or not vim.api.nvim_win_is_valid(w) then
@@ -289,10 +293,9 @@ M.Sidebar.new = function(path)
 end
 M.Sidebar.toggle = function(self)
   local id = "sidebar"
-  local opts = { create_direction = "right" }
 
   if M.uni_win.get(id) == nil then
-    M.uni_win.focus(id, opts)
+    M.uni_win.focus(id, {})
     vim.cmd.edit(self.path)
   else
     M.uni_win.delete(id)

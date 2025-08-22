@@ -1,49 +1,8 @@
 #!/usr/bin/env janet
 
-(use tomlin)
-
-(defn fzagnostic
-  ```
-  Invokes fzagnostic with the provided arguments.
-
-  On success, returns a tuple [n, s] where n is the index of the choice and s is the text string.
-
-  On failure/cancellation, returns nil.
-  ```
-  [choices &named prompt starting-number]
-
-  (def [stdin-r stdin-w] (os/pipe))
-  (def [stdout-r stdout-w] (os/pipe))
-
-  (def starting-number (or starting-number 0))
-  (def fmt (let [max-n-len (-> starting-number (+ (length choices)) (- 1) (string) (length))]
-             (string "%0" max-n-len "d || %s\n")))
-
-  # write choices to stdin (separate fiber)
-  (ev/spawn
-    (for i 0 (length choices)
-      (def str (string/format fmt (+ i starting-number) (in choices i)))
-      (:write stdin-w str))
-    (:close stdin-w))
-
-  (def arglist @["fzagnostic"])
-  (unless (nil? prompt)
-    (array/push arglist "-p")
-    (array/push arglist prompt))
-
-  (def code (os/execute arglist :p {:in stdin-r :out stdout-w}))
-  (when (= code 0)
-    (def choice-raw (-> stdout-r (:read math/int32-max) (string/trim)))
-    (def [num-str rest] (string/split " " choice-raw 0 2))
-    (if-let [num (scan-number num-str)]
-      (do
-        [(- num starting-number) rest])
-      (do
-        (eprintf "error: bad input (%j is not a number)" num-str)
-        (os/exit 1)
-        )
-      ))
-  )
+(use tomlin) # TODO: stop using this
+(use dotf-path)
+(use dotf-utils)
 
 (defn readline-agnostic
   ```
@@ -53,9 +12,11 @@
 
   On failure/cancellation, returns nil.
   ```
-  [&named prompt]
+  [&named prompt-msg]
 
-  (def args ["readline-agnostic" ;(if (nil? prompt) [] ["-p" prompt])])
+  (def prompt-arg (if (nil? prompt-msg) [] ["-p" prompt-msg]))
+
+  (def args ["readline-agnostic" ;prompt-arg])
   (def [stdout-r stdout-w] (os/pipe))
   (def code (os/execute args :p {:out stdout-w}))
   (when (= code 0)
@@ -90,9 +51,10 @@
 
   # (def isatty (= 0 (os/execute [SHELL "-c" "[ -t 2 ]"] :p)))
   (def isatty true)
-  (def args (if isatty
-              [SHELL "-c" cmd]
-              ["tmux-bg-run" cmd]))
+  (def args
+    (if isatty
+      [SHELL "-c" cmd]
+      ["tmux-bg-run" cmd]))
   (os/exit (os/execute args :p)))
 
 (defn cmd-menu [add-to-recent]
@@ -106,7 +68,7 @@
     (os/execute ["gen-pathbin"] :px {:out pipe-w})) # TODO: error handling
   (def bins (->> (:read pipe-r math/int32-max)
                  (string/split "\n")))
-  (match (fzagnostic bins :prompt "Binary:")
+  (match (try-brief (fzagnostic bins :prompt "Binary:"))
     nil (os/exit 1)
     [n _] (run-shell (in bins n) add-to-recent)))
 
@@ -122,7 +84,7 @@
     (def pkg-f (string FZRUN-PACKAGES-FOLDER "/" pkg))
     (def possible-names ["Pkg.toml" "App.toml" "Game.toml"])
 
-    (when (= :directory (os/stat pkg-f :mode))
+    (when (path/is-dir? pkg-f)
       (as?->
         possible-names .x
         (map |(string pkg-f "/" $) .x)
@@ -141,9 +103,10 @@
             ))
         )))
 
-  (match (fzagnostic (->> entries (map |($ :name)))
-                     :prompt "Package: "
-                     :starting-number 50)
+  (match (try-brief (fzagnostic
+           (->> entries (map |($ :name)))
+           :prompt "Package: "
+           :starting-number 50))
     nil (os/exit 1)
 
     [n _]
@@ -192,17 +155,13 @@
                ))
      ])
 
-  (match (fzagnostic (map first actions) :prompt "Run: ")
+  (match (try-brief (fzagnostic (map first actions) :prompt "Run: "))
     nil
     (os/exit 1)
 
     [n _]
     (if-let [act (get actions n)]
       (-> act (in 1) (apply))
-      (do
-        (eprintf "error: out of range choice: %j" n)
-        (os/exit 1)
-        )
-      )
+      (die "out of range choice: %j" n))
     )
   )

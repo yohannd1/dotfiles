@@ -269,7 +269,7 @@ if vim.g.rifle_mode == nil then
   vim.g.rifle_mode = utils.os.is_android and "buffer" or "popup"
 end
 
-vim.g.rifle_split_direction = utils.os.is_android and "down" or "right"
+-- vim.g.rifle_split_direction = utils.os.is_android and "down" or "right"
 
 vim.api.nvim_create_user_command("Find", function(t)
   vim.cmd(("silent grep %s"):format(t.args))
