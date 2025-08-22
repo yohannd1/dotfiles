@@ -4,6 +4,10 @@ local utils = require("cfg.utils")
 
 local M = {}
 
+local autoSplitDirection = function()
+  return (vim.o.lines < vim.o.columns) and "right" or "down"
+end
+
 M.run = function(command)
   if executable("rifle-run") == 0 then
     error("could not find `rifle-run` in PATH")
@@ -12,7 +16,11 @@ M.run = function(command)
   local has_display = (vim.env.DISPLAY ~= nil) or (vim.env.WAYLAND_DISPLAY ~= nil)
   local supports_popup = has_display
   local default_rifle_mode = supports_popup and "popup" or "buffer"
-  local split_direction = vim.g.rifle_split_direction or vim.b.rifle_split_direction or "right"
+  local split_direction =
+    vim.g.rifle_split_direction or
+    vim.b.rifle_split_direction or
+    autoSplitDirection()
+
   local rifle_mode = vim.b.rifle_mode or vim.g.rifle_mode or default_rifle_mode
   local rifle_ft = vim.b.rifle_ft or vim.o.filetype
 
