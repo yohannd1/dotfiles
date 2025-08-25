@@ -66,7 +66,7 @@ local font_presets = {
   },
   ["Hack"] = {
     name = "Hack",
-    base_size = 14.6,
+    base_size = 16,
   },
   ["IbmPlex"] = {
     name = "Ibm Plex Mono",
@@ -123,6 +123,10 @@ local font_presets = {
   ["Inconsolata"] = {
     name = "Inconsolata Medium",
     base_size = 19,
+  },
+  ["Adwaita"] = {
+    name = "Adwaita Mono",
+    base_size = 16.5,
   },
 }
 -- }}}

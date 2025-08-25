@@ -40,7 +40,7 @@ setopt histignorespace # entries that start with a ' ' don't get to the history 
 setopt PROMPT_SUBST # $(cmd) literals are run on $PS1/$PS2/$RPROMPT
 
 # history config
-HISTFILE="$XDG_CACHE_HOME/zhistory"
+HISTFILE="$XDG_CACHE_HOME/zsh-history"
 HISTSIZE=SAVEHIST=100000
 setopt sharehistory
 setopt extendedhistory

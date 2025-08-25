@@ -291,8 +291,9 @@
   (when (or is-pdf (m :ext ["djvu" "ps" "epub"]))
     (t :gui ["zathura" file])
     (t :gui ["okular" file])
-    (t :gui ["mupdf" file])
-    )
+    (t :gui ["mupdf" file]))
+
+  (mt :ext ["xps"] :gui ["mupdf" file])
 
   (when is-pdf
     (t :runpage ["pdftotext" "-l" "10" "-nopgbrk" "-q" "--" file "-"])
