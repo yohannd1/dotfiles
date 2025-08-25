@@ -18,7 +18,7 @@
 
 (defn print-in-format [id tag-line]
   (def tags (-> tag-line (string/trim) (string/slice (length "%:tags "))))
-  (eprintf "%s %s" id tags))
+  (printf "%s %s" id tags))
 
 (defn main [arg0 & args]
   (def prog (path/basename arg0))
