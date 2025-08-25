@@ -1,6 +1,5 @@
 #!/usr/bin/env janet
 
-(use tomlin) # TODO: stop using this
 (use dotf-path)
 (use dotf-utils)
 
@@ -28,7 +27,6 @@
 
 (def XDG-CACHE-HOME (or (os/getenv "XDG_CACHE_HOME")
                         (string HOME "/.cache")))
-(def FZRUN-PACKAGES-FOLDER (os/getenv "FZRUN_PACKAGES_FOLDER"))
 (def FZRUN-RECENT-CMDS (or (os/getenv "FZRUN_RECENT_CMDS")
                            (string XDG-CACHE-HOME "/fzrun-recent-cmds")))
 
@@ -78,51 +76,6 @@
 (defn file-exists? [path]
   (-> path (os/stat :mode) (truthy?)))
 
-(defn package-menu []
-  (def entries @[])
-  (each pkg (os/dir FZRUN-PACKAGES-FOLDER)
-    (def pkg-f (string FZRUN-PACKAGES-FOLDER "/" pkg))
-    (def possible-names ["Pkg.toml" "App.toml" "Game.toml"])
-
-    (when (path/is-dir? pkg-f)
-      (as?->
-        possible-names .x
-        (map |(string pkg-f "/" $) .x)
-        (find file-exists? .x)
-        (file/open .x :rn)
-        (:read .x :all)
-
-        # TODO: start using either (parse-all) for janet-style files or just do a basic config format. I don't want to use a separate library just for this.
-        (toml->janet .x)
-
-        (if-let [entries-raw (in .x :entry)]
-          (loop [er :in entries-raw]
-            (set (er :config) (in .x :config {}))
-            (set (er :exec-dir) (in .x :exec-dir pkg-f))
-            (array/push entries er)
-            ))
-        )))
-
-  (match (try-brief (fzagnostic
-           (->> entries (map |($ :name)))
-           :prompt "Package: "
-           :starting-number 50))
-    nil (os/exit 1)
-
-    [n _]
-    (let [entry (in entries n)
-          config (in entry :config)
-          env (in entry :env {})
-          exec-dir (in entry :exec-dir)]
-      (each [k v] (pairs env)
-        (os/setenv (string k) v))
-      (os/cd exec-dir)
-      (-> entry (in :command) (run-shell false)))
-
-    _
-    (error "Unexpected"))
-  )
-
 (defn main [&]
   (def actions
     [
@@ -134,11 +87,6 @@
       (fn [] (bin-menu true))]
      ["Run a binary from the binary list (add-recent:no)"
       (fn [] (bin-menu false))]
-
-     ;(if FZRUN-PACKAGES-FOLDER
-        [["Select from the packages directory (apps/games)"
-          package-menu]]
-        [])
 
      ["Edit the recent commands file"
       (fn [] (edit-recent))]
