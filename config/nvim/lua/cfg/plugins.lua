@@ -200,6 +200,13 @@ M.add({
   end,
 })
 
+M.add({
+  source = "Olical/conjure",
+  before = function()
+    vim.g["conjure#mapping#prefix"] = ","
+  end,
+})
+
 -- M.add({
 --   name = "nvim-lspconfig",
 --   source = "neovim/nvim-lspconfig",
@@ -460,12 +467,12 @@ M.add({
   }),
 })
 
-M.add({
-  source = "yohannd1/zig.vim",
-  before = function()
-    vim.g.zig_fmt_autosave = 0
-  end
-})
+-- M.add({
+--   source = "yohannd1/zig.vim",
+--   before = function()
+--     vim.g.zig_fmt_autosave = 0
+--   end
+-- })
 
 M.add({
   source = "plasticboy/vim-markdown",

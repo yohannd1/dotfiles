@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+set -ue
+
+if [ $# -ge 0 ] && [ "$1" = build ]; then
+  exec anyzig "$@"
+else
+  exec anyzig 0.15.1 "$@"
+fi
