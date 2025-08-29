@@ -6,6 +6,7 @@ import os
 from math import *
 from random import *
 from pathlib import Path
+from typing import Iterable
 
 from operator import xor
 
@@ -17,10 +18,31 @@ def res_ratio(x: int, y: int) -> tuple[int, int]:
     div = gcd(x, y)
     return (x // div, y // div)
 
-if len(sys.argv) == 1:
-    pass
-elif len(sys.argv) == 2:
-    print(eval(sys.argv[1]))
-    os._exit(0)
-else:
-    raise Exception("bad amount of arguments")
+def is_prime(p: int) -> bool:
+    for i in range(2, p):
+        if p % i == 0:
+            return False
+    return True
+
+def factor(x: int) -> Iterable[int]:
+    """This is probably bog slow btw."""
+
+    factors = []
+
+    def next_prime(p: int) -> int:
+        p += 1
+        while not is_prime(p):
+            p += 1
+        return p
+
+    cur = x
+    prime = next_prime(1)
+    while cur > 1 and prime <= cur:
+        while cur % prime == 0:
+            factors.append(prime)
+            cur //= prime
+        prime = next_prime(prime)
+    if cur != 1:
+        raise Exception(f"Bad state: {cur=} {prime=} {factors=}")
+
+    return factors
