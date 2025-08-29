@@ -2,33 +2,31 @@
 #
 # A script to launch emacs on different occasions.
 
-if [ -t 1 ] && [ -t 2 ]; then
-  onGui=0
-else
-  onGui=1
-fi
+# isGUI() { [ -t 1 ] && [ -t 2 ]; }
+isGUI() { true; }
+
+export TERM=xterm-16color
 
 launchClient() {
-  if [ "$onGui" = 0 ]; then
-    TERM=xterm-16color exec emacsclient -a "" -t "$@"
+  if isGUI; then
+    exec emacsclient -a "" -t "$@"
   else
-    TERM=xterm-16color exec d.trun runsane emacsclient -a "" -t "$@"
+    exec d.trun runsane emacsclient -a "" -t "$@"
     # exec emacsclient -a "" -c "$@"
   fi
 }
 
 launchStandalone() {
-  if [ "$onGui" = 0 ]; then
-    TERM=xterm-16color exec emacs -nw "$@"
+  if isGUI; then
+    exec emacs -nw "$@"
   else
     # TERM=xterm-16color exec emacs "$@"
-    TERM=xterm-16color exec d.trun runsane emacs -nw "$@"
+    exec d.trun runsane emacs -nw "$@"
   fi
 }
 
-if [ "$DISPLAY" ]; then
+if [ "$DISPLAY" ] || [ "$WAYLAND_DISPLAY" ]; then
   launchClient "$@"
 else
-  # launchClient "$@"
   launchStandalone "$@"
 fi
