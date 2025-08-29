@@ -464,13 +464,11 @@ clipW2X() { wl-paste | xclip -sel clip; }
 # proc list searches - might be the fastest & simplest way to do this
 procList() { ps -eo pid,args | tail +2 | sed 's/^ \+//g'; }
 procSearch() {
-  if [ $# = 0 ]; then
-    procList | fzagnostic
-  elif [ $# = 1 ]; then
-    procList | rg "$1"
-  else
-    return 2
-  fi
+  case $# in
+    0) procList | fzagnostic ;;
+    1) procList | rg "$1" ;;
+    *) return 2 ;;
+  esac
 }
 alias P='procSearch'
 
