@@ -152,7 +152,8 @@ bindkey -s '^R' '\eS fzhistory\n'
 [ "$FILEMAN" = "nnn" ] && exists nnn && bindkey -s '^o' '\eS nnnAndCd\n'
 
 bindkey -s '^P' '\e[C'
-bindkey '\e[' edit-command-line
+
+bindkey -M vicmd 'Ç' edit-command-line
 
 _fzselectGen() {
   fd | fzagnostic -m | tr '\n' '\0' | xargs -0 -I{} printf "%q" {}

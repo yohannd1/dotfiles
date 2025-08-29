@@ -544,7 +544,7 @@ elif isLang 'zsh'; then
   do_run() { zsh "$file"; }
 
 else
-  die "unknown language: $lang\n"
+  die "unknown language: $lang"
 fi
 
 case "$1" in

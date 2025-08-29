@@ -283,6 +283,8 @@ vim.api.nvim_create_user_command("AcrMentionedIn", function(_t)
   vim.cmd.copen()
 end, { nargs = "*" })
 
+vim.api.nvim_create_user_command("AcrImportant", [[ Find '\%important' ]], { nargs = 0 })
+
 do
   local num_val = 0
 
