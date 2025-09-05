@@ -15,18 +15,18 @@ main() {
 
   case "$type" in
     # utterly trivial compared to the other messes...
-    image/png) cat "$1" | dotf.wrap.clip copy --type "$type" ;;
+    image/png) cat "$1" | d.clip copy --type "$type" ;;
 
     image/jpeg|image/webp|image/gif)
       # firefox/chromium/xclip (not sure who exactly) struggle with jpeg for some weird reason, so we have to spoof the mimetype.
-      # in case I ever need it: there's also converting with `magick "$1" -quality 4 -format png - | dotf.wrap.clip copy --type 'image/png'`
+      # in case I ever need it: there's also converting with `magick "$1" -quality 4 -format png - | d.clip copy --type 'image/png'`
       # FIXME: is this needed in wayland? or is it just an issue with xclip?
-      cat "$1" | dotf.wrap.clip copy --type 'image/png'
+      cat "$1" | d.clip copy --type 'image/png'
       ;;
 
     *)
       msg "warning: unknown type: $type - copying might not work!"
-      cat "$1" | dotf.wrap.clip copy --type 'image/png'
+      cat "$1" | d.clip copy --type 'image/png'
       exit 1
       ;;
   esac
