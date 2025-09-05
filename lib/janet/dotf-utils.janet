@@ -37,6 +37,17 @@
     )
   )
 
+(defmacro with-cwd
+  "Executes `body` with `cwd` as the current working directory."
+  [cwd & body]
+
+  (def v-orig (gensym))
+  ~(do
+     (def ,v-orig (os/cwd))
+     (os/cd ,cwd)
+     (defer (os/cd ,v-orig) ,;body)
+     ))
+
 (defn die
   "Print a formatted error message and exit with a code."
   [code fmt & args]
