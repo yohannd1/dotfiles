@@ -1,3 +1,45 @@
+(defn run<
+  ```
+  Run a subprocess with command and arguments specified by `args`. Sends to its
+  standard input the data in `to-write`.
+
+  TODO: clarify that `to-write` can either be a function or a string/buffer
+  ```
+  [args to-write]
+
+  (cond
+    (or (string? to-write) (buffer? to-write))
+    (run< args |(:write $ to-write))
+
+    (function? to-write)
+    (let [write-func to-write
+          [stdin-r stdin-w] (os/pipe)
+          [stdout-r stdout-w] (os/pipe)
+          out-buf @""]
+
+      # write fiber
+      (ev/spawn
+        (write-func stdin-w))
+
+      # read fiber
+      (ev/spawn
+        (while (def buf (:read stdout-r 4096))
+          (buffer/push-string out-buf buf)))
+
+      (def code
+        (os/execute args :p {:in stdin-r :out stdout-w}))
+
+      # if we don't close this, the program may block with clogged pipes
+      (:close stdin-w)
+      (:close stdout-r)
+
+      (if (= code 0)
+        out-buf
+        nil))
+
+    (error (string/format "couldn't figure out how to write with: %j"))
+    ))
+
 (defn fzagnostic
   ```
   Invokes fzagnostic with the provided arguments.
@@ -8,34 +50,29 @@
   ```
   [choices &named prompt starting-number]
 
-  (def [stdin-r stdin-w] (os/pipe))
-  (def [stdout-r stdout-w] (os/pipe))
+  (default starting-number 0)
 
-  (def starting-number (or starting-number 0))
-  (def fmt (let [max-n-len (-> starting-number (+ (length choices)) (- 1) (string) (length))]
-             (string "%0" max-n-len "d || %s\n")))
+  (def fmt
+    (let [max-n-len (-> (+ starting-number (length choices)) (- 1) (string) (length))]
+      (string "%0" max-n-len "d || %s\n")))
 
-  # write choices to stdin (separate fiber)
-  (ev/spawn
+  (var arglist ["fzagnostic"])
+  (unless (nil? prompt)
+    (set arglist (tuple ;arglist "-p" prompt)))
+
+  (defn write [f]
     (for i 0 (length choices)
       (def str (string/format fmt (+ i starting-number) (in choices i)))
-      (:write stdin-w str))
-    (:close stdin-w))
+      (:write f str)))
 
-  (def arglist @["fzagnostic"])
-  (unless (nil? prompt)
-    (array/push arglist "-p")
-    (array/push arglist prompt))
-
-  (def code (os/execute arglist :p {:in stdin-r :out stdout-w}))
-  (when (= code 0)
-    (def choice-raw (-> stdout-r (:read math/int32-max) (string/trim)))
-    (def [num-str rest] (string/split " " choice-raw 0 2))
-    (if-let [num (scan-number num-str)]
-      [(- num starting-number) rest]
-      (-> "bad input (%j is not a number)" (string/format num-str) (error)))
-    )
-  )
+  (as?->
+    (run< arglist write) .x
+    (string/trim .x)
+    (let [[num-str rest] (string/split " " .x 0 2)]
+      (if-let [num (scan-number num-str)]
+        [(- num starting-number) rest]
+        (-> "bad input (%j is not a number)"
+            (string/format num-str) (error))))))
 
 (defmacro with-cwd
   "Executes `body` with `cwd` as the current working directory."
@@ -45,8 +82,7 @@
   ~(do
      (def ,v-orig (os/cwd))
      (os/cd ,cwd)
-     (defer (os/cd ,v-orig) ,;body)
-     ))
+     (defer (os/cd ,v-orig) ,;body)))
 
 (defn die
   "Print a formatted error message and exit with a code."
@@ -62,5 +98,4 @@
 
   ~(try
     (do ,;body)
-    ([err] (die 1 "%s" err)))
-  )
+    ([err] (die 1 "%s" err))))
