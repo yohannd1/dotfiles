@@ -309,7 +309,7 @@ M.add({
     local single_quote_rule = autopairs.get_rules("'")[1]
     single_quote_rule.not_filetypes = {
       -- lisps
-      "scheme", "lisp", "fennel", "janet", "clojure",
+      "scheme", "scheme.guile", "lisp", "fennel", "janet", "clojure",
 
       -- prose formats
       "acrylic", "markdown", "latex",
@@ -321,7 +321,7 @@ M.add({
 
     local backtick_rule = autopairs.get_rules("`")[1]
     backtick_rule.not_filetypes = {
-      "systemverilog", "verilog",
+      "systemverilog", "verilog", "scheme"
     }
 
     -- escape codes
