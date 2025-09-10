@@ -43,6 +43,11 @@
 (defn log [msg]
   (os/execute ["notify-send" "--" (string msg)] :px))
 
+(defn exec-exit
+  "Execute the program `args` and exit with its exit code."
+  [args]
+  (-> (os/execute args :p) (os/exit)))
+
 (defn run-shell [cmd add-to-recent]
   (when add-to-recent
     (add-line-to-file FZRUN-RECENT-CMDS cmd))
@@ -53,7 +58,7 @@
     (if isatty
       [SHELL "-c" cmd]
       ["tmux-bg-run" cmd]))
-  (os/exit (os/execute args :p)))
+  (exec-exit args))
 
 (defn cmd-menu [add-to-recent]
   (match (readline-agnostic :prompt "Type the desired command: ")
@@ -61,6 +66,13 @@
     out (run-shell (string out) add-to-recent)))
 
 (defn bin-menu [add-to-recent]
+  '(
+    TODO: refactor this to use... (run<) ?
+    I think do:
+    (def pathbin (run< ["gen-pathbin"]))
+    (when (nil? pathbin)
+      (die 1 "failed to get binaries list"))
+    )
   (def [pipe-r pipe-w] (os/pipe))
   (ev/spawn
     (os/execute ["gen-pathbin"] :px {:out pipe-w})) # TODO: error handling
@@ -71,12 +83,27 @@
     [n _] (run-shell (in bins n) add-to-recent)))
 
 (defn edit-recent []
-  (os/exit (os/execute [EDITOR FZRUN-RECENT-CMDS] :p)))
+  (exec-exit [EDITOR FZRUN-RECENT-CMDS]))
 
-(defn file-exists? [path]
-  (-> path (os/stat :mode) (truthy?)))
+(defn main [arg0 & args]
+  (unless (empty? args)
+    (die 2 "no args should be supplied"))
 
-(defn main [&]
+  (def recent-cmds
+    (if-let [f (file/open FZRUN-RECENT-CMDS :r)]
+      (defer (:close f)
+        (->>
+          (:read f :all)
+          (string/split "\n")
+          (map string/trim)
+          (filter |(not (or (= (length $) 0)
+                            (string/has-prefix? "#" $))))
+          (map |[(string "(recnt) " $)
+                 (fn [] (run-shell $ false))])
+          )
+        )
+      []))
+
   (def actions
     [
      ["Run a custom command (add-recent:yes)"
@@ -87,20 +114,9 @@
       (fn [] (bin-menu true))]
      ["Run a binary from the binary list (add-recent:no)"
       (fn [] (bin-menu false))]
-
      ["Edit the recent commands file"
       (fn [] (edit-recent))]
-
-     ;(match (file/open FZRUN-RECENT-CMDS :r)
-        nil []
-        f (->> (:read f :all)
-               (string/split "\n")
-               (map |(string/trim $))
-               (filter |(not (or (= (length $) 0)
-                                 (string/has-prefix? "#" $))))
-               (map |[(string "(recnt) " $)
-                      (fn [] (run-shell $ false))])
-               ))
+     ;recent-cmds
      ])
 
   (match (try-brief (fzagnostic (map first actions) :prompt "Run: "))
