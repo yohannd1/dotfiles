@@ -405,7 +405,7 @@ elif isLang 'teal'; then
     tl run "$file"
   }
 
-elif isLang 'scheme'; then
+elif isLang 'scheme' || isLang 'scheme.guile'; then
   do_run() {
     if [ -x "$file" ]; then
       "$file"
