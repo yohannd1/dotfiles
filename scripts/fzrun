@@ -3,84 +3,48 @@
 (use dotf-path)
 (use dotf-utils)
 
-(defn readline-agnostic
-  ```
-  Invokes readline-agnostic with the provided arguments.
-
-  On success, returns the input as a string.
-
-  On failure/cancellation, returns nil.
-  ```
-  [&named prompt-msg]
-
-  (def prompt-arg (if (nil? prompt-msg) [] ["-p" prompt-msg]))
-
-  (def args ["readline-agnostic" ;prompt-arg])
-  (def [stdout-r stdout-w] (os/pipe))
-  (def code (os/execute args :p {:out stdout-w}))
-  (when (= code 0)
-    (-> stdout-r (:read math/int32-max))))
-
 (def HOME (assert (os/getenv "HOME") "HOME env var unset"))
 (def SHELL (os/getenv "SHELL" "/bin/sh"))
 (def EDITOR (os/getenv "EDITOR" "vi"))
 
-(def XDG-CACHE-HOME (or (os/getenv "XDG_CACHE_HOME")
-                        (string HOME "/.cache")))
-(def FZRUN-RECENT-CMDS (or (os/getenv "FZRUN_RECENT_CMDS")
-                           (string XDG-CACHE-HOME "/fzrun-recent-cmds")))
+(def XDG-CACHE-HOME
+  (or (os/getenv "XDG_CACHE_HOME")
+      (string HOME "/.cache")))
+(def FZRUN-RECENT-CMDS
+  (or (os/getenv "FZRUN_RECENT_CMDS")
+      (string XDG-CACHE-HOME "/fzrun-recent-cmds")))
 
-(def DISPLAY (os/getenv "DISPLAY"))
-(def WAYLAND-DISPLAY (os/getenv "WAYLAND_DISPLAY"))
-(def is-graphical (-> DISPLAY (or WAYLAND-DISPLAY) (truthy?)))
-
-(defn add-line-to-file [path line]
-  (def f (file/open path :an))
-  (:write f line)
-  (:write f "\n")
-  (:close f))
-
-(defn log [msg]
-  (os/execute ["notify-send" "--" (string msg)] :px))
-
-(defn exec-exit
-  "Execute the program `args` and exit with its exit code."
-  [args]
-  (-> (os/execute args :p) (os/exit)))
+(defn file/append-line [path line]
+  (with [f (file/open path :an)]
+    (:write f line)
+    (:write f "\n") # TODO: is this needed?
+    ))
 
 (defn run-shell [cmd add-to-recent]
   (when add-to-recent
-    (add-line-to-file FZRUN-RECENT-CMDS cmd))
+    (file/append-line FZRUN-RECENT-CMDS cmd))
 
-  # (def isatty (= 0 (os/execute [SHELL "-c" "[ -t 2 ]"] :p)))
-  (def isatty true)
-  (def args
-    (if isatty
-      [SHELL "-c" cmd]
-      ["tmux-bg-run" cmd]))
-  (exec-exit args))
+  # NOTE: previously I used tmux-bg-run here. But not feeling like it rn.
+  (exec-exit [SHELL "-c" cmd]))
 
 (defn cmd-menu [add-to-recent]
-  (match (readline-agnostic :prompt "Type the desired command: ")
-    nil (os/exit 1)
-    out (run-shell (string out) add-to-recent)))
+  (if-let [out (readline-agnostic :prompt "Type the desired command: ")]
+    (run-shell (string out) add-to-recent)
+    (os/exit 1)))
 
 (defn bin-menu [add-to-recent]
-  '(
-    TODO: refactor this to use... (run<) ?
-    I think do:
-    (def pathbin (run< ["gen-pathbin"]))
-    (when (nil? pathbin)
-      (die 1 "failed to get binaries list"))
-    )
-  (def [pipe-r pipe-w] (os/pipe))
-  (ev/spawn
-    (os/execute ["gen-pathbin"] :px {:out pipe-w})) # TODO: error handling
-  (def bins (->> (:read pipe-r math/int32-max)
-                 (string/split "\n")))
-  (match (try-brief (fzagnostic bins :prompt "Binary:"))
-    nil (os/exit 1)
-    [n _] (run-shell (in bins n) add-to-recent)))
+  (def bins
+    (as?->
+      (run< ["gen-pathbin"]) .x
+      (if (nil? .x)
+        (die 1 "failed to get binaries list")
+        .x)
+      (string/trim .x)
+      (string/split "\n" .x)))
+
+  (if-let [[n _] (try-brief (fzagnostic bins :prompt "Binary:"))]
+    (run-shell (in bins n) add-to-recent)
+    (os/exit 1)))
 
 (defn edit-recent []
   (exec-exit [EDITOR FZRUN-RECENT-CMDS]))
@@ -89,6 +53,16 @@
   (unless (empty? args)
     (die 2 "no args should be supplied"))
 
+  (defn is-skippable-line [l]
+    (or (empty? l) (string/has-prefix? "#" l)))
+
+  (def base-actions
+    [["Run a custom command (add-recent:yes)" |(cmd-menu true)]
+     ["Run a custom command (add-recent:no)" |(cmd-menu false)]
+     ["Run a binary from the binary list (add-recent:yes)" |(bin-menu true)]
+     ["Run a binary from the binary list (add-recent:no)" |(bin-menu false)]
+     ["Edit the recent commands file" |(edit-recent)]])
+
   (def recent-cmds
     (if-let [f (file/open FZRUN-RECENT-CMDS :r)]
       (defer (:close f)
@@ -96,36 +70,16 @@
           (:read f :all)
           (string/split "\n")
           (map string/trim)
-          (filter |(not (or (= (length $) 0)
-                            (string/has-prefix? "#" $))))
+          (filter |(not (is-skippable-line $)))
           (map |[(string "(recnt) " $)
                  (fn [] (run-shell $ false))])
-          )
-        )
+          ))
       []))
 
-  (def actions
-    [
-     ["Run a custom command (add-recent:yes)"
-      (fn [] (cmd-menu true))]
-     ["Run a custom command (add-recent:no)"
-      (fn [] (cmd-menu false))]
-     ["Run a binary from the binary list (add-recent:yes)"
-      (fn [] (bin-menu true))]
-     ["Run a binary from the binary list (add-recent:no)"
-      (fn [] (bin-menu false))]
-     ["Edit the recent commands file"
-      (fn [] (edit-recent))]
-     ;recent-cmds
-     ])
+  (def actions [;base-actions ;recent-cmds])
 
-  (match (try-brief (fzagnostic (map first actions) :prompt "Run: "))
-    nil
-    (os/exit 1)
-
-    [n _]
+  (if-let [[n _] (try-brief (fzagnostic (map first actions) :prompt "Run: "))]
     (if-let [act (get actions n)]
       (-> act (in 1) (apply))
       (die "out of range choice: %j" n))
-    )
-  )
+    (os/exit 1)))
