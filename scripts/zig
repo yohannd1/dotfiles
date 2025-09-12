@@ -2,8 +2,20 @@
 
 set -ue
 
-if [ $# -ge 0 ] && [ "$1" = build ]; then
-  exec anyzig "$@"
+PREFIX=${PREFIX:-/usr}
+zig="$PREFIX/bin/zig"
+
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
+if exists anyzig; then
+  if [ $# -ge 0 ] && [ "$1" = build ]; then
+    exec anyzig "$@"
+  else
+    exec anyzig 0.15.1 "$@"
+  fi
+elif exists "$zig"; then
+  exec "$zig" "$@"
 else
-  exec anyzig 0.15.1 "$@"
+  printf >&2 "couldn't find any zig instance...\n"
+  exit 1
 fi

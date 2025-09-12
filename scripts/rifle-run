@@ -347,6 +347,9 @@ elif isLang 'php'; then
   do_check() { php-cs-fixer check "$file"; }
   do_run() { php "$file"; }
 
+elif isLang 'prolog'; then
+  do_run() { swi-prolog "$file"; }
+
 elif isLang 'python'; then
   python=$(firstExists python3 python py)
 
