@@ -33,9 +33,7 @@
     (def [num-str rest] (string/split " " choice-raw 0 2))
     (if-let [num (scan-number num-str)]
       [(- num starting-number) rest]
-      (-> "bad input (%j is not a number)" (string/format num-str) (error)))
-    )
-  )
+      (-> "bad input (%j is not a number)" (string/format num-str) (error)))))
 
 (defn die
   "Print a formatted error message and exit with a code."
@@ -50,6 +48,37 @@
   [& body]
 
   ~(try
-    (do ,;body)
-    ([err] (die 1 "%s" err)))
-  )
+     (do ,;body)
+     ([err] (die 1 "%s" err))))
+
+(defn acquire-lock
+  "Attempt to acquire a lock. Waits for it to be available, and returns a struct with a :unlock method, which can be used to free the lock."
+  [file]
+
+  (assert (string? file))
+  (def cmdline ["flock" file "sh" "-c" "echo x; read _"])
+  (def proc (os/spawn cmdline :px {:in :pipe :out :pipe}))
+  (def {:out p-out} proc)
+
+  (:read p-out 1)
+  (:close p-out)
+
+  (defn unlock [self]
+    (when (self :locked)
+      (set (self :locked) false)
+      (let [{:in p-in} (self :proc)]
+        (:write p-in "ok\n")
+        (:close p-in))))
+
+  @{:proc proc
+    :locked true
+    :unlock unlock})
+
+(defmacro with-lock
+  "Runs `body` in a locked scope of `file`."
+  [file & body]
+
+  (with-syms [lock]
+    ~(let [,lock (acquire-lock ,file)]
+       (defer (:unlock ,lock)
+         ,;body))))
