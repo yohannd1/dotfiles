@@ -235,9 +235,13 @@
     (m :ext ["mod" "it" "s3m" "mptm"]))
 
   # audio files
-  (when (or (and (not is-openmpt-compatible)
-                 (m :mime [[:begins "audio/"]]))
-            (m :ext ["aac" "flac" "m4a" "mpa" "mp2" "mp3" "ogg" "wav" "wma"]))
+  (when
+    (or (and
+          (not is-openmpt-compatible)
+          (m :mime [[:begins "audio/"]]))
+        (m :ext ["aac" "flac" "m4a" "mpa" "mp2" "mp3"
+                 "ogg" "wav" "wma"]))
+
     (t :pop ["mpv" "--no-video" file])
     (t :pop ["mocplay" file "opener"])
     (t :tty ["exiftool" file])
@@ -249,14 +253,14 @@
   (when (m :ext ["ardour"])
     (t :gui ["ardour8" file])
     (t :gui ["ardour7" file])
-    (t :gui ["ardour6" file])
-    )
+    (t :gui ["ardour6" file]))
   (when (m :ext ["mmp" "mmpz"])
     (t :gui ["@lmms" file])
     (t :gui ["lmms" file]))
   (mt :ext ["flp"] :gui ["@fl-studio" file])
   (mt :ext ["zpj"] :gui ["zrythm" file])
   (mt :ext ["rad"] :gui ["radium" file])
+  (mt :ext ["fms"] :gui ["famistudio" file])
 
   # image
   (when (m :mime ["image/vnd.djvu"])

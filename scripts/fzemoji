@@ -24,4 +24,4 @@ genEmojiList() {
 }
 
 choice=$(genEmojiList | fzagnostic)
-printf "%s" "$choice" | cut -d' ' -f1 | tr -d '\n' | dotf.wrap.clip copy
+printf "%s" "$choice" | cut -d' ' -f1 | tr -d '\n' | d.clip copy

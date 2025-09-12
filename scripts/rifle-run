@@ -269,6 +269,7 @@ elif isLang 'hy'; then
 elif isLang 'janet'; then
   do_build() { janet -c "$file" "$tmp/out.jimage"; }
   do_run() { janet "$file"; }
+  do_check() { janet -k "$file"; }
 
 elif isLang 'java'; then
   main=$(getJavaMainClass < "$file")

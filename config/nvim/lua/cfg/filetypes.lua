@@ -569,7 +569,14 @@ end
 
 ft.lisp = function()
   vim.b.better_join_whitespace_matcher = lispJoinMatcher
+  setSpaceIndent(2)
 end
+
+ft.scheme = function()
+  vim.b.better_join_whitespace_matcher = lispJoinMatcher
+  setSpaceIndent(2)
+end
+ft["scheme.guile"] = scheme
 
 ft.janet = function()
   vim.b.better_join_whitespace_matcher = lispJoinMatcher

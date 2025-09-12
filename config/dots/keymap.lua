@@ -12,6 +12,10 @@ return function(api)
     :desc("open terminal (float)")
     :map("dotf.wrap.terminal -c float")
 
+  api.key("super ctrl alt enter")
+    :desc("open terminal (xterm, specifically)")
+    :map("xterm")
+
   api.key("super space")
     :desc("program launcher")
     :map("runnsend error-and-output fzrun")
