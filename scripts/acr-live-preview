@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
+
 import os
 import sys
+from abc import abstractmethod
 from time import sleep
 from pathlib import Path
 from dataclasses import dataclass
@@ -18,8 +21,6 @@ from watchdog.events import FileSystemEvent, FileSystemEventHandler, FileModifie
 from watchdog.observers import Observer
 
 # TODO: refactor this into a more generic utility, or something. I'd like this to be a library, but how do I set up a proper local-to-dotfiles python library anyway?
-# TODO: close everything when a KeyboardInterrupt is received
-# TODO: option for timeout (so I don't need to feed 3 friggin KeyboardInterrupts for it to close...)
 
 opener = os.environ.get("OPENER") or "xdg-open"
 
@@ -31,7 +32,12 @@ class Args:
     katex_path: Path
 
 
-class BroadcasterThread(Thread):
+class StoppableThread(Thread):
+    @abstractmethod
+    def request_stop(self) -> None: ...
+
+
+class BroadcasterThread(StoppableThread):
     def __init__(self) -> None:
         super().__init__()
         self._queue: Queue[Any] = Queue()
@@ -46,6 +52,9 @@ class BroadcasterThread(Thread):
     def broadcast(self, message) -> None:
         self._queue.put(("broadcast", message))
 
+    def request_stop(self) -> None:
+        self._queue.put("stop")
+
     def run(self) -> None:
         while True:
             match self._queue.get():
@@ -56,9 +65,10 @@ class BroadcasterThread(Thread):
                 case ("broadcast", message):
                     for c in self._consumers:
                         c.put(message)
+                case "stop":
+                    break
                 case unk:
-                    print(f"WARNING: got unknown item {unk}")
-
+                    raise ValueError(f"got unknown item {unk}")
 
 broadcaster = BroadcasterThread()
 
@@ -66,28 +76,51 @@ broadcaster = BroadcasterThread()
 class ChangesMonitorThread(Observer):
     callbacks: list[tuple[Any, Callable]]
 
-    def __init__(self, file_to_watch: Path):
+    def __init__(self, file_to_watch: Path) -> None:
         super().__init__()
         self.callbacks = []
 
-        cmt = self
-
         class Handler(FileSystemEventHandler):
+            def __init__(self, monitor: ChangesMonitorThread):
+                super().__init__()
+                self.monitor = monitor
+
             def on_any_event(self, event: FileSystemEvent) -> None:
+                assert isinstance(event.src_path, str)
+
                 if Path(event.src_path) != file_to_watch:
                     return
 
-                for event_type, callback in cmt.callbacks:
+                for event_type, callback in self.monitor.callbacks:
                     if isinstance(event, event_type):
                         callback(event)
 
-        super().schedule(Handler(), file_to_watch.parent, recursive=False)
+        super().schedule(Handler(self), file_to_watch.parent, recursive=False)
 
     def on_event(self, event_type) -> Callable[[Any], None]:
         def inner(func) -> None:
             self.callbacks.append((event_type, func))
 
         return inner
+
+    def request_stop(self) -> None:
+        self.stop()
+
+
+RELOAD_JS = """
+<script>
+const es = new EventSource("/api/stream");
+es.onmessage = (_) => window.location.reload();
+es.onerror = (e) => {
+    debug.error("EventSource error:");
+    debug.error(e);
+    setTimeout(
+        () => alert("An error ocurred! See console for info."),
+        1500
+    )
+};
+</script>
+"""
 
 
 def compile_file(args: Args) -> None:
@@ -98,23 +131,8 @@ def compile_file(args: Args) -> None:
 
     os.environ["OPEN_NEW_WINDOW"] = "1"
 
-    js_to_inject = """
-    <script>
-    const es = new EventSource("/api/stream");
-    es.onmessage = (_) => window.location.reload();
-    es.onerror = (e) => {
-        debug.error("EventSource error:");
-        debug.error(e);
-        setTimeout(
-            () => alert("An error ocurred! See console for info."),
-            1500
-        )
-    };
-    </script>
-    """
-
     def inject_html(file) -> None:
-        file.write(js_to_inject)
+        file.write(RELOAD_JS)
 
     with Popen(c_args, stderr=PIPE) as proc:
         exit_code = proc.wait()
@@ -155,11 +173,12 @@ def compile_file(args: Args) -> None:
             inject_html(file)
 
 
-class CompilerThread(Thread):
-    def __init__(self, args: Args):
+class CompilerThread(StoppableThread):
+    def __init__(self, args: Args) -> None:
         super().__init__()
         self._queue: Queue[Any] = Queue()
         self._args = args
+        self._stop = False
 
     def request_compile(self) -> None:
         self._queue.put("compile")
@@ -167,20 +186,26 @@ class CompilerThread(Thread):
     def request_open(self, path: str) -> None:
         self._queue.put(("open", path))
 
-    def run(self) -> None:
+    def _pileup_empty_queue(self) -> list[Any]:
+        """Wait for an item, sleep for a while and get everything that piled up after.
+        This way we can detect duplicated "file modified" events and avoid recompiling multiple times in a short period.
+        """
+        PILEUP_TIME = 0.2
+        items = [self._queue.get()]
+        sleep(PILEUP_TIME)
         while True:
+            try:
+                items.append(self._queue.get(block=False))
+            except Empty:
+                break
+        return items
+
+    def run(self) -> None:
+        while not self._stop:
             wants_compile = False
             open_path = None
 
-            # wait for an item, then sleep for a while and get all that piled up
-            # this way we can detected duplicated "file modified" events and avoid recompiling multiple times in a short period
-            items = [self._queue.get()]
-            sleep(0.2)
-            while True:
-                try:
-                    items.append(self._queue.get(block=False))
-                except Empty:
-                    break
+            items = self._pileup_empty_queue()
 
             for item in items:
                 match item:
@@ -188,8 +213,10 @@ class CompilerThread(Thread):
                         wants_compile = True
                     case ("open", path):
                         open_path = path
+                    case "stop":
+                        self._stop = True
                     case unk:
-                        print(f"WARNING: got unknown item {unk}")
+                        raise ValueError(f"got unknown item {unk}")
 
             if wants_compile:
                 print("** Compiling **")
@@ -197,76 +224,102 @@ class CompilerThread(Thread):
                 broadcaster.broadcast("send_reload")
 
             if open_path is not None:
-                _ = Popen([opener, open_path]) # pylint: disable=consider-using-with
+                _ = Popen([opener, open_path])  # pylint: disable=consider-using-with
+
+    def request_stop(self) -> None:
+        self._queue.put("stop")
 
 
 compiler: Optional[CompilerThread] = None
 
 
-def server_thread(args: Args) -> None:
-    class Handler(SimpleHTTPRequestHandler):
-        def __init__(self, request, client_address, server):
-            super().__init__(
-                request, client_address, server, directory=args.output_file.parent
-            )
+class ServerReqHandler(SimpleHTTPRequestHandler):
+    def __init__(self, request, client_address, server, **kwargs):
+        super().__init__(
+            request, client_address, server, directory=kwargs["args"].output_file.parent
+        )
 
-        def send_utf8(self, string: str) -> None:
-            self.wfile.write(bytes(string, "utf-8"))
+    def send_utf8(self, string: str) -> None:
+        self.wfile.write(bytes(string, "utf-8"))
 
-        def flush(self) -> None:
-            self.wfile.flush()
+    def flush(self) -> None:
+        self.wfile.flush()
 
-        def handle_sse_stream(self) -> None:
-            self.send_response(200)
-            self.send_header("Content-Type", "text/event-stream")
-            self.send_header("Cache-Control", "no-cache")
-            self.send_header("Connection", "keep-alive")
-            self.end_headers()
+    def handle_sse_stream(self) -> None:
+        self.send_response(200)
+        self.send_header("Content-Type", "text/event-stream")
+        self.send_header("Cache-Control", "no-cache")
+        self.send_header("Connection", "keep-alive")
+        self.end_headers()
 
-            queue: Queue[Any] = Queue()
-            broadcaster.add_consumer(queue)
-            try:
-                while True:
-                    match queue.get():
-                        case "send_reload":
-                            self.send_utf8("data: reload\n\n")
-                            self.flush()
-                        case "stop":
-                            break
-            except BrokenPipeError:
-                print("SSE connection aborted")
-            finally:
-                broadcaster.remove_consumer(queue)
-
-        def do_GET(self) -> None:
-            if self.path == "/api/stream":
-                self.handle_sse_stream()
-                return
-
-            super().do_GET()
-
-    class ThreadedServer(ThreadingMixIn, TCPServer): ...
-
-    with ThreadedServer(("localhost", 0), Handler) as httpd:
-        host_r, port, *_ = httpd.server_address
-
-        if isinstance(host_r, bytes):
-            host = host_r.decode("utf-8")
-        else:
-            assert isinstance(host_r, str)
-            host = host_r
-
-        url = f"http://{host}:{port}"
-
-        print(f"Server opened at {url}")
-
-        assert compiler is not None
-        compiler.request_open(f"{url}/{args.output_file.name}")
-
+        queue: Queue[Any] = Queue()
+        broadcaster.add_consumer(queue)
         try:
-            httpd.serve_forever()
-        except KeyboardInterrupt:
-            print("KeyboardInterrupt received - server stopped")
+            while True:
+                elem = queue.get()
+                match elem:
+                    case "send_reload":
+                        self.send_utf8("data: reload\n\n")
+                        self.flush()
+                    case "stop":
+                        break
+        except BrokenPipeError:
+            print("warning: SSE connection aborted", file=sys.stderr)
+        finally:
+            broadcaster.remove_consumer(queue)
+
+    def do_GET(self) -> None:
+        if self.path == "/api/stream":
+            self.handle_sse_stream()
+            return
+
+        super().do_GET()
+
+
+class ThreadedHTTPServer(ThreadingMixIn, TCPServer):
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.timeout = 0.5
+
+
+class ServerThread(StoppableThread):
+    def __init__(self, args: Args) -> None:
+        super().__init__()
+        self._args = args
+        self._stop = False
+
+    def run(self) -> None:
+        def make_handler(*args):
+            return ServerReqHandler(*args, args=self._args)
+
+        with ThreadedHTTPServer(("localhost", 0), make_handler) as httpd:
+            self._httpd = httpd
+
+            host_r, port, *_ = httpd.server_address
+
+            if isinstance(host_r, bytes):
+                host = host_r.decode("utf-8")
+            else:
+                assert isinstance(host_r, str)
+                host = host_r
+
+            url = f"http://{host}:{port}"
+
+            print(f"Server opened at {url}")
+
+            assert compiler is not None
+            compiler.request_open(f"{url}/{self._args.output_file.name}")
+
+            while not self._stop:
+                httpd.handle_request()
+
+            broadcaster.broadcast("stop")
+
+            print("HTTP", "Stopped...")
+            httpd.shutdown()
+
+    def request_stop(self) -> None:
+        self._stop = True
 
 
 def main() -> None:
@@ -282,23 +335,38 @@ def main() -> None:
 
     changes_monitor = ChangesMonitorThread(args.file_to_watch)
 
+    server = ServerThread(args)
+
     @changes_monitor.on_event(FileModifiedEvent)
     def on_file_modified(_) -> None:
         assert compiler is not None
         compiler.request_compile()
 
-    threads: list[Thread] = [
-        Thread(target=lambda: server_thread(args)),
-        broadcaster,
+    threads: list[StoppableThread] = [
         changes_monitor,
         compiler,
     ]
 
+    broadcaster.start()
     for t in threads:
         t.start()
 
-    for t in threads:
-        t.join()
+    try:
+        for t in threads:
+            t.join()
+    except KeyboardInterrupt:
+        print("Ctrl-C received - stopping...", file=sys.stderr)
+        for t in threads:
+            t.request_stop()
+        for t in threads:
+            t.join()
+
+        broadcaster.request_stop()
+        broadcaster.join()
+
+        server.request_stop()
+        # we were supposed to join here but for some ungodly reason it hangs. so let's just kill this shit.
+        os._exit(0)
 
 
 if __name__ == "__main__":

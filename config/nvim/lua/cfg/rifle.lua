@@ -27,17 +27,26 @@ M.run = function(command)
   local cmd = {rifle_run_path, command, rifle_ft, vim.fn.expand("%:p")}
   local cmd_prefix = utils.os.is_android and {"bash"} or {}
 
+  local createRifleTerm = function()
+    local args = utils.tableJoin(cmd_prefix, {runread_path}, cmd)
+
+    vim.fn.jobstart(args, { term = true })
+    local current_buffer = vim.api.nvim_get_current_buf()
+
+    vim.api.nvim_create_autocmd({"TermClose"}, {
+      buffer = current_buffer,
+      callback = function()
+        vim.api.nvim_buf_delete(0, {})
+      end,
+    })
+    vim.cmd([[ normal! i ]])
+  end
+
   if rifle_mode == "popup" then
     local tbl = utils.tableJoin({"d.trun", runread_path}, cmd)
     vim.fn.jobstart(tbl)
   elseif rifle_mode == "buffer" then
-    local createRifleTerm = function()
-      vim.cmd.enew()
-      vim.fn.termopen(utils.tableJoin(cmd_prefix, {runread_path}, cmd))
-      vim.cmd.file("*Rifle*")
-      vim.cmd([[ normal! i ]])
-    end
-
+    createRifleTerm()
     utils.uni_win.focus("aux", { create_direction = split_direction })
     utils.uni_buf.focus("rifle", {
       replace = true,
@@ -45,8 +54,7 @@ M.run = function(command)
     })
   elseif rifle_mode == "bg_buffer" then
     local current_buffer = vim.api.nvim_get_current_buf()
-    vim.cmd.enew()
-    vim.fn.termopen(utils.tableJoin(cmd_prefix, {runread_path}, cmd))
+    createRifleTerm()
     vim.api.nvim_set_current_buf(current_buffer)
   elseif rifle_mode == "silent" then
     vim.fn.jobstart(utils.tableJoin(cmd_prefix, cmd))
