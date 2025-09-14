@@ -1,11 +1,12 @@
 (defn run<
   ```
-  Run a subprocess with command and arguments specified by `args`. Sends to its
-  standard input the data in `to-write`.
+  Run a subprocess and communicate with it.
 
-  TODO: clarify that `to-write` can either be a function or a string/buffer
-  TODO: `stdin`, `stdout` and `stderr` parameters - only create pipes for these when needed
+  Starts it with the program name and arguments from `args`, sends input data from `to-write`, and returns its output data.
+
+  Note that, when passed, `to-write` can be either a function that receives the writable end of the pipe, or a string/buffer which is fed to the pipe itself.
   ```
+  # TODO: `stdin`, `stdout` and `stderr` parameters - only create pipes for these when needed
   [args &opt to-write]
 
   (cond
@@ -16,31 +17,24 @@
     (run< args |(:write $ to-write))
 
     (function? to-write)
-    (let [write-func to-write
-          [stdin-r stdin-w] (os/pipe)
-          [stdout-r stdout-w] (os/pipe)
+    (let [write-fn to-write
+          proc (os/spawn args :p {:in :pipe :out :pipe})
+          {:in p-in :out p-out} proc
           out-buf @""]
-      (defer
-        (do
-          # if we don't close these, the program may block with clogged pipes
-          (:close stdin-w)
-          (:close stdout-r))
-
+      (defer (:close p-out)
         # write fiber
         (ev/spawn
-          (write-func stdin-w))
+          (defer (:close p-in)
+            (write-fn p-in)))
 
         # read fiber
         (ev/spawn
-          (while (def buf (:read stdout-r 4096))
+          (while (def buf (:read p-out 4096))
             (buffer/push-string out-buf buf)))
 
-        (def code
-          (os/execute args :p {:in stdin-r :out stdout-w}))
-
-        (if (= code 0)
-          out-buf
-          nil)))
+        (as->
+          (:wait proc) .x
+          (if (= .x 0) out-buf nil))))
 
     (error (string/format "couldn't figure out how to write with: %j"))
     ))
@@ -48,11 +42,15 @@
 (defn exec-exit
   "Execute the program `args` and exit with its exit code."
   [args]
-  (-> (os/execute args :p) (os/exit)))
+
+  (compif (dyn 'os/posix-exec)
+    (os/posix-exec args :p)
+    (-> (os/execute args :p) (os/exit))))
 
 (defn fzagnostic
   ```
   Invokes fzagnostic with the provided arguments.
+
   On success, returns a tuple `[n s]` (where `n` is the index of the choice and
   `s` is the text string); on failure/cancellation, returns nil.
   ```
