@@ -473,6 +473,8 @@ procSearch() {
 }
 alias P='procSearch'
 
+procDo() { procSearch | cut -d' ' -f1 | xargs -I{} "$@"; }
+
 eachLine() {
   tr '\n' '\0' | xargs -0 -I{} "$@"
 }

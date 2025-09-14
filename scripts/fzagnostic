@@ -46,7 +46,7 @@ if [ ! -t 2 ] && exists bemenu; then
 
   export BEMENU_OPTS=$(bemenu-load-colorscheme)
 
-  bemenu "${args[@]}"
+  bemenu "${args[@]}" 2>/dev/null
 elif [ ! -t 2 ] && [ "$DISPLAY" ] && exists dmenu; then
   args=()
   tidyPrompt space

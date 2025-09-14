@@ -40,7 +40,7 @@
     ))
 
 (defn exec-exit
-  "Execute the program `args` and exit with its exit code."
+  "Execute the program `args` and exit with its exit code. Calls POSIX `exec` if available."
   [args]
 
   (compif (dyn 'os/posix-exec)
