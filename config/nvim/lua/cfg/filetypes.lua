@@ -163,6 +163,7 @@ ext_ft.rpy = "python"
 ext_ft.scrbl = "scribble"
 ext_ft.terra = "terra"
 ext_ft.xdc = "tcl" -- constraint files
+ext_ft.pro = "prolog"
 ext_ft.tsx = function()
   if vim.fn.getline(1):find("<?xml") == 1 then
     setLocals { filetype = "xml" }

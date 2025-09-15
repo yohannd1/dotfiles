@@ -349,7 +349,8 @@ elif isLang 'php'; then
   do_run() { php "$file"; }
 
 elif isLang 'prolog'; then
-  do_run() { swi-prolog "$file"; }
+  prolog=$(firstExists swi-prolog swipl)
+  do_run() { "$prolog" "$file"; }
 
 elif isLang 'python'; then
   python=$(firstExists python3 python py)

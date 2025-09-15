@@ -24,7 +24,8 @@ _pathsh_printAll() {
   [ "$LUAROCKS_HOME" ] && echo "$LUAROCKS_HOME/bin"
   echo "$JANET_MODPATH/bin"
 
-  _pathsh_glob "${XDG_CACHE_HOME:-$HOME/.cache}/packs"
+  find "${XDG_CACHE_HOME:-$HOME/.cache}/packs" -maxdepth 1 -type d \
+    | xargs -I{} printf "%s/bin\n" {}
 
   # current values in PATH
   printf "%s\n" "$PATH" | tr ':' '\n'
