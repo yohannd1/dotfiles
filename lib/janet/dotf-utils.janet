@@ -156,3 +156,12 @@
     ~(let [,lock (acquire-lock ,file)]
        (defer (:unlock ,lock)
          ,;body))))
+
+(defn make-set
+  "Make a set whose entries are `entries`."
+  [entries]
+
+  (def ret @{})
+  (each x entries
+    (set (ret x) true))
+  (table/to-struct ret))
