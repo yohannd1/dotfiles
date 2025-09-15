@@ -4,6 +4,7 @@
 # Preparations <<<
 
 (use dotf-path)
+(use dotf-utils)
 
 (defn dev-null []
   (assert (file/open "/dev/null" :r)))
@@ -12,20 +13,11 @@
 (var *open-new-window* (-> (os/getenv "OPEN_NEW_WINDOW" "") (length) (> 0)))
 (var *is-termux* (-> (os/getenv "TERMUX_APP_PID") (nil?) (not)))
 
-(defn exec-and-exit
-  "Execute a command and return its exit code."
-  [program]
-  (os/exit (os/execute program :p)))
-
-(defn die
-  "Print a formatted error message and exit with `code`."
-  [code fmt & args]
-  (eprintf fmt ;args)
-  (os/exit code))
-
 (defn exec-capture-stdout
   "Runs the specified command and returns either its stdout (if successful) or nil (if not successful)"
   [-args]
+
+  # TODO: use dotf-utils/run< instead of this.
 
   (def (pipe-r pipe-w) (os/pipe))
   (def code (os/execute -args :p {:in (dev-null) :out pipe-w}))
@@ -51,6 +43,7 @@
   (var protocol
     (-?> (peg/match peg-url-protocol file) (in 0)))
 
+  # normalize filename if it's a file:// protocol
   (when (= protocol "file")
     (set protocol nil)
     (set file (string/slice file (length "file://"))))
@@ -67,8 +60,7 @@
     :file file
     :mime mime
     :ext ext
-    :protocol protocol
-    })
+    :protocol protocol})
 
 (defn state/try
   "Try to open.
@@ -95,22 +87,37 @@
     (when (prog-exists (-args 0))
       (if *open-gui*
         (os/exit (os/execute [;prog ;-args] :p {:in (dev-null) :err stdout}))
-        (exec-and-exit -args))))
+        (exec-exit -args))))
 
-  (match -type
-    :gui (when (and *open-gui* (prog-exists (-args 0)))
-           (os/exit (os/execute -args :p {:in (dev-null) :err stdout})))
-    :tty (when (and (not *open-gui*) (prog-exists (-args 0)))
-           (exec-and-exit -args))
-    :pop (condit-open ["d.tpop"])
-    :runpage (condit-open ["d.tpop" "runpage"])
-    :fallback (os/exit (os/execute [open-alt file] :p))
-    :xdg (do
-           (os/setenv "VIA_OPEN" "1")
-           (exec-and-exit ["xdg-open" file]))
-    :block (die 1 "attempted to open blocked file (%s)\nMIME: %j; EXT: %j\n"
-                file mime ext)
-    _ (error (string/format "unknown action for symbol %s" -type))))
+  (case -type
+    :gui
+    (when (and *open-gui* (prog-exists (-args 0)))
+      (os/exit (os/execute -args :p {:in (dev-null) :err stdout})))
+
+    :tty
+    (when (and (not *open-gui*) (prog-exists (-args 0)))
+      (exec-exit -args))
+
+    :pop
+    (condit-open ["d.tpop"])
+
+    :runpage
+    (condit-open ["d.tpop" "runpage"])
+
+    :fallback
+    (os/exit (os/execute [open-alt file] :p))
+
+    :xdg
+    (do
+      (os/setenv "VIA_OPEN" "1")
+      (exec-exit ["xdg-open" file]))
+
+    :block
+    (die 1 "attempted to open blocked file (%s)\nMIME: %j; EXT: %j\n"
+         file mime ext)
+
+    (error (string/format "unknown action for symbol %s" -type))
+    ))
 
 (defn warn [msg]
   (if *open-gui*
@@ -120,9 +127,11 @@
       (:write stderr "\n"))))
 
 (defn state/match [self mtype marg]
-  (def {:mime mime
-        :ext ext
-        :protocol protocol} self)
+  (def
+    {:mime mime
+     :ext ext
+     :protocol protocol}
+    self)
 
   (defn go-through [list src-str]
     (unless (nil? src-str)
@@ -136,12 +145,16 @@
 
           (tuple? elem)
           (match elem
-            [:begins str] (when (string/has-prefix? str src-str)
-                            (set ret true)
-                            (break))
-            [:ends str] (when (string/has-suffix? str src-str)
-                          (set ret true)
-                          (break))
+            [:begins str]
+            (when (string/has-prefix? str src-str)
+              (set ret true)
+              (break))
+
+            [:ends str]
+            (when (string/has-suffix? str src-str)
+              (set ret true)
+              (break))
+
             _ (-> "bad format for tuple-match: %j" (string/format elem) (error)))
 
           (-> "expected tuple or string, got %j" (string/format elem) (error))
@@ -168,15 +181,22 @@
       "  OPEN_ALT: a fallback opener; default is xdg-open"))
 
   (when (-> args (length) (not= 1))
-    (die 1 "%s" help-str))
+    (die 2 "%s" help-str))
 
   (def s (state/init (in args 0)))
-  (def file (in s :file))
+  (def {:file file :protocol protocol} s)
+  (def web-protocols (make-set ["http" "https"]))
 
   (when (and *is-termux* *open-gui*)
-    (if (->> file (path/absolute) (string/has-prefix? "/storage/emulated/0/"))
-      (exec-and-exit ["termux-open" file])
-      (die 1 "path %s is not externally openable" file)))
+    (cond
+      (nil? protocol)
+      (let [real-file (os/realpath file)]
+        (if (->> real-file (string/has-prefix? "/storage/emulated/0/"))
+          (exec-exit ["termux-open" real-file])
+          (die 1 "path %s is not externally openable" real-file))))
+
+      (in web-protocols protocol)
+      (exec-exit ["termux-open" file]))
 
   (defn t [-type &opt -arg] (state/try s -type -arg))
   (defn m [-type -arg] (state/match s -type -arg))
@@ -198,9 +218,9 @@
 
   (defn try-browser []
     (def args @[])
-    (when (and *open-new-window*
-               (or (= BROWSER "librewolf")
-                   (= BROWSER "firefox")))
+    (def known-browsers
+      (comptime (make-set ["librewolf" "firefox"])))
+    (when (and *open-new-window* (in known-browsers BROWSER))
       (array/push args "--new-window"))
     (t :gui [BROWSER ;args file]))
 
@@ -223,9 +243,10 @@
   (when (m :ext ["godot"])
     (def folder (path/dirname file))
     (def is-cs-project
-      (as-> (os/dir folder) .x
-            (filter |(string/has-suffix? ".csproj" $) .x)
-            (not (empty? .x))))
+      (as->
+        (os/dir folder) .x
+        (filter |(string/has-suffix? ".csproj" $) .x)
+        (not (empty? .x))))
     (if is-cs-project
       (t :gui ["godot-mono" "-e" file])
       (t :gui ["godot" "-e" file]))
@@ -289,8 +310,9 @@
 
   (mt :ext ["swf"] :gui ["flashplayer" file])
 
-  (def is-pdf (or (m :ext ["pdf"])
-                  (m :mime ["application/pdf"])))
+  (def is-pdf
+    (or (m :ext ["pdf"])
+        (m :mime ["application/pdf"])))
 
   (when (or is-pdf (m :ext ["djvu" "ps" "epub"]))
     (t :gui ["zathura" file])
