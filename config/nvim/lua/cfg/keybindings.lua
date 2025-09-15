@@ -45,7 +45,7 @@ dummy.setSoftWrapBinds = function(enable)
     end)
   end)
 end
-dummy.setSoftWrapBinds(true)
+-- dummy.setSoftWrapBinds(true)
 
 vim.cmd([[ command! -nargs=0 SWBindOn lua dummy.setSoftWrapBinds(true) ]])
 vim.cmd([[ command! -nargs=0 SWBindOff lua dummy.setSoftWrapBinds(false) ]])

@@ -30,6 +30,7 @@ M.run = function(command)
   local createRifleTerm = function()
     local args = utils.tableJoin(cmd_prefix, {runread_path}, cmd)
 
+    vim.cmd.enew()
     vim.fn.jobstart(args, { term = true })
     local current_buffer = vim.api.nvim_get_current_buf()
 
@@ -46,7 +47,6 @@ M.run = function(command)
     local tbl = utils.tableJoin({"d.trun", runread_path}, cmd)
     vim.fn.jobstart(tbl)
   elseif rifle_mode == "buffer" then
-    createRifleTerm()
     utils.uni_win.focus("aux", { create_direction = split_direction })
     utils.uni_buf.focus("rifle", {
       replace = true,
