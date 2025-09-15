@@ -348,6 +348,7 @@ def main() -> None:
     ]
 
     broadcaster.start()
+    server.start()
     for t in threads:
         t.start()
 

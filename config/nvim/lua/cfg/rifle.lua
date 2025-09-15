@@ -40,7 +40,6 @@ M.run = function(command)
         vim.api.nvim_buf_delete(0, {})
       end,
     })
-    vim.cmd([[ normal! i ]])
   end
 
   if rifle_mode == "popup" then
@@ -52,6 +51,7 @@ M.run = function(command)
       replace = true,
       create_fn = createRifleTerm,
     })
+    vim.cmd([[ normal! i ]])
   elseif rifle_mode == "bg_buffer" then
     local current_buffer = vim.api.nvim_get_current_buf()
     createRifleTerm()
