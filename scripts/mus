@@ -53,12 +53,10 @@
 (defn file-get-lines [path]
   (def file (file/open path :r))
   (defer (:close file)
-    (def it (file/lines file))
     (def arr @[])
-    (each line it
+    (each line (file/lines file)
       (array/push arr line))
-    arr
-    ))
+    arr))
 
 (defn load-state []
   (if (path/exists? state-path)
@@ -66,8 +64,7 @@
       (def contents (file-get-lines state-path))
       (def index (-> (in contents 0) (string/trim) (scan-number)))
       (def queue (as-> contents .x (array/slice .x 1) (map string/trim .x)))
-      @{:index index :queue queue}
-      )
+      @{:index index :queue queue})
     @{:index 0 :queue @[]}
     ))
 
@@ -83,11 +80,12 @@
   "Runs `body` with the state assigned to `cap`. By the end of the scope, if the state object has a truthy :write field, the state is saved."
   [cap & body]
 
-  ~(let [,cap (load-state)]
-     (defer
-       (when (in ,cap :write)
-         (save-state ,cap))
-       ,;body)))
+  ~(with-lock state-path
+     (let [,cap (load-state)]
+       (defer
+         (when (in ,cap :write)
+           (save-state ,cap))
+         ,;body))))
 
 (defn main [arg0 & args]
   (set *progname* (path/basename arg0))
@@ -190,35 +188,42 @@
     (do
       (when (> args-len 1) (show-help))
 
+      (defn get-queue-state []
+        (with-state {:queue q :index i}
+          {:index i
+           :queue q
+           :cur-song (get q i)}))
+
       (prompt 'loop
         (while true
-          (def state (load-state))
-          (def {:index index :queue queue} state)
+          (def
+            {:index index
+             :queue queue
+             :cur-song cur-song}
+            (get-queue-state))
 
-          (when (>= index (length queue))
+          (when (nil? cur-song)
             (eprintf "no more songs to play.")
             (return 'loop))
 
-          (def cur-song (in queue index))
-
-          (eprintf "(%d of %d) playing %s\nfull path: %s" (inc index) (length queue) (path/basename cur-song) cur-song)
+          (eprintf "(%d of %d) playing %s" (inc index) (length queue) (path/basename cur-song))
+          (eprintf "full path: %s" cur-song)
 
           (os/execute ["mpv" "--no-video" cur-song] :p)
           (eprintf "\n")
 
-          (def state2 (load-state))
-          (def cur-song2 (-> state2 (in :queue) (in (in state2 :index))))
+          (with-state state
+            (def
+              {:index index
+               :queue queue}
+              state)
+            (def cur-song-2 (get queue index))
+            (if (= cur-song cur-song-2)
+              (do
+                (set (state :index) (inc index))
+                (set (state :write) true))
+              (eprintf "warning: current song isn't what I thought it was. I'm lost."))))))
 
-          (if (= cur-song cur-song2)
-            (do
-              (set (state2 :index) (-> state2 (in :index) (+ 1)))
-              (save-state state2)
-              )
-            (eprintf "warning: current song isn't what I thought it was. I'm lost.")
-            )
-          ))
-      )
-
-    unk (show-help)
+    _ (show-help)
     )
   )
