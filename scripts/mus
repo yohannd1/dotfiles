@@ -1,6 +1,7 @@
 #!/usr/bin/env janet
 
 (use dotf-path)
+(use dotf-utils)
 
 (def TMPDIR (os/getenv "TMPDIR" "/tmp"))
 (def HOME (-> (os/getenv "HOME") (assert "no HOME set..?")))
@@ -20,15 +21,6 @@
   (eprintf "    Go forward or backwards in the queue by AMOUNT (defaults to 1).")
   (os/exit 2))
 
-(defn tuple->set
-  "Convert a tuple into a set (table with [`key` true] pairs)."
-  [tup]
-
-  (def tbl @{})
-  (each val tup
-    (set (tbl val) true))
-  (table/to-struct tbl))
-
 (defn shuffle
   "Shuffle an array."
   [arr &opt start end]
@@ -39,21 +31,19 @@
     (def j (-> (math/random) (* (- i-end i-start 1)) (math/round) (+ i-start)))
     (def tmp (in arr i))
     (set (arr i) (in arr j))
-    (set (arr j) tmp)
-    )
-  )
+    (set (arr j) tmp)))
 
 (def get-ext-kind
   (do
     (def music-exts
-      (tuple->set ["mp3" "wav" "midi" "ogg""mus" "m4a" "opus" "flac" "ogx"]))
+      (make-set ["mp3" "wav" "midi" "ogg" "mus" "m4a" "opus" "flac" "ogx"]))
     (def image-exts
-      (tuple->set ["png" "jpg" "jpeg"]))
+      (make-set ["png" "jpg" "jpeg"]))
 
-    (fn [ext]
+    (fn get-ext-kind [ext]
       (cond
-        (-> music-exts (in ext)) :music
-        (-> image-exts (in ext)) :image
+        (in music-exts ext) :music
+        (in image-exts ext) :image
         :unknown))
     ))
 
@@ -89,28 +79,38 @@
       (:write file (string p "\n"))
       )))
 
+(defmacro with-state
+  "Runs `body` with the state assigned to `cap`. By the end of the scope, if the state object has a truthy :write field, the state is saved."
+  [cap & body]
+
+  ~(let [,cap (load-state)]
+     (defer
+       (when (in ,cap :write)
+         (save-state ,cap))
+       ,;body)))
+
 (defn main [arg0 & args]
   (set *progname* (path/basename arg0))
   (def args-len (length args))
 
-  (when (= args-len 0) (show-help))
+  (when (empty? args) (show-help))
 
   (match (in args 0)
     "add"
-    (do
-      (def state (load-state))
+    (with-state state
       (def skip-dirs
         (-> (os/getenv "SKIP_DIRS") (or "") (string/trim) (not= "")))
 
       (defn add-song [fname]
-        (assert (path/exists? fname) (string/format "file %s does not exist" fname))
+        (assert
+          (path/exists? fname)
+          (string/format "file %s does not exist" fname))
 
         (if (path/is-dir? fname)
           (if skip-dirs
             (eprintf "warning: skipping directory %s" fname)
             (each sub (os/dir fname)
-              (add-song (string fname "/" sub)))
-            )
+              (add-song (string fname "/" sub))))
           (do
             (def real (os/realpath fname))
             (def ext (path/extension real))
@@ -118,47 +118,35 @@
             (case (get-ext-kind ext)
               :music (array/push (in state :queue) real)
               :image nil # do nothing
-              :unknown (eprintf "warning: skipping %s (unsupported extension %j)" fname ext)
-              ))
-          )
-        )
+              :unknown (eprintf "warning: skipping %s (unsupported extension %j)" fname ext)))))
 
       (each arg (array/slice args 1)
         (if (= arg "-")
           (while (def fname (:read stdin :line))
             (add-song (string/trim fname)))
-          (add-song arg)
-          ))
+          (add-song arg)))
 
-      (save-state state)
-      )
+      (set (state :write) true))
 
     "clear"
-    (do
-      (def state (load-state))
+    (with-state state
       (set (state :index) 0)
-      (-> state (in :queue) (array/clear))
-      (save-state state)
-      )
+      (-> (state :queue) (array/clear))
+      (set (state :write) true))
 
     "current"
-    (do
+    (with-state state
       (when (> args-len 1) (show-help))
-      (def state (load-state))
-      (def index (in state :index))
-      (def queue (in state :queue))
+      (def {:index index :queue queue} state)
       (if (< index (length queue))
         (printf "%d %s" (inc index) (in queue index))
         (do
           (eprintf "queue is \"empty\"")
-          (os/exit 1))
-        )
-      )
+          (os/exit 1))))
 
     "queue"
-    (do
+    (with-state state
       (when (> args-len 1) (show-help))
-      (def state (load-state))
       (loop [:let [index (in state :index)
                    queue (in state :queue)]
              [i path] :pairs queue]
@@ -168,43 +156,35 @@
             (< i index) "  "
             (= i index) "* "
             (> i index) "- "))
-        (printf "%s%s" prefix final-path)
-        ))
+        (printf "%s%s" prefix final-path)))
 
     "shuffle"
-    (do
+    (with-state state
       (when (> args-len 1) (show-help))
-      (def state (load-state))
+      (def {:index index :queue queue} state)
 
-      (def index (in state :index))
-      (def queue (in state :queue))
       (if (< (+ index 1) (length queue))
         (shuffle queue (+ index 1))
-        (eprintf "no elements to shuffle.")
-        )
+        (eprintf "no elements to shuffle."))
 
-      (save-state state)
-      )
+      (set (state :write) true))
 
     "next"
-    (do
+    (with-state state
       (when (> args-len 2) (show-help))
 
-      (def state (load-state))
-      (def amount (-> args (get 1) (or "1") (scan-number) (math/floor)))
+      (def amount
+        (-> args (get 1) (or "1") (scan-number) (math/floor)))
       (set (state :index) (-> state (in :index) (+ amount)))
-      (save-state state)
-      )
+      (set (state :write) true))
 
     "prev"
-    (do
+    (with-state state
       (when (> args-len 2) (show-help))
 
-      (def state (load-state))
       (def amount (-> args (get 1) (or "1") (scan-number) (math/floor)))
       (set (state :index) (-> state (in :index) (- amount) (max 0)))
-      (save-state state)
-      )
+      (set (state :write) true))
 
     "play"
     (do
@@ -213,8 +193,7 @@
       (prompt 'loop
         (while true
           (def state (load-state))
-          (def index (in state :index))
-          (def queue (in state :queue))
+          (def {:index index :queue queue} state)
 
           (when (>= index (length queue))
             (eprintf "no more songs to play.")
