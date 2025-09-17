@@ -435,16 +435,25 @@ alias Ma='mus add'
 alias Ms='mus shuffle'
 alias Mp='mus play'
 alias Mc='mus clear'
+_mm_showQueue() {
+  {
+    echo '(( Start ))'
+    mus queue
+    echo '(( End ))'
+  }
+}
 mus-menu() {
   while true; do
-    mus queue
+    _mm_showQueue | grep -C 3 '^\*'
     printf >&2 "(Q)uit, (V)iew queue, (N)ext, (P)rev, (S)huffle\n"
     printf >&2 "[q/v/n/p/s] "
     read -k1 key
     printf >&2 "\n"
     case "$key" in
       q|Q) return 0 ;;
-      v|V) clear && mus queue | less ;;
+      v|V)
+        clear && _mm_showQueue | less
+        ;;
       n|N) clear && mus next ;;
       p|P) clear && mus prev ;;
       s|S) clear && mus shuffle ;;
