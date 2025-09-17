@@ -1,11 +1,11 @@
 local vim = _G.vim
 local dummy = _G.dummy
 local utils = require("cfg.utils")
+local lazy = utils.lazy
 local rifle = require("cfg.rifle")
 local snippets = require("cfg.snippets")
 
 local services = utils.services
-local lazy = utils.lazy
 local map = utils.map
 local forChars = utils.forChars
 local editFile = utils.editFile
@@ -204,20 +204,24 @@ map("n", "<Leader>tv", ":lua dummy.toggleVirtualEdit()<CR>", arg_nr)
 forChars("ic", function(m)
   map(m, "<C-u>", "<Nop>", arg_s)
 
-  -- Current date
-  vim.keymap.set(m, "<C-u>d", function()
-    return vim.fn.strftime("%Y/%m/%d")
-  end, {expr = true})
+  local mapE = function(k, v)
+    local func
+    if type(v) == "function" then
+      func = v
+    elseif type(v) == "string" then
+      func = function() return v end
+    else
+      error(("unexpected type: %s"):format(type(v)))
+    end
+    vim.keymap.set(m, "<C-u>" .. k, func, { expr = true })
+  end
 
-  -- Many backquotes
-  vim.keymap.set(m, "<C-u>'", function()
-    return "``````" .. "<Left>" .. "<Left>" .. "<Left>"
-  end, {expr = true})
+  mapE("d", lazy(vim.fn.strftime, "%Y/%m/%d"))
+  mapE("'", "``````" .. "<Left>" .. "<Left>" .. "<Left>")
 
   -- Android hardware keyboard pain
-  vim.keymap.set(m, "<C-u>c", function()
-    return "``" .. "<Left>"
-  end, {expr = true})
+  mapE("c", "``<Left>")
+  mapE("u", "^")
 end)
 
 -- Buffer navigation
