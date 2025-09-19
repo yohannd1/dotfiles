@@ -40,7 +40,7 @@ local font_presets = {
   },
   ["UbuntuMono"] = {
     name = "Ubuntu Mono",
-    base_size = 17.5,
+    base_size = 18.5,
     supports_ligatures = false,
   },
   ["RobotoMono"] = {

@@ -54,8 +54,9 @@
   On success, returns a tuple `[n s]` (where `n` is the index of the choice and
   `s` is the text string); on failure/cancellation, returns nil.
   ```
-  [choices &named prompt starting-number]
+  [choices &named prompt starting-number error-func]
 
+  (default error-func error)
   (default starting-number 0)
 
   (def entry-fmt
@@ -79,7 +80,7 @@
       (if-let [num (scan-number num-str)]
         [(- num starting-number) rest]
         (-> "bad input (%j is not a number)"
-            (string/format num-str) (error))))))
+            (string/format num-str) (error-func))))))
 
 (defn readline-agnostic
   ```

@@ -444,6 +444,7 @@ _mm_showQueue() {
 }
 mus-menu() {
   while true; do
+    clear
     _mm_showQueue | grep -C 3 '^\*'
     printf >&2 "(Q)uit, (V)iew queue, (N)ext, (P)rev, (S)huffle\n"
     printf >&2 "[q/v/n/p/s] "
@@ -452,11 +453,11 @@ mus-menu() {
     case "$key" in
       q|Q) return 0 ;;
       v|V)
-        clear && _mm_showQueue | less
+        _mm_showQueue | less
         ;;
-      n|N) clear && mus next ;;
-      p|P) clear && mus prev ;;
-      s|S) clear && mus shuffle ;;
+      n|N) mus next ;;
+      p|P) mus prev ;;
+      s|S) mus shuffle ;;
       *) printf >&2 "Unknown command...\n" ;;
     esac
   done

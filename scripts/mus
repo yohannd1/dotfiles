@@ -47,34 +47,38 @@
         :unknown))
     ))
 
-(defn open-writable-state-file []
-  (file/open state-path :w))
+(defmacro with-file [head & body]
+  (with-syms [mode-sym]
+    (def [file-sym path mode] head)
+    ~(let [,mode-sym (keyword ,mode :n)
+           ,file-sym (file/open ,path ,mode-sym)]
+       (defer (:close ,file-sym)
+         ,;body))))
 
 (defn file-get-lines [path]
-  (def file (file/open path :r))
-  (defer (:close file)
-    (def arr @[])
-    (each line (file/lines file)
-      (array/push arr line))
-    arr))
+  (with-file [file path :r]
+    (seq [line :in (file/lines file)]
+      line)))
 
 (defn load-state []
+  (defn default-result []
+    @{:index 0 :queue @[]})
+
   (if (path/exists? state-path)
-    (do
-      (def contents (file-get-lines state-path))
-      (def index (-> (in contents 0) (string/trim) (scan-number)))
-      (def queue (as-> contents .x (array/slice .x 1) (map string/trim .x)))
-      @{:index index :queue queue})
-    @{:index 0 :queue @[]}
-    ))
+    (let [contents (file-get-lines state-path)]
+      (if (empty? contents)
+        (default-result)
+        (let
+          [index (-> (in contents 0) (string/trim) (scan-number))
+           queue (as-> contents .x (array/slice .x 1) (map string/trim .x))]
+          @{:index index :queue queue})))
+    (default-result)))
 
 (defn save-state [state]
-  (def file (open-writable-state-file))
-  (defer (:close file)
+  (with-file [file state-path :w]
     (:write file (string/format "%d\n" (in state :index)))
     (each p (in state :queue)
-      (:write file (string p "\n"))
-      )))
+      (:write file (string p "\n")))))
 
 (defmacro with-state
   "Runs `body` with the state assigned to `cap`. By the end of the scope, if the state object has a truthy :write field, the state is saved."

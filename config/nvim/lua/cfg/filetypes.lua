@@ -238,9 +238,11 @@ ft.cpp = function()
   addSnippet("v", "#include <vector>")
   addSnippet("M", "#include <memory>")
   addMSnippet("m", [[
-    int main() {
-      <[@]>
-    }
+int main() {
+    std::cout << "Hello, world!\n";
+    printf("Hello, world!\n");
+    <[@]>
+}
   ]])
 end
 
@@ -418,9 +420,10 @@ ft.zig = function()
 
   addSnippet("s", [[const std = @import("std");]])
   addMSnippet("m", [[
-    pub fn main() anyerror!void {
-      <[@]>
-    }
+pub fn main() anyerror!void {
+    std.debug.print("Hello, world!\n", .{});
+    <[@]>
+}
   ]])
   addMSnippet("t", [[
     test {
