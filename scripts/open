@@ -282,6 +282,8 @@
   (mt :ext ["zpj"] :gui ["zrythm" file])
   (mt :ext ["rad"] :gui ["radium" file])
   (mt :ext ["fms"] :gui ["famistudio" file])
+  (mt :ext ["osctet"] :gui ["osctet" file])
+  (mt :ext ["rpp"] :gui ["reaper" file])
 
   # image
   (when (m :mime ["image/vnd.djvu"])
