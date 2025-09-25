@@ -177,8 +177,8 @@ class CompilerThread(StoppableThread):
     def __init__(self, args: Args) -> None:
         super().__init__()
         self._queue: Queue[Any] = Queue()
-        self._args = args
-        self._stop = False
+        self.__args = args
+        self.__stop = False
 
     def request_compile(self) -> None:
         self._queue.put("compile")
@@ -201,7 +201,7 @@ class CompilerThread(StoppableThread):
         return items
 
     def run(self) -> None:
-        while not self._stop:
+        while not self.__stop:
             wants_compile = False
             open_path = None
 
@@ -214,13 +214,13 @@ class CompilerThread(StoppableThread):
                     case ("open", path):
                         open_path = path
                     case "stop":
-                        self._stop = True
+                        self.__stop = True
                     case unk:
                         raise ValueError(f"got unknown item {unk}")
 
             if wants_compile:
                 print("** Compiling **")
-                compile_file(self._args)
+                compile_file(self.__args)
                 broadcaster.broadcast("send_reload")
 
             if open_path is not None:
@@ -285,12 +285,12 @@ class ThreadedHTTPServer(ThreadingMixIn, TCPServer):
 class ServerThread(StoppableThread):
     def __init__(self, args: Args) -> None:
         super().__init__()
-        self._args = args
-        self._stop = False
+        self.__args = args
+        self.__stop = False
 
     def run(self) -> None:
         def make_handler(*args):
-            return ServerReqHandler(*args, args=self._args)
+            return ServerReqHandler(*args, args=self.__args)
 
         with ThreadedHTTPServer(("localhost", 0), make_handler) as httpd:
             self._httpd = httpd
@@ -308,9 +308,9 @@ class ServerThread(StoppableThread):
             print(f"Server opened at {url}")
 
             assert compiler is not None
-            compiler.request_open(f"{url}/{self._args.output_file.name}")
+            compiler.request_open(f"{url}/{self.__args.output_file.name}")
 
-            while not self._stop:
+            while not self.__stop:
                 httpd.handle_request()
 
             broadcaster.broadcast("stop")
@@ -319,7 +319,7 @@ class ServerThread(StoppableThread):
             httpd.shutdown()
 
     def request_stop(self) -> None:
-        self._stop = True
+        self.__stop = True
 
 
 def main() -> None:
