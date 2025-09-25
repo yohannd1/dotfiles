@@ -48,11 +48,11 @@ super + alt + p
 XF86Audio{Lower,Raise}Volume
     volumectl {dec,inc}
 XF86AudioMute
-    volumectl togglemute
+    volumectl mute
 super + {comma,period}
     volumectl {dec,inc}
 super + y
-    volumectl togglemute
+    volumectl mute
 
 # music player
 XF86AudioPlay

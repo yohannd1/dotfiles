@@ -2,70 +2,64 @@
 
 # Useful source: https://customlinux.blogspot.com/2013/02/pavolumesh-control-active-sink-volume.html
 
+progname=$(basename "$0")
+set -ue
+
 max_limit=${VOLUMECTL_MAX_LIMIT:-100}
-increment=${VOLUMECTL_INCREMENT:-2}
+inc_amount=${VOLUMECTL_INCREMENT:-2}
 
 exists() { command -v "$1" >/dev/null; }
 
 showHelp() {
-  printf >&2 "Usage: %s\n" "$(basename "$0") { inc[rease] | dec[rease] | [toggle]mute }"
-  exit 1
+  cat >&2 <<EOF
+Usage: $progname { inc | dec | mute } [SINK]
+SINK defaults to the default audio sink.
+EOF
+  exit 2
 }
-[ $# != 1 ] && showHelp
+
+if [ $# = 0 ] || [ $# -gt 2 ]; then
+  showHelp
+fi
 
 if exists wpctl; then
-  _das='@DEFAULT_AUDIO_SINK@'
-  _decrease() { wpctl set-volume "$_das" "$increment"%-; }
+  sink=${2:-"@DEFAULT_AUDIO_SINK@"}
+
+  _decrease() { wpctl set-volume "$sink" "$inc_amount"%-; }
   _increase() {
     _limit=$(echo "scale=2; $max_limit/100" | bc)
-    wpctl set-volume -l "$_limit" "$_das" "$increment"%+
+    wpctl set-volume -l "$_limit" "$sink" "$inc_amount"%+
   }
-  _togglemute() { wpctl set-mute "$_das" toggle; }
+  _mute() { wpctl set-mute "$sink" toggle; }
 
 elif exists pactl; then
-  getActiveSink() {
-    pacmd list-sinks | awk '/* index:/ {print $3}'
-  }
-  _decrease() {
-    activeSink=$(getActiveSink) || exit 1
-    pactl set-sink-volume "$activeSink" -"$increment"%
-  }
-  _increase() {
-    # TODO: limit max volume
-    activeSink=$(getActiveSink) || exit 1
-    pactl set-sink-volume "$activeSink" +"$increment"%
-  }
-  _togglemute() {
-    activeSink=$(getActiveSink) || exit 1
-    isMuted=$(pacmd list-sinks \
-      | grep -A 15 "index: ${activeSink}" \
-      | awk '/muted/ {print $2}')
+  sink=${2:-$(getActiveSink)}
 
-    case "$isMuted" in
-      yes)
-        pactl set-sink-mute "$activeSink" 0
-        ;;
-      no)
-        pactl set-sink-mute "$activeSink" 1
-        ;;
-      *)
-        printf >&2 "Unknown mute status: %s\n" "$isMuted"
-        ;;
+  getActiveSink() {
+    pacmd list-sinks | awk '/* index:/ { print $3 }'
+  }
+  _decrease() { pactl set-sink-volume "$sink" -"$inc_amount"%; }
+  _increase() { pactl set-sink-volume "$sink" +"$inc_amount"%; }
+  _mute() {
+    is_muted=$(pacmd list-sinks \
+      | grep -A 15 "index: ${sink}" \
+      | awk '/muted/ { print $2 }')
+
+    case "$is_muted" in
+      yes) pactl set-sink-mute "$sink" 0 ;;
+      no) pactl set-sink-mute "$sink" 1 ;;
+      *) printf >&2 "Unknown mute status: %s\n" "$is_muted" ;;
     esac
   }
 else
   printf >&2 "Could not figure out which command to use.\n"
-  # FIXME: there's amixer as well tho.
-    # amixer -D pulse set Master 1+ toggle
-    # amixer set Master "$increment"%+
-    # amixer set Master "$increment"%-
   exit 1
 fi
 
 case "$1" in
-  dec|decrease) _decrease ;;
-  inc|increase) _increase ;;
-  mute|togglemute) _togglemute ;;
+  dec) _decrease ;;
+  inc) _increase ;;
+  mute) _mute ;;
   *)
     printf >&2 "Invalid option: %s\n" "$1"
     showHelp

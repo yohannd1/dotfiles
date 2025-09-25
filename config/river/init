@@ -109,7 +109,7 @@ riverctl map normal Super+Alt s spawn "$TERMINAL -e tmux-tray" # "scratchpad"
 # volume management
 riverctl map -repeat normal Super Comma spawn "volumectl dec"
 riverctl map -repeat normal Super Period spawn "volumectl inc"
-riverctl map normal Super y spawn "volumectl togglemute"
+riverctl map normal Super y spawn "volumectl mute"
 
 # music player
 riverctl map normal Super+Alt y spawn "playerctl play-pause"
