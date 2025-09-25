@@ -320,7 +320,7 @@ end
 
 map("n", "-", ":lua dummy.nerdTreeToggleX()<CR>", arg_nr)
 map("n", "<Leader>o", ":lua dummy.menuOpenRecent()<CR>", arg_nr)
-map("n", "<Leader>G", ":Goyo<CR>", arg_nr_s)
+-- map("n", "<Leader>G", ":Goyo<CR>", arg_nr_s)
 
 map("n", "<Leader>L", ":set cursorline!<CR>", arg_nr)
 map("n", "<Leader>C", ":set cursorcolumn!<CR>", arg_nr)

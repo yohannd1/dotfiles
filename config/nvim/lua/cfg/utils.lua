@@ -305,7 +305,7 @@ end
 M.lazy = function(f, ...)
   local t = {...}
   return function()
-    f(unpack(t))
+    return f(unpack(t))
   end
 end
 

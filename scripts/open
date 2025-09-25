@@ -301,7 +301,7 @@
     (t :gui ["@openmpt" file])
     (t :pop ["openmpt123" file]))
   (mt :ext ["fur" "dmf"] :gui ["furnace" file])
-  (mt :ext ["dnm"] :gui ["@dn-famitracker" file])
+  (mt :ext ["dnm" "0cc"] :gui ["@dn-famitracker" file])
   (mt :ext ["ptcop"] :gui ["@ptcollab" file])
   (mt :ext ["btm"] :gui ["BambooTracker" file])
 

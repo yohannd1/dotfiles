@@ -200,12 +200,12 @@ M.add({
   end,
 })
 
-M.add({
-  source = "Olical/conjure",
-  before = function()
-    vim.g["conjure#mapping#prefix"] = ","
-  end,
-})
+-- M.add({
+--   source = "Olical/conjure",
+--   before = function()
+--     vim.g["conjure#mapping#prefix"] = ","
+--   end,
+-- })
 
 -- M.add({
 --   name = "nvim-lspconfig",
@@ -257,13 +257,13 @@ M.add({
   source = "tpope/vim-commentary",
 })
 
-M.add({
-  name = "goyo.vim",
-  source = "junegunn/goyo.vim",
-  before = function()
-    vim.g.goyo_width = 120
-  end,
-})
+-- M.add({
+--   name = "goyo.vim",
+--   source = "junegunn/goyo.vim",
+--   before = function()
+--     vim.g.goyo_width = 120
+--   end,
+-- })
 
 -- netrw improvement
 -- M.add({
