@@ -25,7 +25,7 @@
     (file/append-line FZRUN-RECENT-CMDS cmd))
 
   # NOTE: previously I used tmux-bg-run here. But not feeling like it rn.
-  (exec-exit [SHELL "-c" cmd]))
+  (exec-replace [SHELL "-c" cmd]))
 
 (defn cmd-menu [add-to-recent]
   (if-let [out (readline-agnostic :prompt "Type the desired command: ")]
@@ -35,7 +35,7 @@
 (defn bin-menu [add-to-recent]
   (def bins
     (as?->
-      (run< ["gen-pathbin"]) .x
+      (run<stdout ["gen-pathbin"]) .x
       (if (nil? .x)
         (die 1 "failed to get binaries list")
         .x)
@@ -47,7 +47,7 @@
     (os/exit 1)))
 
 (defn edit-recent []
-  (exec-exit [EDITOR FZRUN-RECENT-CMDS]))
+  (exec-replace [EDITOR FZRUN-RECENT-CMDS]))
 
 (defn main [arg0 & args]
   (unless (empty? args)

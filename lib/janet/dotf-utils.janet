@@ -1,51 +1,103 @@
 (defn run<
-  ```
-  Run a subprocess and communicate with it.
+  "Run a subprocess and communicate with it.
+  Starts it with the program name and arguments from `args`, and receives options in `env`.
 
-  Starts it with the program name and arguments from `args`, sends input data from `to-write`, and returns its output data.
+  Valid options are :in, :out and :err, referring to said descriptors, and they can be one of either:
+  - a string/buffer, which is read onto (or written into);
+  - a function, which receives the file descriptor;"
+  [args &opt env]
 
-  Note that, when passed, `to-write` can be either a function that receives the writable end of the pipe, or a string/buffer which is fed to the pipe itself.
-  ```
-  # TODO: `stdin`, `stdout` and `stderr` parameters - only create pipes for these when needed
-  [args &opt to-write]
+  # FIXME: improve this ugly fuck ass spaghetti code
 
-  (cond
-    (nil? to-write)
-    (run< args (fn [_]))
+  (default env {})
 
-    (or (string? to-write) (buffer? to-write))
-    (run< args |(:write $ to-write))
+  (defn make-reader-fn [kw]
+    (match (get env kw)
+      nil nil
 
-    (function? to-write)
-    (let [write-fn to-write
-          proc (os/spawn args :p {:in :pipe :out :pipe})
-          {:in p-in :out p-out} proc
-          out-buf @""]
-      (defer (:close p-out)
-        # write fiber
+      true
+      (fn [pipe]
+        (def buf @"")
         (ev/spawn
-          (defer (:close p-in)
-            (write-fn p-in)))
+          (while (def x (:read pipe 4096))
+            (buffer/push-string buf x)))
+        buf)
 
-        # read fiber
+      unk
+      (error (string/format "bad argument: %j" unk))))
+
+  (defn make-writer-fn []
+    (def ei (get env :in))
+    (cond
+      (nil? ei) nil
+
+      (or (string? ei) (buffer? ei))
+      (fn [pipe]
         (ev/spawn
-          (while (def buf (:read p-out 4096))
-            (buffer/push-string out-buf buf)))
+          (defer (:close pipe)
+            (:write pipe ei))))
 
-        (as->
-          (:wait proc) .x
-          (if (= .x 0) out-buf nil))))
+      (function? ei)
+      (fn [pipe]
+        (ev/spawn
+          (defer (:close pipe)
+            (ei pipe))))
 
-    (error (string/format "couldn't figure out how to write with: %j"))
-    ))
+      (error (string/format "bad argument: %j" ei))))
 
-(defn exec-exit
-  "Execute the program `args` and exit with its exit code. Calls POSIX `exec` if available."
+  (def in-fn (make-writer-fn))
+  (def out-fn (make-reader-fn :out))
+  (def err-fn (make-reader-fn :err))
+
+  (def spawn-args @{})
+  (when out-fn
+    (set (spawn-args :out) :pipe))
+  (when err-fn
+    (set (spawn-args :err) :pipe))
+  (when in-fn
+    (set (spawn-args :in) :pipe))
+
+  (def proc
+    (os/spawn args :p spawn-args))
+
+  (def ret @{})
+  (when out-fn
+    (set (ret :out) (out-fn (in proc :out))))
+  (when err-fn
+    (set (ret :err) (err-fn (in proc :err))))
+  (when in-fn
+    (in-fn (in proc :in)))
+
+  (defn try-close [x]
+    (when x (:close x)))
+
+  (defer
+    (do
+      (try-close (in proc :out))
+      (try-close (in proc :err)))
+    (set (ret :code) (:wait proc))
+    ret))
+
+(defn run<stdout
+  "Runs the specified command and returns either its stdout (if successful) or nil (if not successful)"
   [args]
 
+  (match (run< args {:out true})
+    {:code 0 :out x} x
+    _ nil))
+
+(defn exec-then-exit
+  "Executes the program `args` and exits with its exit code."
+  [args]
+  (-> (os/execute args :p) (os/exit)))
+
+(defn exec-replace
+  "Executes the program `args` through POSIX `exec`, if available.
+  If not available, forwards to exec-then-exit."
+  [args]
   (compif (dyn 'os/posix-exec)
     (os/posix-exec args :p)
-    (-> (os/execute args :p) (os/exit))))
+    (exec-then-exit args)))
 
 (defn fzagnostic
   ```
@@ -74,8 +126,10 @@
       (:write f str)))
 
   (as?->
-    (run< arglist write) .x
-    (string/trim .x)
+    (run< arglist {:in write :out true}) .x
+    (match .x
+      {:code 0 :out data} (string/trim data)
+      _ nil)
     (let [[num-str rest] (string/split " " .x 0 2)]
       (if-let [num (scan-number num-str)]
         [(- num starting-number) rest]
@@ -83,20 +137,16 @@
             (string/format num-str) (error-func))))))
 
 (defn readline-agnostic
-  ```
-  Invokes readline-agnostic with the provided arguments.
-  Returns the input (as a string) on success, nil on failure/cancellation.
-  ```
+  "Invokes readline-agnostic with the provided arguments.
+  Returns the input (as a string) on success, nil on failure/cancellation."
   [&named prompt-msg]
 
   (def prompt-arg
     (if (nil? prompt-msg) [] ["-p" prompt-msg]))
 
-  (def args ["readline-agnostic" ;prompt-arg])
-  (def [stdout-r stdout-w] (os/pipe))
-  (def code (os/execute args :p {:out stdout-w}))
-  (when (= code 0)
-    (-> (:read stdout-r math/int32-max) (string/trim))))
+  (match (run<stdout ["readline-agnostic" ;prompt-arg])
+    {:code 0 :out out} out
+    _ nil))
 
 (defmacro with-cwd
   "Executes `body` with `cwd` as the current working directory."

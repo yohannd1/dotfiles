@@ -96,4 +96,4 @@
          ;(if a-class ["-c" ;a-class] [])
          ;args-eval])))
 
-  (exec-exit exec-args))
+  (exec-replace exec-args))

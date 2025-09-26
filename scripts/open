@@ -13,18 +13,6 @@
 (var *open-new-window* (-> (os/getenv "OPEN_NEW_WINDOW" "") (length) (> 0)))
 (var *is-termux* (-> (os/getenv "TERMUX_APP_PID") (nil?) (not)))
 
-(defn exec-capture-stdout
-  "Runs the specified command and returns either its stdout (if successful) or nil (if not successful)"
-  [-args]
-
-  # TODO: use dotf-utils/run< instead of this.
-
-  (def (pipe-r pipe-w) (os/pipe))
-  (def code (os/execute -args :p {:in (dev-null) :out pipe-w}))
-  (if (= code 0)
-    (-> pipe-r (:read math/int32-max) (string/trim))
-    nil))
-
 (defn state/init [file-arg]
   (var file file-arg)
 
@@ -49,7 +37,7 @@
     (set file (string/slice file (length "file://"))))
 
   (def mime
-    (exec-capture-stdout ["file" "-E" "--dereference" "--brief" "--mime-type" "--" file]))
+    (run<stdout ["file" "-E" "--dereference" "--brief" "--mime-type" "--" file]))
 
   (def ext
     (if (nil? protocol)
@@ -87,7 +75,7 @@
     (when (prog-exists (-args 0))
       (if *open-gui*
         (os/exit (os/execute [;prog ;-args] :p {:in (dev-null) :err stdout}))
-        (exec-exit -args))))
+        (exec-replace -args))))
 
   (case -type
     :gui
@@ -96,7 +84,7 @@
 
     :tty
     (when (and (not *open-gui*) (prog-exists (-args 0)))
-      (exec-exit -args))
+      (exec-replace -args))
 
     :pop
     (condit-open ["d.tpop"])
@@ -110,7 +98,7 @@
     :xdg
     (do
       (os/setenv "VIA_OPEN" "1")
-      (exec-exit ["xdg-open" file]))
+      (exec-replace ["xdg-open" file]))
 
     :block
     (die 1 "attempted to open blocked file (%s)\nMIME: %j; EXT: %j\n"
@@ -192,11 +180,11 @@
       (nil? protocol)
       (let [real-file (os/realpath file)]
         (if (->> real-file (string/has-prefix? "/storage/emulated/0/"))
-          (exec-exit ["termux-open" real-file])
+          (exec-replace ["termux-open" real-file])
           (die 1 "path %s is not externally openable" real-file))))
 
       (in web-protocols protocol)
-      (exec-exit ["termux-open" file]))
+      (exec-replace ["termux-open" file]))
 
   (defn t [-type &opt -arg] (state/try s -type -arg))
   (defn m [-type -arg] (state/match s -type -arg))
