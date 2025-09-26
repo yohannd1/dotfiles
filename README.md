@@ -95,3 +95,28 @@ understandable, so here's an attempt:
     to set up particularly (e.g. steam, since I like it to start up
     silently and log into a specific file);
 - `,` for local scripts (they aren't here lol);
+
+## base16
+
+Not sure where to put this, but [the place it was in
+before](scripts/gen-res) wasn't appropriate either. I got this from
+somewhere, by the way. Maybe the official base16 specs?
+
+```
+- base00 - Default Background
+- base01 - Lighter Background (Used for status bars)
+- base02 - Selection Background
+- base03 - Comments, Invisibles, Line Highlighting
+- base04 - Dark Foreground (Used for status bars)
+- base05 - Default Foreground, Caret, Delimiters, Operators
+- base06 - Light Foreground
+- base07 - Light Background
+- base08 - Variables, XML Tags, Markup Link Text, Markup Lists, Diff Deleted
+- base09 - Integers, Boolean, Constants, XML Attributes, Markup Link Url
+- base0A - Classes, Markup Bold, Search Text Background
+- base0B - Strings, Inherited Class, Markup Code, Diff Inserted
+- base0C - Support, Regular Expressions, Escape Characters, Markup Quotes
+- base0D - Functions, Methods, Attribute IDs, Headings
+- base0E - Keywords, Storage, Selector, Markup Italic, Diff Changed
+- base0F - Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?>
+```
