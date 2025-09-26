@@ -14,6 +14,7 @@
   (eprintf "  %s add [FILES...]" *progname*)
   (eprintf "  %s clear" *progname*)
   (eprintf "  %s current" *progname*)
+  (eprintf "  %s edit" *progname*)
   (eprintf "  %s queue" *progname*)
   (eprintf "  %s shuffle" *progname*)
   (eprintf "    Shuffle the songs after the current one in the queue.")
@@ -145,6 +146,11 @@
         (do
           (eprintf "queue is \"empty\"")
           (os/exit 1))))
+
+    "edit"
+    (let [EDITOR (or (os/getenv "EDITOR") "vi")]
+      (with-lock state-path
+        (os/execute [EDITOR state-path] :p)))
 
     "queue"
     (with-state state
