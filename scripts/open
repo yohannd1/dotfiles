@@ -37,7 +37,8 @@
     (set file (string/slice file (length "file://"))))
 
   (def mime
-    (run<stdout ["file" "-E" "--dereference" "--brief" "--mime-type" "--" file]))
+    (-?> ["file" "-E" "--dereference" "--brief" "--mime-type" "--" file]
+         (run<stdout) (string/trim)))
 
   (def ext
     (if (nil? protocol)
@@ -156,14 +157,16 @@
     _ (error (string/format "Unknown action for symbol %s" mtype))))
 # >>>
 
-(defn main [_ & args]
+(defn main [arg0 & args]
+  (def progname (path/basename arg0))
+
   (when (nil? (os/getenv "WAYLAND_DISPLAY"))
     (set *open-gui* true)
     (os/setenv "OPEN_GUI" "1"))
 
   (def help-str
     (string
-      "Usage: open { <FILE> | <URL> }\n"
+      "Usage: " progname " { <FILE> | <URL> }\n"
       "Environment variables:\n"
       "  OPEN_GUI: forces to open only apps in GUI mode.\n"
       "  OPEN_ALT: a fallback opener; default is xdg-open"))
