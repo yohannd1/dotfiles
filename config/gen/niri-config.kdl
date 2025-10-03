@@ -244,10 +244,10 @@ binds {
     Mod+Shift+H { move-window-up; }
     Mod+Shift+L { move-window-down; }
 
-    Mod+Ctrl+H { focus-monitor-left; }
-    Mod+Ctrl+J { focus-monitor-down; }
-    Mod+Ctrl+K { focus-monitor-up; }
-    Mod+Ctrl+L { focus-monitor-right; }
+    Mod+Ctrl+J { focus-monitor-right; }
+    Mod+Ctrl+K { focus-monitor-left; }
+    Mod+Ctrl+H { focus-monitor-up; }
+    Mod+Ctrl+L { focus-monitor-down; }
 
     Mod+Shift+Ctrl+H { move-column-to-monitor-left; }
     Mod+Shift+Ctrl+J { move-column-to-monitor-down; }
