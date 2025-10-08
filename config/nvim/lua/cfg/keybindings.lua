@@ -4,13 +4,21 @@ local utils = require("cfg.utils")
 local lazy = utils.lazy
 local rifle = require("cfg.rifle")
 local snippets = require("cfg.snippets")
+local format = require("cfg.format")
 
 local services = utils.services
 local map = utils.map
 local forChars = utils.forChars
 local editFile = utils.editFile
 
+local jobstart = vim.fn.jobstart
+
 local DOTFILES = vim.env.DOTFILES
+local TERMINAL = vim.env.TERMINAL
+
+local lazyJobStart = function(...)
+  return lazy(jobstart, {...})
+end
 
 -- Quick binding arguments
 local arg_nr = { noremap = true }
@@ -23,32 +31,6 @@ vim.o.ttimeoutlen = 10
 
 -- set leader key
 vim.g.mapleader = " "
-
--- Soft wrap keybindings
-dummy.setSoftWrapBinds = function(enable)
-  local keys = "jk0$"
-
-  if not enable then
-    forChars(keys, function(k)
-      vim.cmd.nunmap(k)
-      vim.cmd.nunmap("g" .. k)
-    end)
-    return
-  end
-
-  forChars(keys, function(k)
-    local opts = { noremap = true, expr = true }
-    forChars("nv", function(m)
-      local fmt = string.format
-      map(m, k, fmt([[v:count == 0 ? 'g%s' : '%s']], k, k), opts)
-      map(m, "g" .. k, fmt([[v:count == 0 ? '%s' : 'g%s']], k, k), opts)
-    end)
-  end)
-end
--- dummy.setSoftWrapBinds(true)
-
-vim.cmd([[ command! -nargs=0 SWBindOn lua dummy.setSoftWrapBinds(true) ]])
-vim.cmd([[ command! -nargs=0 SWBindOff lua dummy.setSoftWrapBinds(false) ]])
 
 -- Mouse wheel scrolling (except on android)
 if not utils.os.is_android then
@@ -100,8 +82,8 @@ for k, once in pairs({h = "<", l = ">"}) do
 end
 
 -- Alt + o : toggle todo<->done state in items
-map("n", "<M-o>", ":lua dummy.itemToggleTodo()<CR>", arg_nr_s)
-map("v", "<M-o>", "<Esc>:lua dummy.itemToggleTodoVisual()<CR>", arg_nr_s)
+map("n", "<M-o>", dummy.itemToggleTodo, { noremap = true, silent = true, desc = "toggle todo" })
+map("v", "<M-o>", dummy.itemToggleTodoVisual, { noremap = true, silent = true, desc = "toggle todo" })
 
 -- Used when no completion plugin is available.
 --
@@ -322,9 +304,6 @@ map("n", "-", ":lua dummy.nerdTreeToggleX()<CR>", arg_nr)
 map("n", "<Leader>o", ":lua dummy.menuOpenRecent()<CR>", arg_nr)
 -- map("n", "<Leader>G", ":Goyo<CR>", arg_nr_s)
 
-map("n", "<Leader>L", ":set cursorline!<CR>", arg_nr)
-map("n", "<Leader>C", ":set cursorcolumn!<CR>", arg_nr)
-
 -- better n/N keys
 map("n", "n", "/<Up><CR>", arg_nr_s)
 map("n", "N", "?<Up><CR>", arg_nr_s)
@@ -341,7 +320,7 @@ dummy.openCurrentWORD = function()
     local browser = assert(vim.env.BROWSER, "Could not find a suitable browser to open the WORD (set it via $BROWSER)")
 
     if vim.fn.confirm("Open using a browser?", "&Yes\n&No") == 1 then
-      vim.fn.jobstart({browser, url})
+      jobstart({browser, url})
     end
 
     return
@@ -361,13 +340,14 @@ dummy.openCurrentWORD = function()
 end
 map("n", "gf", ":lua dummy.openCurrentWORD()<CR>", arg_nr)
 
-map("n", "<Leader>bf", ":lua require('cfg.format').formatBuffer()<CR>", arg_nr)
+map("n", "<Leader>bf", format.formatBuffer, { noremap = true, desc = "format buffer" })
 
-local telescope_builtin = require("telescope.builtin")
+local tsc_builtin = require("telescope.builtin")
 map("n", "<Leader>ft", dummy.findTodos, { noremap = true, desc = "find TODOs (in buffer)" })
-map("n", "<Leader>fb", telescope_builtin.buffers, { noremap = true, desc = "find buffers" })
-map("n", "<Leader>fh", telescope_builtin.help_tags, { noremap = true, desc = "find help tags" })
-map("n", "<Leader>f.", telescope_builtin.find_files, { noremap = true, desc = "find files" })
+map("n", "<Leader>fb", tsc_builtin.buffers, { noremap = true, desc = "find buffers" })
+map("n", "<Leader>fh", tsc_builtin.help_tags, { noremap = true, desc = "find help tags" })
+map("n", "<Leader>f.", tsc_builtin.find_files, { noremap = true, desc = "find files" })
+map("n", "<Leader>m", tsc_builtin.commands, { noremap = true, desc = "find commands" })
 
 for k, path in pairs({
   v = vim.env.VIM_INIT,
@@ -376,8 +356,7 @@ for k, path in pairs({
   p = ("%s/config/dots/path.sh"):format(DOTFILES),
 }) do
   local desc = ("edit: %s"):format(vim.fs.basename(path))
-  local callback = function() vim.cmd.edit(path) end
-  map("n", "<Leader>e" .. k, callback, { noremap = true, desc = desc })
+  map("n", "<Leader>e" .. k, lazy(vim.cmd.edit, path), { noremap = true, desc = desc })
 end
 
 local rifle_maps = { r = "run", b = "build", c = "check", t = "test", d = "debug" }
@@ -421,7 +400,7 @@ local quickFixIsOpen = function()
   return #t > 0
 end
 
-dummy.toggleQuickFix = function()
+local toggleQuickFix = function()
   if quickFixIsOpen() then
     vim.cmd.cclose()
   else
@@ -429,10 +408,16 @@ dummy.toggleQuickFix = function()
   end
 end
 
-map("n", "<Leader>q", dummy.toggleQuickFix, { noremap = true, desc = "toggle quickfix" })
+map("n", "<Leader>qq", toggleQuickFix, { noremap = true, desc = "quickfix: toggle" })
+map("n", "<Leader>qn", ":cnext<CR>", { noremap = true, desc = "quickfix: next" })
+map("n", "<Leader>qp", ":cnext<CR>", { noremap = true, desc = "quickfix: previous" })
+
 map("n", "<Leader>l", [[:messages<CR>]], arg_nr)
-map("n", "<Leader>T", [[:terminal<CR>i]], arg_nr)
-map("n", "<Leader>[", lazy(vim.fn.jobstart, {"tmux", "new-window"}), { noremap = true, desc = "tmux: new tab" })
+
+-- open terminal
+map("n", "<Leader>tn", [[:terminal<CR>i]], arg_nr)
+map("n", "<Leader>tN", lazyJobStart("tmux", "new-window"), { noremap = true, desc = "new tmux tab" })
+map("n", "<Leader>to", lazyJobStart(TERMINAL), { noremap = true, desc = "new terminal window" })
 
 services.defKeyMenu({
   id = "buffer",
@@ -486,6 +471,7 @@ map("n", "<Leader>k", vim.cmd.bdelete, { noremap = true, desc = "delete buffer" 
 
 map("n", "<Leader>i,", snippets.fuzzyMenu, arg_nr_s)
 
+-- TODO: how to make this better?
 map("n", "<Leader>gr", ":NumRead<CR>", arg_nr_s)
 map("n", "<Leader>g+", ":NumWriteInc<CR>", arg_nr_s)
 map("n", "<Leader>g-", ":NumWriteDec<CR>", arg_nr_s)

@@ -3,6 +3,7 @@ local dummy = _G.dummy
 
 local utils = require("cfg.utils")
 local map = utils.map
+local lazy = utils.lazy
 local setGlobals = utils.setGlobals
 
 local autocmd = vim.api.nvim_create_autocmd
@@ -269,26 +270,28 @@ if vim.g.rifle_mode == nil then
   vim.g.rifle_mode = utils.os.is_android and "buffer" or "popup"
 end
 
+local create_command = vim.api.nvim_create_user_command
+
 -- vim.g.rifle_split_direction = utils.os.is_android and "down" or "right"
 
-vim.api.nvim_create_user_command("Find", function(t)
+create_command("Find", function(t)
   vim.cmd(("silent grep %s"):format(t.args))
   vim.cmd.copen()
 end, { nargs = "*" })
 
-vim.api.nvim_create_user_command("AcrMentionedIn", function(_t)
+create_command("AcrMentionedIn", function(_t)
   local parent_dir = vim.fn.expand("%:h")
   local current_path = vim.fn.expand("%f")
   vim.cmd(("Find %q %q"):format(current_path:gsub("%.acr$", ""), parent_dir))
   vim.cmd.copen()
 end, { nargs = "*" })
 
-vim.api.nvim_create_user_command("AcrImportant", [[ Find '\%important' ]], { nargs = 0 })
+create_command("AcrImportant", [[Find '\%important']], { nargs = 0 })
 
 do
   local num_val = 0
 
-  vim.api.nvim_create_user_command("NumRead", function(_t)
+  create_command("NumRead", function(_t)
     local n = tonumber(vim.fn.expand("<cword>"))
     assert(n ~= nil, "hovered word is not a number")
     num_val = n
@@ -300,7 +303,7 @@ do
   end
 
   local defNumDoSet = function(name, mapper)
-    vim.api.nvim_create_user_command(name, function(_t)
+    create_command(name, function(_t)
       numDoSet(mapper)
     end, { nargs = "*" })
   end
@@ -308,6 +311,15 @@ do
   defNumDoSet("NumWriteInc", function(x) return x + 1 end)
   defNumDoSet("NumWriteDec", function(x) return x - 1 end)
 end
+
+-- Commands with descriptive names (intended to be searchable)
+create_command("FixTrailingWhitespace", [[%s/\s\+$//e]], {})
+create_command("ToggleCursorLine", [[:set cursorline!]], {})
+create_command("ToggleCursorColumn", [[:set cursorcolumn!]], {})
+create_command("SoftWrapBindsEnable", lazy(utils.setSoftWrapBinds, true), {})
+create_command("SoftWrapBindsDisable", lazy(utils.setSoftWrapBinds, false), {})
+
+if false then dummy.setSoftWrapBinds(true) end
 
 -- TODO: inside neovim, replace the $EDITOR with a wrapper script that connects
 -- to the current neovim instance, opens a buffer, and waits for the buffer to

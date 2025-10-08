@@ -313,4 +313,28 @@ M.editFile = function(path)
   vim.cmd.edit(path)
 end
 
+-- Soft wrap keybindings
+M.setSoftWrapBinds = function(enable)
+  local keys = "jk0$"
+  local forChars = M.forChars
+  local map = M.map
+
+  if not enable then
+    forChars(keys, function(k)
+      vim.cmd.nunmap(k)
+      vim.cmd.nunmap("g" .. k)
+    end)
+    return
+  end
+
+  forChars(keys, function(k)
+    local opts = { noremap = true, expr = true }
+    forChars("nv", function(m)
+      local fmt = string.format
+      map(m, k, fmt([[v:count == 0 ? 'g%s' : '%s']], k, k), opts)
+      map(m, "g" .. k, fmt([[v:count == 0 ? '%s' : 'g%s']], k, k), opts)
+    end)
+  end)
+end
+
 return M
