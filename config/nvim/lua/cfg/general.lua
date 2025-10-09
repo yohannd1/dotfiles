@@ -98,14 +98,6 @@ end
 
 vim.cmd([[command! Fgitmerge /\v^(\<{4,}|\={4,}|\>{4,})]])
 
-dummy.toggleVirtualEdit = function()
-  local value = (vim.o.ve == "") and "all" or ""
-  vim.o.ve = value
-
-  local message = string.format("Virtual edit set to '%s'", value)
-  vim.api.nvim_echo({{message}}, false, {})
-end
-
 dummy.bufSwitch = function(dir)
   if dir == "next" then vim.cmd.bnext()
   elseif dir == "prev" then vim.cmd.bprevious()
@@ -318,6 +310,14 @@ create_command("ToggleCursorLine", [[:set cursorline!]], {})
 create_command("ToggleCursorColumn", [[:set cursorcolumn!]], {})
 create_command("SoftWrapBindsEnable", lazy(utils.setSoftWrapBinds, true), {})
 create_command("SoftWrapBindsDisable", lazy(utils.setSoftWrapBinds, false), {})
+create_command("JanetRunLine", [[:.!janet /dev/stdin]], {})
+
+create_command("ToggleVirtualEdit", function()
+  local new_value = (vim.o.ve == "") and "all" or ""
+  vim.o.ve = new_value
+  local message = string.format("Virtual edit set to '%s'", new_value)
+  vim.api.nvim_echo({{message}}, false, {})
+end, {})
 
 if false then dummy.setSoftWrapBinds(true) end
 

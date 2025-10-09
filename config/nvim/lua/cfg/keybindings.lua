@@ -179,9 +179,6 @@ forChars("nv", function(m)
   map(m, "gK", "K", arg_nr)
 end)
 
--- Toggle virtualedit
-map("n", "<Leader>tv", ":lua dummy.toggleVirtualEdit()<CR>", arg_nr)
-
 -- Small... snippets?
 forChars("ic", function(m)
   map(m, "<C-u>", "<Nop>", arg_s)
