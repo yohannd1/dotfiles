@@ -5,12 +5,40 @@
   (printf "begin")
   (printf "end architecture;"))
 
-(defn .osc-names-furnace [start labels]
+(defn .osc-fur [start labels]
+  "Generate corrscope channel entries for furnace channels."
   (for i 0 (length labels)
     (def lb (in labels i))
     (unless (nil? lb)
       (printf "- !ChannelConfig")
       (printf "  wav_path: c_c%02d.wav" (+ start i))
-      (printf "  label %s" lb))))
+      (printf "  label: %s" lb))))
+
+(def- osc-lmms-peg
+  (peg/compile
+    '(* :d+ "_" (<- (any (if-not ".wav" 1))) ".wav")))
+
+(defn .osc-lmms []
+  "Generate corrscope channel entries for LMMS tracks."
+
+  (defn try-parse [x]
+    (when (def m (peg/match osc-lmms-peg x))
+      [x ;m]))
+
+  (as->
+    (os/dir ".") .x
+    (map try-parse .x)
+    (filter |(not (nil? $)) .x)
+    (each [path name] .x
+      (printf "- !ChannelConfig")
+      (printf "  wav_path: %s" path)
+      (printf "  label: %s" name))))
+
+(defn ? []
+  "Aux function for listing known snippets."
+  (as->
+    (all-bindings) .x
+    (filter |(= (string/slice $ 0 1) ".") .x)
+    (each x .x (pp x))))
 
 (-> (:read stdin :all) (eval-string))
