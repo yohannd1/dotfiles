@@ -1,0 +1,16 @@
+#!/usr/bin/env janet
+
+(defn .vhdl-arch [arch entity]
+  (printf "architecture %s of %s" arch entity)
+  (printf "begin")
+  (printf "end architecture;"))
+
+(defn .osc-names-furnace [start labels]
+  (for i 0 (length labels)
+    (def lb (in labels i))
+    (unless (nil? lb)
+      (printf "- !ChannelConfig")
+      (printf "  wav_path: c_c%02d.wav" (+ start i))
+      (printf "  label %s" lb))))
+
+(-> (:read stdin :all) (eval-string))

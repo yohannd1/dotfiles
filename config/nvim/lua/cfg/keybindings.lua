@@ -468,6 +468,9 @@ map("n", "<Leader>k", vim.cmd.bdelete, { noremap = true, desc = "delete buffer" 
 
 map("n", "<Leader>i,", snippets.fuzzyMenu, arg_nr_s)
 
+map("n", "<Leader>,", ":ProgSnipLine<CR>", arg_nr)
+map("v", "<Leader>,", ":ProgSnipVisual<CR>", arg_nr)
+
 -- TODO: how to make this better?
 map("n", "<Leader>gr", ":NumRead<CR>", arg_nr_s)
 map("n", "<Leader>g+", ":NumWriteInc<CR>", arg_nr_s)

@@ -306,11 +306,20 @@ end
 
 -- Commands with descriptive names (intended to be searchable)
 create_command("FixTrailingWhitespace", [[%s/\s\+$//e]], {})
-create_command("ToggleCursorLine", [[:set cursorline!]], {})
-create_command("ToggleCursorColumn", [[:set cursorcolumn!]], {})
+create_command("ToggleCursorLine", [[set cursorline!]], {})
+create_command("ToggleCursorColumn", [[set cursorcolumn!]], {})
 create_command("SoftWrapBindsEnable", lazy(utils.setSoftWrapBinds, true), {})
 create_command("SoftWrapBindsDisable", lazy(utils.setSoftWrapBinds, false), {})
-create_command("JanetRunLine", [[:.!janet /dev/stdin]], {})
+create_command("ProgSnipLine", [[.!progsnip]], {})
+-- create_command("ProgSnipVisual", function()
+--   local text = M.getVisualRegion()
+--   local obj = vim.system({"progsnip"}, { text = true, stdin = text }):wait()
+--   if obj.code ~= 0 then
+--     print("Command exited with non-zero exit code: " .. obj.code)
+--     print("Stderr: " .. obj.stderr)
+--   end
+--   TODO: replace selection with the output
+-- end)
 
 create_command("ToggleVirtualEdit", function()
   local new_value = (vim.o.ve == "") and "all" or ""

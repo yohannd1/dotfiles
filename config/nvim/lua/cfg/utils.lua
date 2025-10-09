@@ -337,4 +337,17 @@ M.setSoftWrapBinds = function(enable)
   end)
 end
 
+local getpos = vim.fn.getpos
+local getregion = vim.fn.getregion
+
+-- Get the visual selection region as text, character-wise (not line-wise ffs).
+--
+-- FIXME: probably doesn't work with rectangular selections
+M.getVisualRegion = function()
+  local vstart = getpos("'<")
+  local vend = getpos("'>")
+  local lines = getregion(vstart, vend)
+  return table.concat(lines, "\n")
+end
+
 return M
