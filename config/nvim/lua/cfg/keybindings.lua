@@ -1,17 +1,22 @@
 local vim = _G.vim
+local jobstart = vim.fn.jobstart
+local col = vim.fn.col
+local line = vim.fn.line
+local getline = vim.fn.getline
+
 local dummy = _G.dummy
-local utils = require("cfg.utils")
-local lazy = utils.lazy
 local rifle = require("cfg.rifle")
 local snippets = require("cfg.snippets")
 local format = require("cfg.format")
 
+local utils = require("cfg.utils")
+local doKeys = utils.doKeys
+local lazy = utils.lazy
+local lazyRepeatable = utils.lazyRepeatable
 local services = utils.services
 local map = utils.map
 local forChars = utils.forChars
 local editFile = utils.editFile
-
-local jobstart = vim.fn.jobstart
 
 local DOTFILES = vim.env.DOTFILES
 local TERMINAL = vim.env.TERMINAL
@@ -82,24 +87,21 @@ for k, once in pairs({h = "<", l = ">"}) do
 end
 
 -- Alt + o : toggle todo<->done state in items
-map("n", "<M-o>", dummy.itemToggleTodo, { noremap = true, silent = true, desc = "toggle todo" })
-map("v", "<M-o>", dummy.itemToggleTodoVisual, { noremap = true, silent = true, desc = "toggle todo" })
+map("n", "<M-o>", utils.task.toggleLine, { noremap = true, silent = true, desc = "toggle todo" })
+map("v", "<M-o>", utils.task.toggleVisual, { noremap = true, silent = true, desc = "toggle todo" })
 
+-- Wrapper around tab completion.
+--
 -- Used when no completion plugin is available.
 --
 -- When pressing the tab key, decide if it's needed to complete the current
 -- word, or else simply insert the tab key.
-dummy.tabOrComplete = function(scroll_direction)
-  local col = vim.fn.col
-  local esc = function(x)
-    return vim.api.nvim_replace_termcodes(x, true, true, true)
-  end
-
+local tabOrComplete = function(scroll_direction)
   local scrollKey = function()
     if scroll_direction == "up" then
-      return esc("<C-p>")
+      return vim.keycode("<C-p>")
     elseif scroll_direction == "down" then
-      return esc("<C-n>")
+      return vim.keycode("<C-n>")
     else
       error(("Unknown scroll direction: %s"):format(scroll_direction))
     end
@@ -111,16 +113,12 @@ dummy.tabOrComplete = function(scroll_direction)
 
   local not_first_char = col(".") > 1
   local is_space = not_first_char and vim.fn.strcharpart(vim.fn.getline("."), col(".") - 2, 1):match("[ \t]")
-  return (not is_space) and scrollKey() or esc("<Tab>")
+  return (not is_space) and scrollKey() or vim.keycode("<Tab>")
 end
 
 -- Use Tab to complete or insert indent
-map("i", "<Tab>", "<C-r>=v:lua.dummy.tabOrComplete('down')<CR>", arg_nr_s)
-map("i", "<S-Tab>", "<C-r>=v:lua.dummy.tabOrComplete('up')<CR>", arg_nr_s)
-
--- Folding commands
--- " nnoremap <silent> <Tab> za
--- " nnoremap <silent> <S-Tab> zm
+map("i", "<Tab>", lazy(tabOrComplete, "down"), { noremap = true, expr = true })
+map("i", "<S-Tab>", lazy(tabOrComplete, "up"), { noremap = true, expr = true })
 
 -- Perl-ish regex searches
 forChars("nv", function(m)
@@ -157,7 +155,7 @@ forChars("nv", function(m)
     return (":g/%s/normal "):format(result)
   end
 
-  vim.keymap.set(m, "<Leader>.", callback, { expr = true })
+  map(m, "<Leader>.", callback, { expr = true })
 end)
 
 -- Per-line macros for visual ranges
@@ -204,14 +202,10 @@ forChars("ic", function(m)
 end)
 
 -- Buffer navigation
-map("n", "<C-j>", ":lua dummy.bufSwitch('next')<CR>", arg_nr_s)
-map("n", "<C-k>", ":lua dummy.bufSwitch('prev')<CR>", arg_nr_s)
+map("n", "<C-j>", lazy(dummy.bufSwitch, "next"), { noremap = true, silent = true, desc = "next buffer" })
+map("n", "<C-k>", lazy(dummy.bufSwitch, "prev"), { noremap = true, silent = true, desc = "prev buffer" })
 
 dummy.betterJoin = function()
-  local line = vim.fn.line
-  local getline = vim.fn.getline
-  local doKeys = utils.doKeys
-
   -- line numbers
   local ln_cur = line(".")
   local ln_last = line("$")
@@ -238,20 +232,18 @@ dummy.betterJoin = function()
 end
 
 dummy.betterJoinVisual = function()
-  local getpos = vim.fn.getpos
-  local line_start = getpos("'<")[2]
-  local line_end = getpos("'>")[2]
-  local line_diff = line_end - line_start
+  local l_start, l_end = utils.getVisualLineNumbers()
+  local diff = l_end - l_start
 
-  utils.doKeys(("%dG"):format(line_start))
-  for _ = 1, line_diff do
+  doKeys(vim.keycode("<Esc>"))
+  doKeys(l_start .. "G")
+  for _ = 1, diff do
     dummy.betterJoin()
   end
-  utils.doKeys(("%dG"):format(line_start))
 end
 
-map("n", "J", ":lua dummy.betterJoin()<CR>", arg_nr_s)
-map("v", "J", ":lua dummy.betterJoinVisual()<CR>", arg_nr_s)
+map("n", "J", lazyRepeatable(dummy.betterJoin), arg_nr_s)
+map("v", "J", dummy.betterJoinVisual, arg_nr_s)
 
 -- Terminal commands
 map("t", "<M-w>", "<C-\\><C-n>", arg_nr_s)
@@ -297,8 +289,8 @@ dummy.nerdTreeToggleX = function()
   end
 end
 
-map("n", "-", ":lua dummy.nerdTreeToggleX()<CR>", arg_nr)
-map("n", "<Leader>o", ":lua dummy.menuOpenRecent()<CR>", arg_nr)
+map("n", "-", dummy.nerdTreeToggleX, arg_nr)
+map("n", "<Leader>o", dummy.menuOpenRecent, arg_nr)
 -- map("n", "<Leader>G", ":Goyo<CR>", arg_nr_s)
 
 -- better n/N keys
@@ -335,7 +327,7 @@ dummy.openCurrentWORD = function()
 
   print("Could not find a suitable file or url in the current WORD")
 end
-map("n", "gf", ":lua dummy.openCurrentWORD()<CR>", arg_nr)
+map("n", "gf", dummy.openCurrentWORD, arg_nr)
 
 map("n", "<Leader>bf", format.formatBuffer, { noremap = true, desc = "format buffer" })
 
@@ -367,7 +359,7 @@ local getWikiPage = function(id)
 end
 
 dummy.plan_sidebar = utils.Sidebar.new(getWikiPage("202407161554-F1C8E4"))
-map("n", "<Leader>c", [[:lua dummy.plan_sidebar:toggle()<CR>]], arg_nr_s)
+map("n", "<Leader>c", function() dummy.plan_sidebar:toggle() end, arg_nr_s)
 
 dummy.wikiOpenJournal = function()
   local result = vim.system({"acr-journal", "get-path"}, { text = true }):wait()

@@ -1,4 +1,9 @@
 local vim = _G.vim
+local getpos = vim.fn.getpos
+local getregion = vim.fn.getregion
+local trim = vim.fn.trim
+local match = vim.fn.match
+
 local M = {}
 M.os = {}
 M.os.is_android = vim.fn.isdirectory("/sdcard") ~= 0
@@ -309,6 +314,15 @@ M.lazy = function(f, ...)
   end
 end
 
+M.lazyRepeatable = function(fn, ...)
+  local tbl = {...}
+  return function()
+    for _ = 1, math.max(1, vim.v.count) do
+      fn(unpack(tbl))
+    end
+  end
+end
+
 M.editFile = function(path)
   vim.cmd.edit(path)
 end
@@ -337,9 +351,6 @@ M.setSoftWrapBinds = function(enable)
   end)
 end
 
-local getpos = vim.fn.getpos
-local getregion = vim.fn.getregion
-
 -- Get the visual selection region as text, character-wise (not line-wise ffs).
 --
 -- FIXME: probably doesn't work with rectangular selections
@@ -348,6 +359,81 @@ M.getVisualRegion = function()
   local vend = getpos("'>")
   local lines = getregion(vstart, vend)
   return table.concat(lines, "\n")
+end
+
+M.withSavedCursor = function(fn)
+  local saved_cursor = vim.fn.getcurpos()
+  fn()
+  vim.fn.setpos(".", saved_cursor)
+end
+
+M.getVisualLineNumbers = function()
+  local pos1 = getpos(".")[2]
+  local pos2 = getpos("v")[2]
+  local l_start = math.min(pos1, pos2)
+  local l_end = math.max(pos1, pos2)
+  return l_start, l_end
+end
+
+M.task = {}
+
+M.task.toggleLine = function()
+  local fn = vim.b.task_toggleline_func
+    or M.task.toggleLineDefault
+  fn()
+end
+
+M.task.toggleVisual = function()
+  local doKeys = M.doKeys
+  local l_start, l_end = M.getVisualLineNumbers()
+
+  M.withSavedCursor(function()
+    for ln = l_start, l_end do
+      doKeys(ln .. "G")
+      M.task.toggleLine()
+    end
+  end)
+end
+
+M.task.toggleLineDefault = function()
+  local cur_line = vim.fn.getline(".")
+  local marker = vim.b.task_toggleline_marker or "x"
+
+  local OPEN_SQUARE_PATT = trim([[ \v^(\s*)([*-]*)(\s*)\[ \] ]])
+  local OPEN_ROUND_PATT = trim([[ \v^(\s*)([*-]*)(\s*)\( \) ]])
+  local CLOSED_SQUARE_PATT = trim([[ \v^(\s*)([*-]*)(\s*)\[[Xx]\] ]])
+  local CLOSED_ROUND_PATT = trim([[ \v^(\s*)([*-]*)(\s*)\([Xx]\) ]])
+
+  local afterReplace = function()
+    vim.cmd.nohlsearch()
+    vim.cmd("normal! ``")
+  end
+
+  if match(cur_line, OPEN_SQUARE_PATT) ~= -1 then
+    vim.cmd(("s/%s/\\1\\2\\3[%s]"):format(OPEN_SQUARE_PATT, marker))
+    afterReplace()
+    return
+  end
+
+  if match(cur_line, OPEN_ROUND_PATT) ~= -1 then
+    vim.cmd(("s/%s/\\1\\2\\3(%s)"):format(OPEN_ROUND_PATT, marker))
+    afterReplace()
+    return
+  end
+
+  if match(cur_line, CLOSED_SQUARE_PATT) ~= -1 then
+    vim.cmd(("s/%s/\\1\\2\\3[ ]"):format(CLOSED_SQUARE_PATT))
+    afterReplace()
+    return
+  end
+
+  if match(cur_line, CLOSED_ROUND_PATT) ~= -1 then
+    vim.cmd(("s/%s/\\1\\2\\3( )"):format(CLOSED_ROUND_PATT))
+    afterReplace()
+    return
+  end
+
+  print("No to-do detected on the current line")
 end
 
 return M

@@ -8,6 +8,7 @@ local setGlobals = utils.setGlobals
 
 local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup
+local create_cmd = vim.api.nvim_create_user_command
 
 vim.env.VIM_INIT = vim.g.config_root .. "/init.vim"
 vim.env.GVIM_INIT = vim.g.config_root .. "/ginit.vim"
@@ -96,96 +97,15 @@ if vim.g.neovide then
   vim.g.neovide_cursor_vfx_mode = "ripple"
 end
 
-vim.cmd([[command! Fgitmerge /\v^(\<{4,}|\={4,}|\>{4,})]])
-
 dummy.bufSwitch = function(dir)
-  if dir == "next" then vim.cmd.bnext()
-  elseif dir == "prev" then vim.cmd.bprevious()
-  else error(("Unknown direction: %s"):format(dir))
+  if dir == "next" then
+    vim.cmd.bnext()
+  elseif dir == "prev" then
+    vim.cmd.bprevious()
+  else
+    error(("Unknown direction: %s"):format(dir))
   end
   vim.cmd([[ silent doautocmd User BufSwitch ]])
-end
-
-dummy.itemToggleTodo = function()
-  local fn = vim.b.item_toggletodo_func or dummy.itemToggleTodoDefault
-  fn()
-end
-
-dummy.itemToggleTodoVisual = function()
-  local doKeys = utils.doKeys
-  local line = vim.fn.line
-
-  doKeys("mz") -- mark
-
-  -- get beginning and end lines
-  doKeys("'<")
-  local l1 = line(".")
-  doKeys("'>")
-  local l2 = line(".")
-  local count = l2 - l1
-
-  doKeys("'<")
-  for _ = 0, count do
-    dummy.itemToggleTodo()
-    doKeys("j")
-  end
-
-  doKeys("`z")
-end
-
-dummy.itemToggleTodoDefault = function()
-  local cur_line = vim.fn.getline(".")
-  local preferred_done = vim.b.item_toggletodo_preferred_done or "x"
-
-  local trim = vim.fn.trim
-  local OPEN_SQUARE_PATT = trim([[ \v^(\s*)([*-]*)(\s*)\[ \] ]])
-  local OPEN_ROUND_PATT = trim([[ \v^(\s*)([*-]*)(\s*)\( \) ]])
-  local CLOSED_SQUARE_PATT = trim([[ \v^(\s*)([*-]*)(\s*)\[[Xx]\] ]])
-  local CLOSED_ROUND_PATT = trim([[ \v^(\s*)([*-]*)(\s*)\([Xx]\) ]])
-
-  local afterReplace = function()
-    vim.cmd.nohlsearch()
-    vim.cmd("normal! ``")
-  end
-
-  local match = vim.fn.match
-  if match(cur_line, OPEN_SQUARE_PATT) ~= -1 then
-    vim.cmd(("s/%s/\\1\\2\\3[%s]"):format(OPEN_SQUARE_PATT, preferred_done))
-    afterReplace()
-    return
-  end
-
-  if match(cur_line, OPEN_ROUND_PATT) ~= -1 then
-    vim.cmd(("s/%s/\\1\\2\\3(%s)"):format(OPEN_ROUND_PATT, preferred_done))
-    afterReplace()
-    return
-  end
-
-  if match(cur_line, CLOSED_SQUARE_PATT) ~= -1 then
-    vim.cmd(("s/%s/\\1\\2\\3[ ]"):format(CLOSED_SQUARE_PATT))
-    afterReplace()
-    return
-  end
-
-  if match(cur_line, CLOSED_ROUND_PATT) ~= -1 then
-    vim.cmd(("s/%s/\\1\\2\\3( )"):format(CLOSED_ROUND_PATT))
-    afterReplace()
-    return
-  end
-
-  print("No to-do detected on the current line")
-end
-
--- Highlight yanked selection briefly
-if false then -- turned off lol
-  autocmd({"TextYankPost"}, {
-    pattern = "*",
-    callback = function()
-      vim.highlight.on_yank({
-        higroup = "Normal",
-      })
-    end
-  })
 end
 
 dummy.findTodos = function()
@@ -262,28 +182,38 @@ if vim.g.rifle_mode == nil then
   vim.g.rifle_mode = utils.os.is_android and "buffer" or "popup"
 end
 
-local create_command = vim.api.nvim_create_user_command
+-- Highlight yanked selection briefly
+if false then -- turned off lol
+  autocmd({"TextYankPost"}, {
+    pattern = "*",
+    callback = function()
+      vim.highlight.on_yank({
+        higroup = "Normal",
+      })
+    end
+  })
+end
 
 -- vim.g.rifle_split_direction = utils.os.is_android and "down" or "right"
 
-create_command("Find", function(t)
+create_cmd("Find", function(t)
   vim.cmd(("silent grep %s"):format(t.args))
   vim.cmd.copen()
 end, { nargs = "*" })
 
-create_command("AcrMentionedIn", function(_t)
+create_cmd("AcrMentionedIn", function(_t)
   local parent_dir = vim.fn.expand("%:h")
   local current_path = vim.fn.expand("%f")
   vim.cmd(("Find %q %q"):format(current_path:gsub("%.acr$", ""), parent_dir))
   vim.cmd.copen()
 end, { nargs = "*" })
 
-create_command("AcrImportant", [[Find '\%important']], { nargs = 0 })
+create_cmd("AcrImportant", [[Find '\%important']], { nargs = 0 })
 
 do
   local num_val = 0
 
-  create_command("NumRead", function(_t)
+  create_cmd("NumRead", function(_t)
     local n = tonumber(vim.fn.expand("<cword>"))
     assert(n ~= nil, "hovered word is not a number")
     num_val = n
@@ -295,7 +225,7 @@ do
   end
 
   local defNumDoSet = function(name, mapper)
-    create_command(name, function(_t)
+    create_cmd(name, function(_t)
       numDoSet(mapper)
     end, { nargs = "*" })
   end
@@ -305,13 +235,13 @@ do
 end
 
 -- Commands with descriptive names (intended to be searchable)
-create_command("FixTrailingWhitespace", [[%s/\s\+$//e]], {})
-create_command("ToggleCursorLine", [[set cursorline!]], {})
-create_command("ToggleCursorColumn", [[set cursorcolumn!]], {})
-create_command("SoftWrapBindsEnable", lazy(utils.setSoftWrapBinds, true), {})
-create_command("SoftWrapBindsDisable", lazy(utils.setSoftWrapBinds, false), {})
-create_command("ProgSnipLine", [[.!progsnip]], {})
--- create_command("ProgSnipVisual", function()
+create_cmd("FixTrailingWhitespace", [[%s/\s\+$//e]], {})
+create_cmd("ToggleCursorLine", [[set cursorline!]], {})
+create_cmd("ToggleCursorColumn", [[set cursorcolumn!]], {})
+create_cmd("SoftWrapBindsEnable", lazy(utils.setSoftWrapBinds, true), {})
+create_cmd("SoftWrapBindsDisable", lazy(utils.setSoftWrapBinds, false), {})
+create_cmd("ProgSnipLine", [[.!progsnip]], {})
+-- create_cmd("ProgSnipVisual", function()
 --   local text = M.getVisualRegion()
 --   local obj = vim.system({"progsnip"}, { text = true, stdin = text }):wait()
 --   if obj.code ~= 0 then
@@ -320,8 +250,8 @@ create_command("ProgSnipLine", [[.!progsnip]], {})
 --   end
 --   TODO: replace selection with the output
 -- end)
-
-create_command("ToggleVirtualEdit", function()
+create_cmd("FindGitMerge", [[/\v^(\<{4,}|\={4,}|\>{4,})]], {})
+create_cmd("ToggleVirtualEdit", function()
   local new_value = (vim.o.ve == "") and "all" or ""
   vim.o.ve = new_value
   local message = string.format("Virtual edit set to '%s'", new_value)

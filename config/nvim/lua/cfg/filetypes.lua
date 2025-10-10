@@ -549,7 +549,7 @@ ft.acrylic = function()
   addSnippet("t", "%:title ")
   vim.b.rifle_mode = "bg_buffer"
 
-  vim.b.item_toggletodo_preferred_done = "x"
+  vim.b.task_toggleline_marker = "x"
   vim.b.todo_queries = {
     "^(\\s*)([-*]\\s+)?\\( \\)",
     "^(\\s*)([-*]\\s+)?\\[ \\]",
@@ -580,7 +580,7 @@ ft.scheme = function()
   vim.b.better_join_whitespace_matcher = lispJoinMatcher
   setSpaceIndent(2)
 end
-ft["scheme.guile"] = scheme
+ft["scheme.guile"] = ft.scheme
 
 ft.janet = function()
   vim.b.better_join_whitespace_matcher = lispJoinMatcher
