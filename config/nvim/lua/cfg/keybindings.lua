@@ -290,7 +290,6 @@ dummy.nerdTreeToggleX = function()
 end
 
 map("n", "-", dummy.nerdTreeToggleX, arg_nr)
-map("n", "<Leader>o", dummy.menuOpenRecent, arg_nr)
 -- map("n", "<Leader>G", ":Goyo<CR>", arg_nr_s)
 
 -- better n/N keys
@@ -337,6 +336,7 @@ map("n", "<Leader>fb", tsc_builtin.buffers, { noremap = true, desc = "find buffe
 map("n", "<Leader>fh", tsc_builtin.help_tags, { noremap = true, desc = "find help tags" })
 map("n", "<Leader>f.", tsc_builtin.find_files, { noremap = true, desc = "find files" })
 map("n", "<Leader>m", tsc_builtin.commands, { noremap = true, desc = "find commands" })
+map("n", "<Leader>fr", dummy.menuOpenRecent, { noremap = true, desc = "find recent files" })
 
 for k, path in pairs({
   v = vim.env.VIM_INIT,

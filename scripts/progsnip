@@ -1,9 +1,17 @@
 #!/usr/bin/env janet
 
 (defn .vhdl-arch [arch entity]
-  (printf "architecture %s of %s" arch entity)
+  (printf "architecture %s of %s is" arch entity)
   (printf "begin")
   (printf "end architecture;"))
+
+(defn .vhdl-clock-process [clk-in]
+  (printf "process (%s)" clk-in)
+  (printf "begin")
+  (printf "  if rising_edge(%s) then" clk-in)
+  (printf "    -- CODE HERE")
+  (printf "  end if;")
+  (printf "end process;"))
 
 (defn .osc-fur [start labels]
   "Generate corrscope channel entries for furnace channels."
