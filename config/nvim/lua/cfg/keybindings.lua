@@ -399,7 +399,7 @@ end
 
 map("n", "<Leader>qq", toggleQuickFix, { noremap = true, desc = "quickfix: toggle" })
 map("n", "<Leader>qn", ":cnext<CR>", { noremap = true, desc = "quickfix: next" })
-map("n", "<Leader>qp", ":cnext<CR>", { noremap = true, desc = "quickfix: previous" })
+map("n", "<Leader>qp", ":cprev<CR>", { noremap = true, desc = "quickfix: previous" })
 
 map("n", "<Leader>l", [[:messages<CR>]], arg_nr)
 
