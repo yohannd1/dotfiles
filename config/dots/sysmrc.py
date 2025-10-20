@@ -78,6 +78,7 @@ m.link_conf("waybar/config", "~/.config/waybar/config")
 m.link_glob(DOTFILES / "config/kak", "~/.config/kak")
 m.link_glob(DOTFILES / "config/nvim", "~/.config/nvim")
 m.link_glob(DOTFILES / "config/emacs", "~/.emacs.d")
+m.link_glob(DOTFILES / "config/w3m", "~/.w3m")
 
 if not m.is_android:
     # desktop apps

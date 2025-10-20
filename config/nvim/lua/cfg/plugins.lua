@@ -200,6 +200,10 @@ M.add({
   end,
 })
 
+M.add({
+  source = "yuratomo/w3m.vim",
+})
+
 -- M.add({
 --   source = "Olical/conjure",
 --   before = function()
