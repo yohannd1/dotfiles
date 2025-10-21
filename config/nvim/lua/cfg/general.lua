@@ -194,6 +194,13 @@ if false then -- turned off lol
   })
 end
 
+-- Fix some folds not being detected when a file is loaded.
+-- Not even sure if it's related but I got it from there: https://github.com/nvim-treesitter/nvim-treesitter/issues/1337#issuecomment-1397639999
+autocmd({"BufEnter"}, {
+  pattern = "*",
+  command = "normal zx",
+})
+
 -- vim.g.rifle_split_direction = utils.os.is_android and "down" or "right"
 
 create_cmd("Find", function(t)
