@@ -208,23 +208,23 @@ create_cmd("Find", function(t)
   vim.cmd.copen()
 end, { nargs = "*" })
 
-create_cmd("AcrMentionedIn", function(_t)
+create_cmd("AcrMentionedIn", function()
   local parent_dir = vim.fn.expand("%:h")
   local current_path = vim.fn.expand("%f")
   vim.cmd(("Find %q %q"):format(current_path:gsub("%.acr$", ""), parent_dir))
   vim.cmd.copen()
-end, { nargs = "*" })
+end, { nargs = 0 })
 
 create_cmd("AcrImportant", [[Find '\%important']], { nargs = 0 })
 
 do
   local num_val = 0
 
-  create_cmd("NumRead", function(_t)
+  create_cmd("NumRead", function()
     local n = tonumber(vim.fn.expand("<cword>"))
     assert(n ~= nil, "hovered word is not a number")
     num_val = n
-  end, { nargs = "*" })
+  end, { nargs = 0 })
 
   local numDoSet = function(op)
     vim.cmd(("normal! ciw%s"):format(num_val))
@@ -232,9 +232,7 @@ do
   end
 
   local defNumDoSet = function(name, mapper)
-    create_cmd(name, function(_t)
-      numDoSet(mapper)
-    end, { nargs = "*" })
+    create_cmd(name, lazy(numDoSet, mapper), { nargs = 0 })
   end
 
   defNumDoSet("NumWriteInc", function(x) return x + 1 end)

@@ -61,11 +61,13 @@
     :block to not run the file and exit immediately"
   [self -type &opt -args]
 
-  (def {:open-alt open-alt
-        :file file
-        :mime mime
-        :protocol protocol
-        :ext ext} self)
+  (def
+    {:open-alt open-alt
+     :file file
+     :mime mime
+     :protocol protocol
+     :ext ext}
+    self)
 
   (defn prog-exists [progn]
     (def args ["which" progn])

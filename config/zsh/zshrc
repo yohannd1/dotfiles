@@ -544,3 +544,6 @@ fm() {
     esac
   done
 }
+
+cb() { nvim +"W3m $*"; }
+cb-search() { cb "https://lite.duckduckgo.com/lite/?q=$*"; }
