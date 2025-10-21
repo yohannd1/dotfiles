@@ -547,6 +547,12 @@ end
 
 ft.acrylic = function()
   addSnippet("t", "%:title ")
+  addMSnippet("c", [[
+@code#{
+<[@]>
+}#
+  ]])
+
   vim.b.rifle_mode = "bg_buffer"
 
   vim.b.task_toggleline_marker = "x"

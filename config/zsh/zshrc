@@ -546,4 +546,7 @@ fm() {
 }
 
 cb() { nvim +"W3m $*"; }
-cb-search() { cb "https://lite.duckduckgo.com/lite/?q=$*"; }
+cb-search() {
+  local query=$(printf "%s" "$*" | tr ' ' '+')
+  cb "https://lite.duckduckgo.com/lite/?q=$query"
+}
