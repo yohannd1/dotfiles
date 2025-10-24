@@ -1,0 +1,30 @@
+#!/usr/bin/env sh
+#
+# Low quality termux trash wrapper.
+#
+# Fixes being unable to trash stuff at /storage/emulated/0, at the potential
+# sacrifice of having to copy data from one volume to the other.
+
+set -ue
+
+termuxTrashDir="$XDG_CACHE_HOME/termux-trash"
+
+while [ $# -gt 0 ]; do
+  real=$(realpath "$1")
+  case "$real" in
+    /storage/emulated/0/*)
+      mkdir -p "$termuxTrashDir"
+      bn=$(basename "$1")
+      mv "$1" "$termuxTrashDir/$bn"
+      trash-put "$termuxTrashDir/$bn"
+      ;;
+    /data/data/com.termux/files/*)
+      trash-put "$1"
+      ;;
+    *)
+      printf >&2 "error: probably can't trash %s - giving up\n" "$1"
+      exit 1
+      ;;
+  esac
+  shift
+done
