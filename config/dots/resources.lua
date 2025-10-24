@@ -14,7 +14,7 @@ local font_presets = {
   },
   ["Terminus"] = {
     name = "Terminus",
-    base_size = 18,
+    base_size = 20,
   },
   ["Iosevka"] = {
     name = "Iosevka",
@@ -54,7 +54,7 @@ local font_presets = {
   },
   ["FantasqueSans"] = {
     name = "Fantasque Sans Mono",
-    base_size = 17,
+    base_size = 19.5,
   },
   ["Sudo"] = {
     name = "Sudo",
@@ -86,7 +86,7 @@ local font_presets = {
   },
   ["PtMono"] = {
     name = "PTMono",
-    base_size = 15,
+    base_size = 16,
   },
   ["Hermit"] = {
     name = "Hermit",
