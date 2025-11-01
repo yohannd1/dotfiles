@@ -3,7 +3,19 @@
 # A script for power actions.
 
 progname=$(basename "$0")
+
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
+isInteractive() { [ -t 2 ]; }
+isWayland() { [ "$WAYLAND_DISPLAY" ]; }
+isXorg() { ! isWayland && [ "$DISPLAY" ]; }
+
+customExec() {
+  if isInteractive; then
+    exec "$@"
+  else
+    exec d.tpop "$@"
+  fi
+}
 
 main() {
   case $# in
@@ -37,14 +49,12 @@ EOF
 
 showHelp() {
 cat >&2 <<EOF
-Usage: $progname [{ lock | exit | suspend | hibernate | reboot | shutdown | shutdown_now }]
+Usage: $progname [ACTION]
+  ACTION := { lock | exit | suspend | hibernate | reboot | shutdown | shutdown_now }
 If no argument is specified, a fzagnostic pop-up is shown to select it manually.
 EOF
 exit 2
 }
-
-isWayland() { [ "$WAYLAND_DISPLAY" ]; }
-isXorg() { ! isWayland && [ "$DISPLAY" ]; }
 
 action_lock() {
   trap '' INT # prevent ctrl-c, as this part is finicky
@@ -93,7 +103,7 @@ action_hibernate() {
 }
 
 action_reboot() { systemctl reboot; }
-action_shutdown() { d.tpop shutdown-routine; }
-action_shutdown_now() { systemctl poweroff; }
+action_shutdown() { customExec d.shutdown full; }
+action_shutdown_now() { customExec d.shutdown quick; }
 
 main "$@"

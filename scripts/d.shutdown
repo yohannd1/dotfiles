@@ -1,0 +1,48 @@
+#!/usr/bin/env sh
+
+set -ue
+
+set -e
+progname=$(basename "$0")
+
+showHelp() {
+cat >&2 <<EOF
+Usage: $progname { full | quick }
+EOF
+  exit 2
+}
+
+[ $# = 1 ] || showHelp
+
+quickRoutine() {
+  # kill winedevice because niri, specially, waits for it until it
+  # timeouts.
+  pgrep winedevice | xargs -I{} kill -9 {}
+}
+
+fullRoutine() {
+  printf >&2 "Commiting on personal repos (via std-commits)...\n"
+  std-commits
+
+  printf >&2 "Tidying up filehist...\n"
+  filehist tidy
+}
+
+doShutdown() {
+  printf >&2 "Shutting down soon! 3 seconds...\n"
+  sleep 3
+  exec systemctl poweroff
+}
+
+case "$1" in
+  full)
+    quickRoutine
+    fullRoutine
+    doShutdown
+    ;;
+  quick)
+    quickRoutine
+    doShutdown
+    ;;
+  *) showHelp ;;
+esac
