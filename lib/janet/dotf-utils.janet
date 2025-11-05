@@ -214,3 +214,12 @@
   (each x entries
     (set (ret x) true))
   (table/to-struct ret))
+
+(defn getenv-or-die
+  "Runs getenv but dies with an error code if it is null."
+  [name]
+
+  (def val (os/getenv name))
+  (if (nil? val)
+    (die 1 "env var \"%s\" is not set" name)
+    val))
