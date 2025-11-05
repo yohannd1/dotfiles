@@ -1,0 +1,37 @@
+#!/usr/bin/env sh
+
+set -ue
+progname=$(basename "$0")
+
+showHelp() {
+  cat >&2 <<EOF
+Usage:
+  $progname restore-file <FILE>: restore the latest version of a file in the log
+  $progname fz-restore-file: fuzzy-menu version of restore-file - opens the contents on an editor
+EOF
+  exit 2
+}
+
+[ $# != 0 ] || showHelp
+
+restoreFile() {
+  commit=$(git log --oneline --follow --diff-filter=ACMRTUXB -- "$1" \
+    | head -n1 | cut -d' ' -f1)
+  git show "$commit":"$1"
+}
+
+gitDir=$(upfind .git)
+cd "$gitDir"
+
+case "$1" in
+  restore-file)
+    [ $# = 2 ] || showHelp
+    restoreFile "$2"
+    ;;
+  fz-restore-file)
+    [ $# = 1 ] || showHelp
+    file=$(git log --pretty=format: --name-only --diff-filter=A | sort -u | fzagnostic)
+    restoreFile "$file" | "$EDITOR"
+    ;;
+  *) showHelp ;;
+esac
