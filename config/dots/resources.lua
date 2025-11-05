@@ -74,7 +74,7 @@ local font_presets = {
   },
   ["ShareTech"] = {
     name = "Share Tech Mono",
-    base_size = 17,
+    base_size = 18,
   },
   ["Unifont"] = {
     name = "Unifont",
