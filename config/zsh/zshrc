@@ -555,3 +555,6 @@ cb-search() {
   local query=$(printf "%s" "$*" | tr ' ' '+')
   cb "https://lite.duckduckgo.com/lite/?q=$query"
 }
+
+# live grep
+lg() { nvim +'Telescope live_grep'; }

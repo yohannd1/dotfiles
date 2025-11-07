@@ -392,5 +392,6 @@
 
   (mt :ext ["asta"] :gui ["astah-uml" file])
   (mt :ext ["dot"] :gui ["rifle-run" "run" "dot" file])
+  (mt :ext ["xopp"] :gui ["xournalpp" file])
 
   (t :fallback))

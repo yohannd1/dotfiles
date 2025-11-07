@@ -335,6 +335,7 @@ map("n", "<Leader>ft", dummy.findTodos, { noremap = true, desc = "find TODOs (in
 map("n", "<Leader>fb", tsc_builtin.buffers, { noremap = true, desc = "find buffers" })
 map("n", "<Leader>fh", tsc_builtin.help_tags, { noremap = true, desc = "find help tags" })
 map("n", "<Leader>f.", tsc_builtin.find_files, { noremap = true, desc = "find files" })
+map("n", "<Leader>fl", tsc_builtin.live_grep, { noremap = true, desc = "live grep" })
 map("n", "<Leader>m", tsc_builtin.commands, { noremap = true, desc = "find commands" })
 map("n", "<Leader>fr", dummy.menuOpenRecent, { noremap = true, desc = "find recent files" })
 
