@@ -64,6 +64,10 @@ M.use = function(key)
   end
 
   if s.marker ~= nil then
+    if vim.opt_local.foldenable:get() then
+      print("warning: snippets w/ markers are disastrous when folds are involved!")
+    end
+
     doKeys(("%dG"):format(start_lnum))
 
     if not utils.searchLiteral(s.marker)

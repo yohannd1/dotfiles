@@ -126,7 +126,7 @@ export PYTHON_BASIC_REPL=1 # weird thing that happened but i dont care that much
 # nnn config
 {
   export NNN_OPENER="$OPENER"
-  export NNN_TRASH=1
+  _isTermux && export NNN_TRASH=termux-trash-put || export NNN_TRASH=1
 
   export NNN_OPTS="A"
   if _exists cpg; then
@@ -192,7 +192,7 @@ case "$HOST" in
     ;;
   core2)
     export RESLUA_FONT_SIZE=1.35
-    export RESLUA_FONT_NAME="UbuntuMono"
+    export RESLUA_FONT_NAME="ShareTech"
     export QT_SCALE_FACTOR=1.15
     export VOLUMECTL_INCREMENT=5
     ;;

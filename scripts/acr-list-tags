@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+set -ue
+
 acr-get-tags \
   | cut -d' ' -f2- \
   | grep -v '^$' \

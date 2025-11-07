@@ -170,8 +170,9 @@ M.loadColorschemeFromYaml = function(path)
 end
 
 M.doKeys = function(keys)
+  local keys_esc = vim.api.nvim_replace_termcodes(keys, true, true, true)
   vim.cmd.normal({
-    args = { vim.api.nvim_replace_termcodes(keys, true, true, true) },
+    args = {keys_esc},
     bang = true
   })
 end

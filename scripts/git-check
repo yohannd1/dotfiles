@@ -79,7 +79,9 @@ while [ ! "$exit" ]; do
     d) git diff HEAD ;;
     f) git fetch ;;
     i) git status -sb ;;
-    l) git log --all --oneline ;;
+    l)
+      git log --graph --pretty=format:'%h -%d %s (%cr) <%an>' --abbrev-commit
+      ;;
     L) git log --all ;;
     p) git pull ;;
     P)

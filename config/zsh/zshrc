@@ -96,9 +96,13 @@ _comp_options+=(globdots) # include hidden files in autocomplete
 ${_ps1MainBox}${_ps1ExitCodeIndicator}${_ps1JobCountIndicator}${_ps1ShellStackIndicator}
 $_ps1Symbol%b%F{5}"
 
+  _getGitBranch() {
+    git symbolic-ref --short -q HEAD 2>/dev/null
+  }
+
   PS2="%F{13}| %{$reset_color%}"
   # ! isAndroid && RPROMPT='%F{11}${SHELL_STACK}'
-  # ! isAndroid && RPROMPT='%F{11}$(git-branch)'
+  # ! isAndroid && RPROMPT='%F{11}$(_getGitBranch)'
   # [ "${NNNLVL:-0}" -ge 1 ] && PS1="%B%F{3}(%F{5}n%F{3})%b $PS1"
 }
 
@@ -355,6 +359,7 @@ _ept_canonicalize_str() {
     .|en|es|fr) printf "%s" "$1" ;;
     it) printf "italian" ;;
     lt) printf "latin" ;;
+    ru) printf "russian" ;;
     _*) printf "%s" "${1#_}" ;;
     *)
       printf >&2 "Unknown language: %s\n" "$1"
@@ -543,4 +548,10 @@ fm() {
         ;;
     esac
   done
+}
+
+cb() { nvim +"W3m $*"; }
+cb-search() {
+  local query=$(printf "%s" "$*" | tr ' ' '+')
+  cb "https://lite.duckduckgo.com/lite/?q=$query"
 }

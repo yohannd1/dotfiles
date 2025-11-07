@@ -1,52 +1,25 @@
 #!/usr/bin/env janet
 
 (use dotf-path)
+(use dotf-utils)
+(use dotf-acr)
 
-(defn die [code fmt & args]
-  (eprintf fmt ;args)
-  (os/exit code))
+(defn show-help []
+  (def progname (-> (dyn *args*) (first) (path/basename)))
+  (eprintf "Usage: %s <TAG>" progname)
+  (os/exit 2))
 
 (defn main [arg0 & args]
   (when (not= (length args) 1)
-    (die 2 "Usage: %s <TAG>" (path/basename arg0)))
+    (show-help))
 
-  (def wiki-dir (os/getenv "ACR_WIKI_DIR"))
-  (when (nil? wiki-dir)
-    (die 1 "error: ACR_WIKI_DIR is not set"))
+  (def wiki-dir (getenv-or-die "ACR_WIKI_DIR"))
+  (def [tag] args)
 
-  (def tag (in args 0))
-
-  (each name (os/dir wiki-dir)
-    (def path (string wiki-dir "/" name))
-
-    (def fd (file/open path :r))
-    (defer (file/close fd)
-      (var found false)
-      (var title nil)
-
-      (each line (file/lines fd)
-        # stop going through the file if we went off the header
-        (unless (string/has-prefix? "%:" line)
-          (break))
-
-        (def title-prefix "%:title ")
-        (when (string/has-prefix? title-prefix line)
-          (set title (-> line (string/slice (length title-prefix)) (string/trim))))
-
-        # check for the tags if we found the line
-        (when (string/has-prefix? "%:tags " line)
-          (def tags
-            (as-> line .x
-                  (string/trim .x)
-                  (string/split " " .x)
-                  (array/slice .x 1)))
-          (when (find |(= $ tag) tags)
-            (set found true))
-          )
-        )
-
-      (when found
-        (:write stdout (string/slice name 0 -5) " " (or title "<NO TITLE>") "\n"))
-      )
-    )
-  )
+  (each [id path] (acr-get-wiki-note-pairs wiki-dir)
+    (def header (acr-slurp-header path))
+    (def tags-raw (in header :tags))
+    (when tags-raw
+      (def tags (string/split " " tags-raw))
+      (when (find |(= $ tag) tags)
+        (printf "%s %s" id (-> header (in :title) (or "<NO TITLE>")))))))

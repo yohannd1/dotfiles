@@ -210,6 +210,7 @@ ft.c = function()
   setTabIndent(4)
   setLocals {
     foldmethod = "syntax",
+    foldenable = false,
     commentstring = "/* %s */", -- TODO: is there any way to figure out whether the current project is using C89 or C99? cuz this is awful...
     textwidth = 80,
     cinoptions = "g0,:0,l1,(1s"
@@ -547,6 +548,12 @@ end
 
 ft.acrylic = function()
   addSnippet("t", "%:title ")
+  addMSnippet("c", [[
+@code#{
+<[@]>
+}#
+  ]])
+
   vim.b.rifle_mode = "bg_buffer"
 
   vim.b.task_toggleline_marker = "x"

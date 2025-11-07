@@ -49,4 +49,8 @@
     (filter |(= (string/slice $ 0 1) ".") .x)
     (each x .x (pp x))))
 
-(-> (:read stdin :all) (eval-string))
+(as->
+  (:read stdin :all) .x
+  (eval-string .x)
+  (unless (nil? .x)
+    (pp .x)))

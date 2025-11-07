@@ -1,0 +1,100 @@
+#!/usr/bin/env janet
+
+(use dotf-path)
+(use dotf-utils)
+(use dotf-acr)
+
+# The cache format is a TSV file where, for each row, the columns are:
+# - Note ID
+# - Last modification time (Unix Time)
+# - Title
+
+(defn show-help []
+  (def progname (-> (dyn *args*) (first) (path/basename)))
+  (eprintf "Usage: %s" progname)
+  (os/exit 2))
+
+(defn read-cache
+  "Read the cache from a file."
+  [cache-path]
+
+  (def cache @{})
+  (as->
+    (slurp cache-path) .x
+    (string/split "\n" .x)
+    (map string/trim .x)
+    (filter |(not (empty? $)) .x)
+    (map |(string/split "\t" $) .x)
+    (each [id mtime-str title] .x
+      (set (cache id) {:id id :mtime (scan-number mtime-str) :title title})))
+  cache)
+
+(defn write-cache
+  "Write the cache to a file."
+  [cache cache-path]
+
+  (let [fd (file/open cache-path :wn)]
+    (each {:id id :mtime mtime :title title} cache
+      (:write fd (string/format "%s\t%d\t%s\n" id mtime title)))))
+
+(defn get-mtime [x]
+  (-> x (os/stat) (in :changed)))
+
+(defn compare-update-output [cache wiki-dir]
+  (def note-pairs (acr-get-wiki-note-pairs wiki-dir))
+
+  # remove invalid old entries from the cache
+  (def existing-ids (map |(in $ 0) note-pairs))
+  (def exist-set (make-set existing-ids))
+  (eachk k cache
+    (unless (in exist-set k)
+      (set (cache k) nil)))
+
+  (defn file-newer? [id path]
+    (> (get-mtime path) (get-in cache [id :mtime])))
+
+  (each [id path] note-pairs
+    (if (or (nil? (in cache id)) (file-newer? id path))
+      (let [header (acr-slurp-header path)
+            title (-> header (in :title) (or "<NO TITLE>"))]
+        (set (cache id) {:id id :mtime (get-mtime path) :title title})
+        (printf "%s %s" id title))
+      (let [{:id id :title title} (in cache id)]
+        (printf "%s %s" id title)))))
+
+(defn main [arg0 & args]
+  (when (not (empty? args))
+    (show-help))
+
+  (def home-dir (getenv-or-die "HOME"))
+  (def wiki-dir (getenv-or-die "ACR_WIKI_DIR"))
+
+  (def xdg-cache-home
+    (or (os/getenv "XDG_CACHE_HOME")
+        (path/join home-dir ".cache")))
+
+  (def acr-cache-dir
+    (or (os/getenv "ACR_CACHE_DIR")
+        (path/join xdg-cache-home "acr")))
+
+  (def cache-path (path/join acr-cache-dir "titles"))
+  (def cache-file-exists (path/exists? cache-path))
+
+  (defn cache-file-outdated []
+    (>= (get-mtime wiki-dir) (get-mtime cache-path)))
+
+  (cond
+    (and cache-file-exists (not (cache-file-outdated)))
+    (each {:id id :title title} (read-cache cache-path)
+      (printf "%s %s" id title))
+
+    cache-file-exists
+    (let [cache (read-cache cache-path)]
+      (compare-update-output cache wiki-dir)
+      (write-cache cache cache-path))
+
+    # the data file doesn't exist at all - create it from scratch
+    (let [cache @{}]
+      (compare-update-output cache wiki-dir)
+      (write-cache cache cache-path)))
+  )

@@ -1,46 +1,33 @@
 #!/usr/bin/env janet
 
 (use dotf-path)
-
-(def acr-wiki-dir (os/getenv "ACR_WIKI_DIR"))
-
-(defn read-tag-line [path]
-  (label 'ret
-    (def file (file/open path :r))
-    (defer (:close file)
-      (each line (file/lines file)
-        (cond
-          (string/has-prefix? "%:tags" line) (return 'ret line)
-          (string/has-prefix? "%:" line) nil
-          (return 'ret nil))
-        ))
-    ))
+(use dotf-utils)
+(use dotf-acr)
 
 (defn print-in-format [id tag-line]
-  (def tags (-> tag-line (string/trim) (string/slice (length "%:tags "))))
-  (printf "%s %s" id tags))
+  (printf "%s %s" id tag-line))
+
+# (defn show-help []
+#   (def progname (-> (dyn *args*) (first) (path/basename)))
+#   (eprintf "Usage: %s [PAGE-ID...]" progname)
+#   (os/exit 2))
+
+(defn read-tag [id path]
+  (def header (acr-slurp-header path))
+  (def tag-line (-> header (in :tags) (or "")))
+  (print-in-format id tag-line))
+
+(defn read-tags [ids-paths]
+  (each [id path] ids-paths
+    (read-tag id path)))
 
 (defn main [arg0 & args]
-  (def prog (path/basename arg0))
+  (def wiki-dir (getenv-or-die "ACR_WIKI_DIR"))
 
-  (case (length args)
-    0
-    (loop [name :in (os/dir acr-wiki-dir)
-           :when (string/has-suffix? ".acr" name)
-           :let [id (string/slice name 0 (-> name (length) (- 4)))
-                 path (string acr-wiki-dir "/" name)]]
-      (when (def tag-line (read-tag-line path))
-        (print-in-format id tag-line)))
+  (defn id->note-pair [id]
+    (def path (string wiki-dir "/" id ".acr"))
+    [id path])
 
-    1
-    (let [id (in args 0)
-          path (string/format "%s/%s.acr" acr-wiki-dir id)]
-      (when (def tag-line (read-tag-line path))
-        (print-in-format id tag-line)))
-
-    (do
-      (eprintf "Usage: %s [PAGE_ID]" prog)
-      (os/exit 2)
-      )
-    )
-  )
+  (if (empty? args)
+    (read-tags (acr-get-wiki-note-pairs wiki-dir))
+    (read-tags (map id->note-pair args))))
