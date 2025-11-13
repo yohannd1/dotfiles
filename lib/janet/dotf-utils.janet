@@ -8,14 +8,16 @@
   [args &opt env]
 
   # FIXME: improve this ugly fuck ass spaghetti code
+  # TODO: fix the doc. It's not clear.
 
   (default env {})
 
   (defn make-reader-fn [kw]
-    (match (get env kw)
-      nil nil
+    (def ei (get env kw))
+    (cond
+      (nil? ei) nil
 
-      true
+      (true? ei)
       (fn [pipe]
         (def buf @"")
         (ev/spawn
@@ -23,8 +25,13 @@
             (buffer/push-string buf x)))
         buf)
 
-      unk
-      (error (string/format "bad argument: %j" unk))))
+      (function? ei)
+      (fn [pipe]
+        (ev/spawn
+          (defer (:close pipe)
+            (ei pipe))))
+
+      (error (string/format "bad argument of type %j" (type ei)))))
 
   (defn make-writer-fn []
     (def ei (get env :in))
@@ -216,10 +223,29 @@
   (table/to-struct ret))
 
 (defn getenv-or-die
-  "Runs getenv but dies with an error code if it is null."
+  "Get the value of an environment variable, or die if it does not exist."
   [name]
 
   (def val (os/getenv name))
   (if (nil? val)
     (die 1 "env var \"%s\" is not set" name)
     val))
+
+# Adapted from https://github.com/janet-lang/janet/discussions/1211#discussioncomment-6339830
+(defn stream-lines
+  "Return a coroutine that iterates through lines of a stream.It is the stream equivalent to file/lines."
+  [stream &opt chunk-size]
+
+  (default chunk-size 2048)
+  (coro
+    (var buf @"")
+    (var start 0)
+    (while (:read stream chunk-size buf)
+      (while (def end (string/find "\n" buf start))
+        (def result (string/slice buf 0 end))
+        (set buf (buffer/slice buf (inc end)))
+        (set start 0)
+        (yield result))
+      (set start (length buf)))
+    (when (> start 0)
+      (yield (string buf)))))
