@@ -249,10 +249,10 @@ binds {
     Mod+Ctrl+H { focus-monitor-up; }
     Mod+Ctrl+L { focus-monitor-down; }
 
-    Mod+Shift+Ctrl+H { move-column-to-monitor-left; }
-    Mod+Shift+Ctrl+J { move-column-to-monitor-down; }
-    Mod+Shift+Ctrl+K { move-column-to-monitor-up; }
-    Mod+Shift+Ctrl+L { move-column-to-monitor-right; }
+    Mod+Shift+Ctrl+K { move-column-to-monitor-left; }
+    Mod+Shift+Ctrl+L { move-column-to-monitor-down; }
+    Mod+Shift+Ctrl+H { move-column-to-monitor-up; }
+    Mod+Shift+Ctrl+J { move-column-to-monitor-right; }
 
     Mod+WheelScrollDown cooldown-ms=100 { focus-column-right; }
     Mod+WheelScrollUp cooldown-ms=100 { focus-column-left; }
