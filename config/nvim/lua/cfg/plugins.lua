@@ -372,8 +372,8 @@ M.add("tpope/vim-rsi")
 M.add({
   source = "luochen1990/rainbow",
   before = function()
-    vim.g.rainbow_active = 1
     vim.g.rainbow_conf = {
+      ctermfgs = {'8', '9', '10', '11', '12', '13', '14'},
       -- parentheses = {
       --     [[start="(" end=")"]],
       --     [[start="[" end="]"]],
@@ -387,6 +387,7 @@ M.add({
         latex = 0,
       }
     }
+    vim.g.rainbow_active = 1
   end,
 })
 -- M.add({source = "andymass/vim-matchup", before = function()

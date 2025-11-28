@@ -1,9 +1,27 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-# Prints all the 256 colors (not RGB).
+set -ue
+progname=$(basename "$0")
 
-for i in {0..255}; do
-  printf "\x1b[38;5;${i}m%03s\x1b[0m " "$i"
-  [[ $((i % ${1:-10})) == 0 ]] && printf "\n"
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname [LINELEN]
+Where LINELEN is the amount of numbers per line.
+EOF
+  exit 2
+}
+
+case $# in
+  0) linelen=$(( $(tput cols) / 4 )) ;;
+  1) linelen=$1 ;;
+  2) showHelp ;;
+esac
+
+seq 0 255 | while read -r i; do
+  printf '\033[38;5;%dm%03s\033[0m ' "$i" "$i"
+  if [ $(( (i + 1) % linelen )) -eq 0 ]; then
+    printf "\n"
+  fi
 done
+
 printf "\n"

@@ -1,13 +1,13 @@
-scheme: "Gruvbox light, soft"
+scheme: "Gruvbox mid"
 author: "Yohanan (yohannd1), Dawid Kurek (dawikur@gmail.com), morhetz (https://github.com/morhetz/gruvbox)"
-base00: "b9ac81" # ----
-base01: "a89c71" # ---
-base02: "d5c4a1" # --
+base00: "9e9374" # ----
+base01: "a89f7c" # ---
+base02: "ada085" # --
 base03: "6d5e63" # -
-base04: "564c44" # +
-base05: "303935" # ++
-base06: "3c3836" # +++
-base07: "282828" # ++++
+base04: "463c34" # +
+base05: "202925" # ++
+base06: "181818" # +++
+base07: "0a0a0a" # ++++
 base08: "9d0006" # red
 base09: "af3a03" # orange
 base0A: "a55614" # yellow

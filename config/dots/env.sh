@@ -18,7 +18,7 @@ if [ "$WAYLAND_DISPLAY" ]; then
 
   export MOZ_DBUS_REMOTE=1
   export MOZ_ENABLE_WAYLAND=1
-  export SDL_VIDEODRIVER=wayland
+  export SDL_VIDEODRIVER="wayland,x11"
   export _JAVA_AWT_WM_NONREPARENTING=1
   export QT_QPA_PLATFORM=wayland
   export GDK_BACKEND=wayland
@@ -110,18 +110,23 @@ export KBRATE_INTERVAL="45"
 export GIT_EDITOR="$EDITOR"
 export LESS="-RC"
 export KEYTIMEOUT=1
-export FZF_DEFAULT_OPTS='
-  --layout=reverse --no-border
-  --color fg:5,fg+:7
-  --color hl:6,hl+:4
-  --color prompt:8,marker:5,pointer:8
-  --color spinner:3,gutter:1,info:3'
 export GREP_COLORS='ms=01;34:mc=01;34:sl=:cx=:fn=35:ln=32:bn=32:se=36'
 export OPEN_ALT=dotf.unknown-filetype
 export OPEN_FALLBACK_SILENT=1
 _isTermux || export GTK_THEME="Adwaita-dark"
 export QT_STYLE_OVERRIDE="Adwaita-Dark"
 export PYTHON_BASIC_REPL=1 # weird thing that happened but i dont care that much tbh - https://github.com/python/cpython/issues/118840
+
+# see https://minsw.github.io/fzf-color-picker/
+export FZF_DEFAULT_OPTS='
+  --layout=reverse --border
+  --gutter=- --gutter-raw=- --pointer=-
+  --marker=* --marker-multi-line=***
+  --color fg:5,fg+:7
+  --color bg:-1,bg+:2
+  --color hl:6,hl+:4
+  --color prompt:8,marker:5,pointer:8
+  --color spinner:3,gutter:2,info:3'
 
 # nnn config
 {
@@ -192,7 +197,7 @@ case "$HOST" in
     ;;
   core2)
     export RESLUA_FONT_SIZE=1.35
-    export RESLUA_FONT_NAME="SourceCodePro"
+    export RESLUA_FONT_NAME="PtMono"
     export QT_SCALE_FACTOR=1.15
     export VOLUMECTL_INCREMENT=5
     ;;
