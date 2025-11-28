@@ -62,11 +62,17 @@ input {
 }
 
 output "HDMI-A-1" {
+    focus-at-startup
     mode "1920x1080@74.973" // why so specific...
+    position x=0 y=0
 }
 
-// declare the workspaces so they become persistent
-//!! for i in $(seq 1 9); do printf 'workspace "%d" {}\n' "$i"; done
+// Declare the workspaces so they become persistent
+//!! for i in $(seq 1 9); do printf 'workspace "%d" { open-on-output "HDMI-A-1"; }\n' "$i"; done
+
+//!! # The VGA slot. I suppose core2's motherboard translates it to VGA?
+//!! # if [ "$(hostname)" = core2 ]; then printf 'output "DP-2" { position x=1920 y=0; }\n'; fi
+//!! # for i in $(seq 1 9); do printf 'workspace "v%d" { open-on-output "DP-2"; }\n' "$i"; done
 
 // Settings that influence how windows are positioned and sized.
 // Find more information on the wiki:
@@ -258,6 +264,11 @@ binds {
     Mod+WheelScrollUp cooldown-ms=100 { focus-column-left; }
     Mod+Shift+WheelScrollDown cooldown-ms=100 { move-column-right; }
     Mod+Shift+WheelScrollUp cooldown-ms=100 { move-column-left; }
+
+    Mod+Ctrl+WheelScrollDown cooldown-ms=100 { focus-monitor-right; }
+    Mod+Ctrl+WheelScrollUp cooldown-ms=100 { focus-monitor-left; }
+    Mod+Ctrl+Shift+WheelScrollDown cooldown-ms=100 { move-column-to-monitor-right; }
+    Mod+Ctrl+Shift+WheelScrollUp cooldown-ms=100 { move-column-to-monitor-left; }
 
     // Keep in mind that niri is a dynamic workspace system, so these commands
     // are kind of "best effort". Trying to refer to a workspace index bigger
