@@ -1,8 +1,8 @@
 scheme: "Gruvbox mid"
 author: "Yohanan (yohannd1), Dawid Kurek (dawikur@gmail.com), morhetz (https://github.com/morhetz/gruvbox)"
 base00: "9e9374" # ----
-base01: "a89f7c" # ---
-base02: "ada085" # --
+base01: "a39a78" # ---
+base02: "a89f7c" # --
 base03: "6d5e63" # -
 base04: "463c34" # +
 base05: "202925" # ++
@@ -15,4 +15,4 @@ base0B: "59640e" # green
 base0C: "427b58" # aqua/cyan
 base0D: "076678" # blue
 base0E: "8f3f71" # purple
-base0F: "d65d0e" # brown
+base0F: "cc5c12" # brown

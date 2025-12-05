@@ -260,12 +260,36 @@ create_cmd("ProgSnipLine", [[.!progsnip]], {})
 --   TODO: replace selection with the output
 -- end)
 create_cmd("FindGitMerge", [[/\v^(\<{4,}|\={4,}|\>{4,})]], {})
+create_cmd("AcrFindImportant", [[Find '\%important']], {})
+create_cmd("FindTodosFolder", [[Find '\b(TODO\|XXX\|FIXME)\b']], {})
+
 create_cmd("ToggleVirtualEdit", function()
   local new_value = (vim.o.ve == "") and "all" or ""
   vim.o.ve = new_value
   local message = string.format("Virtual edit set to '%s'", new_value)
   vim.api.nvim_echo({{message}}, false, {})
 end, {})
+
+create_cmd("LatexMakeEnv", function(t)
+  local word = t.args
+  local cline = vim.fn.line(".")
+
+  -- print(vim.inspect({
+  --   vim.fn.getline(cline),
+  --   vim.fn.getline(cline):match("^%s*$") == ""
+  -- }))
+
+  local lines = {
+    ("\\begin{%s}"):format(word),
+    ("\\end{%s}"):format(word),
+  }
+
+  if vim.fn.getline("."):match("^%s*$") then
+    vim.fn.setline(cline, lines)
+  else
+    vim.fn.append(cline, lines)
+  end
+end, { nargs = "*" })
 
 if false then dummy.setSoftWrapBinds(true) end
 

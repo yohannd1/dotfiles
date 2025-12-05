@@ -97,15 +97,19 @@ return function(api)
 
   api.key("super alt m")
     :desc("open mixer")
-    :map("dotf.wrap.terminal -c float -e pulsemixer")
+    :map("d.tpop pulsemixer")
+
+  api.key("super alt p")
+    :desc("open calculator")
+    :map("d.tpop calc")
 
   -- api.key("super alt t")
   --   :desc("open tmux tray")
-  --   :map("dotf.wrap.terminal -c float -e tmux-tray")
+  --   :map("d.tpop tmux-tray")
 
   api.key("super alt t")
     :desc("fztmux")
-    :map([[ "$TERMINAL" -c float -e fztmux ]])
+    :map("d.tpop fztmux")
 
   api.key("super alt g")
     :desc("open current window menu")

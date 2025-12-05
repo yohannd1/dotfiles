@@ -238,7 +238,7 @@ decl {
 -- foot (wayland terminal)
 decl {
   {"foot.font", xft_font},
-  {"foot.alpha", "0.9"},
+  {"foot.alpha", "0.97"},
 
   targets = T_ALL,
 }
