@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+set -ue
+
+[ $# = 0 ] || exit 2
+
+while read -r url; do
+  yt-dlp -qj --no-warnings "$url" \
+    | jq -r --arg url "$url" '"\($url) \(.title)"' &
+done

@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+#
+# Adapted from: https://superuser.com/questions/488449/is-there-any-way-to-check-which-baud-rates-are-supported-on-a-serial-device
+
+set -ue
+[ $# = 1 ] || exit 2
+
+listSupportedBaudRates() {
+  sed -E 's/^#define\s+B([1-9][0-9]+)\s+.*/\1/p;d' \
+    /usr/include/asm-generic/termbits*.h
+}
+
+listSupportedBaudRates | while read -r rate; do
+  stty -F "$1" "$rate" \
+    && printf "%d OK\n" "$rate" \
+    || printf "%d ERR\n" "$rate"
+done | pr -t3
