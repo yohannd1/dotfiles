@@ -249,3 +249,8 @@
       (set start (length buf)))
     (when (> start 0)
       (yield (string buf)))))
+
+(defn remove-suffix [x suffix]
+  (def end-idx (- (length x) (length suffix)))
+  (assert (= (string/slice x end-idx) suffix))
+  (string/slice x 0 end-idx))

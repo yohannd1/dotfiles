@@ -1,0 +1,83 @@
+#!/usr/bin/env janet
+
+(use dotf-path)
+(use dotf-utils)
+(use dotf-acr)
+
+(defn show-help []
+  (def progname (-> (dyn *args*) (first) (path/basename)))
+  (eprintf "Usage: %s <FORMAT> [IDS]" progname)
+  (os/exit 2))
+
+(def peg
+  (peg/compile
+    ~{:main (any (+ :ref 1))
+      :ref (* "@ref" :bracketed-id)
+      :bracketed-id (+ (* "(" :id ")") (* "{" :id "}"))
+      :id (<- (some (+ :w+ "-")))}))
+
+(defn extract-tags [path]
+  (def contents (acr-slurp-contents path))
+  (peg/match peg contents))
+
+(defn main [arg0 & args]
+  (def wiki-dir (getenv-or-die "ACR_WIKI_DIR"))
+
+  (var format nil)
+  (var ids nil)
+  (case (length args)
+    1
+    (do
+      (set format (in args 0))
+      (set ids (acr-wiki-ids wiki-dir)))
+
+    2
+    (do
+      (set format (in args 0))
+
+      (set ids @[])
+      (each id (string/split " " (in args 1))
+        (when (not= id "")
+          (array/push ids id))))
+
+    (show-help))
+
+  (def id-to-mentions @{})
+  (each id ids
+    (def path (path/join wiki-dir (string id ".acr")))
+    (set (id-to-mentions id) (extract-tags path)))
+
+  (case format
+    "text"
+    (eachp [k v] id-to-mentions
+      (printf "%s : %s" k (string/join v " ")))
+
+    "dot"
+    (let [all-ids @{}
+          id-to-int @{}]
+
+      (printf "digraph {")
+      (printf "rankdir=TB")
+
+      # find out every possible id
+      (eachp [k v] id-to-mentions
+        (set (all-ids k) true)
+        (each x v
+          (set (all-ids x) true)))
+
+      (var cnt 0)
+      (eachk id all-ids
+        (printf "_a%d [label=%j]" cnt id)
+        (set (id-to-int id) cnt)
+        (++ cnt))
+
+      (eachp [k v] id-to-mentions
+        (prinf "  _a%d -> { " (in id-to-int k))
+        (each x v
+          (prinf "_a%d " (in id-to-int x)))
+        (prinf "}\n"))
+
+      (printf "}"))
+
+    (die 1 "bad format: %j" format))
+  )

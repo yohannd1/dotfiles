@@ -44,8 +44,13 @@
 
 (defn path/join
   "Join two path strings."
-  [lhs rhs]
-  (if (= lhs "") rhs (string lhs "/" rhs)))
+  [lhs & rhss]
+
+  (var ret lhs)
+  (each rhs rhss
+    (set ret (if (= ret "") rhs (string ret "/" rhs))))
+
+  ret)
 
 (when (dyn *debug*) # FIXME: HOW TO MAKE THIS WORK????
   (assert (= (path/dirname "foo/bar") "foo"))
