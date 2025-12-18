@@ -11,7 +11,7 @@ if exists anyzig; then
   if [ $# -ge 0 ] && [ "$1" = build ]; then
     exec anyzig "$@"
   else
-    exec anyzig 0.15.1 "$@"
+    exec anyzig 0.15.2 "$@"
   fi
 elif exists "$zig"; then
   exec "$zig" "$@"

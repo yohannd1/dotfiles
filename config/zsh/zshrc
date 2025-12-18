@@ -481,7 +481,7 @@ clipW2X() { wl-paste | xclip -sel clip; }
 procList() { ps -eo pid,args | tail +2 | sed 's/^ \+//g'; }
 procSearch() {
   case $# in
-    0) procList | fzagnostic ;;
+    0) procList | fzagnostic -m ;;
     1) procList | rg "$1" ;;
     *) return 2 ;;
   esac
@@ -558,3 +558,6 @@ cb-search() {
 
 # live grep
 lg() { nvim +'Telescope live_grep'; }
+
+fpga-ci9p-detect() { openFPGALoader -c ch347_jtag --detect; }
+fpga-ci9p-program() { openFPGALoader -c ch347_jtag -b colorlight-i9+ "$1".bit; }

@@ -473,8 +473,12 @@ elif isLang 'systemverilog'; then
     "$tmp/out"
   }
   do_check() {
-    verible-verilog-lint --rules "$_VERIBLE_LINT_RULES" "$file"
+    verible-verilog-lint --rules "$_VERIBLE_LINT_RULES" "$file" || true
+    verilator --lint-only -Wall "$file"
   }
+
+elif isLang 'tcl'; then
+  do_run() { tclsh "$file"; }
 
 elif isLang 'terra'; then
   do_run() { terra "$file"; }
@@ -507,8 +511,9 @@ elif isLang 'verilog'; then
     "$tmp/out"
   }
   do_check() {
-    _VERIBLE_LINT_RULES="${_VERIBLE_LINT_RULES},-explicit-parameter-storage-type"
-    verible-verilog-lint --rules "$_VERIBLE_LINT_RULES" "$file"
+    _VERIBLE_LINT_RULES="${_VERIBLE_LINT_RULES},-explicit-parameter-storage-type,-always-comb"
+    verible-verilog-lint --rules "$_VERIBLE_LINT_RULES" "$file" || true
+    verilator --lint-only -Wall "$file"
   }
 
 elif isLang 'vim'; then
