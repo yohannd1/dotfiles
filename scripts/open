@@ -284,7 +284,7 @@
     (t :runpage ["exiftool" file]))
   (when (or (m :mime [[:begins "image/"]])
             (m :ext ["gif" "jpg" "png" "webp"]))
-    (t :gui ["sxiv" "-p" file])
+    (t :gui ["sxiv" "-a" "-s" "f" "-p" file])
     (t :runpage ["viu" "-n" file])
     (t :runpage ["img2txt" "--gamma=0.6" "--" file])
     (t :runpage ["exiftool" file]))

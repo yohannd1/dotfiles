@@ -1,5 +1,7 @@
 #!/usr/bin/env janet
 
+(use dotf-path)
+
 (defn .vhdl-arch [arch entity]
   (printf "architecture %s of %s is" arch entity)
   (printf "begin")
@@ -26,20 +28,23 @@
   (peg/compile
     '(* :d+ "_" (<- (any (if-not ".wav" 1))) ".wav")))
 
-(defn .osc-lmms []
+(defn .osc-lmms [&opt path]
   "Generate corrscope channel entries for LMMS tracks."
+
+
+  (default path ".")
 
   (defn try-parse [x]
     (when (def m (peg/match osc-lmms-peg x))
       [x ;m]))
 
   (as->
-    (os/dir ".") .x
+    (os/dir path) .x
     (map try-parse .x)
     (filter |(not (nil? $)) .x)
-    (each [path name] .x
+    (each [base name] .x
       (printf "- !ChannelConfig")
-      (printf "  wav_path: %s" path)
+      (printf "  wav_path: %s" (path/join path base))
       (printf "  label: %s" name))))
 
 (defn ? []

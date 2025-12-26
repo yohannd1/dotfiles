@@ -135,6 +135,7 @@ def compile_file(args: Args) -> None:
         file.write(RELOAD_JS)
 
     with Popen(c_args, stderr=PIPE) as proc:
+        # TODO: make this work concurrently properly (it blocks if the stderr has too much data)
         exit_code = proc.wait()
         assert proc.stderr is not None
         stderr_output = proc.stderr.read().decode("utf-8")
