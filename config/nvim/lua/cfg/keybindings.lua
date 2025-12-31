@@ -445,6 +445,8 @@ map("n", "<Leader>B", lazy(services.loadKeyMenu, "buffer"), arg_nr_s)
 
 map("n", "<Leader>k", vim.cmd.bdelete, { noremap = true, desc = "delete buffer" })
 
+map("n", "<Leader>L", ":lua print(vim.inspect())<Left><Left>", { noremap = true, desc = "lua expr" })
+
 -- TODO: make this better! so it can replace key-menus like hydra
 -- map("n", "<Leader>B", function()
 --   local choices = {

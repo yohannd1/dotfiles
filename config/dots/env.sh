@@ -194,11 +194,13 @@ case "$HOST" in
     export USE_BUILTIN_1080P=
     export RESLUA_FONT_SIZE=1.25
     export RESLUA_FONT_NAME="Iosevka"
+    export N_JOBS=2 # don't want to use many...
     ;;
   core2)
-    export RESLUA_FONT_SIZE=1.35
-    export RESLUA_FONT_NAME="Mononoki"
+    export RESLUA_FONT_SIZE=1.40
+    export RESLUA_FONT_NAME="*random*"
     export QT_SCALE_FACTOR=1.15
     export VOLUMECTL_INCREMENT=5
+    export N_JOBS=5 # don't want to use many...
     ;;
 esac

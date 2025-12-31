@@ -76,10 +76,10 @@ local font_presets = {
     name = "Share Tech Mono",
     base_size = 18,
   },
-  ["Unifont"] = {
-    name = "Unifont",
-    base_size = 18,
-  },
+  -- ["Unifont"] = {
+  --   name = "Unifont",
+  --   base_size = 18,
+  -- },
   ["ProggyVector"] = {
     name = "ProggyVector",
     base_size = 14.5,
@@ -93,8 +93,8 @@ local font_presets = {
     base_size = 14,
   },
   ["Agave"] = {
-    name = "Agave",
-    base_size = 17,
+    name = "Agave Nerd Font",
+    base_size = 18.5,
   },
   ["EnvyCodeR"] = {
     name = "Envy Code R",
@@ -209,10 +209,24 @@ local T_ALL = {t_xres, t_dots}
 
 local want_enable_ligatures = (os.getenv("RESLUA_ENABLE_LIGATURES") or "") ~= ""
 local wayland_scale_factor = os.getenv("WAYLAND_DISPLAY") and 1.025 or 1.0
-local font_size =
-  wayland_scale_factor
-  * tonumber(os.getenv("RESLUA_FONT_SIZE") or 1.2)
+local font_size = wayland_scale_factor * tonumber(os.getenv("RESLUA_FONT_SIZE") or 1.2)
+
 local font_name = os.getenv("RESLUA_FONT_NAME") or "SourceCodePro"
+if font_name == "*random*" then
+  local names = {}
+  for k, _ in pairs(font_presets) do
+    table.insert(names, k)
+  end
+  table.sort(names)
+
+  local dt = os.date("!*t")
+  local seed = (((dt.year * 100) + dt.month) * 100) + dt.day
+
+  math.randomseed(seed)
+  font_name = names[math.random(1, #names)]
+  -- io.stderr:write(("seed=%d, name=%s\n"):format(seed, font_name))
+end
+
 local font = getFontInfo(font_name, font_size)
 
 local fsize_term = font.base_size
