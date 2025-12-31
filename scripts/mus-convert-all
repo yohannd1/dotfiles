@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+set -ue
+shopt -s nullglob
+
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
 if [ $# != 2 ]; then
   printf >&2 "Usage: %s <SRC-EXT> <DST-EXT>\n" "$(basename "$0")"
   printf >&2 "Converts all files in the current directory from SRC-EXT to DST-EXT, using ffmpeg\n"
@@ -9,6 +14,14 @@ src_ext="$1"
 dst_ext="$2"
 
 src_files=(*."$src_ext")
+
+if exists parallel; then
+  n_jobs=${N_JOBS:-$(nproc)}
+  eachLine() { parallel -j "$n_jobs" "$@"; }
+else
+  printf >&2 "warning: parallel not found, using xargs (sequential)\n"
+  eachLine() { xargs -I{} "$@"; }
+fi
 
 printf >&2 "Will convert (to %s):\n" "$dst_ext"
 for f in "${src_files[@]}"; do
@@ -20,9 +33,8 @@ read -r answer
 
 case "$answer" in
   y|Y)
-    for f in "${src_files[@]}"; do
-      ffmpeg-convert "$f" "$dst_ext"
-    done
+    printf "%s\n" "${src_files[@]}" \
+      | eachLine ffmpeg-convert {} "$dst_ext"
     ;;
   n|N)
     exit 1
