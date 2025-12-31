@@ -1,7 +1,6 @@
 local vim = _G.vim
 local jobstart = vim.fn.jobstart
 local col = vim.fn.col
-local line = vim.fn.line
 local getline = vim.fn.getline
 
 local dummy = _G.dummy
@@ -207,6 +206,7 @@ map("n", "<C-k>", lazy(dummy.bufSwitch, "prev"), { noremap = true, silent = true
 
 dummy.betterJoin = function()
   -- line numbers
+  local line = vim.fn.line
   local ln_cur = line(".")
   local ln_last = line("$")
   if ln_cur == ln_last then
@@ -359,7 +359,25 @@ local getWikiPage = function(id)
   return ("%s/%s.acr"):format(vim.g.acr_wiki_dir, id)
 end
 
-dummy.plan_sidebar = utils.Sidebar.new(getWikiPage("202407161554-F1C8E4"))
+local special_map = {}
+local special_map_path = ("%s/../wiki_meta/special-pages.conf"):format(vim.g.acr_wiki_dir)
+if vim.fn.filereadable(special_map_path) ~= 0 then
+  for _, line in ipairs(vim.fn.readfile(special_map_path)) do
+    local s = vim.split(line, " ", { plain = true, trimempty = true })
+    assert(#s == 2, "too much stuff in the line")
+    special_map[s[1]] = s[2]
+  end
+else
+  print("warning: wiki special map not found")
+end
+
+local getSpecialWikiPage = function(name)
+  local id = special_map[name]
+  assert(id, ("no page with id '%q' found"):format(name))
+  return getWikiPage(id)
+end
+
+dummy.plan_sidebar = utils.Sidebar.new(getSpecialWikiPage("plan"))
 map("n", "<Leader>c", function() dummy.plan_sidebar:toggle() end, arg_nr_s)
 
 dummy.wikiOpenJournal = function()
@@ -370,10 +388,10 @@ end
 
 -- wiki keybindings
 local wiki_mappings = {
-  {"w", lazy(editFile, getWikiPage("index")), "open index"},
-  {"s", lazy(editFile, getWikiPage("202105021825-E80938")), "open scratchpad"},
-  {"P", lazy(editFile, getWikiPage("202407161554-F1C8E4")), "open plan"},
-  {"p", lazy(editFile, getWikiPage("202501061628-CB9C1A")), "open week plan (2024)"},
+  {"w", lazy(editFile, getSpecialWikiPage("index")), "open index"},
+  {"s", lazy(editFile, getSpecialWikiPage("scratchpad")), "open scratchpad"},
+  {"P", lazy(editFile, getSpecialWikiPage("plan")), "open plan"},
+  {"p", lazy(editFile, getSpecialWikiPage("yearly-week-plan-2026")), "open week plan (2026)"},
   {"o", lazy(dummy.wikiFzOpen, {}), "search on the wiki"},
   {"j", lazy(dummy.wikiOpenJournal, {}), "open journal"},
   {"R", lazy(dummy.wikiFzInsertRef, { after_cursor = false }), "add reference ←"},
