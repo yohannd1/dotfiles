@@ -503,15 +503,53 @@ M.add({
   source = "goerz/jupytext.nvim",
   condition = not utils.os.is_android,
   after = function()
-    require("jupytext").setup({
+    local jupytext = utils.tryRequire("jupytext")
+    if jupytext == nil then
+      print("warning: failed to load jupytext")
+      return
+    end
+
+    jupytext.setup({
       jupytext = "jupytext",
       format = "markdown",
       update = true,
-      filetype = require("jupytext").get_filetype,
-      new_template = require("jupytext").default_new_template(),
-      sync_patterns = { "*.md", "*.py", "*.jl", "*.R", "*.Rmd", "*.qmd" },
+      filetype = jupytext.get_filetype,
+      new_template = jupytext.default_new_template(),
+      sync_patterns = {"*.md", "*.py", "*.jl", "*.R", "*.Rmd", "*.qmd"},
       autosync = true,
       handle_url_schemes = true,
+    })
+  end,
+})
+
+M.add({
+  source = "gruvw/strudel.nvim",
+  condition = not utils.os.is_android,
+  after = function()
+    local strudel = utils.tryRequire("strudel")
+    if strudel == nil then
+      print("warning: failed to load strudel.nvim")
+      return
+    end
+
+    strudel.setup({
+      ui = {
+        maximise_menu_panel = true,
+        hide_menu_panel = false,
+        hide_top_bar = false,
+        hide_code_editor = false,
+        hide_error_display = false,
+      },
+
+      start_on_launch = false, -- this isn't working for me :( but it's alright
+      update_on_save = true, -- reload the song when saving, if already playing
+      sync_cursor = true, -- two-way cursor position sync between Neovim and Strudel
+      report_eval_errors = true, -- report evaluation errors from Strudel as Neovim notifications
+
+      -- Browser config
+      headless = false,
+      browser_data_dir = "~/.cache/strudel-nvim/",
+      browser_exec_path = "/usr/bin/chromium",
     })
   end,
 })

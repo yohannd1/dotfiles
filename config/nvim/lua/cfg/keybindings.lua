@@ -1,3 +1,9 @@
+-- Vim keybinding config
+--
+-- TODO: explain how I do plugin keybinding configuration (indeed, I need to do some optional verification here; we'll see)
+--
+-- Filetype-specific keybindings should be prefixed by <Leader>h (it's acessible enough for me)
+
 local vim = _G.vim
 local jobstart = vim.fn.jobstart
 local col = vim.fn.col
@@ -11,6 +17,7 @@ local format = require("cfg.format")
 local utils = require("cfg.utils")
 local doKeys = utils.doKeys
 local lazy = utils.lazy
+local box = utils.box
 local lazyRepeatable = utils.lazyRepeatable
 local services = utils.services
 local map = utils.map
@@ -485,6 +492,14 @@ map("n", "<Leader>,", ":ProgSnipLine<CR>", arg_nr)
 map("v", "<Leader>,", ":ProgSnipVisual<CR>", arg_nr)
 
 -- TODO: how to make this better?
-map("n", "<Leader>gr", ":NumRead<CR>", arg_nr_s)
-map("n", "<Leader>g+", ":NumWriteInc<CR>", arg_nr_s)
-map("n", "<Leader>g-", ":NumWriteDec<CR>", arg_nr_s)
+-- map("n", "<Leader>gr", ":NumRead<CR>", arg_nr_s)
+-- map("n", "<Leader>g+", ":NumWriteInc<CR>", arg_nr_s)
+-- map("n", "<Leader>g-", ":NumWriteDec<CR>", arg_nr_s)
+
+-- Strudel keybindings
+box(utils.tryRequire("strudel")):andThen(function(strudel)
+  map("n", "<Leader>hh", strudel.toggle, { desc = "strudel: play/stop" })
+  map("n", "<Leader>hu", strudel.update, { desc = "strudel: update" })
+  map("n", "<Leader>ho", strudel.launch, { desc = "strudel: launch browser" })
+  map("n", "<Leader>hO", strudel.quit, { desc = "strudel: quit browser" })
+end)

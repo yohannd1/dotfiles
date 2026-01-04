@@ -161,6 +161,7 @@ ext_ft.mpp = "cpp"
 ext_ft.PKGBUILD = "PKGBUILD"
 ext_ft.rpy = "python"
 ext_ft.scrbl = "scribble"
+-- ext_ft.str = "strudel"
 ext_ft.terra = "terra"
 ext_ft.xdc = "tcl" -- constraint files
 ext_ft.pro = "prolog"
@@ -588,6 +589,11 @@ ft.scheme = function()
   setSpaceIndent(2)
 end
 ft["scheme.guile"] = ft.scheme
+
+-- ft.strudel = function()
+--   vim.o.syntax = "javascript"
+--   setSpaceIndent(2)
+-- end
 
 ft.janet = function()
   vim.b.better_join_whitespace_matcher = lispJoinMatcher

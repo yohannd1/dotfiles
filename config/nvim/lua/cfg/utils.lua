@@ -437,4 +437,34 @@ M.task.toggleLineDefault = function()
   print("No to-do detected on the current line")
 end
 
+M._box_mt = {}
+M._box_mt.get = function(self) return self.val end
+M._box_mt.andThen = function(self, f)
+  if self.val == nil then
+    return nil
+  else
+    return M.box(f(self.val))
+  end
+end
+M._box_mt.orElse = function(self, f)
+  if self.val == nil then
+    return M.box(f())
+  else
+    return self.val
+  end
+end
+
+M.box = function(val)
+  return setmetatable({ val = val }, { __index = M._box_mt })
+end
+
+M.tryRequire = function(name)
+  local ok, val = pcall(require, name)
+  if not ok then
+    return nil
+  else
+    return val
+  end
+end
+
 return M
