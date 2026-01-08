@@ -11,9 +11,10 @@ lua _G.dummy = {}
 
 " Get config root
 let g:config_root = resolve(expand("<sfile>:p:h"))
+let g:plugin_path = g:config_root . "/plugged"
 
 " load plugin config
-lua require("cfg.plugins").init({ plugins = "all", root_path = ("%s/plugged"):format(vim.g.config_root) })
+lua require("cfg.plugins").init({ plugins = "all", root_path = vim.g.plugin_path })
 
 " load the rest of the config
 lua require("cfg.general")

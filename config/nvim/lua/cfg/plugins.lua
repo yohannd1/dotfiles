@@ -54,19 +54,44 @@ do
     vim.fn["plug#begin"](root_path)
     local plug = vim.fn["plug#"]
 
+    local sourceToName = function(x)
+      if x:match("^/") then
+        -- skip local paths
+        return nil
+      else
+        -- return the basename
+        return x:match("^.*/(.*)$")
+      end
+    end
+
+    local plugged_files = vim.fn.readdir(vim.g.plugin_path)
+    local should_install = false
+
     for _, pname in ipairs(plugins_to_load) do
       local info = assert(plugins[pname], "plugin of name " .. pname .. " is not defined")
 
-      local cresult
-      if type(info.condition) == "function" then cresult = info.condition()
-      else cresult = info.condition
-      end
+      local cond_result = type(info.condition) == "function"
+        and info.condition()
+        or info.condition
 
-      if cresult then
+      if cond_result then
         info.before()
         plug(info.source)
+
+        local name = sourceToName(info.source)
+        local isName = function(x) return x == name end
+        local isNotInstalled = name ~= nil and #vim.tbl_filter(isName, plugged_files) == 0
+
+        if isNotInstalled then
+          should_install = true
+        end
+
         table.insert(to_call, info.after)
       end
+    end
+
+    if should_install then
+      vim.cmd("PlugInstall")
     end
 
     vim.fn["plug#end"]()
@@ -88,7 +113,7 @@ local UNUSED_PLUGIN_COND = false
 M.add({
   source = "nvim-treesitter/nvim-treesitter",
   after = function()
-    require("nvim-treesitter.configs").setup {
+    require("nvim-treesitter").setup {
       ensure_installed = { "lua", "python" },
       sync_install = false,
 
@@ -440,7 +465,9 @@ M.add({
 --         ['<C-b>'] = cmp.mapping.scroll_docs(-4),
 --         ['<C-f>'] = cmp.mapping.scroll_docs(4),
 --         ['<C-Space>'] = cmp.mapping.complete(),
---         ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+--         -- Accept currently selected item. Set `select` to `false` to only
+--         confirm explicitly selected items.
+--         ['<CR>'] = cmp.mapping.confirm({ select = true }),
 --       }),
 --       sources = cmp.config.sources(
 --         { { name = 'nvim_lsp' } },
@@ -536,9 +563,9 @@ M.add({
       ui = {
         maximise_menu_panel = true,
         hide_menu_panel = false,
-        hide_top_bar = false,
+        hide_top_bar = true,
         hide_code_editor = false,
-        hide_error_display = false,
+        hide_error_display = true,
       },
 
       start_on_launch = false, -- this isn't working for me :( but it's alright
