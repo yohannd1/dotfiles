@@ -64,6 +64,7 @@ input {
 output "HDMI-A-1" {
     focus-at-startup
     mode "1920x1080@74.973" // why so specific...
+    scale 1.10
     position x=0 y=0
 }
 

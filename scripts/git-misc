@@ -5,9 +5,14 @@ progname=$(basename "$0")
 
 showHelp() {
   cat >&2 <<EOF
-Usage:
-  $progname restore-file <FILE>: restore the latest version of a file in the log
-  $progname fz-restore-file: fuzzy-menu version of restore-file - opens the contents on an editor
+"All-in-one" git scritp to do various things.
+Usage: $progname <COMMMAND> [ARGS...] - available commands:
+  restore-file <FILE>:
+    restore the latest version of a file in the log
+  fz-restore-file:
+    fuzzy-menu version of restore-file - opens the contents on an editor
+  changed-rank [COUNT]:
+    show top COUNT changed files in the repo (defaults to 0)
 EOF
   exit 2
 }
@@ -28,10 +33,31 @@ case "$1" in
     [ $# = 2 ] || showHelp
     restoreFile "$2"
     ;;
+
   fz-restore-file)
     [ $# = 1 ] || showHelp
     file=$(git log --pretty=format: --name-only --diff-filter=A | sort -u | fzagnostic)
     restoreFile "$file" | "$EDITOR"
     ;;
+
+  changed-rank)
+    # source: https://stackoverflow.com/a/7686616/7448276
+
+    case $# in
+      1) count=10 ;;
+      2) count=$2 ;;
+      *) showHelp ;;
+    esac
+
+    if printf "%s\n" "$count" | grep -v '^[0-9]\+$'; then
+      printf >&2 "error: count should be exclusively numeric digits (got %s)\n" "$count"
+      exit 1
+    fi
+
+    git log --pretty=format: --name-only \
+      | sort | uniq -c | sort -rg | head -"$count"
+
+    ;;
+
   *) showHelp ;;
 esac

@@ -263,6 +263,7 @@ dup-term-auto() {
 }
 
 alias Dgui='dup-term-gui'
+alias Dt='dup-term-tmux'
 alias Dtmux='dup-term-tmux'
 alias D='dup-term-auto'
 

@@ -277,6 +277,7 @@
   (mt :ext ["fms"] :gui ["famistudio" file])
   (mt :ext ["osctet"] :gui ["osctet" file])
   (mt :ext ["rpp"] :gui ["reaper" file])
+  (mt :ext ["str"] :gui ["dotf.wrap.editor" file]) # strudel
 
   # image
   (when (m :mime ["image/vnd.djvu"])

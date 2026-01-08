@@ -90,16 +90,19 @@ local font_presets = {
   },
   ["Hermit"] = {
     name = "Hermit",
-    base_size = 14,
+    base_size = 15,
   },
   ["Agave"] = {
     name = "Agave Nerd Font",
     base_size = 18.5,
   },
-  ["EnvyCodeR"] = {
-    name = "Envy Code R",
-    base_size = 16,
-  },
+
+  -- TODO: make this work again
+  -- ["EnvyCodeR"] = {
+  --   name = "EnvyCodeR-Nerd-Font",
+  --   base_size = 16,
+  -- },
+
   ["DinaRemasterII"] = {
     name = "DinaRemasterII",
     base_size = 18,
