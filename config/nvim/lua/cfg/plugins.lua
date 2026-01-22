@@ -578,6 +578,13 @@ M.add({
       browser_data_dir = "~/.cache/strudel-nvim/",
       browser_exec_path = "/usr/bin/chromium",
     })
+
+    vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+      pattern = {"*.str", "*.std"},
+      callback = function()
+        vim.bo.filetype = "strudel"
+      end,
+    })
   end,
 })
 

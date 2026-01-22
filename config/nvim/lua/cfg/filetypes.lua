@@ -590,10 +590,10 @@ ft.scheme = function()
 end
 ft["scheme.guile"] = ft.scheme
 
--- ft.strudel = function()
---   vim.o.syntax = "javascript"
---   setSpaceIndent(2)
--- end
+ft.strudel = function()
+  vim.o.syntax = "javascript"
+  setSpaceIndent(2)
+end
 
 ft.janet = function()
   vim.b.better_join_whitespace_matcher = lispJoinMatcher

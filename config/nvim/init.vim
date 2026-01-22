@@ -23,5 +23,8 @@ lua require("cfg.keybindings")
 lua require("cfg.filetypes")
 lua require("cfg.rifle")
 
+" load system-local config if it exists
+lua local p = ("%s/storage/local/config/nvim.lua"):format(vim.env.HOME) if vim.fn.filereadable(p) ~= 0 then dofile(p) end
+
 set notermguicolors
 colorscheme base16

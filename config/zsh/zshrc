@@ -321,7 +321,7 @@ make() {
 e() { "$EDITOR" "$@"; }
 se() { EDITOR=$(which "$EDITOR") sudoedit "$@"; } # yeah, workaround
 
-alias g='git-check'
+alias g='menu-git'
 alias G='tig status'
 
 alias p3='python3'
@@ -560,5 +560,28 @@ cb-search() {
 # live grep
 lg() { nvim +'Telescope live_grep'; }
 
-fpga-ci9p-detect() { openFPGALoader -c ch347_jtag --detect; }
-fpga-ci9p-program() { openFPGALoader -c ch347_jtag -b colorlight-i9+ "$1".bit; }
+fpga-ci9p() {
+  case "$1" in
+    detect)
+      openFPGALoader -c ch347_jtag --detect
+      ;;
+
+    upload)
+      openFPGALoader -c ch347_jtag -b colorlight-i9+ "$2"
+      ;;
+
+    fzupload)
+      local choice
+      choice=$(fd -HI '\.bit$' | fzagnostic) || return 1
+      fpga-ci9p upload "$choice"
+      ;;
+
+    *) return 2 ;;
+  esac
+}
+
+# World's laziest dict
+dict() {
+  local url="https://en.wiktionary.org/wiki/$1"
+  w3m -dump "$url" | "$EDITOR"
+}

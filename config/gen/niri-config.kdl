@@ -64,7 +64,7 @@ input {
 output "HDMI-A-1" {
     focus-at-startup
     mode "1920x1080@74.973" // why so specific...
-    scale 1.10
+//!! printf 'scale %.4f\n' "${DOTF_SCALE:-1}"
     position x=0 y=0
 }
 
@@ -309,8 +309,12 @@ binds {
     // - adjust in percentage of screen: "-10%" or "+10%"
     Mod+Alt+L { set-column-width "+12.5%"; }
     Mod+Alt+H { set-column-width "-12.5%"; }
+    Mod+Alt+Shift+L { set-column-width "+6.25%"; }
+    Mod+Alt+Shift+H { set-column-width "-6.25%"; }
     Mod+Alt+K { set-window-height "-10%"; }
     Mod+Alt+J { set-window-height "+10%"; }
+    Mod+Alt+Shift+K { set-window-height "-5%"; }
+    Mod+Alt+Shift+J { set-window-height "+5%"; }
 
     // Move the focused window between the floating and the tiling layout.
     Mod+Shift+Space { toggle-window-floating; }
