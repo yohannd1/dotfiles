@@ -1,0 +1,195 @@
+#!/usr/bin/env bash
+
+set -ue
+progname=$(basename "$0")
+
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname
+EOF
+  exit 2
+}
+
+[ $# = 0 ] || showHelp
+
+isGitDir() {
+  [ -d .git ] || git rev-parse --git-dir 2>/dev/null >/dev/null
+}
+
+confirm() {
+  local answer
+  printf >&2 "%s [Y/n] " "$1"
+  read -r -n1 answer
+  [ "$answer" != $'\n' ] && printf >&2 "\n"
+  case "$answer" in
+    y|Y|'') return 0 ;;
+    n|N|*) return 1 ;;
+  esac
+}
+
+confirmRun() {
+  [ $# -gt 0 ] || exit 2
+  printf >&2 "Command to run: %s\n" "$*"
+  confirm "Run?" && "$@" || true
+}
+
+if ! isGitDir; then
+  printf >&2 "Error: the current directory is not part of a git repository.\n"
+  printf >&2 "You are at: %s\n" "$PWD"
+  exit 1
+fi
+
+# show help message
+printf >&2 "Type 'h' for help, 'q' for quit.\n"
+
+declare -A keyAct
+declare -A keyDesc
+
+addAction() {
+  key=$1
+  action=$2
+  desc=$3
+
+  keyAct[$key]=$action
+  keyDesc[$key]=$desc
+}
+
+## Reads a key-chord and tries to match against it
+## Out-var $chord: the input key-chord
+## Out-var $value: the value. If empty, it was not successful
+readChord() {
+  chord=
+  value=
+  while true; do
+    read -r -n1 rk
+    chord="${chord}${rk}"
+
+    matchResult=
+    for k in "${!keyAct[@]}"; do
+      if [ "$chord" = "$k" ]; then
+        printf >&2 "\n"
+        matchResult=ok
+        value=${keyAct[$k]}
+        break
+      elif [[ "$k" == "$chord"* ]]; then
+        matchResult=partial
+      fi
+    done
+
+    case "$matchResult" in
+      ok) return ;; # go to the outer loop
+      partial) ;; # keep reading keys
+      *)
+        printf >&2 "\nInvalid key chord. Press 'h' for help.\n"
+        return
+        ;;
+    esac
+  done
+}
+
+act_stage() {
+  git status -u --short \
+    | awk '($1 != "A") { print }' \
+    | cut -d' ' -f2- \
+    | fzagnostic -m \
+    | cut -d' ' -f2- \
+    | xargs -I{} git add {}
+}
+addAction 'a' act_stage "select files to add (stage)"
+
+act_unstage() {
+  git status -u --short \
+    | awk '($1 == "A") { print }' \
+    | cut -d' ' -f2- \
+    | fzagnostic -m \
+    | cut -d' ' -f2- \
+    | xargs -I{} git reset {}
+}
+addAction 'A' act_unstage "select files to reset (unstage)"
+
+act_branchList() {
+  git branch | cat
+  printf "Current branch: %s\n" "$(git rev-parse --abbrev-ref HEAD)"
+}
+addAction 'b' act_branchList "list branches"
+
+act_branchSwitch() {
+  selectedBranch=$(
+    git branch -la \
+      | sed 's|^*||g' \
+      | awk '{ print $1 }' \
+      | fzagnostic) \
+    && git checkout "$selectedBranch"
+}
+addAction 'B' act_branchList "select branch to switch"
+
+act_commit() { git commit; }
+addAction 'c' act_commit "commit"
+
+act_diff() { git diff HEAD; }
+addAction 'd' act_diff "show diff"
+
+act_fetch() { git fetch; }
+addAction 'f' act_fetch "fetch"
+
+act_help() {
+  for k in "${!keyDesc[@]}"; do
+    desc=${keyDesc[$k]}
+    if [ "$desc" ]; then
+      printf >&2 "  %q\t%s\n" "$k" "$desc"
+    fi
+  done
+}
+addAction 'h' act_help "show help"
+
+act_info() { git status -sb; }
+addAction 'i' act_info "info (git status -sb)"
+
+act_logCompact() {
+  git log --graph --pretty=format:'%h -%d %s (%cr) <%an>' \
+    --abbrev-commit
+}
+addAction 'l' act_logCompact "log (compact)"
+
+act_logFull() { git log --all; }
+addAction 'L' act_logFull "log (full)"
+
+act_pull() { git pull; }
+addAction 'p' act_pull "pull"
+
+act_pullSetUpstream() {
+  current_branch=$(git branch --show-current) \
+    && confirmRun git pull --set-upstream origin "$current_branch"
+}
+addAction 'P' act_pull "pull + set upstream"
+
+addAction 'q' exit ""
+
+act_remoteList() { git remote -v; }
+addAction 'r' act_remoteList "list remotes"
+
+act_push() { git push; }
+addAction 's' act_push "push"
+
+act_pushSetUpstream() {
+  current_branch=$(git branch --show-current) \
+    && confirmRun git push -u origin "$current_branch"
+}
+addAction 'S' act_pushSetUpstream "push + set upstream"
+
+act_tig() { tig status; }
+addAction 't' act_tig "open tig (tig status)"
+
+addAction '' clear ""
+addAction '' exit ""
+addAction '' exit ""
+addAction '' exit ""
+
+shouldExit=
+while [ -z "$shouldExit" ]; do
+  printf >&2 "> "
+  readChord
+  if [ "$value" ]; then
+    "$value"
+  fi
+done
