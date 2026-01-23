@@ -115,13 +115,29 @@ addAction 'b' act_branchList "list branches"
 
 act_branchSwitch() {
   selectedBranch=$(
+    git branch -l \
+      | sed 's|^*||g' \
+      | awk '{ print $1 }' \
+      | fzagnostic) \
+    && git checkout "$selectedBranch"
+}
+addAction 'B' act_branchSwitch "select branch to switch"
+
+act_branchListAll() {
+  git branch -a | cat
+  printf "Current branch: %s\n" "$(git rev-parse --abbrev-ref HEAD)"
+}
+addAction '.b' act_branchListAll "list branches (all)"
+
+act_branchSwitchAll() {
+  selectedBranch=$(
     git branch -la \
       | sed 's|^*||g' \
       | awk '{ print $1 }' \
       | fzagnostic) \
     && git checkout "$selectedBranch"
 }
-addAction 'B' act_branchList "select branch to switch"
+addAction '.B' act_branchSwitchAll "select branch to switch (show all)"
 
 act_commit() { git commit; }
 addAction 'c' act_commit "commit"
@@ -129,7 +145,7 @@ addAction 'c' act_commit "commit"
 act_diff() { git diff HEAD; }
 addAction 'd' act_diff "show diff"
 
-act_fetch() { git fetch; }
+act_fetch() { git fetch --all --prune; }
 addAction 'f' act_fetch "fetch"
 
 act_help() {
@@ -190,6 +206,6 @@ while [ -z "$shouldExit" ]; do
   printf >&2 "> "
   readChord
   if [ "$value" ]; then
-    "$value"
+    "$value" || true
   fi
 done
