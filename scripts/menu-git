@@ -146,10 +146,16 @@ act_diff() { git diff HEAD; }
 addAction 'd' act_diff "show diff"
 
 act_fetch() { git fetch --all --prune; }
-addAction 'f' act_fetch "fetch"
+addAction 'f' act_fetch "fetch all branches (and prune if needed)"
+
+getSortedKeys() {
+  for k in "${!keyDesc[@]}"; do
+    printf "%s\0" "$k"
+  done | sort -z
+}
 
 act_help() {
-  for k in "${!keyDesc[@]}"; do
+  getSortedKeys | while read -r -d $'\0' k; do
     desc=${keyDesc[$k]}
     if [ "$desc" ]; then
       printf >&2 "  %q\t%s\n" "$k" "$desc"
@@ -170,8 +176,17 @@ addAction 'l' act_logCompact "log (compact)"
 act_logFull() { git log --all; }
 addAction 'L' act_logFull "log (full)"
 
-act_pull() { git pull; }
-addAction 'p' act_pull "pull"
+act_pull() {
+  # A simple 'git pull' may pull from other branches, and waste bandwidth.
+  # So let's figure out which branch and remote we have to pull from.
+  localBranch=$(git rev-parse --abbrev-ref HEAD)
+  remoteBranch=$(git for-each-ref --format='%(upstream:short)' \
+    "$(git symbolic-ref -q HEAD)")
+  remoteName=${remoteBranch%/*}
+  printf >&2 "Pulling branch \"%s\" from remote \"%s\"\n" "$localBranch" "$remoteName"
+  git pull "$remoteName" "$localBranch"
+}
+addAction 'p' act_pull "pull current branch"
 
 act_pullSetUpstream() {
   current_branch=$(git branch --show-current) \
@@ -185,7 +200,7 @@ act_remoteList() { git remote -v; }
 addAction 'r' act_remoteList "list remotes"
 
 act_push() { git push; }
-addAction 's' act_push "push"
+addAction 's' act_push "push current branch"
 
 act_pushSetUpstream() {
   current_branch=$(git branch --show-current) \
