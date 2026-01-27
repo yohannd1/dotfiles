@@ -30,42 +30,42 @@ bash install.bash https $path_to_dotfiles
 
 ## folder structure
 
-* `config`: config files, mostly symlinked to `~` and `~/.config`.
+- `config`: config files, mostly symlinked to `~` and `~/.config`.
 
-* `desktop`: .desktop files so some apps (mostly browsers) can respect my program choices.
+- `desktop`: .desktop files so some apps (mostly browsers) can respect my program choices.
 
-* `lib`: personal libraries for use with some scripting languages.
+- `lib`: personal libraries for use with some scripting languages.
 
-* `patches`: some patches I usually would like to apply on a system. I
+- `patches`: some patches I usually would like to apply on a system. I
   currently have no way to automate this.
 
-* `pkgbuilds`: some pkgbuilds to install packages I use... kinda like a
+- `pkgbuilds`: some pkgbuilds to install packages I use... kinda like a
     personal AUR I guess
 
-* `scripts`: executable files, added to PATH via `env.sh`.
+- `scripts`: executable files, added to PATH via `env.sh`.
 
-* `share`: other generic resources
+- `share`: other generic resources
 
-* `.trash`: old files that I don't want to delete right now, but aren't
+- `.trash`: old files that I don't want to delete right now, but aren't
   being used in the repo. Might be unavailable if empty (due to how
   git works).
 
-## inspirations & & stuff I "stole"
+## inspirations (and steals)
 
 The repos below are the ones I remember ~~stealing code~~ taking
-inspiration from to build my dotfiles. There are lots of more places
-that inspired me, though - specially from r/unixporn and r/vim - and
-even though I can't possibly remember them all, I'd like to thank them.
-It has been a pretty cool experience to make, well, pretty much my own
-"operating system" (obviously not from scratch...).
+inspiration from to build this. There are lots of more places that
+inspired and helped me, though - from r/unixporn screenshots to random
+stackoverflow discussions - and even though I can't possibly remember
+them all, I'd like to thank them. It has been a pretty cool experience
+to make my own "operating system", to an extent.
 
-* https://github.com/denysdovhan/dotfiles
+- https://github.com/denysdovhan/dotfiles
 
-* https://github.com/LukeSmithxyz/voidrice
+- https://github.com/LukeSmithxyz/voidrice
 
-* https://github.com/jdhao/nvim-config
+- https://github.com/jdhao/nvim-config
 
-* https://gist.github.com/sooop/8dc424e13c6fe2e2a663
+- https://gist.github.com/sooop/8dc424e13c6fe2e2a663
 
   (It's Steve Losh (sjl)'s vimrc. The [original
   file](https://bitbucket.org/sjl/dotfiles/src/tip/vim/vimrc) and repo
@@ -88,19 +88,26 @@ prefix scheme that is very short (for small command names) but still
 understandable, so here's an attempt:
 
 - `d.` for dotfiles-local problems (currently it's mostly `dotf.`);
+
 - `s.` for "service-providers" - a series of wrappers that decide which
     underlying command to run based on the WM/DE (currently it's mostly
     `dotf.wrap.` - what a mouthful...);
+
+- `f.` for "filters" - programs to which you can feed data to stdin,
+    and they will do something with it, then give you the result through
+    stdout. Useful for text processing.
+
 - `@` for wrapper scripts for apps that have trouble launching or I like
-    to set up particularly (e.g. steam, since I like it to start up
+    to set up particularly (e.g. Steam, since I like it to start up
     silently and log into a specific file);
-- `,` for local scripts (they aren't here lol);
+
+- `,` for local scripts, which I store in a separate (private) repo;
 
 ## base16
 
 Not sure where to put this, but [the place it was in
 before](scripts/gen-res) wasn't appropriate either. I got this from
-somewhere, by the way. Maybe the official base16 specs?
+somewhere - maybe the official base16 specs?
 
 ```
 - base00 - Default Background
