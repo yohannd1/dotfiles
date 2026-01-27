@@ -71,14 +71,16 @@ to make my own "operating system", to an extent.
   file](https://bitbucket.org/sjl/dotfiles/src/tip/vim/vimrc) and repo
   were deleted.)
 
-## milestones
+## to do
 
-- Find a good compiled language for more complicated scripts
-  - Must be easy to compile
-  - Tried out `dlang`, will try `nim`
-- Make a system-agnostic local package builder
-  - Initial requirement is to generate pacman & apt packages.
-- Be more explicit about dependencies (see TODO file...)
+- Make a system-agnostic local package builder (it needs to generate
+    pacman &amp; apt packages);
+
+- Be more explicit about dependencies (see TODO file...);
+
+- Update license (I like WTFYWPL but CC0 would probably be more
+    explicit; also, I have some code here that is from other repos,
+    namely vim-plug and z.lua - I need to talk about them!);
 
 ## script naming
 
@@ -87,7 +89,7 @@ Since there is pretty much one global namespace for all scripts (the
 prefix scheme that is very short (for small command names) but still
 understandable, so here's an attempt:
 
-- `d.` for dotfiles-local problems (currently it's mostly `dotf.`);
+- `d.` for "dotfiles-local" tools (currently it's mostly `dotf.`);
 
 - `s.` for "service-providers" - a series of wrappers that decide which
     underlying command to run based on the WM/DE (currently it's mostly
