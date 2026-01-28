@@ -115,13 +115,29 @@ addAction 'b' act_branchList "list branches"
 
 act_branchSwitch() {
   selectedBranch=$(
+    git branch -l \
+      | sed 's|^*||g' \
+      | awk '{ print $1 }' \
+      | fzagnostic) \
+    && git checkout "$selectedBranch"
+}
+addAction 'B' act_branchSwitch "select branch to switch"
+
+act_branchListAll() {
+  git branch -a | cat
+  printf "Current branch: %s\n" "$(git rev-parse --abbrev-ref HEAD)"
+}
+addAction '.b' act_branchListAll "list branches (all)"
+
+act_branchSwitchAll() {
+  selectedBranch=$(
     git branch -la \
       | sed 's|^*||g' \
       | awk '{ print $1 }' \
       | fzagnostic) \
     && git checkout "$selectedBranch"
 }
-addAction 'B' act_branchList "select branch to switch"
+addAction '.B' act_branchSwitchAll "select branch to switch (show all)"
 
 act_commit() { git commit; }
 addAction 'c' act_commit "commit"
@@ -129,11 +145,17 @@ addAction 'c' act_commit "commit"
 act_diff() { git diff HEAD; }
 addAction 'd' act_diff "show diff"
 
-act_fetch() { git fetch; }
-addAction 'f' act_fetch "fetch"
+act_fetch() { git fetch --all --prune; }
+addAction 'f' act_fetch "fetch all branches (and prune if needed)"
+
+getSortedKeys() {
+  for k in "${!keyDesc[@]}"; do
+    printf "%s\0" "$k"
+  done | sort -z
+}
 
 act_help() {
-  for k in "${!keyDesc[@]}"; do
+  getSortedKeys | while read -r -d $'\0' k; do
     desc=${keyDesc[$k]}
     if [ "$desc" ]; then
       printf >&2 "  %q\t%s\n" "$k" "$desc"
@@ -154,8 +176,17 @@ addAction 'l' act_logCompact "log (compact)"
 act_logFull() { git log --all; }
 addAction 'L' act_logFull "log (full)"
 
-act_pull() { git pull; }
-addAction 'p' act_pull "pull"
+act_pull() {
+  # A simple 'git pull' may pull from other branches, and waste bandwidth.
+  # So let's figure out which branch and remote we have to pull from.
+  localBranch=$(git rev-parse --abbrev-ref HEAD)
+  remoteBranch=$(git for-each-ref --format='%(upstream:short)' \
+    "$(git symbolic-ref -q HEAD)")
+  remoteName=${remoteBranch%/*}
+  printf >&2 "Pulling branch \"%s\" from remote \"%s\"\n" "$localBranch" "$remoteName"
+  git pull "$remoteName" "$localBranch"
+}
+addAction 'p' act_pull "pull current branch"
 
 act_pullSetUpstream() {
   current_branch=$(git branch --show-current) \
@@ -169,7 +200,7 @@ act_remoteList() { git remote -v; }
 addAction 'r' act_remoteList "list remotes"
 
 act_push() { git push; }
-addAction 's' act_push "push"
+addAction 's' act_push "push current branch"
 
 act_pushSetUpstream() {
   current_branch=$(git branch --show-current) \
@@ -190,6 +221,6 @@ while [ -z "$shouldExit" ]; do
   printf >&2 "> "
   readChord
   if [ "$value" ]; then
-    "$value"
+    "$value" || true
   fi
 done

@@ -2,14 +2,16 @@
 #
 # A replacement for passmenu that works with fzagnostic
 
-shopt -s nullglob globstar
-progName=$(basename "$0")
+set -ue
+progname=$(basename "$0")
 
 showHelp() {
-  printf >&2 "Usage: %s <TYPE> [OUTPUT]\n" "$progName"
-  printf >&2 "  TYPE := { normal | otp }\n"
-  printf >&2 "  OUTPUT := { stdout | copy }, defaults to stdout\n"
-  exit 1
+  cat >&2 <<EOF
+Usage: $progname <TYPE> [OUTPUT]
+  TYPE := { normal | otp }
+  OUTPUT := { stdout | copy }, defaults to stdout
+EOF
+  exit 2
 }
 
 case $# in
@@ -35,12 +37,22 @@ esac
 # force gpg to connect because issues
 gpg-connect-agent updatestartuptty /bye >/dev/null
 
-prefix=${PASSWORD_STORE_DIR-~/.password-store}
-files=("$prefix"/**/*.gpg)
-files=("${files[@]#"$prefix"/}")
-files=("${files[@]%.gpg}")
+storeDir=${PASSWORD_STORE_DIR:-$HOME/.password-store}
 
-choice=$(printf "%s\n" "${files[@]}" | fzagnostic -p "Entry:") || exit 1
-[ "$choice" ] || exit 1
+filterChoices() {
+  if [ "$passType" = otp ]; then
+    grep 't\?otp'
+  else
+    cat
+  fi
+}
 
-pass "${args[@]}" "$choice" || exit 1
+getChoices() {(
+  cd "$storeDir"
+  find -type f \
+    | filterChoices \
+    | sed 's|^\./||g; s|\.gpg$||g'
+)}
+
+choice=$(getChoices | fzagnostic -p "Entry:")
+exec pass "${args[@]}" "$choice"
