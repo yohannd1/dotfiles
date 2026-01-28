@@ -160,7 +160,7 @@ bindkey -s '^P' '\e[C'
 bindkey -M vicmd 'Ç' edit-command-line
 
 _fzselectGen() {
-  fd | fzagnostic -m | tr '\n' '\0' | xargs -0 -I{} printf "%q" {}
+  fd | fzagnostic -m | tr '\n' '\0' | xargs -0 -I{} printf "%q " {}
 }
 _bind_fzselect() {
   LBUFFER="${LBUFFER}$(_fzselectGen)"

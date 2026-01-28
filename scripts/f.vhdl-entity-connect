@@ -1,0 +1,139 @@
+#!/usr/bin/env janet
+
+# A lazy approximation of the grammar for a VHDL entity declaration.
+#
+# Using "<" prefix for patterns that generate a value (captures or
+# otherwise).
+(def vhdl-entity-peg-source
+  ~{:main
+    (* :s* "entity" :s* :<ident :s* "is"
+       :s* (any (+ :<generic-map :<port-map))
+       :s* "end" :s* :ident :s* ";" :s*)
+
+    :<generic-map
+    (/ (* :s* "generic" :s* "("
+          :s* (any :<generic-port-decl)
+          :s* ")" :s* ";" :s*)
+       ,(fn [& decls]
+          [:generic-map decls]))
+
+    # Technically this can parse more than what the actual
+    # language allows, but it's fine.
+    :<generic-port-decl
+    (/ (* :s* :<ident :s* ":" :s* :<texpr :s* (? ";"))
+       ,(fn [p t]
+          {:port p :type t}))
+
+    :<port-map
+    (/ (* :s* "port" :s* "(" (any :<port-decl) :s* ")" :s* ";" :s*)
+       ,(fn [& decls]
+          [:port-map decls]))
+
+    :<port-decl
+    (/ (* :s* :<ident :s* ":" :s* :<dir :s* :<texpr :s* (? ";") :s*)
+       ,(fn [p d t]
+          {:port p :dir d :type t}))
+
+    # Type expression. I think it's always either an
+    # identifier or a function call.
+    :texpr
+    (+ (* :s* :ident :s* :parens)
+       (* :s* :ident))
+    :<texpr (<- :texpr)
+
+    # Safely nestable parens - doesn't matter what's inside
+    # them, except that they match. We need to handle
+    # strings here, sadly.
+    :parens
+    (* "(" (any (+ :string (if-not (+ "(" ")") 1) :parens)) ")")
+    :<parens (<- :parens)
+
+    :ident (* (+ :a "_") (any (+ :w "_")))
+    :<ident (<- :ident)
+    :<dir (<- (+ "in" "out" "inout"))
+    :string (* `"` (any (if-not `"` 1)) `"`)})
+
+(defn compile-with-main [main]
+  (def x (struct/to-table vhdl-entity-peg-source))
+  (set (x :main) (x main))
+  (peg/compile x))
+
+(when false # run tests
+  (assert (peg/match (compile-with-main :ident) "foobar"))
+  (assert (peg/match (compile-with-main :ident) "foo_bar"))
+  (assert (peg/match (compile-with-main :ident) "_baz"))
+  (assert (peg/match (compile-with-main :string) `"Hello world"`))
+  (assert (peg/match (compile-with-main :<parens) "(1 + 2)"))
+  (assert (peg/match (compile-with-main :texpr) "std_logic_vector(15 downto 0)"))
+  (assert (peg/match (compile-with-main :texpr) "natural"))
+  (assert (peg/match (compile-with-main :texpr) "not_a_real_case(sorry(std_logic_vector(5 to 7)))"))
+  (assert (peg/match (compile-with-main :<port-decl) "foo_bar : in natural"))
+  (assert (peg/match (compile-with-main :<generic-port-decl) "IDK_MAN : natural;")))
+
+(def vhdl-entity-peg (peg/compile vhdl-entity-peg-source))
+
+(defn make-dummy-inst [in-str]
+  (def parsed (peg/match vhdl-entity-peg in-str))
+
+  (assert (not (nil? parsed)) "failed to parse input data")
+
+  (def name (in parsed 0))
+  (assert (string? name))
+
+  (def sig-decls @[])
+  (def const-decls @[])
+  (def port-conns @[])
+  (def generic-conns @[])
+
+  (for i 1 (length parsed)
+    (match (in parsed i)
+      [:generic-map ports]
+      (each {:port p :type t} ports
+        (array/push const-decls (string/format "constant %s : %s := TODO;" p t))
+        (array/push generic-conns (string/format "%s => %s" p p)))
+
+      [:port-map ports]
+      (each {:port p-raw :dir d :type t} ports
+        (def pot-sfx (string "_" d)) # potential suffix to remove
+        (def p
+          (if (string/has-suffix? pot-sfx p-raw)
+            (string/slice p-raw 0 (- (length p-raw) (length pot-sfx)))
+            p-raw))
+
+        (array/push sig-decls (string/format "signal %s : %s;" p t))
+        (array/push port-conns (string/format "%s => %s" p-raw p)))
+
+      other (assertf false "unknown value %j" other)))
+
+  (def ret @"")
+  (defn ps [fmt & args]
+    (buffer/push-string ret (string/format fmt ;args)))
+
+  (each ds [sig-decls const-decls]
+    (each x ds
+      (ps "%s\n" x)))
+
+  (ps "\nuut : entity %s\n" name)
+  (unless (empty? generic-conns)
+    (def [head & tail] generic-conns)
+    (ps "generic map (\n")
+    (ps "  %s" head)
+    (each x tail
+      (ps ",\n  %s" x))
+    (ps ");\n"))
+  (unless (empty? port-conns)
+    (def [head & tail] port-conns)
+    (ps "port map (\n")
+    (ps "  %s" head)
+    (each x tail
+      (ps ",\n  %s" x))
+    (ps ");\n"))
+
+  ret)
+
+(defn main [arg0 & args]
+  (when (not (empty? args))
+    (printf "do not provide args - send data through stdin")
+    (os/exit 2))
+  (def input-str (:read stdin :all))
+  (printf "%s" (make-dummy-inst input-str)))
