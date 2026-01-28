@@ -278,6 +278,7 @@
   (mt :ext ["osctet"] :gui ["osctet" file])
   (mt :ext ["rpp"] :gui ["reaper" file])
   (mt :ext ["str"] :gui ["dotf.wrap.editor" file]) # strudel
+  # (mt :ext ["helio"] :gui ["helio-workstation" file]) # TODO: this doesn't work atm. I think there's no CLI interface for helio
 
   # image
   (when (m :mime ["image/vnd.djvu"])

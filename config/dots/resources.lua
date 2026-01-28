@@ -182,31 +182,6 @@ local trimString = function(str)
   return str:match("^%s*(.-)%s*$")
 end
 
--- Gets the current boot's font.
---
--- If not available, randomly picks one to be such font.
-local getBootRandomFont = function()
-  local font_path = "/tmp/dotf.random-font.txt"
-  if not fileExists(font_path) then
-    local keys = {}
-    for k, _ in pairs(font_presets) do
-      table.insert(keys, k)
-    end
-
-    local key = keys[math.random(#keys)]
-
-    local fd = assert(io.open(font_path, "w"), "could not open random font path")
-    fd:write(key)
-    fd:close()
-    return key
-  end
-
-  local fd = assert(io.open(font_path, "r"), "could not open random font path")
-  local result = trimString(fd:read())
-  fd:close()
-  return result
-end
-
 local T_ALL = {t_xres, t_dots}
 -- }}}
 
@@ -222,12 +197,12 @@ if font_name == "*random*" then
   end
   table.sort(names)
 
-  local dt = os.date("!*t")
-  local seed = (((dt.year * 100) + dt.month) * 100) + dt.day
+  local seed = tonumber(os.date("%Y%m%d"))
 
   math.randomseed(seed)
-  font_name = names[math.random(1, #names)]
-  -- io.stderr:write(("seed=%d, name=%s\n"):format(seed, font_name))
+  local idx = math.random(1, #names)
+  font_name = names[idx]
+  io.stderr:write(("seed=%d, name=%s, idx=%d\n"):format(seed, font_name, idx))
 end
 
 local font = getFontInfo(font_name, font_size)

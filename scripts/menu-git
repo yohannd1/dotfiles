@@ -141,6 +141,7 @@ addAction '.B' act_branchSwitchAll "select branch to switch (show all)"
 
 act_commit() { git commit; }
 addAction 'c' act_commit "commit"
+addAction 'C' act_commit "commit"
 
 act_diff() { git diff HEAD; }
 addAction 'd' act_diff "show diff"
