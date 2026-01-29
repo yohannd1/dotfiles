@@ -1,40 +1,38 @@
 #!/usr/bin/env sh
 
-# FIXME: this program can very easily be exploited to run arbritary shell cocde
+progname=$(basename "$0")
+exportStr=''
+prefix='#'
 
-PROGNAME=$(basename "$0")
-B16PAT='[a-fA-F0-9]'
-EXPORT_TAG=''
-PREFIX='#'
-
-main() {
-  while read -r line; do
-    printf "%s" "$line" \
-      | grep '^base0[a-fA-F0-9]:' \
-      | sed 's/^\(base0'"$B16PAT"'\): "\('"$B16PAT"'\{6\}\)"/'"$EXPORT_TAG"'\1="'"$PREFIX"'\2"/g' \
-      | sed 's|^\(base0[a-fA-F0-9]="#[a-fA-F0-9]\{6\}"\)\s*#.*$|\1|g'
-  done
+filter() {
+  gawk -v prefix="$prefix" -v exportStr="$exportStr" '/^base0[a-fA-F0-9]:/ {
+    name = gensub(/^(base0[a-fA-F0-9]):$/, "\\1", "g", $1)
+    value = gensub(/^"([a-fA-F0-9]{6})"$/, "\\1", "g", $2)
+    print sprintf("%s%s=\"%s%s\"", exportStr, name, prefix, value)
+  }'
 }
 
-usage() {
-  printf >&2 "Usage: %s\n" "$PROGNAME [-h | --help] [-e | --export] [ -n | --noprefix ] [THEME]"
-  printf >&2 "The theme data is loaded from %s\n" '$XDG_CONFIG_HOME/dots/themes/$THEME.yaml'
-  exit 1
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname [-h | --help] [-e | --export] [ -n | --noprefix ] [THEME]
+The theme data is loaded from "\$XDG_CONFIG_HOME/dots/themes/\$THEME.yaml"
+EOF
+  exit 2
 }
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --export|-e) EXPORT_TAG='export ' ;;
-    --noprefix|-n) PREFIX='' ;;
-    --help|-h) usage ;;
+    --export|-e) exportStr='export ' ;;
+    --noprefix|-n) prefix='' ;;
+    --help|-h) showHelp ;;
     -*)
       printf >&2 "Invalid argument: %s\n" "$1"
-      usage
+      showHelp
       ;;
     *)
       if [ "$themeSpecified" ]; then
         printf >&2 "Repeated THEME argument: %s\n" "$1"
-        usage
+        showHelp
       else
         THEME="$1"
         themeSpecified=1
@@ -55,7 +53,7 @@ case $# in
       exit 1
     fi
 
-    main < "${XDG_CONFIG_HOME:-$HOME/.config}/dots/themes/${THEME}.yaml"
+    filter <"${XDG_CONFIG_HOME:-$HOME/.config}/dots/themes/${THEME}.yaml"
     ;;
   *) ;;
 esac
