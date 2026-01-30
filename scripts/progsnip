@@ -31,7 +31,6 @@
 (defn .osc-lmms [&opt path]
   "Generate corrscope channel entries for LMMS tracks."
 
-
   (default path ".")
 
   (defn try-parse [x]
@@ -47,12 +46,28 @@
       (printf "  wav_path: %s" (path/join path base))
       (printf "  label: %s" name))))
 
-(defn ? []
+(defn .hr
+  "Hour range"
+  [a b]
+
+  (def start (int/s64 a))
+  (def end (int/s64 b))
+
+  (defn rec [i]
+    (printf "%02d:00" i)
+    (when (not= i end)
+      (rec (-> i (inc) (mod 24)))))
+  (rec start))
+
+(defn ?
   "Aux function for listing known snippets."
+  []
+
   (as->
     (all-bindings) .x
     (filter |(= (string/slice $ 0 1) ".") .x)
-    (each x .x (pp x))))
+    (string/join .x " ")
+    (printf "%s" .x)))
 
 (as->
   (:read stdin :all) .x
