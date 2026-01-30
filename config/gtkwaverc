@@ -1,3 +1,4 @@
 # vim: ft=conf
 
 splash_disable on
+accel "/Edit/Delete" Delete
