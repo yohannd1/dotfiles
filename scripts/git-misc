@@ -13,6 +13,8 @@ Usage: $progname <COMMMAND> [ARGS...] - available commands:
     fuzzy-menu version of restore-file - opens the contents on an editor
   changed-rank [COUNT]:
     show top COUNT changed files in the repo (defaults to 0)
+  quick-pull:
+    a cheap version of the pull that only pulls the current branch
 EOF
   exit 2
 }
@@ -57,6 +59,18 @@ case "$1" in
     git log --pretty=format: --name-only \
       | sort | uniq -c | sort -rg | head -"$count"
 
+    ;;
+
+  quick-pull)
+    [ $# = 1 ] || showHelp
+    # A simple 'git pull' may pull from other branches, and waste bandwidth.
+    # So let's figure out which branch and remote we have to pull from.
+    localBranch=$(git rev-parse --abbrev-ref HEAD)
+    remoteBranch=$(git for-each-ref --format='%(upstream:short)' \
+      "$(git symbolic-ref -q HEAD)")
+    remoteName=${remoteBranch%/*}
+    printf >&2 "Pulling branch \"%s\" from remote \"%s\"\n" "$localBranch" "$remoteName"
+    git pull "$remoteName" "$localBranch"
     ;;
 
   *) showHelp ;;
