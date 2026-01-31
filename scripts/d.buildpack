@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+set -ue
+shopt -s nullglob
+progname=$(basename "$0")
+
+pkgbuilds="$DOTFILES/pkgbuilds"
+builds="${XDG_CACHE_HOME:-$HOME/.cache}/dotf.buildpacks"
+
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname <TARGET...>
+
+Each TARGET matches against all files in the pkgbuilds directory that start
+with it. There should be exactly one match for each target given.
+
+Said directory is $pkgbuilds.
+EOF
+  exit 2
+}
+
+die() {
+  printf >&2 "%s\n" "$*"
+  exit 1
+}
+
+[ $# -gt 0 ] || showHelp
+
+for x in "$@"; do
+  matches=("$pkgbuilds/$x"*)
+  case "${#matches[@]}" in
+    0) die "could not match anything like '$x'" ;;
+    1) ;;
+    *) die "more than one match found for '$x'" ;;
+  esac
+
+  tfile=${matches[0]}
+  tname=$(basename "$tfile")
+  (
+    mkdir -p "$builds/$tname"
+    cd "$builds/$tname"
+    [ -e "$tname" ] || ln -s "$tfile" "$tname"
+    makepkg -p "$tname" -si --force
+  )
+done
