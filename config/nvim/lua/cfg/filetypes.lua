@@ -548,6 +548,7 @@ ft.uxntal = function()
 end
 
 ft.acrylic = function()
+  setLocals { commentstring = "%% %s" }
   addSnippet("t", "%:title ")
   addMSnippet("c", [[
 @code#{

@@ -449,43 +449,44 @@ services.defKeyMenu({
     },
   }}
 })
-map("n", "<Leader>B", lazy(services.loadKeyMenu, "buffer"), arg_nr_s)
+-- map("n", "<Leader>B", lazy(services.loadKeyMenu, "buffer"), arg_nr_s)
 
 map("n", "<Leader>k", vim.cmd.bdelete, { noremap = true, desc = "delete buffer" })
 
 map("n", "<Leader>L", ":lua print(vim.inspect())<Left><Left>", { noremap = true, desc = "lua expr" })
 
 -- TODO: make this better! so it can replace key-menus like hydra
--- map("n", "<Leader>B", function()
---   local choices = {
---     {"j", "next", lazy(dummy.bufSwitch, "next")},
---     {"k", "prev", lazy(dummy.bufSwitch, "prev")},
---     {"d", "delete", lazy(vim.cmd, "bdelete")},
---     {"w", "write", lazy(vim.cmd, "write")},
---   }
+map("n", "<Leader>B", function()
+  local choices = {
+    {"j", "next", lazy(dummy.bufSwitch, "next")},
+    {"k", "prev", lazy(dummy.bufSwitch, "prev")},
+    {"d", "delete", lazy(vim.cmd, "bdelete")},
+    {"w", "write", lazy(vim.cmd, "write")},
+  }
 
---   -- build string for the confirm dialog
---   local options_str = nil
---   do
---     local t = {}
---     for _, x in ipairs(choices) do
---       table.insert(t, ("&%s %s"):format(x[1], x[2]))
---     end
---     table.insert(t, "&q quit")
---     options_str = table.concat(t, "\n")
---   end
+  -- build string for the confirm dialog
+  local options_str = nil
+  do
+    local t = {}
+    for _, x in ipairs(choices) do
+      table.insert(t, ("&%s %s"):format(x[1], x[2]))
+    end
+    table.insert(t, "&q quit")
+    options_str = table.concat(t, "\n")
+  end
 
---   while true do
---     local c = vim.fn.confirm("", options_str)
---     if c <= #choices then
---       choices[c][3]() -- run the comand
---     elseif c == #choices + 1 then
---       break -- quit
---     else
---       print("Invalid choice...")
---     end
---   end
--- end, arg_nr)
+  while true do
+    vim.cmd("redraw") -- TODO: use something better
+    local c = vim.fn.confirm("", options_str)
+    if c <= #choices then
+      choices[c][3]() -- run the comand
+    elseif c == #choices + 1 then
+      break -- quit
+    else
+      print("Invalid choice...")
+    end
+  end
+end, arg_nr)
 
 map("n", "<Leader>i,", snippets.fuzzyMenu, arg_nr_s)
 
