@@ -120,14 +120,15 @@
     (ps "  %s" head)
     (each x tail
       (ps ",\n  %s" x))
-    (ps ");\n"))
+    (ps ")\n"))
   (unless (empty? port-conns)
     (def [head & tail] port-conns)
     (ps "port map (\n")
     (ps "  %s" head)
     (each x tail
       (ps ",\n  %s" x))
-    (ps ");\n"))
+    (ps ")"))
+  (ps ";\n")
 
   ret)
 

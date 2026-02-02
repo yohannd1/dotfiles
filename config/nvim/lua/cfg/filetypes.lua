@@ -217,7 +217,7 @@ ft.c = function()
     cinoptions = "g0,:0,l1,(1s"
   }
 
-  vim.b.format_command = "fmt.clang c"
+  vim.b.format_command = "f.fmt.clang c"
 
   addSnippet("s", "#include <stdio.h>")
   addMSnippet("m", [[
@@ -234,7 +234,7 @@ ft.cpp = function()
     cinoptions = "g0,:0,l1,(1s,N-s"
   }
 
-  vim.b.format_command = "fmt.clang c++"
+  vim.b.format_command = "f.fmt.clang c++"
 
   addSnippet("s", "#include <iostream>")
   addSnippet("v", "#include <vector>")
@@ -439,7 +439,7 @@ ft.moon = function()
 end
 
 ft.javascript = function()
-  vim.b.format_command = "fmt.js-prettier"
+  vim.b.format_command = "f.fmt.js-prettier"
 end
 
 ft.python = function()
@@ -496,7 +496,7 @@ end
 
 ft.vlang = function()
   setTabIndent(4)
-  vim.b.format_command = "fmt.vlang"
+  vim.b.format_command = "f.fmt.vlang"
 end
 
 ft.fennel = function()
@@ -593,6 +593,7 @@ ft["scheme.guile"] = ft.scheme
 
 ft.strudel = function()
   vim.o.syntax = "javascript"
+  setLocals { commentstring = "// %s" }
   setSpaceIndent(2)
 end
 

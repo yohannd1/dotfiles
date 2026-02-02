@@ -2,7 +2,7 @@
 
 pkgname=furnace-git
 _truepkg=furnace
-pkgver=0df28b68f
+pkgver=ddd098734
 pkgrel=1
 epoch=1
 pkgdesc="A multi-system chiptune tracker compatible with DefleMask modules"

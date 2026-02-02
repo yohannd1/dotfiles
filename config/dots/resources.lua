@@ -21,6 +21,11 @@ local font_presets = {
     base_size = 17,
     supports_ligatures = false,
   },
+  ["IosevkaExtended"] = {
+    name = "Iosevka Extended",
+    base_size = 16.25,
+    supports_ligatures = false,
+  },
   ["FiraCode"] = {
     name = "Fira Code Medium",
     base_size = 15.75,

@@ -183,7 +183,7 @@ if vim.g.rifle_mode == nil then
 end
 
 -- Highlight yanked selection briefly
-if false then -- turned off lol
+if false then
   autocmd({"TextYankPost"}, {
     pattern = "*",
     callback = function()
@@ -291,7 +291,10 @@ create_cmd("LatexMakeEnv", function(t)
   end
 end, { nargs = "*" })
 
-if false then dummy.setSoftWrapBinds(true) end
+for _, action in ipairs({"blame", "log", "diff", "status"}) do
+  local cmd_name = "Git" .. action:sub(1, 1):upper() .. action:sub(2, -1)
+  create_cmd(cmd_name, "Git " .. action, { nargs = 0 })
+end
 
 -- TODO: inside neovim, replace the $EDITOR with a wrapper script that connects
 -- to the current neovim instance, opens a buffer, and waits for the buffer to

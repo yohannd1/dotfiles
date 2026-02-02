@@ -177,17 +177,8 @@ addAction 'l' act_logCompact "log (compact)"
 act_logFull() { git log --all; }
 addAction 'L' act_logFull "log (full)"
 
-act_pull() {
-  # A simple 'git pull' may pull from other branches, and waste bandwidth.
-  # So let's figure out which branch and remote we have to pull from.
-  localBranch=$(git rev-parse --abbrev-ref HEAD)
-  remoteBranch=$(git for-each-ref --format='%(upstream:short)' \
-    "$(git symbolic-ref -q HEAD)")
-  remoteName=${remoteBranch%/*}
-  printf >&2 "Pulling branch \"%s\" from remote \"%s\"\n" "$localBranch" "$remoteName"
-  git pull "$remoteName" "$localBranch"
-}
-addAction 'p' act_pull "pull current branch"
+act_pull() { git-misc quick-pull; }
+addAction 'p' act_pull "quick-pull (only current branch)"
 
 act_pullSetUpstream() {
   current_branch=$(git branch --show-current) \
@@ -211,6 +202,21 @@ addAction 'S' act_pushSetUpstream "push + set upstream"
 
 act_tig() { tig status; }
 addAction 't' act_tig "open tig (tig status)"
+
+getStashName() {
+  gawk '{
+    name = gensub(/^(stash@{[0-9]+}):.*$/, "\\1", "g", $1)
+    print name
+  }'
+}
+
+act_stashMenu() {
+  name=$(git stash list | fzagnostic | getStashName)
+  [ "$name" ] || return 1
+  printf >&2 "Stash: %s\n" "$name"
+  git stash show -p "$name"
+}
+addAction ',s' act_stashMenu "explore stash"
 
 addAction '' clear ""
 addAction '' exit ""
