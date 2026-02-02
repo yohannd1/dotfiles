@@ -203,6 +203,21 @@ addAction 'S' act_pushSetUpstream "push + set upstream"
 act_tig() { tig status; }
 addAction 't' act_tig "open tig (tig status)"
 
+getStashName() {
+  gawk '{
+    name = gensub(/^(stash@{[0-9]+}):.*$/, "\\1", "g", $1)
+    print name
+  }'
+}
+
+act_stashMenu() {
+  name=$(git stash list | fzagnostic | getStashName)
+  [ "$name" ] || return 1
+  printf >&2 "Stash: %s\n" "$name"
+  git stash show -p "$name"
+}
+addAction ',s' act_stashMenu "explore stash"
+
 addAction '' clear ""
 addAction '' exit ""
 addAction '' exit ""

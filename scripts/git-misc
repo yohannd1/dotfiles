@@ -5,7 +5,7 @@ progname=$(basename "$0")
 
 showHelp() {
   cat >&2 <<EOF
-"All-in-one" git scritp to do various things.
+"All-in-one" git script to do various things.
 Usage: $progname <COMMMAND> [ARGS...] - available commands:
   restore-file <FILE>:
     restore the latest version of a file in the log
