@@ -165,7 +165,7 @@ act_help() {
 }
 addAction 'h' act_help "show help"
 
-act_info() { git status -sb; }
+act_info() { git status -u -sb; }
 addAction 'i' act_info "info (git status -sb)"
 
 act_logCompact() {

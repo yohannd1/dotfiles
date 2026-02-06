@@ -22,7 +22,7 @@ if exists gpg-connect-agent && ! isAndroid; then
 fi
 
 if [ $# = 3 ]; then
-  exec ssh "$2" -p "$1" "$3"
+  exec ssh -t "$2" -p "$1" "$3"
 else
-  exec ssh "$2" -p "$1"
+  exec ssh -t "$2" -p "$1"
 fi
