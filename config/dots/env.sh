@@ -56,7 +56,7 @@ export TERMBROWSER=w3m
 export PAGER=less
 export OPENER=openfork
 export READER=zathura
-export FILEMAN=nnn
+export FILEMAN=lf
 
 # SDKs and programming tools
 export GOPATH="$XDG_CACHE_HOME/go"
