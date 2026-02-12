@@ -1,62 +1,71 @@
 #!/usr/bin/env sh
 
-BATTERY_PATH="/sys/class/power_supply/BAT0/capacity"
+set -ue
+progname=$(basename "$0")
+
 CHARGE_STATE_PATH="/sys/class/power_supply/BAT0/status"
-DELAY=5
 
 LEVEL_CRITICAL=5
 LEVEL_LOW=20
 LEVEL_HIGH=90
-
-PROGNAME=$(basename "$0")
+SLEEP_DELAY=5
 
 die() {
-  printf >&2 "%s: %s\n" "$PROGNAME" "$*"
-  notify-send -u critical -- "$PROGNAME: $*"
+  msg="$progname: $*"
+  printf >&2 "%s\n" "$msg"
+  notify-send -u critical -- "$msg"
   exit 1
 }
 
-isCharging() { [ "$(cat $CHARGE_STATE_PATH)" = "Charging" ]; }
-
 warn() {
-  _msg="$(printf "%s (%02d%%)\n" "$2" "$level")"
-  notify-send -u "$1" -- "Battery level alert" "$_msg"
+  _msg=$(printf "%s (%02d%%)\n" "$3" "$level")
+  notify-send -u "$2" -- "Battery $1 level alert" "$_msg"
 }
 
-[ -e "$BATTERY_PATH" ] || die "Battery file doesn't exist"
-[ -e "$CHARGE_STATE_PATH" ] || die "Charge state file doesn't exist"
+monitorBattery() {
+  battery=$1
+  name=$(basename "$battery")
 
-# state can be: critical normal low high
-state=normal
+  # state := { critical | normal | low | high }
+  state=normal
 
-while :; do
-  level=$(cat "$BATTERY_PATH")
+  while true; do
+    level=$(cat "$1/capacity")
+    isCharging=$(x=$(cat "$1/status"); [ "$x" = "Charging" ] && echo 1 || true)
+    warn "$name" low "test2 $level {$isCharging}"
 
-  if [ "$state" != high ] && [ "$level" -ge "$LEVEL_HIGH" ]; then
-    if isCharging; then
-      state=high
-      warn low "Battery is almost fully charged!"
-    else
+    if [ "$state" != high ] && [ "$level" -ge "$LEVEL_HIGH" ]; then
+      if [ "$isCharging" ]; then
+        state=high
+        warn "$name" low "Battery is almost fully charged!"
+      else
+        state=normal
+      fi
+    elif [ "$state" != low ] && [ "$state" != critical ] && [ "$level" -le "$LEVEL_LOW" ]; then
+      if [ "$isCharging" ]; then
+        state=normal
+      else
+        state=low
+        warn critical "Battery is low!"
+      fi
+    elif [ "$state" != critical ] && [ "$level" -le "$LEVEL_CRITICAL" ]; then
+      if [ "$isCharging" ]; then
+        state=normal
+      else
+        state=critical
+        warn critical "Battery is almost empty!"
+      fi
+    elif [ "$level" -gt "$LEVEL_LOW" ] && [ "$level" -lt "$LEVEL_HIGH" ]; then
+      # I'm not sure if this part is good but I'm trying it
       state=normal
     fi
-  elif [ "$state" != low ] && [ "$state" != critical ] && [ "$level" -le "$LEVEL_LOW" ]; then
-    if isCharging; then
-      state=normal
-    else
-      state=low
-      warn critical "Battery is low!"
-    fi
-  elif [ "$state" != critical ] && [ "$level" -le "$LEVEL_CRITICAL" ]; then
-    if isCharging; then
-      state=normal
-    else
-      state=critical
-      warn critical "Battery is almost empty!"
-    fi
-  elif [ "$level" -gt "$LEVEL_LOW" ] && [ "$level" -lt "$LEVEL_HIGH" ]; then
-    # I'm not sure if this part is good but I'm trying it
-    state=normal
-  fi
 
-  sleep "$DELAY"
+    sleep "$SLEEP_DELAY"
+  done
+}
+
+find /sys/class/power_supply/ | grep BAT | while read -r battery; do
+  monitorBattery "$battery" &
 done
+
+wait
