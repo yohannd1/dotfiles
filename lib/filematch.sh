@@ -1,5 +1,8 @@
-## Filematch library
-## Needed features: local functions
+#!/usr/bin/env bash
+#
+# Filematch library - for use with bash-compatible shells.
+#
+# Bashisms: local functions; substitutions on expansions;
 
 # Clean up some variables
 _filematch_initialized=
@@ -29,7 +32,7 @@ _filematch_casematch() {
 filematch_initialize() {
   if [ $# = 1 ]; then
     _filematch_file="$1"
-    _filematch_filename="$(basename "$_filematch_file")"
+    _filematch_filename=$(basename "$_filematch_file")
     _filematch_filetype="$(file --dereference --brief "$_filematch_file")"
     _filematch_mimetype="$(file --dereference --brief --mime-type "$_filematch_file")"
     _filematch_ext="${_filematch_filename##*.}"
@@ -59,7 +62,7 @@ filematch_initialize() {
 
     _filematch_initialized=1
   else
-    printf >&2 "Usage: %s\n" "$(basename $0) <FILE>"
+    printf >&2 "Usage: %s\n" "$(basename "$0") <FILE>"
     return 1
   fi
 }
@@ -69,7 +72,7 @@ filematch_initialize() {
 ## Usage: <PTYPE> <PAT>
 ##        where PTYPE := mime ext url
 match() {
-  _filematch_guard "$(basename $0)"
+  _filematch_guard "$(basename "$0")"
   local ptype="$1" pat="$2"
   shift 2
 
