@@ -1,25 +1,36 @@
-# vim: ft=conf
+# vim: ft=conf foldmethod=marker foldmarker={{{,}}}
 #
-# Useful reference: https://gist.github.com/matsubo/8012c260f76f1dad3ad9
-# Also see tigrc(5)
+# Useful references:
+# - https://gist.github.com/matsubo/8012c260f76f1dad3ad9
+# - https://github.com/jonas/tig/blob/master/tigrc
+# - tigrc(5)
 
 set line-graphics = auto
 set tab-size = 8
 
+# set main-view = date:relative-compact author:yes title:yes
+set main-view = line-number:no id:no date:custom,format="%Y-%m-%d %H:%M" author:full commit-title:yes,graph,refs,overflow=no
+
+# keybindings {{{
+
+# movement bindings
 bind generic g none
-bind generic G none
 bind generic G move-last-line
 bind generic gg move-first-line
 bind generic gG move-last-line
 bind generic gk move-first-line
 bind generic gj move-last-line
 
-# better bindings for the sections...
+# section trigger bindings
 bind generic l view-main
 bind generic L view-log
+bind generic b view-blame
 
-# set main-view = date:relative-compact author:yes title:yes
-set main-view = line-number:no id:no date:custom,format="%Y-%m-%d %H:%M" author:full commit-title:yes,graph,refs,overflow=no
+# status view bindings
+# TODO
+
+# }}}
+# colors {{{
 
 color "Author: "		7	default
 color "Commit: "		7	default
@@ -116,3 +127,5 @@ color palette-10		green	default	bold
 color palette-11		default	default	bold
 color palette-12		white	default	bold
 color palette-13		red	default	bold
+
+# }}}

@@ -152,16 +152,15 @@ fzhistory() {
 }
 
 bindkey -s '^R' '\eS fzhistory\n'
+bindkey -s '^P' '\e[C'
 
 if [ "$FILEMAN" = "lf" ] && exists lf; then
   bindkey -s '^o' '\eS lfAndCd\n'
 elif [ "$FILEMAN" = "nnn" ] && exists nnn; then
   bindkey -s '^o' '\eS nnnAndCd\n'
 else
-  bindkey -s '^o' '\eS # no compatible file manager detected!\n'
+  bindkey -s '^o' '\eS # could not figure out file manager!\n'
 fi
-
-bindkey -s '^P' '\e[C'
 
 bindkey -M vicmd 'Ç' edit-command-line
 

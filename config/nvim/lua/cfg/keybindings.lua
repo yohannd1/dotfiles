@@ -498,6 +498,10 @@ map("v", "<Leader>,", ":ProgSnipVisual<CR>", arg_nr)
 -- map("n", "<Leader>g+", ":NumWriteInc<CR>", arg_nr_s)
 -- map("n", "<Leader>g-", ":NumWriteDec<CR>", arg_nr_s)
 
+-- "Maximize & minimize" windows... kinda
+map("n", "<C-w>M", "<C-w>|<C-w>_", { desc = "maximize window" })
+map("n", "<C-w>m", "<C-w>=", { desc = "equalize windows" })
+
 -- Strudel keybindings
 box(utils.tryRequire("strudel")):andThen(function(strudel)
   map("n", "<Leader>hh", strudel.toggle, { desc = "strudel: play/stop" })
