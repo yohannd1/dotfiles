@@ -63,7 +63,7 @@ case "$1" in
 
     ;;
 
-  quick-pull)
+  pull-cheap)
     [ $# = 1 ] || showHelp
     # A simple 'git pull' may pull from other branches, and waste bandwidth.
     # So let's figure out which branch and remote we have to pull from.
