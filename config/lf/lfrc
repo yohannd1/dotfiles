@@ -101,76 +101,27 @@ cmd delete ${{
   done
 }}
 
-cmd flatten-dir ${{
-  set -ue
+# TODO: wrapper for ffmpeg-convert?
 
-  _dummy() { echo $#; }
+cmd to-wav ${{ ffmpeg-convert "$f" wav }}; reload
+cmd to-ogg ${{ ffmpeg-convert "$f" ogg }}; reload
+cmd to-mp3 ${{ ffmpeg-convert "$f" mp3 }}; reload
+cmd to-mp4 ${{ ffmpeg-convert "$f" mp4 }}; reload
 
-  oldIFS="$IFS"
-  IFS=$(printf '\n\t')
-  if [ "$(_dummy $fx)" != 1 ]; then
-    printf "You should select exactly one directory.\n"
-  fi
-  IFS="$oldIFS"
-
-  dir="$fx"
-
-  printf "Selected directory: %s\n" "$dir"
-
-  case "$(ls -A "$dir" | wc -l)" in
-    0) exit ;;
-    1) ;;
-    *)
-      printf "There is more than one file on this folder:\n"
-      ls -A "$dir"
-      read _
-      exit
-      ;;
-  esac
-
-  toFlatten="$(ls -A "$dir")"
-
-  if [ ! -d "$toFlatten" ]; then
-    printf "File %s should be a folder.\n" "$dir/$toFlatten"
-    read _
-    exit
-  fi
-
-  printf "TODO: finish this\n"
-  read _
-  exit
-
-  printf "Would you like proceed?\n"
-
-  while true; do
-    printf "(y)es or (n)o => "
-    read -n1 answer
-    printf "\n"
-
-    case "$answer" in
-      y) false; break ;;
-      n) break ;;
-      *) ;;
-    esac
-
-    if [ $? != 0 ]; then
-      printf "Failed to flatten directory.\n"
-      read _
-    fi
-  done
-}}
-
+cmd vid-trim-small ${{ vid-trim-small "$f" }}; reload
 cmd make-exec ${{ chmod +x "$f" }}; reload
 cmd make-noexec ${{ chmod -x "$f" }}; reload
 cmd move-here ${{ PROMPT_ON_ERROR=1 d.fileman-actions move-here "$fs" }}; unselect; reload
 cmd copy-here ${{ PROMPT_ON_ERROR=1 d.fileman-actions copy-here "$fs" }}; unselect; reload
 cmd extract ${{ PROMPT_ON_ERROR=1 d.fileman-actions extract "$f" }}
+cmd flatten ${{ PROMPT_ON_ERROR=1 d.fileman-actions flatten "$f" }}
 
 # command mappings
 map . set hidden!
 map n new
 map <c-n> search-next
 map x trash
+map R ${{ vidir }} # TODO: support renaming from selection?
 map v move-here
 map p copy-here
 map R ${{ "$EDITOR" . }}

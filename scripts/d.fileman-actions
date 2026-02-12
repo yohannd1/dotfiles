@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 set -ue
 progname=$(basename "$0")
@@ -10,6 +10,7 @@ die() {
   if [ "$PROMPT_ON_ERROR" ]; then
     printf >&2 "[press enter to dismiss]"
     read -r _
+    exit 1
   fi
 }
 
@@ -21,8 +22,7 @@ Usage:
   $progname new: TODO(description)
   $progname trash-put: TODO(description)
   $progname delete: TODO(description)
-  $progname flatten-dir: TODO(description)
-  $progname rename-dir: TODO(description)
+  $progname flatten <DIR>: flatten the directory in question
   $progname move-here <FILES>: copy files (newline-separated list) to current dir
   $progname copy-here <FILES>: copy files (newline-separated list) to current dir
   $progname extract <FILE>: simple wrapper around \`ext\`
@@ -45,6 +45,7 @@ parseFiles() {
 
 [ $# -gt 0 ] || showHelp
 
+printf >&2 "\n"
 case "$1" in
   new)
     [ $# = 1 ] || showHelp
@@ -61,9 +62,46 @@ case "$1" in
     die "TODO"
     ;;
 
-  flatten-dir)
-    [ $# = 1 ] || showHelp
-    die "TODO"
+  flatten)
+    [ $# = 2 ] || showHelp
+
+    count=$(parseFiles "$2" | wc -l)
+    [ "$count" -eq 1 ] || die "only one folder should be selected"
+
+    dir=$(printf "%s" "$(parseFiles "$2")" | head -n1)
+    printf >&2 "Selected: %s\n" "$dir"
+
+    inside=$(find "$dir" -maxdepth 1 -type f)
+
+    case "$(find "$dir" -maxdepth 1 -type f)" in
+      0) exit ;; # already flattened
+      1) ;;
+      *)
+        printf >&2 "Found files:\n%s\n" "$inside"
+        die "found files on the folder - cannot flatten!"
+        ;;
+    esac
+
+    if [ ! -d "$inside" ]; then
+      die "inside file '$inside' is not a directory"
+    fi
+
+    printf >&2 "Will flatten folder to parent: $inside"
+
+    while true; do
+      printf >&2 "(y)es or (n)o => "
+      read -r -n1 answer
+      printf >&2 "\n"
+
+      case "$answer" in
+        y)
+          die "TODO"
+          break
+          ;;
+        n) break ;;
+        *) ;;
+      esac
+    done
     ;;
 
   move-here)
@@ -85,11 +123,6 @@ case "$1" in
   extract)
     [ $# = 2 ] || showHelp
     ext "$2" || die "failed to extract file"
-    ;;
-
-  rename-dir)
-    [ $# = 1 ] || showHelp
-    die "TODO"
     ;;
 
   *) showHelp ;;
