@@ -1,4 +1,3 @@
-// vim: ft=jsonc
 {
     "layer": "top",
     "position": "top",
@@ -23,7 +22,7 @@
     ],
     "modules-right": [
         "pulseaudio",
-        "battery",
+!! [ -e /sys/class/power_supply/BAT0 ] && printf '"battery",\n' || true
         "clock",
         "tray",
     ],

@@ -2,4 +2,4 @@
 
 pkill waybar
 gen-config waybar
-waybar & disown
+waybar -c "$XDG_CONFIG_HOME/waybar/config.jsonc" & disown

@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 
 set -e
+progname=$(basename "$0")
 
 . "$DOTFILES/config/dots/env.sh"
 eval "$(load-base16-theme --export)"
-
-progname=$(basename "$0")
 
 MINIMUM=(wget)
 T_ANDROID=(termux)
@@ -75,8 +74,8 @@ _t_yambar() {
 }
 
 _t_waybar() {
-  PP_PREFIX="!!" gen "$DOTFILES/config/gen/waybar-style.css" \
-    "$XDG_CONFIG_HOME/waybar/style.css"
+  PP_PREFIX="!!" gen "$DOTFILES/config/gen/waybar-style.css" "$XDG_CONFIG_HOME/waybar/style.css"
+  PP_PREFIX="!!" gen "$DOTFILES/config/gen/waybar-config.jsonc" "$XDG_CONFIG_HOME/waybar/config.jsonc"
 }
 
 _t_wget() {
