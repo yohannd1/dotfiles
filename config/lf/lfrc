@@ -2,6 +2,8 @@
 # vim: ft=conf fdm=marker foldmarker={{,}} sw=2
 
 set shell bash
+set shellopts '-ue'
+
 set icons
 set ignorecase
 # set hidden
@@ -17,9 +19,9 @@ cmd new ${{
   set -ue
 
   while true; do
-    printf "(f)ile or (d)ir => "
-    read -n1 answer
-    printf "\n"
+    printf >&2 "\b(f)ile or (d)ir => "
+    read -r -n1 answer
+    printf >&2 "\n"
 
     case "$answer" in
       f|d) break ;;
@@ -28,9 +30,9 @@ cmd new ${{
     esac
   done
 
-  printf "filename => "
-  read filename
-  printf "\n"
+  printf >&2 "filename => "
+  read -r filename
+  printf >&2 "\n"
 
   [ -z "$filename" ] && exit
 
@@ -101,12 +103,14 @@ cmd delete ${{
   done
 }}
 
-# TODO: wrapper for ffmpeg-convert?
+cmd ffmpeg-convert ${{
+  printf >&2 "file to convert: %s\n" "$f"
+  printf >&2 "target format => "
+  read -r targetFormat
+  printf >&2 "\n"
 
-cmd to-wav ${{ ffmpeg-convert "$f" wav }}; reload
-cmd to-ogg ${{ ffmpeg-convert "$f" ogg }}; reload
-cmd to-mp3 ${{ ffmpeg-convert "$f" mp3 }}; reload
-cmd to-mp4 ${{ ffmpeg-convert "$f" mp4 }}; reload
+  ffmpeg-convert "$f" "$targetFormat"
+}}
 
 cmd vid-trim-small ${{ vid-trim-small "$f" }}; reload
 cmd make-exec ${{ chmod +x "$f" }}; reload
@@ -129,5 +133,7 @@ map E extract
 map P set preview!
 map ~ cd ~
 map <c-z> ${{ kill -STOP "$PPID" }}
+map <c-l> reload; redraw
+map C ffmpeg-convert
 
 # TODO: custom ruler - https://github.com/gokcehan/lf/wiki/Ruler - don't make it _too_ fancy

@@ -33,12 +33,14 @@ parseFiles() {
   count=0
   oldIfs=$IFS
 
+  set -f
   IFS=$(printf '\n\t')
   for file in $1; do
     IFS=$oldIfs
     printf "%s\n" "$file"
     count=$((count + 1))
   done
+  set +f
 
   [ "$count" -gt 0 ] || die "no selected files"
 }
