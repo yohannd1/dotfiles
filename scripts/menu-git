@@ -177,8 +177,8 @@ addAction 'l' act_logCompact "log (compact)"
 act_logFull() { git log --all; }
 addAction 'L' act_logFull "log (full)"
 
-act_pull() { git-misc quick-pull; }
-addAction 'p' act_pull "quick-pull (only current branch)"
+act_pull() { git-misc pull-cheap; }
+addAction 'p' act_pull "pull (only current branch)"
 
 act_pullSetUpstream() {
   current_branch=$(git branch --show-current) \
@@ -191,14 +191,8 @@ addAction 'q' exit ""
 act_remoteList() { git remote -v; }
 addAction 'r' act_remoteList "list remotes"
 
-act_push() { git push; }
-addAction 's' act_push "push current branch"
-
-act_pushSetUpstream() {
-  current_branch=$(git branch --show-current) \
-    && confirmRun git push -u origin "$current_branch"
-}
-addAction 'S' act_pushSetUpstream "push + set upstream"
+act_push() { git-misc push-safe; }
+addAction 's' act_push "push (safe) current branch"
 
 act_tig() { tig status; }
 addAction 't' act_tig "open tig (tig status)"

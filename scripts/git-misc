@@ -13,8 +13,8 @@ Usage: $progname <COMMMAND> [ARGS...] - available commands:
     fuzzy-menu version of restore-file - opens the contents on an editor
   changed-rank [COUNT]:
     show top COUNT changed files in the repo (defaults to 0)
-  quick-pull:
-    a cheap version of the pull that only pulls the current branch
+  push-safe: a safer version of the push, which asks for an upstream if one is not set
+  pull-cheap: only pulls the current branch (saves bandwidth!)
   gitk-local:
     show gitk with all local branches
 EOF
@@ -73,6 +73,23 @@ case "$1" in
     remoteName=${remoteBranch%%/*}
     printf >&2 "Pulling branch \"%s\" from remote \"%s\"\n" "$localBranch" "$remoteName"
     git pull "$remoteName" "$localBranch"
+    ;;
+
+  push-safe)
+    [ $# = 1 ] || showHelp
+    localBranch=$(git rev-parse --abbrev-ref HEAD)
+    remoteBranch=$(git for-each-ref --format='%(upstream:short)' \
+      "$(git symbolic-ref -q HEAD)")
+    remoteName=${remoteBranch%%/*}
+
+    if [ "$remoteBranch" ]; then
+      printf >&2 "Upstream is \"%s\"\n" "$remoteBranch"
+      git push
+    else
+      printf >&2 "No upstream detected for this branch!\n"
+      choice=$(git remote | fzagnostic -p "Pick a remote for this branch:")
+      git push --set-upstream "$choice" "$localBranch"
+    fi
     ;;
 
   gitk-local)
