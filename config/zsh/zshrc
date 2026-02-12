@@ -152,8 +152,14 @@ fzhistory() {
 }
 
 bindkey -s '^R' '\eS fzhistory\n'
-[ "$FILEMAN" = "lf" ] && exists lf && bindkey -s '^o' '\eS lfAndCd\n'
-[ "$FILEMAN" = "nnn" ] && exists nnn && bindkey -s '^o' '\eS nnnAndCd\n'
+
+if [ "$FILEMAN" = "lf" ] && exists lf; then
+  bindkey -s '^o' '\eS lfAndCd\n'
+elif [ "$FILEMAN" = "nnn" ] && exists nnn; then
+  bindkey -s '^o' '\eS nnnAndCd\n'
+else
+  bindkey -s '^o' '\eS # no compatible file manager detected!\n'
+fi
 
 bindkey -s '^P' '\e[C'
 

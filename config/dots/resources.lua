@@ -4,6 +4,30 @@
 -- TODO: find a way to check all font sizes to see if they are around the same
 
 local font_presets = {
+  ["Adwaita"] = {
+    name = "Adwaita Mono",
+    base_size = 16.5,
+  },
+  ["Agave"] = {
+    name = "Agave Nerd Font",
+    base_size = 18.5,
+  },
+  ["AporeticSansMono"] = {
+    name = "Aporetic Sans Mono",
+    base_size = 17,
+  },
+  ["CascadiaCode"] = {
+    name = "Cascadia Code",
+    base_size = 16,
+  },
+  ["CommitMono"] = {
+    name = "CommitMono Nerd Font",
+    base_size = 16,
+  },
+  ["CourierPrimeCode"] = {
+    name = "Courier Prime Code",
+    base_size = 17,
+  },
   ["SourceCodePro"] = {
     name = "Source Code Pro Medium",
     base_size = 15.5,
@@ -29,10 +53,6 @@ local font_presets = {
   ["FiraCode"] = {
     name = "Fira Code Medium",
     base_size = 15.75,
-  },
-  ["CascadiaCode"] = {
-    name = "Cascadia Code",
-    base_size = 16,
   },
   ["JetbrainsMono"] = {
     name = "JetBrains Mono",
@@ -97,10 +117,6 @@ local font_presets = {
     name = "Hermit",
     base_size = 15,
   },
-  ["Agave"] = {
-    name = "Agave Nerd Font",
-    base_size = 18.5,
-  },
 
   -- TODO: make this work again
   -- ["EnvyCodeR"] = {
@@ -124,17 +140,9 @@ local font_presets = {
     name = "Go Mono",
     base_size = 16,
   },
-  ["CourierPrimeCode"] = {
-    name = "Courier Prime Code",
-    base_size = 17,
-  },
   ["Inconsolata"] = {
     name = "Inconsolata Medium",
     base_size = 19,
-  },
-  ["Adwaita"] = {
-    name = "Adwaita Mono",
-    base_size = 16.5,
   },
 }
 -- }}}

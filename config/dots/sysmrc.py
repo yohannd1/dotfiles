@@ -49,7 +49,7 @@ apps += [
     "ripgreprc",
     "dots",
     "mpv",
-    # "lf",
+    "lf",
     # "broot",
 ]
 

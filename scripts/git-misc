@@ -68,7 +68,7 @@ case "$1" in
     localBranch=$(git rev-parse --abbrev-ref HEAD)
     remoteBranch=$(git for-each-ref --format='%(upstream:short)' \
       "$(git symbolic-ref -q HEAD)")
-    remoteName=${remoteBranch%/*}
+    remoteName=${remoteBranch%%/*}
     printf >&2 "Pulling branch \"%s\" from remote \"%s\"\n" "$localBranch" "$remoteName"
     git pull "$remoteName" "$localBranch"
     ;;
