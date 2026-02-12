@@ -23,6 +23,7 @@
     ],
     "modules-right": [
         "pulseaudio",
+        "battery",
         "clock",
         "tray",
     ],
@@ -55,6 +56,11 @@
     "clock": {
         "format": "{:%Y-%m-%d %H:%M}",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+    },
+
+    "battery": {
+        "format": " bat {capacity}% ",
+        "format-charging": " chr {capacity}% ",
     },
 
     "pulseaudio": {
