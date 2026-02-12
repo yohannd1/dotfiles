@@ -6,6 +6,7 @@ set shellopts '-ue'
 
 set icons
 set ignorecase
+set mouse
 # set hidden
 # set drawbox
 
@@ -112,6 +113,15 @@ cmd ffmpeg-convert ${{
   ffmpeg-convert "$f" "$targetFormat"
 }}
 
+cmd vidir-rename ${{
+  set -efu
+  if [ -z "$fs" ]; then
+    fd -d1 | vidir -
+  else
+    printf "%s" "$fs" | vidir -
+  fi
+}}
+
 cmd vid-trim-small ${{ vid-trim-small "$f" }}; reload
 cmd make-exec ${{ chmod +x "$f" }}; reload
 cmd make-noexec ${{ chmod -x "$f" }}; reload
@@ -125,15 +135,16 @@ map . set hidden!
 map n new
 map <c-n> search-next
 map x trash
-map R ${{ vidir }} # TODO: support renaming from selection?
+map R vidir-rename
 map v move-here
 map p copy-here
-map R ${{ "$EDITOR" . }}
 map E extract
 map P set preview!
 map ~ cd ~
 map <c-z> ${{ kill -STOP "$PPID" }}
 map <c-l> reload; redraw
 map C ffmpeg-convert
+
+# Remember that sort keybindings are through `s`! There's a lotta 'em.
 
 # TODO: custom ruler - https://github.com/gokcehan/lf/wiki/Ruler - don't make it _too_ fancy
