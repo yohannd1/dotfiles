@@ -2,16 +2,19 @@
 # vim: ft=conf fdm=marker foldmarker={{,}} sw=2
 
 set shell bash
-set previewer cat
-set preview
-# set hidden
-# set drawbox
 set icons
 set ignorecase
+# set hidden
+# set drawbox
+
+# configure preview and column widths
+set previewer cat
+set nopreview
+set ratios 1:4
 
 # commands
 cmd new ${{
-  clear; set -f
+  set -ue
 
   while true; do
     printf "(f)ile or (d)ir => "
@@ -46,8 +49,9 @@ cmd new ${{
     fi
   fi
 }}
+
 cmd trash ${{
-  clear; set -f
+  set -ue
 
   IFS=$(printf '\n\t')
   printf "Selected files:\n"
@@ -72,7 +76,7 @@ cmd trash ${{
   done
 }}
 cmd delete ${{
-  clear; set -f
+  set -ue
 
   IFS=$(printf '\n\t')
   printf "Selected files:\n"
@@ -96,8 +100,9 @@ cmd delete ${{
     fi
   done
 }}
-cmd flatdir ${{
-  clear; set -f
+
+cmd flatten-dir ${{
+  set -ue
 
   _dummy() { echo $#; }
 
@@ -154,53 +159,24 @@ cmd flatdir ${{
     fi
   done
 }}
-cmd move-here ${{
-  clear; set -f
-  IFS=$(printf '\n\t')
-  for file in $fs; do
-    mv -ivt . -- "$file"
 
-    if [ $? != 0 ]; then
-      printf "Failed to move file '%s'.\n" "$file"
-      read _
-      break
-    fi
-  done
-}}
-cmd copy-here ${{
-  clear; set -f
-  IFS=$(printf '\n\t')
-  for file in $fs; do
-    cp -vrt . -- "$file"
-
-    if [ $? != 0 ]; then
-      printf "Failed to copy file '%s'.\n" "$file"
-      read _
-      break
-    fi
-  done
-}}
-cmd extract-this ${{
-  clear; set -f
-  [ "$f" ] && ext "$f"
-
-  if [ $? != 0 ]; then
-    printf "Failed to extract file.\n"
-    read _
-    break
-  fi
-}}
+cmd make-exec ${{ chmod +x "$f" }}; reload
+cmd make-noexec ${{ chmod -x "$f" }}; reload
+cmd move-here ${{ PROMPT_ON_ERROR=1 d.fileman-actions move-here "$fs" }}; unselect; reload
+cmd copy-here ${{ PROMPT_ON_ERROR=1 d.fileman-actions copy-here "$fs" }}; unselect; reload
+cmd extract ${{ PROMPT_ON_ERROR=1 d.fileman-actions extract "$f" }}
 
 # command mappings
 map . set hidden!
 map n new
-map L flatdir
 map <c-n> search-next
 map x trash
-map X delete
-map v :move-here; unselect
-map p :copy-here; unselect
-map R ${{ vidir }}
-map E extract-this
-map P :set preview!
+map v move-here
+map p copy-here
+map R ${{ "$EDITOR" . }}
+map E extract
+map P set preview!
 map ~ cd ~
+map <c-z> ${{ kill -STOP "$PPID" }}
+
+# TODO: custom ruler - https://github.com/gokcehan/lf/wiki/Ruler - don't make it _too_ fancy

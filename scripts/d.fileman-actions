@@ -1,0 +1,96 @@
+#!/usr/bin/env sh
+
+set -ue
+progname=$(basename "$0")
+
+PROMPT_ON_ERROR=${PROMPT_ON_ERROR:-}
+
+die() {
+  printf >&2 "fatal: %s\n" "$*"
+  if [ "$PROMPT_ON_ERROR" ]; then
+    printf >&2 "[press enter to dismiss]"
+    read -r _
+  fi
+}
+
+showHelp() {
+  cat >&2 <<EOF
+$progname: a collection of (mostly interactive) commands, designed for use with lf.
+
+Usage:
+  $progname new: TODO(description)
+  $progname trash-put: TODO(description)
+  $progname delete: TODO(description)
+  $progname flatten-dir: TODO(description)
+  $progname rename-dir: TODO(description)
+  $progname move-here <FILES>: copy files (newline-separated list) to current dir
+  $progname copy-here <FILES>: copy files (newline-separated list) to current dir
+  $progname extract <FILE>: simple wrapper around \`ext\`
+EOF
+}
+
+parseFiles() {
+  count=0
+  oldIfs=$IFS
+
+  IFS=$(printf '\n\t')
+  for file in $1; do
+    IFS=$oldIfs
+    printf "%s\n" "$file"
+    count=$((count + 1))
+  done
+
+  [ "$count" -gt 0 ] || die "no selected files"
+}
+
+[ $# -gt 0 ] || showHelp
+
+case "$1" in
+  new)
+    [ $# = 1 ] || showHelp
+    die "TODO"
+    ;;
+
+  trash-put)
+    [ $# = 1 ] || showHelp
+    die "TODO"
+    ;;
+
+  delete)
+    [ $# = 1 ] || showHelp
+    die "TODO"
+    ;;
+
+  flatten-dir)
+    [ $# = 1 ] || showHelp
+    die "TODO"
+    ;;
+
+  move-here)
+    [ $# = 2 ] || showHelp
+
+    parseFiles "$2" | while read -r file; do
+      mv -iv -t . -- "$file" || die "failed to move file: $file"
+    done
+    ;;
+
+  copy-here)
+    [ $# = 2 ] || showHelp
+
+    parseFiles "$2" | while read -r file; do
+      cp -vr -t . -- "$file" || die "failed to copy file: $file"
+    done
+    ;;
+
+  extract)
+    [ $# = 2 ] || showHelp
+    ext "$2" || die "failed to extract file"
+    ;;
+
+  rename-dir)
+    [ $# = 1 ] || showHelp
+    die "TODO"
+    ;;
+
+  *) showHelp ;;
+esac
