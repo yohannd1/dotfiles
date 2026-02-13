@@ -116,7 +116,7 @@ cmd ffmpeg-convert ${{
 cmd vidir-rename ${{
   set -efu
   if [ -z "$fs" ]; then
-    fd -d1 | vidir -
+    fd -IH -d1 | vidir -
   else
     printf "%s" "$fs" | vidir -
   fi
@@ -144,6 +144,7 @@ map ~ cd ~
 map <c-z> ${{ kill -STOP "$PPID" }}
 map <c-l> reload; redraw
 map C ffmpeg-convert
+map I ${{ imgs-view }}
 
 # Remember that sort keybindings are through `s`! There's a lotta 'em.
 
