@@ -132,10 +132,10 @@ local font_presets = {
     name = "Bedstead",
     base_size = 16,
   },
-  ["ModernDOS"] = {
-    name = "Modern DOS 9x16",
-    base_size = 17,
-  },
+  -- ["ModernDOS"] = {
+  --   name = "Modern DOS 9x16",
+  --   base_size = 17,
+  -- },
   ["GoMono"] = {
     name = "Go Mono",
     base_size = 16,

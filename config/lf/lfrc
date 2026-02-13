@@ -145,6 +145,7 @@ map <c-z> ${{ kill -STOP "$PPID" }}
 map <c-l> reload; redraw
 map C ffmpeg-convert
 map I ${{ imgs-view }}
+map / filter
 
 # Remember that sort keybindings are through `s`! There's a lotta 'em.
 
