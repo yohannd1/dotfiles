@@ -148,12 +148,12 @@
   Returns the input (as a string) on success, nil on failure/cancellation."
   [&named prompt-msg]
 
-  (def prompt-arg
-    (if (nil? prompt-msg) [] ["-p" prompt-msg]))
+  (var args [])
 
-  (match (run<stdout ["readline-agnostic" ;prompt-arg])
-    {:code 0 :out out} out
-    _ nil))
+  (unless (nil? prompt-msg)
+    (set args [;args "-p" prompt-msg]))
+
+  (string/trim (run<stdout ["readline-agnostic" ;args])))
 
 (defmacro with-cwd
   "Executes `body` with `cwd` as the current working directory."
