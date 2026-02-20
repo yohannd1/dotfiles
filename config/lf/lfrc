@@ -20,18 +20,18 @@ cmd new ${{
   set -ue
 
   while true; do
-    printf >&2 "\b(f)ile or (d)ir => "
+    printf >&2 "\b(f)ile (d)ir (q)uit: "
     read -r -n1 answer
     printf >&2 "\n"
 
     case "$answer" in
       f|d) break ;;
-      ) exit ;;
+      |q) exit ;;
       *) ;;
     esac
   done
 
-  printf >&2 "filename => "
+  printf >&2 "filename: "
   read -r filename
   printf >&2 "\n"
 

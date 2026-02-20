@@ -98,6 +98,15 @@ if isLang '@cargo'; then
   do_test() { _do test; }
   do_check() { _do check; }
 
+elif isLang '@godot'; then
+  _do() {
+    cd "$(dirname "$file")"
+    die "TODO"
+    # fparent-run "project.godot" run-file script-dir ???
+  }
+  do_build() { _do build; }
+  do_run() { _do run; }
+
 elif isLang '@gradlew'; then
   _do() {
     cd "$(dirname "$file")"

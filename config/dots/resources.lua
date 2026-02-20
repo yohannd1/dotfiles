@@ -79,7 +79,7 @@ local font_presets = {
   },
   ["FantasqueSans"] = {
     name = "Fantasque Sans Mono",
-    base_size = 19.5,
+    base_size = 18.35,
   },
   ["Sudo"] = {
     name = "Sudo",
