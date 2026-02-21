@@ -1,40 +1,57 @@
 !! getColor() { dotcfg send "get:theme_rgb_csv.$1"; }
 !! _font_family=$(dotcfg send 'get:waybar.font_family')
 !! _font_size=$(dotcfg send 'get:waybar.font_size')
-!! base00=$(getColor base00)
-!! base01=$(getColor base01)
-!! base02=$(getColor base02)
-!! base03=$(getColor base03)
-!! base04=$(getColor base04)
-!! base05=$(getColor base05)
-!! base06=$(getColor base06)
+
+!! for i in $(seq 0 15); do name=$(printf "base%02X" "$i"); printf '@define-color %s rgb(%s);\n' "$name" "$(getColor "$name")"; done
+!! for i in $(seq 0 15); do name=$(printf "base%02X" "$i"); printf '@define-color %s-strong rgba(%s,0.85);\n' "$name" "$(getColor "$name")"; done
+!! for i in $(seq 0 15); do name=$(printf "base%02X" "$i"); printf '@define-color %s-mid rgba(%s,0.6);\n' "$name" "$(getColor "$name")"; done
+!! for i in $(seq 0 15); do name=$(printf "base%02X" "$i"); printf '@define-color %s-weak rgba(%s,0.15);\n' "$name" "$(getColor "$name")"; done
+@define-color invisible rgba(0, 0, 0, 0.0);
 
 * {
 !! printf "font-family: '%s', monospace;\n" "$_font_family"
 !! printf "font-size: %spx;\n" "$_font_size"
 }
 
+*:hover, #pulseaudio:hover, #clock:hover {
+    transition: 20ms ease;
+    color: @base0C;
+}
+
 window#waybar {
-!! printf "background-color: rgba(%s,0.0);\n" "$base00"
-!! printf "color: rgb(%s);\n" "$base05"
+    background-color: @base01;
+    color: @base05;
+}
+
+/* label.module { */
+/*     box-shadow: inset 0 1px; */
+/* } */
+
+#workspaces {
+    all: unset;
 }
 
 #workspaces button, #tags button {
+    border-radius: 0px;
     padding: 0px 4px;
     background-color: transparent;
-!! printf "color: rgba(%s,1.0);\n" "$base05"
+    color: @base05;
 }
 
 #workspaces button.empty {
-!! printf "color: rgba(%s,0.15);\n" "$base04"
+    color: @base04-weak;
 }
 
 #tags button.occupied {
-!! printf "color: rgba(%s,1.0);\n" "$base05"
+    color: @base05;
 }
 
 #workspaces button.active, #tags button.focused {
-!! printf "background-color: rgba(%s,0.6);\n" "$base03"
+    background-color: @base03;
+}
+
+#workspaces button:hover, #taskbar button:hover {
+    background-color: @base0A;
 }
 
 #window, #workspaces, #tags {
@@ -42,23 +59,14 @@ window#waybar {
     margin: 0px;
 }
 
-.modules-left { margin-left: 5px; }
-.modules-right { margin-right: 5px; }
-
-.modules-left, .modules-right, .modules-center {
-!! printf "background-color: rgba(%s,0.8);\n" "$base02"
-    margin: 0px 5px;
-    padding: 0px 10px;
-    border-radius: 8px;
-    border-width: 2px;
-    border-style: solid;
-!! printf "border-color: rgba(%s,0.5);\n" "$base01"
-}
-
 #clock, #pulseaudio, #tray {
     padding: 0 10px;
-!! printf "color: rgba(%s,1.0);\n" "$base05"
-!! printf "background-color: rgba(%s,0.0);\n" "$base01"
+    color: @base05;
+    background-color: @invisible;
+}
+
+#tray > window menuitem:hover {
+    background-color: @base02;
 }
 
 #tray > .passive {
@@ -69,3 +77,37 @@ window#waybar {
     -gtk-icon-effect: highlight;
     background-color: #eb4d4b;
 }
+
+#custom-distroicon {
+    color: @base00;
+    background-color: @base0D;
+    margin-right: 5px;
+    /* FIXME: why tf is this padding so messed up? */
+    padding-left: 7px;
+    padding-right: 0px;
+    min-width: 16px;
+}
+
+/* Old "spacey" config:
+
+window#waybar {
+    background-color: @invisible;
+    color: @base05;
+}
+
+.modules-left, .modules-right, .modules-center {
+    background-color: @base02-strong;
+    margin: 0px 5px;
+    padding: 0px 10px;
+    border-radius: 8px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: @base01-mid;
+}
+
+.modules-left, .modules-right, .modules-center {
+    margin: 0px 2px;
+    padding: 0px 10px;
+}
+
+ */

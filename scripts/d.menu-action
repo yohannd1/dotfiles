@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+set -ue
+
+if [ "${NIRI_SOCKET:-}" ]; then
+  niri msg action open-overview
+else
+  printf >&2 "???"
+fi

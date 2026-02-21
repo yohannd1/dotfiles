@@ -1,77 +1,131 @@
-{
+// vim: sw=2
+[
+  {
+    "name": "hbar",
     "layer": "top",
     "position": "top",
-    "height": 26,
-    "margin-top": 2,
+    "height": 24,
+    "margin-top": 0,
     "margin-bottom": 0,
     "spacing": 0,
 
+    // Old "floating" config:
+    // "margin-top": 2,
+    // "margin-bottom": 2,
+
     "modules-left": [
-        // "dwl/window",
-        // "river/window",
-        // "hyprland/window",
-        // "sway/window",
-        "niri/window",
+      "custom/distroicon",
+      // "dwl/window",
+      // "river/window",
+      // "hyprland/window",
+      // "sway/window",
+      "niri/window",
     ],
     "modules-center": [
-        // "river/tags", "river/mode",
-        // "hyprland/workspaces",
-        // "dwl/tags",
-        // "sway/workspaces", "sway/mode",
-        "niri/workspaces",
+      // "river/tags", "river/mode",
+      // "hyprland/workspaces",
+      // "dwl/tags",
+      // "sway/workspaces", "sway/mode",
+      "niri/workspaces",
     ],
     "modules-right": [
-        "pulseaudio",
+      "memory",
+      "cpu",
+      "pulseaudio",
 !! [ -e /sys/class/power_supply/BAT0 ] && printf '"battery",\n' || true
-        "clock",
-        "tray",
+      "clock",
+      "tray",
     ],
 
     "hyprland/workspaces": {
-        "disable-scroll": true,
-        "all-outputs": false,
-        "warp-on-scroll": false,
-        "format": "{name}",
+      "disable-scroll": true,
+      "all-outputs": false,
+      "warp-on-scroll": false,
+      "format": "{name}",
     },
 
     "river/mode": {
-        "format": "({})",
+      "format": "({})",
     },
 
     "river/tags": {
-        "num-tags": 9,
+      "num-tags": 9,
     },
 
     "river/window": {
-        "format": "{}",
-        "max-length": 60,
+      "format": "{}",
+      "max-length": 60,
     },
 
     "tray": {
-        // "icon-size": 21,
-        "spacing": 5
+      "icon-size": 14,
+      "spacing": 5
     },
 
     "clock": {
-        "format": "{:%Y-%m-%d %H:%M}",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+      "format": "{:%Y-%m-%d %H:%M}",
+      "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
     },
 
     "battery": {
-        "format": " bat {capacity}% ",
-        "format-charging": " chr {capacity}% ",
+      "format": " bat {capacity}% ",
+      "format-charging": " chr {capacity}% ",
+      "format-plugged": " nochr? {capacity}% ",
+      "states": {
+        "critical": 15,
+        "warning": 30,
+        "good": 85,
+        "full": 100
+      },
     },
 
     "pulseaudio": {
-        "format": "{format_source}  vol {volume}%",
-        "format-muted": "{format_source}  vol OFF",
-        "scroll-step": 5.0, // %, can be a float
-        "format-source": "mic {volume}%",
-        "format-source-muted": "mic OFF",
+      "format": "{format_source}  vol {volume}%",
+      "format-muted": "{format_source}  vol OFF",
+      "scroll-step": 5.0, // %, can be a float
+      "format-source": "mic {volume}%",
+      "format-source-muted": "mic OFF",
     },
 
-    "wlr/taskbar": {
-        "icon-size": 10,
-        "tooltip-format": "{title} | {app_id}",
+    "cpu": {
+      "format": " cpu {usage}% ",
     },
-}
+
+    "memory": {
+      "format": " mem {percentage}+{swapPercentage}% ",
+      "tooltip-format": "RAM: {used}/{total} GiB ({percentage}%)\nSwap: {swapUsed}/{swapTotal} GiB ({swapPercentage}%)",
+    },
+
+    "niri/workspaces": {
+      "all-outputs": false,
+    },
+
+    "custom/distroicon": {
+      "format": "󰣇 ",
+!! printf '"tooltip-format": "%s",\n' "$(lsb_release --all | grep '^Description' | cut -f2-) - $(uname -somr)"
+      "on-click": "display-report 2>/dev/null",
+      "on-click-right": "d.menu-action 2>/dev/null",
+    },
+  }
+
+  // {
+  //   "name": "vbar",
+  //   "layer": "top",
+  //   "position": "left",
+  //   "width": 10,
+  //   "margin-top": 0,
+  //   "margin-bottom": 0,
+  //   "spacing": 0,
+
+  //   "modules-left": [],
+  //   "modules-center": [
+  //     // "wlr/taskbar",
+  //   ],
+  //   "modules-right": [],
+
+  //   "wlr/taskbar": {
+  //     "icon-size": 18,
+  //     "tooltip-format": "{title} | {app_id}",
+  //   },
+  // },
+]

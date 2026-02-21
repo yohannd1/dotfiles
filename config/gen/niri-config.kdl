@@ -80,7 +80,7 @@ output "HDMI-A-1" {
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Layout
 layout {
     // Set gaps around windows in logical pixels.
-    gaps 2
+    gaps 0
 
     // When to center a column when changing focus, options are:
     // - "never", default behavior, focusing an off-screen column will keep at the left
@@ -103,16 +103,17 @@ layout {
     // Alternatively, you can override it with a window rule called
     // `draw-border-with-background`.
 
+    // focus-ring and border seem to add to each other, but I feel like using
+    // one at a time is better. The latter is more suited if you don't want
+    // gaps between windows.
     focus-ring {
-        // off
+        off
         width 2
 //!! printf 'inactive-color "%s"\n' "$base00"
 //!! printf 'active-color "%s"\n' "$base03"
     }
-
-    // You can also add a border. It's similar to the focus ring, but always visible.
     border {
-        off
+        // off
         width 2
 //!! printf 'inactive-color "%s"\n' "$base00"
 //!! printf 'active-color "%s"\n' "$base03"

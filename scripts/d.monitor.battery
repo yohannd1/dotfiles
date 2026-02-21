@@ -3,11 +3,9 @@
 set -ue
 progname=$(basename "$0")
 
-CHARGE_STATE_PATH="/sys/class/power_supply/BAT0/status"
-
-LEVEL_CRITICAL=5
-LEVEL_LOW=20
-LEVEL_HIGH=90
+LEVEL_CRITICAL=10
+LEVEL_LOW=30
+LEVEL_HIGH=85
 SLEEP_DELAY=5
 
 die() {
@@ -31,7 +29,7 @@ monitorBattery() {
 
   while true; do
     level=$(cat "$1/capacity")
-    isCharging=$(x=$(cat "$1/status"); [ "$x" = "Charging" ] && echo 1 || true)
+    isCharging=$(cat "$1/status" | awk '/^[cC]harging$/ { print 1 }')
     warn "$name" low "test2 $level {$isCharging}"
 
     if [ "$state" != high ] && [ "$level" -ge "$LEVEL_HIGH" ]; then
