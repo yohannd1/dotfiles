@@ -30,7 +30,6 @@ monitorBattery() {
   while true; do
     level=$(cat "$1/capacity")
     isCharging=$(cat "$1/status" | awk '/^[cC]harging$/ { print 1 }')
-    warn "$name" low "test2 $level {$isCharging}"
 
     if [ "$state" != high ] && [ "$level" -ge "$LEVEL_HIGH" ]; then
       if [ "$isCharging" ]; then

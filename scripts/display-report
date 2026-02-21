@@ -19,7 +19,7 @@ message() {
   '
 
   find /sys/class/power_supply/ | grep BAT | while read -r battery; do
-    printf "bat %.0f%%" "$(cat "$battery/capacity")"
+    printf "bat %.0f%%\n" "$(cat "$battery/capacity")"
   done
   printf "%s\n" "$(dwmblocks-volume)"
 }
