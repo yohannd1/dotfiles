@@ -91,7 +91,7 @@ local font_presets = {
   },
   ["Hack"] = {
     name = "Hack",
-    base_size = 16,
+    base_size = 15,
   },
   ["IbmPlex"] = {
     name = "Ibm Plex Mono",

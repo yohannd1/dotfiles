@@ -36,9 +36,7 @@
   (def bins
     (as?->
       (run<stdout ["gen-pathbin"]) .x
-      (if (nil? .x)
-        (die 1 "failed to get binaries list")
-        .x)
+      (if (nil? .x) (die 1 "failed to get binaries list") .x)
       (string/trim .x)
       (string/split "\n" .x)))
 
@@ -71,9 +69,7 @@
           (string/split "\n")
           (map string/trim)
           (filter |(not (is-skippable-line $)))
-          (map |[(string "(recnt) " $)
-                 (fn [] (run-shell $ false))])
-          ))
+          (map |[(string $) (fn [] (run-shell $ false))])))
       []))
 
   (def actions [;base-actions ;recent-cmds])

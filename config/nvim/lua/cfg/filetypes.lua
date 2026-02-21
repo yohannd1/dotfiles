@@ -529,6 +529,10 @@ ft.json = function()
   vim.b.format_command = "jq ."
 end
 
+ft.jsonc = function()
+  setLocals { commentstring = "// %s" }
+end
+
 ft.php = function()
   setLocals { commentstring = "// %s" }
 end

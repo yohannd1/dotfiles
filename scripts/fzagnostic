@@ -38,7 +38,7 @@ tidyPrompt() {
 }
 
 if [ ! -t 2 ] && exists bemenu; then
-  args=(-i -n)
+  args=(-i -C -n)
   tidyPrompt nospace
   [ "$hasPrompt" ] && args+=(-p "$prompt")
   [ "$hasHeight" ] && args+=(-l "$height") || args+=(-l 10)

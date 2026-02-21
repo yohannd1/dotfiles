@@ -121,7 +121,7 @@
   (def entry-fmt
     (let [last-idx (dec (+ starting-number (length choices)))
           idx-string-len (-> last-idx (string) (length))]
-      (string "%0" idx-string-len "d || %s\n")))
+      (string "%0" idx-string-len "d : %s\n")))
 
   (var arglist ["fzagnostic"])
   (unless (nil? prompt)
