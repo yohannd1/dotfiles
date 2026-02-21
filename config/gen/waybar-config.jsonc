@@ -34,7 +34,6 @@
       "pulseaudio",
 !! [ -e /sys/class/power_supply/BAT0 ] && printf '"battery",\n' || true
       "clock",
-      "tray",
     ],
 
     "hyprland/workspaces": {
@@ -55,11 +54,6 @@
     "river/window": {
       "format": "{}",
       "max-length": 60,
-    },
-
-    "tray": {
-      "icon-size": 14,
-      "spacing": 5
     },
 
     "clock": {
@@ -106,26 +100,30 @@
       "on-click": "display-report 2>/dev/null",
       "on-click-right": "d.menu-action 2>/dev/null",
     },
+  },
+
+  {
+    "name": "vbar",
+    "layer": "top",
+    "position": "left",
+    "width": 10,
+    "margin-top": 0,
+    "margin-bottom": 0,
+    "spacing": 0,
+
+    "modules-left": ["wlr/taskbar"], // TODO: use niri/taskbar when that's available
+    "modules-center": [],
+    "modules-right": ["tray"],
+
+    "wlr/taskbar": {
+      "icon-size": 12,
+      "ignore-list": ["waybar"],
+      "tooltip-format": "({app_id}) {title}",
+      "on-click": "activate",
+    },
+
+    "tray": {
+      "icon-size": 14,
+    },
   }
-
-  // {
-  //   "name": "vbar",
-  //   "layer": "top",
-  //   "position": "left",
-  //   "width": 10,
-  //   "margin-top": 0,
-  //   "margin-bottom": 0,
-  //   "spacing": 0,
-
-  //   "modules-left": [],
-  //   "modules-center": [
-  //     // "wlr/taskbar",
-  //   ],
-  //   "modules-right": [],
-
-  //   "wlr/taskbar": {
-  //     "icon-size": 18,
-  //     "tooltip-format": "{title} | {app_id}",
-  //   },
-  // },
 ]

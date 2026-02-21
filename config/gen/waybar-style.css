@@ -55,36 +55,64 @@ window#waybar {
 }
 
 #window, #workspaces, #tags {
-    padding: 0px;
-    margin: 0px;
+    padding: 0;
+    margin: 0;
 }
 
 #clock, #pulseaudio, #tray {
-    padding: 0 10px;
     color: @base05;
     background-color: @invisible;
 }
 
-#tray > window menuitem:hover {
+#clock, #pulseaudio {
+    padding: 0 10px;
+}
+
+#taskbar > * {
+    padding: 5px 3px;
+}
+
+#taskbar button {
+    /* FIXME: improve this. Buttons have weird shapes */
+    padding-top: 12px;
+    padding-bottom: 0px;
+}
+
+#taskbar button.active {
+    background-color: @base03;
+}
+
+#taskbar button.minimized {
+    background-color: @base00;
+}
+
+#tray { padding-bottom: 6px; }
+
+#tray * {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+#tray widget:hover {
     background-color: @base02;
 }
 
-#tray > .passive {
+#tray .passive {
     -gtk-icon-effect: dim;
 }
 
-#tray > .needs-attention {
+#tray .needs-attention {
     -gtk-icon-effect: highlight;
-    background-color: #eb4d4b;
+    background-color: @base0A;
 }
 
 #custom-distroicon {
+    font-family: "Go Mono NerdFont";
     color: @base00;
     background-color: @base0D;
-    margin-right: 5px;
-    /* FIXME: why tf is this padding so messed up? */
-    padding-left: 7px;
-    padding-right: 0px;
+    margin-right: 6px;
+    padding-left: 6px;
+    padding-right: 2px;
     min-width: 16px;
 }
 
