@@ -74,7 +74,7 @@ super + F12
 
 # show a report (time, current window, CPU usage, battery etc.)
 super + r
-    display-report
+    d.status
 
 # quick apps
 super + b

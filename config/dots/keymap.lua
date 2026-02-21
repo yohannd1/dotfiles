@@ -73,7 +73,7 @@ return function(api)
 
   api.key("super r")
     :desc("show report")
-    :map("display-report")
+    :map("d.status")
 
   api.key("super b")
     :desc("open browser")
