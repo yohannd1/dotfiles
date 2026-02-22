@@ -116,7 +116,7 @@
     "modules-right": ["tray"],
 
     "wlr/taskbar": {
-      "icon-size": 12,
+      "icon-size": 15,
       "ignore-list": ["waybar"],
       "tooltip-format": "({app_id}) {title}",
       "on-click": "activate",
