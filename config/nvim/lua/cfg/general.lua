@@ -296,6 +296,32 @@ for _, action in ipairs({"blame", "log", "diff", "status"}) do
   create_cmd(cmd_name, "Git " .. action, { nargs = 0 })
 end
 
+local bufferSyntaxOff = function()
+  if vim.fn.has("syntax") == 0 then
+    return
+  end
+
+  vim.cmd("syntax clear")
+  vim.opt_local.syntax = "OFF"
+  vim.b.current_syntax = nil
+end
+
+autocmd({"BufReadPost"}, {
+  pattern = "*",
+  callback = function()
+    local fname = vim.fn.expand("%:p")
+    if fname == nil or fname == "" then
+      return
+    end
+
+    local size_kb = vim.fn.getfsize(fname) / 1024
+    if size_kb >= 100 then
+      print(("File size (%d KiB) too big - syntax=off"):format(size_kb))
+      bufferSyntaxOff()
+    end
+  end,
+})
+
 -- TODO: inside neovim, replace the $EDITOR with a wrapper script that connects
 -- to the current neovim instance, opens a buffer, and waits for the buffer to
 -- unload before exiting.
