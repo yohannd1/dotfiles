@@ -72,7 +72,7 @@ output "HDMI-A-1" {
 //!! for i in $(seq 1 9); do printf 'workspace "%d" { open-on-output "HDMI-A-1"; }\n' "$i"; done
 
 //!! # The VGA slot. I suppose core2's motherboard translates it to VGA?
-//!! # if [ "$(hostname)" = core2 ]; then printf 'output "DP-2" { position x=1920 y=0; }\n'; fi
+//!! # if [ "$HOSTNAME" = core2 ]; then printf 'output "DP-2" { position x=1920 y=0; }\n'; fi
 //!! # for i in $(seq 1 9); do printf 'workspace "v%d" { open-on-output "DP-2"; }\n' "$i"; done
 
 // Settings that influence how windows are positioned and sized.
@@ -182,7 +182,7 @@ window-rule {
     open-floating true
 
 //!! _w=1250 _h=750
-//!! if [ "$(hostname)" = core ]; then _w=925; _h=575; fi
+//!! if [ "$HOSTNAME" = core ]; then _w=925; _h=575; fi
 //!! printf "default-column-width { fixed %d; }\n" "$_w"
 //!! printf "default-window-height { fixed %d; }\n" "$_h"
 }

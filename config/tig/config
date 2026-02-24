@@ -25,6 +25,7 @@ bind generic gj move-last-line
 bind generic l view-main
 bind generic L view-log
 bind generic b view-blame
+bind generic y view-stash
 
 # status view bindings
 # TODO
