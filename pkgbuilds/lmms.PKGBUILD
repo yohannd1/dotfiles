@@ -1,24 +1,29 @@
 # Based off furnace-git and lmms-git PKGBUILDs
 
 pkgname=lmms-fork
-pkgver=1.3.0.alpha.1.r982.ga8e7be56e
+pkgver=1.3.0.alpha.1.r1008.gdda3120f0
 pkgrel=1
 pkgdesc="The Linux MultiMedia Studio."
 arch=('x86_64')
 license=('GPL2')
 url="https://lmms.io"
 depends=(
-  'sdl2' 'libsndfile' 'fmt' 'hicolor-icon-theme' 'alsa-lib' 'fftw'
-  'rtmidi' 'stk'
+  sdl2 libsndfile fmt hicolor-icon-theme alsa-lib fftw
+  rtmidi stk
 )
 optdepends=(
   'pulseaudio: pulseaudio support'
+  'jack2: jack support'
+  'portaudio: portaudio support'
   'wine: VST plugin support'
   'carla: carla support'
 )
 makedepends=(
-  'cmake' 'doxygen' 'extra-cmake-modules' 'freetype2' 'git' 'ladspa'
-  'qt5-tools' 'wine' 'perl-list-moreutils' 'perl-xml-parser'
+  git cmake extra-cmake-modules freetype2 git ladspa
+  libsndfile libvorbis lame libsamplerate libogg libgig
+  fluidsynth fltk
+  qt5-base qt5-tools qt5-x11extras
+  qt5-tools wine perl-list-moreutils perl-xml-parser perl-exporter-tiny
 )
 provides=('lmms')
 conflicts=('lmms')
