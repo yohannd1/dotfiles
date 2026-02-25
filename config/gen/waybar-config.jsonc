@@ -1,6 +1,41 @@
 // vim: sw=2
 [
   {
+    "name": "vbar",
+    "layer": "top",
+    "position": "left",
+    "width": 28,
+    "margin-top": 0,
+    "margin-bottom": 0,
+    "spacing": 0,
+
+    "modules-left": [
+      "custom/distroicon",
+      "wlr/taskbar" // TODO: use niri/taskbar when that's available
+    ],
+    "modules-center": [],
+    "modules-right": ["tray"],
+
+    "wlr/taskbar": {
+      "icon-size": 15,
+      "ignore-list": ["waybar"],
+      "tooltip-format": "({app_id}) {title}",
+      "on-click": "activate",
+    },
+
+    "tray": {
+      "icon-size": 14,
+    },
+
+    "custom/distroicon": {
+      "format": "󰣇 ",
+!! printf '"tooltip-format": "%s",\n' "$(lsb_release --all | grep '^Description' | cut -f2-) - $(uname -somr)"
+      "on-click": "d.status 2>/dev/null",
+      "on-click-right": "d.menu-action 2>/dev/null",
+    },
+  },
+
+  {
     "name": "hbar",
     "layer": "top",
     "position": "top",
@@ -14,7 +49,6 @@
     // "margin-bottom": 2,
 
     "modules-left": [
-      "custom/distroicon",
       // "dwl/window",
       // "river/window",
       // "hyprland/window",
@@ -58,6 +92,7 @@
 
     "clock": {
       "format": "{:%Y-%m-%d %H:%M}",
+      "tooltip": false,
       "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
     },
 
@@ -94,36 +129,5 @@
       "all-outputs": false,
     },
 
-    "custom/distroicon": {
-      "format": "󰣇 ",
-!! printf '"tooltip-format": "%s",\n' "$(lsb_release --all | grep '^Description' | cut -f2-) - $(uname -somr)"
-      "on-click": "d.status 2>/dev/null",
-      "on-click-right": "d.menu-action 2>/dev/null",
-    },
-  },
-
-  {
-    "name": "vbar",
-    "layer": "top",
-    "position": "left",
-    "width": 28,
-    "margin-top": 0,
-    "margin-bottom": 0,
-    "spacing": 0,
-
-    "modules-left": ["wlr/taskbar"], // TODO: use niri/taskbar when that's available
-    "modules-center": [],
-    "modules-right": ["tray"],
-
-    "wlr/taskbar": {
-      "icon-size": 15,
-      "ignore-list": ["waybar"],
-      "tooltip-format": "({app_id}) {title}",
-      "on-click": "activate",
-    },
-
-    "tray": {
-      "icon-size": 14,
-    },
   }
 ]

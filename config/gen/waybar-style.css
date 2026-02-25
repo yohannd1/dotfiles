@@ -59,6 +59,8 @@ window#waybar {
     margin: 0;
 }
 
+#window { margin-left: 8px; }
+
 #clock, #pulseaudio, #tray {
     color: @base05;
     background-color: @invisible;
@@ -111,10 +113,8 @@ window#waybar {
     font-family: "Go Mono NerdFont";
     color: @base00;
     background-color: @base0D;
-    margin-right: 10px;
     padding-left: 6px;
-    padding-right: 2px;
-    min-width: 16px;
+    min-height: 25px;
 }
 
 /* Old "spacey" config:
