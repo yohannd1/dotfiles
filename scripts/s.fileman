@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+#
+# Wrapper for programs that need a GUI file manager.
+
+set -ue
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
+if [ $# = 0 ]; then
+  path=$PWD
+else
+  path=$(printf "%s\n" "$1" | sed 's|^file://||g')
+  shift
+fi
+
+if [ "${FILEMAN:-}" ]; then
+  exec d.tpop "$FILEMAN" "$path" "$@"
+elif exists thunar; then
+  exec thunar "$path" "$@"
+elif exists dolphin; then
+  exec dolphin "$path" "$@"
+elif exists nautilus; then
+  exec nautilus "$path" "$@"
+else
+  printf >&2 "couldn't figure out valid file manager...\n"
+fi

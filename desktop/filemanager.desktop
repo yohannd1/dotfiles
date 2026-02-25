@@ -1,5 +1,6 @@
 #!/usr/bin/env xdg-open
+
 [Desktop Entry]
-Name=File manager
-Exec=d.pop nnn %u
+Name=File manager (dotfiles)
+Exec=s.fileman %u
 Type=Application
