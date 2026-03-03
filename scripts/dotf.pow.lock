@@ -4,10 +4,17 @@ set -ue
 progname=$(basename "$0")
 
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
-isWayland() { [ "$WAYLAND_DISPLAY" ]; }
-isXorg() { ! isWayland && [ "$DISPLAY" ]; }
+isWayland() { [ "${WAYLAND_DISPLAY:-}" ]; }
+isXorg() { ! isWayland && [ "${DISPLAY:-}" ]; }
 
-[ $# = 0 ] || exit 2
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname
+EOF
+  exit 2
+}
+
+[ $# = 0 ] || showHelp
 
 _getLockColors() {
   c_init="0x$(dotcfg send get:theme_no_prefix.base01)" || return 1
@@ -31,7 +38,7 @@ if isXorg && exists bslock; then
   tryLock bslock
 elif isXorg && exists betterlockscreen; then
   tryLock betterlockscreen -l
-elif isWayland && [ -z "$NIRI_SOCKET" ] && exists waylock; then
+elif isWayland && [ -z "${NIRI_SOCKET:-}" ] && exists waylock; then
   _getLockColors
   tryLock waylock -init-color "$c_init" -input-color "$c_input" -fail-color "$c_fail"
 elif isWayland && exists swaylock; then
