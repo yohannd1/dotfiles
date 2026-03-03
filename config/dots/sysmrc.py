@@ -72,6 +72,7 @@ m.link_conf("latexmkrc", "~/.latexmkrc")
 m.link_conf("tmux.conf", "~/.tmux.conf")
 m.link_conf("icons_default.theme", "~/.icons/default/index.theme")
 m.link_conf("radium/keybindings.conf", "~/.radium/keybindings.conf")
+m.link_conf("newsboat.conf", "~/.newsboat/config")
 
 # text editors
 m.link_glob(DOTFILES / "config/kak", "~/.config/kak")
