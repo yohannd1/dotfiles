@@ -8,8 +8,22 @@ exists() { command -v "$1" >/dev/null 2>/dev/null; }
 if [ $# = 0 ]; then
   path=$PWD
 else
-  path=$(printf "%s\n" "$1" | sed 's|^file://||g')
+  path=$1
   shift
+
+  if printf "%s\n" "$path" | grep -q '^file:///'; then
+    replaceEscaped() {
+      # Sourced from https://stackoverflow.com/a/23409201, not 100% sure how it works...
+      awk -v RS='%[[:xdigit:]]{2}' '
+        RT { RT = sprintf("%c", strtonum("0x" substr(RT, 2))); }
+        {
+          gsub(/\+/, " ");
+          printf "%s", $0 RT;
+        }
+      '
+    }
+    path=$(printf "%s\n" "$path" | sed 's|^file://||g' | replaceEscaped)
+  fi
 fi
 
 if [ "${FILEMAN:-}" ]; then
