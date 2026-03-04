@@ -37,6 +37,9 @@ export XDG_DATA_HOME="$XDG_DATA_DIR"
 # personal dirs (should this even be here lol)
 export ACR_WIKI_DIR="$HOME/wiki/vimwiki"
 
+# man page path
+export MANPATH="$XDG_DATA_DIR/man:/usr/share/man"
+
 # global options
 if _isTermux; then
   export EDITOR=nvim # not sure yet but nnn struggles with dotf.wrap.editor. Probably crap android exec stuff...
@@ -72,6 +75,7 @@ export LUAROCKS_HOME="$HOME/.luarocks"
 export JANET_MODPATH="$XDG_CACHE_HOME/janet-modules"
 export JANET_PATH="$DOTFILES/lib/janet:$JANET_MODPATH:/usr/lib/janet"
 export JANET_BINPATH="$HOME/.local/bin"
+export JANET_MANPATH="$XDG_DATA_DIR/man"
 export ZSH_PLUGIN_PATH="$XDG_CACHE_HOME/zsh-plugins"
 export R_PROFILE_USER="$DOTFILES/config/Rprofile.R"
 export R_LIBS_USER="$XDG_CACHE_HOME/rlibs"
