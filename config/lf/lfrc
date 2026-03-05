@@ -122,6 +122,12 @@ cmd vidir-rename ${{
   fi
 }}
 
+cmd sizes ${{
+  set -ue
+  du -shc *
+  printf >&2 "[Press enter]" && read -r _
+}}
+
 cmd vid-trim-small ${{ vid-trim-small "$f" }}; reload
 cmd make-exec ${{ chmod +x "$f" }}; reload
 cmd make-noexec ${{ chmod -x "$f" }}; reload

@@ -28,6 +28,7 @@ gale=gale-handler.desktop
 ror2mm=gale-handler.desktop
 inode/directory=filemanager.desktop
 x-scheme-handler/file=filemanager.desktop
+text/xml=editor.desktop
 
 [Added Associations]
 application/xml=editor.desktop;

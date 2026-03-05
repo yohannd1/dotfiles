@@ -411,14 +411,16 @@ if ! isAndroid; then
 fi
 
 get-network-info() {
+  local cmd
   printf >&2 "IPs:\n"
-  ifconfig 2>/dev/null | grep inet | awk '{ print "  " $2 }'
+  (if isAndroid; then ifconfig; else ip addr; fi) 2>/dev/null \
+    | awk '/inet/ { print "  " $2 }'
   printf >&2 "User: %s\n" "$(whoami)"
   printf >&2 "Public IP: "
   curl ifconfig.me
   printf >&2 "\n"
 }
-alias N='get-network-info'
+N() { get-network-info "$@"; }
 
 if [ "$_STARTUP_DEBUG_TIME" ] && [ -z "$_startup_time_shown" ]; then
   local current_time=$(date +"%s%3N")

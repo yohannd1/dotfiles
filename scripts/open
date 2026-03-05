@@ -234,6 +234,7 @@
 
   # godot project files
   (when (m :ext ["godot"])
+    # FIXME: why is this crashing godot?????
     (def folder (path/dirname file))
     (def is-cs-project
       (as->
@@ -242,24 +243,42 @@
         (not (empty? .x))))
     (if is-cs-project
       (t :gui ["godot-mono" "-e" file])
-      (t :gui ["godot" "-e" file]))
-    )
+      (t :gui ["godot" "-e" file])))
 
   (def is-openmpt-compatible
     (m :ext ["mod" "it" "s3m" "mptm"]))
 
   # audio files
   (when
-    (or (and
-          (not is-openmpt-compatible)
-          (m :mime [[:begins "audio/"]]))
-        (m :ext ["aac" "flac" "m4a" "mpa" "mp2" "mp3"
-                 "ogg" "wav" "wma"]))
+    (or (and (not is-openmpt-compatible) (m :mime [[:begins "audio/"]]))
+        (m :ext ["aac" "flac" "m4a" "mpa" "mp2" "mp3" "ogg" "wav" "wma"]))
 
     (t :pop ["mpv" "--no-video" file])
     (t :pop ["mocplay" file "opener"])
     (t :tty ["exiftool" file])
     (t :runpage ["mediainfo" file]))
+
+  # images
+  (when (m :mime ["image/vnd.djvu"])
+    (t :runpage ["djvutxt" file])
+    (t :runpage ["exiftool" file]))
+  (when (or (m :mime [[:begins "image/"]])
+            (m :ext ["gif" "jpg" "png" "webp"]))
+    (t :gui ["sxiv" "-a" "-s" "f" "-p" file])
+    (t :runpage ["viu" "-n" file])
+    (t :runpage ["img2txt" "--gamma=0.6" "--" file])
+    (t :runpage ["exiftool" file]))
+
+  # music modules
+  (when is-openmpt-compatible
+    (t :gui ["@openmpt" file])
+    (t :pop ["openmpt123" file]))
+  (when (m :ext ["fur" "dmf"])
+    (t :gui ["@furnace" file])
+    (t :gui ["furnace" file]))
+  (mt :ext ["dnm" "0cc"] :gui ["@dn-famitracker" file])
+  (mt :ext ["ptcop"] :gui ["@ptcollab" file])
+  (mt :ext ["btm"] :gui ["BambooTracker" file])
 
   # music projects
   (mt :ext ["kdenlive"] :gui ["kdenlive" file])
@@ -280,27 +299,7 @@
   (mt :ext ["str"] :gui ["dotf.wrap.editor" file]) # strudel
   # (mt :ext ["helio"] :gui ["helio-workstation" file]) # TODO: this doesn't work atm. I think there's no CLI interface for helio
 
-  # image
-  (when (m :mime ["image/vnd.djvu"])
-    (t :runpage ["djvutxt" file])
-    (t :runpage ["exiftool" file]))
-  (when (or (m :mime [[:begins "image/"]])
-            (m :ext ["gif" "jpg" "png" "webp"]))
-    (t :gui ["sxiv" "-a" "-s" "f" "-p" file])
-    (t :runpage ["viu" "-n" file])
-    (t :runpage ["img2txt" "--gamma=0.6" "--" file])
-    (t :runpage ["exiftool" file]))
-
-  # music modules
-  (when is-openmpt-compatible
-    (t :gui ["@openmpt" file])
-    (t :pop ["openmpt123" file]))
-  (mt :ext ["fur" "dmf"] :gui ["furnace" file])
-  (mt :ext ["dnm" "0cc"] :gui ["@dn-famitracker" file])
-  (mt :ext ["ptcop"] :gui ["@ptcollab" file])
-  (mt :ext ["btm"] :gui ["BambooTracker" file])
-
-  # chiptune files
+  # chiptune raw-stream-thingy files
   (mt :ext ["nsf"] :pop ["nosefart" file])
   (mt :ext ["spc"] :gui ["vspcplay" file])
   (mt :ext ["vgm" "vgz"] :pop ["vgmplay" file])
@@ -347,14 +346,14 @@
     (t :pop ["csvlens" file])
     (t :gui ["libreoffice" "--nologo" "--calc" file]))
 
-  (mt :ext
-      [
-       "odt" "rtf" "docx" "doc" # text documents
-       "odp" "pptx" "ppt" # presentation
-       "ods" "xlsx" "xls" # spreadsheet
-       "odg" # drawing
-       ]
-      :gui ["libreoffice" "--nologo" file])
+  (def libreoffice-candidates
+    ["odt" "rtf" "docx" "doc" # text documents
+     "odp" "pptx" "ppt" # presentation
+     "ods" "xlsx" "xls" # spreadsheet
+     "odg" # drawing
+     ])
+
+  (mt :ext libreoffice-candidates :gui ["libreoffice" "--nologo" file])
 
   (mt :ext ["odt" "ods" "odp" "sxw"]
       :runpage ["odt2txt" file])
