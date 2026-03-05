@@ -1,23 +1,39 @@
 #!/usr/bin/env sh
 
-if [ $# != 1 ]; then
-  printf >&2 "Usage: %s <FILE>\n" "$(basename "$0")"
-  exit 1
-fi
+set -ue
+progname=$(basename "$0")
 
-MIDI_SOUNDFONT=${MIDI_SOUNDFONT:-/usr/share/soundfonts/default.sf2}
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname <FILE>
+Soundfont can be configured through the MIDI_SOUNDFONT env variable.
+EOF
+  exit 2
+}
 
-synth_count=$(aconnect -o | grep -cv '^ ')
+[ $# = 1 ] || showHelp
+
+synthCount=$(aconnect -o | grep -cv '^ ')
+sf2Path=${MIDI_SOUNDFONT:-/usr/share/soundfonts/default.sf2}
 
 printf >&2 "Press Ctrl-C to stop playing\n"
-if [ "$synth_count" -gt 1 ]; then
-  # HELLA WONKY. Can fail easily I think
-  aplaymidi -p128:0 "$1"
-  # TODO: stop all notes
+
+cleanup() {}
+trap 'cleanup' INT
+
+if [ "$synthCount" -gt 1 ]; then
+  port="128:0"
+  printf >&2 "Will connect to a synth (port %s)\n" "$port"
+
+  # FIXME: HELLA WONKY. Can fail easily I think
+  # TODO: how to stop all notes after ctrlc-ing???
+  aplaymidi -p"$port" "$1"
 else
-  printf >&2 "Using soundfont: %s\n\n" "$MIDI_SOUNDFONT"
-  fluidsynth -a pulseaudio -m alsa_seq -l -g 0.5 -C 0 -i "$MIDI_SOUNDFONT" "$1" </dev/null &
+  printf >&2 "Using soundfont: %s\n\n" "$sf2Path"
+
+  cleanup() { kill -9 "$fluidsynth_pid"; }
+  fluidsynth -a pulseaudio -m alsa_seq -l -g 0.5 -C 0 -i "$sf2Path" "$1" </dev/null &
   fluidsynth_pid="$!"
-  trap 'kill -9 "$fluidsynth_pid"' INT
+
   wait "$fluidsynth_pid"
 fi
