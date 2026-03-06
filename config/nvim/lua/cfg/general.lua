@@ -270,6 +270,15 @@ create_cmd("ToggleVirtualEdit", function()
   vim.api.nvim_echo({{message}}, false, {})
 end, {})
 
+create_cmd("TrashPut", function()
+  local res = vim.system({"trash-put", vim.fn.expand("%")}):wait()
+  if res.code ~= 0 then
+    print("Failed to move file to trash.")
+    return
+  end
+  vim.cmd("bd!")
+end, {})
+
 create_cmd("LatexMakeEnv", function(t)
   local word = t.args
   local cline = vim.fn.line(".")
