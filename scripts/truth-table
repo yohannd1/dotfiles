@@ -1,0 +1,79 @@
+#!/usr/bin/env janet
+
+(use dotf-utils)
+
+(eprintf "WARNING: this is an early wip, it may not work as intended.")
+
+(defn compile-grammar [&opt main-kw]
+  (default main-kw :default)
+
+  # TODO: support multiple syntaxes for each thing:
+  # - NOT: A', !A, ~A
+  # - OR: A+B, A|B
+  # - AND: A*B, A&B
+
+  (def pre-grammar
+    ~{:main ,main-kw
+      :default (* :s* :expr0 :s* -1)
+
+      :expr0 (+ (/ (* :expr1 :s* "|" :s* :expr1 :s*) ,|[:or $0 $1])
+                (* :expr1 :s*))
+      :expr1 (+ (/ (* :expr2 :s* "&" :s* :expr2 :s*) ,|[:and $0 $1])
+                (* :expr2 :s*))
+      :expr2 (+ (/ (* "!" :s* :expr2 :s*) ,|[:not $])
+                (* :expr3 :s*))
+      :expr3 (+ (* :ident :s*)
+                (* "(" :s* :expr0 :s* ")" :s*)
+                (* "[" :s* :expr0 :s* "]" :s*))
+
+      :ident (/ (<- (* (+ :a "_") (any (+ :a :d "_")))) ,symbol)})
+
+  (peg/compile pre-grammar))
+
+(defn parse-expect [main-kw in-str expected]
+  (def grm (compile-grammar main-kw))
+
+  (def result (peg/match grm in-str))
+
+  # hack to convert from array to tuple
+  (def result (if (nil? result) nil [;result]))
+
+  (unless (deep= result expected)
+    (def msg (string/format "expected %j, got %j (input %j, main keyword %j)" expected result in-str main-kw))
+    (error msg)))
+
+(when false
+  (eprintf "running parsing tests...")
+
+  (parse-expect :ident "hello" '(hello))
+  (parse-expect :ident "foo_bar" '(foo_bar))
+  (parse-expect :ident "foo2" '(foo2))
+  (parse-expect :ident "idkBaz" '(idkBaz))
+  (parse-expect :ident "1" nil)
+
+  (parse-expect :expr3 "hello" '(hello))
+  (parse-expect :expr3 "(test)" '(test))
+
+  (parse-expect :expr0 "test" '(test))
+  (parse-expect :expr0 "!test" '((:not test)))
+  (parse-expect :expr0 "foo & bar" '((:and foo bar)))
+  (parse-expect :expr0 "foo | bar" '((:or foo bar)))
+  (parse-expect :expr0 "(A&B) | C" '((:or (:and A B) C)))
+  (parse-expect :expr0 "A&B|C" '((:or (:and A B) C)))
+  (parse-expect :default "A&B | !A&!B" '((:or (:and A B) (:and (:not A) (:not B)))))
+
+  (eprintf "tests finished; exiting...")
+  (os/exit 0))
+
+(defn main [arg0 expr]
+  # TODO: basic ident parsing
+
+  (def grammar (compile-grammar))
+  (def parsed (peg/match grammar expr))
+  (when (nil? parsed)
+    (die 1 "failed to parse input..."))
+
+  # TODO: auto-detect all symbols
+  # TODO: compile parsed tree into actual janet expression
+  # TODO: generate truth table
+  )
