@@ -114,6 +114,7 @@ window#waybar {
     color: @base00;
     background-color: @base0D;
     padding-left: 6px;
+    min-width: 25px;
     min-height: 25px;
 }
 

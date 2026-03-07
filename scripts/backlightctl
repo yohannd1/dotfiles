@@ -61,11 +61,16 @@ if exists ddcutil && ddcutil --skip-ddc-checks detect | grep -q '^Display'; then
     _setBrightness "$cur"
   }
 elif exists light; then
-  # runCommand("light -s sysfs/backlight/auto -v3 -S " .. value)
-  # amount = amount * 0.4
-  # local args = (amount > 0) and ("-A " .. amount) or ("-U " .. -amount)
-  printf >&2 "TODO\n"
-  exit 1
+  cmd() { light -s "sysfs/backlight/auto" -v1 "$@"; }
+  impl_get() { cmd; }
+  impl_set() {
+    cur=$(printf "%s\n" "$1" | addAndClamp 0 1 100)
+    cmd -S "$cur"
+  }
+  impl_mod() {
+    cur=$(impl_get | addAndClamp "$1" 1 100)
+    cmd -S "$cur"
+  }
 elif [ "${DISPLAY:-}" ] && [ -z "${WAYLAND_DISPLAY:-}" ] && exists xbacklight; then
   impl_get() { xbacklight -get; }
   impl_set() {
