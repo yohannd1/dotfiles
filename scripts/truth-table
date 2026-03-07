@@ -5,20 +5,23 @@
 (defn compile-grammar [&opt main-kw]
   (default main-kw :default)
 
-  # TODO: support multiple syntaxes for each thing:
-  # - NOT: A', !A, ~A
-  # - OR: A+B, A|B
-  # - AND: A*B, A&B
+  (defn make-wrapper [tag]
+    (fn [& args] [tag ;args]))
+
+  (def or-wrapper (make-wrapper :or))
+  (def and-wrapper (make-wrapper :and))
+  (def not-wrapper (make-wrapper :not))
 
   (def pre-grammar
     ~{:main ,main-kw
       :default (* :s* :expr0 :s* -1)
 
-      :expr0 (+ (/ (* :expr1 :s* "|" :s* :expr1 :s*) ,|[:or $0 $1])
+      :expr0 (+ (/ (* :expr1 :s* (+ "|" "+") :s* :expr1 :s*) ,or-wrapper)
                 (* :expr1 :s*))
-      :expr1 (+ (/ (* :expr2 :s* "&" :s* :expr2 :s*) ,|[:and $0 $1])
+      :expr1 (+ (/ (* :expr2 :s* (+ "&" "*") :s* :expr2 :s*) ,and-wrapper)
                 (* :expr2 :s*))
-      :expr2 (+ (/ (* "!" :s* :expr2 :s*) ,|[:not $])
+      :expr2 (+ (/ (* (+ "!" "~") :s* :expr2 :s*) ,not-wrapper)
+                # TODO: how to do A' negation here? without going into an infinite loop
                 (* :expr3 :s*))
       :expr3 (+ (* :ident :s*)
                 (* "(" :s* :expr0 :s* ")" :s*)
