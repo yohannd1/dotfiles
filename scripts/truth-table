@@ -2,8 +2,6 @@
 
 (use dotf-utils)
 
-(eprintf "WARNING: this is an early wip, it may not work as intended.")
-
 (defn compile-grammar [&opt main-kw]
   (default main-kw :default)
 
@@ -60,20 +58,81 @@
   (parse-expect :expr0 "foo | bar" '((:or foo bar)))
   (parse-expect :expr0 "(A&B) | C" '((:or (:and A B) C)))
   (parse-expect :expr0 "A&B|C" '((:or (:and A B) C)))
-  (parse-expect :default "A&B | !A&!B" '((:or (:and A B) (:and (:not A) (:not B)))))
+  (parse-expect :default "A&B | !A&!B"
+                '((:or (:and A B) (:and (:not A) (:not B)))))
 
   (eprintf "tests finished; exiting...")
   (os/exit 0))
 
-(defn main [arg0 expr]
-  # TODO: basic ident parsing
+(defn get-symbols
+  "Recursively search through an expression list and fetch all symbols from there"
+  [ds]
 
+  (def sym-map @{})
+
+  (defn rec [x]
+    (each e x
+      (cond
+        (symbol? e) (set (sym-map e) true)
+        (indexed? e) (rec e))))
+
+  (rec ds)
+  (sorted (keys sym-map)))
+
+(defn compile-func
+  "Compile a parsed expression into a janet function"
+  [parsed symbols]
+
+  (defn op-not [x]
+    (if (= x 0) 1 0))
+  (def op-and band)
+  (def op-or bor)
+
+  (defn to-expr [x]
+    (when (symbol? x)
+      (break x))
+    (match x
+      [:not a] [op-not (to-expr a)]
+      [:and & args] [op-and ;(map to-expr args)]
+      [:or & args] [op-or ;(map to-expr args)]
+      _ (error (string/format "WHAT IS THIS %j" x))))
+
+  (eval ~(fn [,;symbols] ,(to-expr parsed))))
+
+(defn main [arg0 expr]
   (def grammar (compile-grammar))
   (def parsed (peg/match grammar expr))
   (when (nil? parsed)
     (die 1 "failed to parse input..."))
+  (def parsed (in parsed 0)) # since it's a list with one element (the root expr)
 
-  # TODO: auto-detect all symbols
-  # TODO: compile parsed tree into actual janet expression
-  # TODO: generate truth table
-  )
+  (def symbols (get-symbols parsed))
+  (def n-vars (length symbols))
+  (def max-vars 63)
+  (when (> n-vars max-vars)
+    (die 1 "expression has too many variables (should be at most %d, got %d)"
+         max-vars n-vars))
+
+  (def func (compile-func parsed symbols))
+
+  (let [nmax (-> (math/pow 2 n-vars) (int/u64))
+        vbuf (seq [_ :range [0 n-vars]] 0)]
+
+    # print table header
+    (each v symbols
+      (prinf "%s " v))
+    (printf ": %s" expr)
+
+    # evaluate expression & generate table body
+    (var i (int/u64 0))
+    (while (< i nmax)
+      # set up arguments
+      (for vi 0 n-vars
+        (def bit (-> i (brshift (- n-vars vi 1)) (band 1) (int/to-number)))
+        (prinf "%d " bit)
+        (set (vbuf vi) bit))
+
+      (def result (apply func vbuf))
+      (printf "  %d" result)
+
+      (++ i))))
