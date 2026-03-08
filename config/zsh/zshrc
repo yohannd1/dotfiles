@@ -329,8 +329,10 @@ se() { EDITOR=$(which "$EDITOR") sudoedit "$@"; } # yeah, workaround
 alias g='menu-git'
 
 G() {
-  cd "$(git rev-parse --show-toplevel)" || return 1
-  tig status "$@"
+  (
+    cd "$(git rev-parse --show-toplevel)" || return 1
+    tig status "$@"
+  )
 }
 
 alias p3='python3'

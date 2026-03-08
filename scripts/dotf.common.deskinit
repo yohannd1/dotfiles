@@ -9,6 +9,10 @@ isWayland() { test "$WAYLAND_DISPLAY"; }
 isHyprland() { test "$HYPRLAND_INSTANCE_SIGNATURE"; }
 isPipewire() { test "$_audiot" = pipewire; }
 
+progname=$(basename "$0")
+
+printf >&2 "%s: starting point\n" "$progname"
+
 if pactl info | grep -q '^Server Name:.*PipeWire.*'; then
   _audiot=pipewire
 fi
@@ -71,9 +75,23 @@ if isWayland; then
 
   if [ "$NIRI_SOCKET" ] && exists swayidle; then
     swayidle \
-      timeout 120 'niri msg action power-off-monitors' \
+      timeout 200 'niri msg action power-off-monitors' \
       timeout 300 'dotf.pow.lock'
-  fi
+  fi &
+
+  # X-wayland clipboard sync!
+  if exists clipboard-sync; then
+    (
+      while true; do
+        clipboard-sync
+        printf >&2 "It seems clipboard-sync has died. Will try to run it again soon.\n"
+        sleep 3
+      done
+    )
+  else
+    printf >&2 "Warning: clipboard-sync not found! X and Wayland clipboards may become unsynced.\n"
+    printf >&2 "You may want to obtain it: https://github.com/dnut/clipboard-sync\n"
+  fi &
 fi
 
 # set colors for hyprland
@@ -84,3 +102,5 @@ if isHyprland; then
   hyprctl keyword general:col.active_border "rgb($bf)"
   hyprctl keyword general:col.inactive_border "rgb($bn)"
 fi
+
+printf >&2 "%s: end point\n" "$progname"

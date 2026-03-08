@@ -1,7 +1,7 @@
 # Based off furnace-git and lmms-git PKGBUILDs
 
 pkgname=lmms-fork
-pkgver=1.3.0.alpha.1.r1008.gdda3120f0
+pkgver=1.3.0.alpha.1.r1030.g22ebee18c
 pkgrel=1
 pkgdesc="The Linux MultiMedia Studio."
 arch=('x86_64')

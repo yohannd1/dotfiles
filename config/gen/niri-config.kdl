@@ -1,4 +1,8 @@
-spawn-at-startup "dotf.common.deskinit"
+spawn-at-startup "bash" "-c" "
+    logdir=${XSESSIONDIR:-/tmp};
+    mkdir -p \"$logdir\";
+    dotf.common.deskinit 2>&1 | tee \"$logdir/deskinit.log\";
+"
 
 environment {
     DISPLAY ":0"
