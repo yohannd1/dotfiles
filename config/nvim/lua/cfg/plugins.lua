@@ -32,6 +32,7 @@ do
     local source = assert(opts.source, ".source entry missing")
     local name = opts.name or vim.fs.basename(source)
     local before = opts.before or function() end
+    local branch = opts.branch
     local after = opts.after or function() end
 
     local condition = (function(x)
@@ -39,7 +40,14 @@ do
       return x
     end)(opts.condition)
 
-    plugins[name] = { name = name, source = source, condition = condition, before = before, after = after }
+    plugins[name] = {
+      name = name,
+      source = source,
+      condition = condition,
+      before = before,
+      after = after,
+      branch = branch,
+    }
     table.insert(plugin_names, name)
   end
 
@@ -75,8 +83,23 @@ do
         or info.condition
 
       if cond_result then
+        local has_args = false
+        local plug_args = {}
+
+        if info.branch ~= nil then
+          has_args = true
+          assert(type(info.branch) == "string")
+          plug_args.branch = info.branch
+        end
+
+        -- print(vim.inspect{pname, info, has_args, plug_args})
+
         info.before()
-        plug(info.source)
+        if has_args then
+          plug(info.source, plug_args)
+        else
+          plug(info.source)
+        end
 
         local name = sourceToName(info.source)
         local isName = function(x) return x == name end
@@ -112,8 +135,12 @@ local UNUSED_PLUGIN_COND = false
 -- Treesitter {{{
 M.add({
   source = "nvim-treesitter/nvim-treesitter",
+
+  -- FIXME: for some reason this is fixing a bug I was having. See https://github.com/neovim/neovim/discussions/38037, it's a bit related.
+  branch = "master",
+
   after = function()
-    require("nvim-treesitter").setup {
+    require("nvim-treesitter").setup({
       ensure_installed = { "lua", "python" },
       sync_install = false,
 
@@ -129,7 +156,7 @@ M.add({
         disable = { "gitcommit", "bash", "PKGBUILD", "janet" },
         additional_vim_regex_highlighting = false,
       },
-    }
+    })
   end,
 })
 -- }}}
@@ -613,6 +640,7 @@ M.add("habamax/vim-godot")
 M.add("bellinitte/uxntal.vim")
 M.add("dart-lang/dart-vim-plugin")
 M.add("lepture/vim-jinja")
+M.add("hylang/vim-hy")
 M.add("oils-for-unix/oils.vim")
 -- M.add("sj2tpgk/vim-oil")
 

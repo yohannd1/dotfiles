@@ -283,11 +283,6 @@ create_cmd("LatexMakeEnv", function(t)
   local word = t.args
   local cline = vim.fn.line(".")
 
-  -- print(vim.inspect({
-  --   vim.fn.getline(cline),
-  --   vim.fn.getline(cline):match("^%s*$") == ""
-  -- }))
-
   local lines = {
     ("\\begin{%s}"):format(word),
     ("\\end{%s}"):format(word),
@@ -304,6 +299,8 @@ for _, action in ipairs({"blame", "log", "diff", "status"}) do
   local cmd_name = "Git" .. action:sub(1, 1):upper() .. action:sub(2, -1)
   create_cmd(cmd_name, "Git " .. action, { nargs = 0 })
 end
+
+create_cmd("ScratchBuffer", "edit $XDG_DATA_DIR/dots/scratch.acr", { nargs = 0 })
 
 local bufferSyntaxOff = function()
   if vim.fn.has("syntax") == 0 then
