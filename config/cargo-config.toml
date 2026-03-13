@@ -1,9 +1,13 @@
 [build]
 rustc-wrapper = "sccache"
 
+[profile.dev.package."*"]
+debug = false
+
 [target.x86_64-unknown-linux-gnu]
 linker = "/usr/bin/clang"
 rustflags = [
+    "-Clink-arg=-Wl,--compress-debug-sections=zstd",
     # "-Clink-arg=-fuse-ld=lld", # FIXME: not working for some ungodly reason
     "-Zshare-generics=y",
 ]
