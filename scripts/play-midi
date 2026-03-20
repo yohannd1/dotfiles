@@ -18,7 +18,7 @@ sf2Path=${MIDI_SOUNDFONT:-/usr/share/soundfonts/default.sf2}
 
 printf >&2 "Press Ctrl-C to stop playing\n"
 
-cleanup() {}
+cleanup() { true; }
 trap 'cleanup' INT
 
 if [ "$synthCount" -gt 1 ]; then
