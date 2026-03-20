@@ -116,9 +116,9 @@ local initialize = function()
       local callback = ft[vim.o.filetype]
       if callback then callback() end
 
-      if vim.fs.root(0, "Makefile") ~= nil then
-        vim.b.rifle_ft = "@make"
-      end
+      -- if vim.fs.root(0, "Makefile") ~= nil then
+      --   vim.b.rifle_ft = "@make"
+      -- end
     end
   })
 
