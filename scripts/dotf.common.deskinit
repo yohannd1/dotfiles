@@ -80,18 +80,18 @@ if isWayland; then
   fi &
 
   # X-wayland clipboard sync!
-  if exists clipboard-sync; then
-    (
-      while true; do
-        clipboard-sync
-        printf >&2 "It seems clipboard-sync has died. Will try to run it again soon.\n"
-        sleep 3
-      done
-    )
-  else
-    printf >&2 "Warning: clipboard-sync not found! X and Wayland clipboards may become unsynced.\n"
-    printf >&2 "You may want to obtain it: https://github.com/dnut/clipboard-sync\n"
-  fi &
+  # if exists clipboard-sync; then
+  #   (
+  #     while true; do
+  #       clipboard-sync
+  #       printf >&2 "It seems clipboard-sync has died. Will try to run it again soon.\n"
+  #       sleep 3
+  #     done
+  #   )
+  # else
+  #   printf >&2 "Warning: clipboard-sync not found! X and Wayland clipboards may become unsynced.\n"
+  #   printf >&2 "You may want to obtain it: https://github.com/dnut/clipboard-sync\n"
+  # fi &
 fi
 
 # set colors for hyprland
