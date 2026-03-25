@@ -388,6 +388,13 @@ end
 dummy.plan_sidebar = utils.Sidebar.new(getSpecialWikiPage("plan"))
 map("n", "<Leader>c", function() dummy.plan_sidebar:toggle() end, arg_nr_s)
 
+local lazyEditId = function(id)
+  return function()
+    local id = getSpecialWikiPage(id)
+    editFile(id)
+  end
+end
+
 dummy.wikiOpenJournal = function()
   local result = vim.system({"acr-journal", "get-path"}, { text = true }):wait()
   assert(result.code == 0, "command failed to run")
@@ -396,10 +403,10 @@ end
 
 -- wiki keybindings
 local wiki_mappings = {
-  {"w", lazy(editFile, getSpecialWikiPage("index")), "open index"},
-  {"s", lazy(editFile, getSpecialWikiPage("scratchpad")), "open scratchpad"},
-  {"P", lazy(editFile, getSpecialWikiPage("plan")), "open plan"},
-  {"p", lazy(editFile, getSpecialWikiPage("yearly-week-plan-2026")), "open week plan (2026)"},
+  {"w", lazyEditId("index"), "open index"},
+  {"s", lazyEditId("scratchpad"), "open scratchpad"},
+  {"P", lazyEditId("plan"), "open plan"},
+  {"p", lazyEditId("yearly-week-plan-2026"), "open week plan (2026)"},
   {"o", lazy(dummy.wikiFzOpen, {}), "search on the wiki"},
   {"j", lazy(dummy.wikiOpenJournal, {}), "open journal"},
   {"R", lazy(dummy.wikiFzInsertRef, { after_cursor = false }), "add reference ←"},
