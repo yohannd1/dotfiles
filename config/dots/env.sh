@@ -1,3 +1,5 @@
+#!/usr/bin/env sh
+
 _exists() { command -v "$1" >/dev/null 2>/dev/null; }
 _isTermux() { [ "$(uname -o)" = Android ]; }
 
@@ -5,7 +7,7 @@ _isTermux() { [ "$(uname -o)" = Android ]; }
 _dotpath=~/.local/share/dots/dotpath
 _fallback_dotpath=~/.dotfiles
 if [ -f "$_dotpath" ]; then
-  export DOTFILES=$(cat "$_dotpath")
+  export DOTFILES="$(cat "$_dotpath")"
 else
   printf >&2 "warning: %s doesn't exist - %s will fallback to %s" "$_dotpath" '$DOTFILES' "$_fallback_dotpath"
   export DOTFILES="$_fallback_dotpath"
@@ -87,12 +89,15 @@ if _exists ccache; then
   export CMAKE_C_COMPILER_LAUNCHER=ccache
 fi
 
+# wine config (pick )
+export WINEW_32_PREFIX="$XDG_DATA_DIR/wine32"
+export WINEW_64_PREFIX="$XDG_DATA_DIR/wine64"
+export WINEARCH="win64"
+export WINEPREFIX="$WINEW_64_PREFIX"
+
 # configuration files/folders
 export _ZL_DATA="$XDG_DATA_DIR/zlua"
 export _ZL_FZF_HEIGHT="15" # no height limit!
-export WINEPREFIX="$XDG_DATA_DIR/wine32"
-export WINEW_32_PREFIX="$XDG_DATA_DIR/wine32"
-export WINEW_64_PREFIX="$XDG_DATA_DIR/wine64"
 export JAVA_TOOL_OPTIONS="-Djava.util.prefs.userRoot='$XDG_CONFIG_HOME/java' -Dawt.useSystemAAFontSettings=on -Dswing.aatext=true -Dawt.toolkit.name=WLToolkit -Dsun.java2d.vulkan=True"
 export JAVA_FONTS="/usr/share/fonts/TTF"
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
@@ -135,7 +140,10 @@ export FZF_DEFAULT_OPTS='
 # nnn config
 {
   export NNN_OPENER="$OPENER"
-  _isTermux && export NNN_TRASH=termux-trash-put || export NNN_TRASH=1
+  export NNN_TRASH=1
+  if _isTermux; then
+    export NNN_TRASH=termux-trash-put
+  fi
 
   export NNN_OPTS="A"
   if _exists cpg; then
@@ -151,18 +159,19 @@ export FZF_DEFAULT_OPTS='
 _pue="tty"
 [ "$DISPLAY" ] && _pue="xorg"
 [ "$WAYLAND_DISPLAY" ] && _pue="wayland"
-export PINENTRY_USER_DATA=$(printf '{"context":"%s","dotcfg_socket":"%s"}' "$_pue" "$DOTCFG_SOCKET")
+export PINENTRY_USER_DATA="$(printf '{"context":"%s","dotcfg_socket":"%s"}' "$_pue" "$DOTCFG_SOCKET")"
 unset _pue
 
-export GPG_TTY=$(tty)
+export GPG_TTY="$(tty)"
 
-_gcc_colors='error   = 01;38;5;8
-             warning = 01;38;5;9
-             note    = 01;38;5;12
-             caret   = 01;32
-             locus   = 01;38;5;4
-             quote   = 03'
-export GCC_COLORS=$(printf "%s" "$_gcc_colors" | tr '\n' ':' | tr -d ' ')
+_gcc_colors='
+  error   = 01;38;5;8
+  warning = 01;38;5;9
+  note    = 01;38;5;12
+  caret   = 01;32
+  locus   = 01;38;5;4
+  quote   = 03'
+export GCC_COLORS="$(printf "%s" "$_gcc_colors" | tr '\n' ':' | tr -d ' ')"
 
 # dotfiles program options
 export DIR_BOOKMARKS=~/storage/local/share/bookmarks.sh
@@ -192,7 +201,6 @@ if [ -r ~/.config/dircolors ]; then
 fi
 
 # system-specific config
-RESLUA_ENABLE_LIGATURES=false
 case "$HOST" in
   core)
     export USE_BUILTIN_1080P=
@@ -210,4 +218,4 @@ case "$HOST" in
     ;;
 esac
 
-export QT_SCALE_FACTOR=${DOTF_SCALE:-1}
+export QT_SCALE_FACTOR="${DOTF_SCALE:-1}"
