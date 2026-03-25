@@ -252,9 +252,11 @@ M.add({
   end,
 })
 
-M.add({
-  source = "yuratomo/w3m.vim",
-})
+if vim.fn.executable("w3m") ~= 0 then
+  M.add({
+    source = "yuratomo/w3m.vim",
+  })
+end
 
 -- M.add({
 --   source = "Olical/conjure",
