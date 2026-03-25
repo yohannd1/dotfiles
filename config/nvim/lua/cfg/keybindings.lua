@@ -385,8 +385,13 @@ local getSpecialWikiPage = function(name)
   return getWikiPage(id)
 end
 
-dummy.plan_sidebar = utils.Sidebar.new(getSpecialWikiPage("plan"))
-map("n", "<Leader>c", function() dummy.plan_sidebar:toggle() end, arg_nr_s)
+dummy.plan_sidebar = nil
+map("n", "<Leader>c", function()
+  if dummy.plan_sidebar == nil then
+    dummy.plan_sidebar = utils.Sidebar.new(getSpecialWikiPage("plan"))
+  end
+  dummy.plan_sidebar:toggle()
+end, arg_nr_s)
 
 local lazyEditId = function(id)
   return function()
