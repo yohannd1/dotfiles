@@ -10,7 +10,8 @@ def eprint(*args, **kwargs) -> None:
 apps = []
 
 if m.is_android:
-    m.link_glob(DOTFILES/"config/termux", "~/.termux")
+    # m.link_glob(DOTFILES/"config/termux", "~/.termux")
+    pass
 else:
     apps += [
         "xorg",
