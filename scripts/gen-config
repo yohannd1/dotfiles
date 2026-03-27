@@ -90,6 +90,7 @@ _t_niri() {
 _t_termux() {
   [ -d ~/.termux ] || return
   gen "$DOTFILES/config/gen/termux-colors" ~/.termux/colors.properties
+  cp "$DOTFILES/config/termux/termux.properties" ~/.termux/termux.properties
 }
 
 main "$@"

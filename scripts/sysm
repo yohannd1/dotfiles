@@ -18,8 +18,9 @@ class Manager:
 
     def __init__(self):
         # platform checks
-        self.is_linux = sys.platform.startswith("linux")
-        self.is_android = self.is_linux and which("termux-info")
+        splat = sys.platform
+        self.is_linux = splat.startswith("linux") or splat.startswith("android")
+        self.is_android = self.is_linux and (splat.startswith("android") or which("termux-info"))
 
         # attempt to generate a backup path (keep trying if it already exists)
         while True:
