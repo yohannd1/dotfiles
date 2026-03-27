@@ -201,13 +201,18 @@
   (def TERMBROWSER (os/getenv "TERMBROWSER"))
   (def EDITOR (os/getenv "EDITOR"))
 
+  (defn handle-text []
+    (t :runpage ["cat" file]))
+
+  (pp s)
+
   # (mt :mime [[:begins "application/"]] :block)
 
   (mt :mime ["inode/directory"] :pop [FILEMAN file])
   (mt :mime ["text/troff"] :runpage ["man" "-l" file])
-  (when (or (m :mime ["inode/x-empty" [:ends "/xml"]])
-            (m :ext ["txt" "log"]))
-    (t :runpage ["cat" file]))
+
+  (when (m :ext ["txt" "log"])
+    (handle-text))
 
   (defn try-browser []
     (def args @[])
@@ -287,7 +292,7 @@
     (t :gui ["ardour8" file])
     (t :gui ["ardour7" file])
     (t :gui ["ardour6" file]))
-  (when (m :ext ["mmp" "mmpz"])
+  (when (m :ext ["mmp" "mmpz"]) # FIXME: mmp files are not being recognized here... or something
     (t :gui ["@lmms" file])
     (t :gui ["lmms" file]))
   (mt :ext ["flp"] :gui ["@fl-studio" file])
@@ -394,5 +399,8 @@
   (mt :ext ["asta"] :gui ["astah-uml" file])
   (mt :ext ["dot"] :gui ["rifle-run" "run" "dot" file])
   (mt :ext ["xopp"] :gui ["xournalpp" file])
+
+  (when (m :mime ["inode/x-empty" [:ends "/xml"]])
+    (handle-text))
 
   (t :fallback))

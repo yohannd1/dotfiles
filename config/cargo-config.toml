@@ -1,6 +1,9 @@
 [build]
 rustc-wrapper = "sccache"
 
+[profile.dev]
+incremental = true
+
 [profile.dev.package."*"]
 debug = false
 
