@@ -250,7 +250,29 @@
     (when (> start 0)
       (yield (string buf)))))
 
-(defn remove-suffix [x suffix]
-  (def end-idx (- (length x) (length suffix)))
-  (assert (= (string/slice x end-idx) suffix))
-  (string/slice x 0 end-idx))
+(defn remove-suffix
+  "Remove `suffix` from the end of the string `str`."
+  [str suffix]
+
+  (def end-idx (- (length str) (length suffix)))
+  (assert (= (string/slice str end-idx) suffix))
+  (string/slice str 0 end-idx))
+
+(defn stable-sort
+  "A stable, though probably very slow, sorting algorithm."
+  [arr &opt cmp<]
+
+  # TODO: better sorting algorithm here! this is O(n^2) ffs
+
+  (assert (array? arr))
+  (default cmp< compare<)
+  (def arr-len (length arr))
+
+  (loop [step :range [0 (- arr-len 1)]
+         i :range [0 (- arr-len step 1)]
+         :let [i2 (inc i)]]
+    (def e (in arr i))
+    (def e2 (in arr i2))
+    (when (cmp< e2 e)
+      (set (arr i) e2)
+      (set (arr i2) e))))
