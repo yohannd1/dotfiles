@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+set -ue
+
+[ $# = 1 ] || exit 2
+
+ffmpeg -i "$1" -filter:a ebur128=framelog=quiet -f null -
