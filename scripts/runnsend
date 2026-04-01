@@ -9,8 +9,8 @@ if exists notify-send; then
 elif exists termux-notification; then
   nsend() { printf "%s" "$2" | termux-notification -t "$1"; }
 else
-  # obscure error message. meh. FIXME
-  depCheck notify-send termux-notification
+  printf >&2 "no notification program found...\n"
+  nsend() { true; }
 fi
 
 PROGNAME=$(basename "$0")

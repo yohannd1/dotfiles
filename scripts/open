@@ -11,7 +11,7 @@
 
 (var *open-gui* (-> (os/getenv "OPEN_GUI" "") (length) (> 0)))
 (var *open-new-window* (-> (os/getenv "OPEN_NEW_WINDOW" "") (length) (> 0)))
-(var *is-termux* (-> (os/getenv "TERMUX_APP_PID") (nil?) (not)))
+(var *is-termux* (-> (os/getenv "TERMUX_VERSION") (nil?) (not)))
 
 (defn state/init [file-arg]
   (var file file-arg)
@@ -203,8 +203,6 @@
 
   (defn handle-text []
     (t :runpage ["cat" file]))
-
-  (pp s)
 
   # (mt :mime [[:begins "application/"]] :block)
 
