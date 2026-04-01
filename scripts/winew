@@ -34,7 +34,8 @@ Usage:
   $progname fwd [ARGS...]
     Pass ARGS directly to wine
   $progname fwd-sh [ARGS...]
-    Run ARGS directly to the host shell (useful for running a command with the environment set up)
+    Run ARGS directly to the host shell. Useful since it sets up environment
+    variables.
   $progname desktop [ARGS...]
   $progname path [ARGS...]
 
@@ -87,9 +88,10 @@ case "$1" in
 
   desktop)
     [ $# = 0 ] && show_help
+
     resolution=800x600
     if is_x11 && exists xrandr; then
-      resolution=$(xrandr | awk '/\*/ { print $1 }') || resolution=800x600
+      resolution=$(xrandr | awk '/\*/ { print $1 }')
     fi
 
     shift
