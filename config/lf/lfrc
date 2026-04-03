@@ -57,26 +57,38 @@ cmd trash ${{
   set -ue
 
   IFS=$(printf '\n\t')
-  printf "Selected files:\n"
-  printf "  %s\n" $fx
-  printf "Would you like to send them to the TRASH?\n"
 
-  while true; do
-    printf "(y)es or (n)o => "
+  if [ -z "$fs" ]; then
+    files="$f"
+  else
+    printf "(c)urrent or (s)el => "
     read -n1 answer
     printf "\n"
 
     case "$answer" in
-      y) trash-put $fx; break ;;
-      n) break ;;
-      *) ;;
+      c) files="$f" ;;
+      s) files="$fs" ;;
+      *) exit 1 ;;
     esac
+  fi
 
-    if [ $? != 0 ]; then
-      printf "Failed to move file(s) to trash.\n"
-      read _
-    fi
-  done
+  printf "Files:\n"
+  printf "  %s\n" $files
+  printf "Would you like to send them to the TRASH?\n"
+  printf "(y)es or (n)o => "
+  read -n1 answer
+  printf "\n"
+
+  case "$answer" in
+    y) trash-put $files ;;
+    n) ;;
+    *) exit 1 ;;
+  esac
+
+  if [ $? != 0 ]; then
+    printf "Failed to move file(s) to trash.\n"
+    read _
+  fi
 }}
 cmd delete ${{
   set -ue
