@@ -2,6 +2,7 @@
 -- Preparation {{{
 
 local vim = _G.vim
+local dummy = _G.dummy
 
 local utils = require("cfg.utils")
 local setLocals = utils.setLocals
@@ -86,6 +87,9 @@ local initialize = function()
       end
       for _, f in ipairs(ft_hooks) do
         f()
+      end
+      if dummy.post_file_hook ~= nil then
+        dummy.post_file_hook()
       end
     end
   })
