@@ -112,8 +112,7 @@ RELOAD_JS = """
 const es = new EventSource("/api/stream");
 es.onmessage = (_) => window.location.reload();
 es.onerror = (e) => {
-    debug.error("EventSource error:");
-    debug.error(e);
+    console.error(e);
     setTimeout(
         () => alert("An error ocurred! See console for info."),
         1500

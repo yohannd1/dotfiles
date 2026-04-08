@@ -299,11 +299,13 @@ elif isLang 'java'; then
 
 elif isLang 'javascript'; then
   js=$(firstExists deno nodejs)
-  case "$js" in
-    deno) deno run "$file" ;;
-    nodejs) nodejs "$file" ;;
-    *) exit 32 ;;
-  esac
+  do_run() {
+    case "$js" in
+      deno) deno run "$file" ;;
+      nodejs) nodejs "$file" ;;
+      *) exit 32 ;;
+    esac
+  }
 
 elif isLang 'julia'; then
   do_run() { julia "$file"; }
@@ -547,12 +549,8 @@ elif isLang 'vhdl'; then
   }
 
 elif isLang 'ysh'; then
-  do_check() {
-    ysh -n "$file"
-  }
-  do_run() {
-    ysh "$file"
-  }
+  do_check() { ysh -n "$file"; }
+  do_run() { ysh "$file"; }
 
 elif isLang 'zig'; then
   do_run() { zig run "$file" --color off --cache-dir "$tmp"; }
