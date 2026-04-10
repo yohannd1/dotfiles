@@ -258,6 +258,13 @@
   (assert (= (string/slice str end-idx) suffix))
   (string/slice str 0 end-idx))
 
+(defn remove-prefix
+  "Remove `prefix` from the start of the string `str`."
+  [str prefix]
+
+  (assert (string/has-prefix? prefix str))
+  (string/slice str (length prefix)))
+
 (defn stable-sort
   "A stable, though probably very slow, sorting algorithm."
   [arr &opt cmp<]
