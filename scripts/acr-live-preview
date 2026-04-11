@@ -9,7 +9,6 @@ from time import sleep
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Callable, Any, Optional
-
 from subprocess import Popen, PIPE
 from queue import Queue, Empty
 from threading import Thread
@@ -69,6 +68,7 @@ class BroadcasterThread(StoppableThread):
                     break
                 case unk:
                     raise ValueError(f"got unknown item {unk}")
+
 
 broadcaster = BroadcasterThread()
 
@@ -234,9 +234,15 @@ compiler: Optional[CompilerThread] = None
 
 
 class ServerReqHandler(SimpleHTTPRequestHandler):
+    original_dir: Path
+
     def __init__(self, request, client_address, server, **kwargs):
+        self.original_dir = kwargs["args"].file_to_watch.parent
         super().__init__(
-            request, client_address, server, directory=kwargs["args"].output_file.parent
+            request,
+            client_address,
+            server,
+            directory=kwargs["args"].output_file.parent,
         )
 
     def send_utf8(self, string: str) -> None:
@@ -272,6 +278,19 @@ class ServerReqHandler(SimpleHTTPRequestHandler):
         if self.path == "/api/stream":
             self.handle_sse_stream()
             return
+
+        # XXX: this is a sad, miserable hack. I need to figure out a way to expose the file-handling logic.
+        tpath = Path(self.translate_path(self.path))
+        if not tpath.exists(follow_symlinks=False):
+            # remove the prefix and try to find the file respective to the original .acr file's directory
+            subpath = tpath.relative_to(self.directory)
+            file_in_orig = self.original_dir / subpath
+
+            # if it exists, make a symlink in the output folder to the original file
+            if file_in_orig.exists():
+                # FIXME: this might fuck things up on directories...
+                tpath.parent.mkdir(exist_ok=True, parents=True)
+                tpath.symlink_to(target=file_in_orig)
 
         super().do_GET()
 
