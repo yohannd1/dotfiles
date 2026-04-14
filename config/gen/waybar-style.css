@@ -76,7 +76,7 @@ window#waybar {
 
 #taskbar button {
     /* FIXME: improve this. Buttons have weird shapes */
-    padding-top: 12px;
+    padding-top: 8px;
     padding-bottom: 0px;
     border-radius: 0px;
 }
@@ -92,8 +92,8 @@ window#waybar {
 #tray { padding-bottom: 6px; }
 
 #tray image {
-    padding-top: 8px;
-    padding-bottom: 8px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 #tray widget:hover {
@@ -114,7 +114,7 @@ window#waybar {
     color: @base00;
     background-color: @base0D;
     padding-left: 6px;
-    min-width: 25px;
+    min-width: 20px;
     min-height: 25px;
 }
 
