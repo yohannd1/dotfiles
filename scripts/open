@@ -205,6 +205,7 @@
     (t :runpage ["cat" file]))
 
   # (mt :mime [[:begins "application/"]] :block)
+  (mt :ext ["sf2"] :block)
 
   (mt :mime ["inode/directory"] :pop [FILEMAN file])
   (mt :mime ["text/troff"] :runpage ["man" "-l" file])
@@ -300,7 +301,7 @@
   (mt :ext ["osctet"] :gui ["osctet" file])
   (mt :ext ["rpp"] :gui ["reaper" file])
   (mt :ext ["str"] :gui ["dotf.wrap.editor" file]) # strudel
-  (mt :ext ["aup"] :gui ["audacity" file])
+  (mt :ext ["aup" "aup3"] :gui ["audacity" file])
   # (mt :ext ["helio"] :gui ["helio-workstation" file]) # TODO: this doesn't work atm. I think there's no CLI interface for helio
 
   # chiptune raw-stream-thingy files

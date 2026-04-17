@@ -211,7 +211,7 @@ case "$HOST" in
     ;;
   core2)
     export RESLUA_FONT_SIZE=1.35
-    export RESLUA_FONT_NAME="*random*"
+    export RESLUA_FONT_NAME="FiraCode"
     export DOTF_SCALE=1.15
     export VOLUMECTL_INCREMENT=5
     export N_JOBS=5 # don't want to use many...

@@ -19,7 +19,7 @@ application/zip=editor.desktop
 application/x-7z-compressed=editor.desktop
 
 x-scheme-handler/msteams=teams.desktop
-x-scheme-handler/ror2mm=r2modman.desktop
+x-scheme-handler/ror2mm=gale-handler.desktop
 x-scheme-handler/http=browser.desktop
 x-scheme-handler/https=browser.desktop
 x-scheme-handler/discord=vesktop.desktop
@@ -29,6 +29,7 @@ ror2mm=gale-handler.desktop
 inode/directory=filemanager.desktop
 x-scheme-handler/file=filemanager.desktop
 text/xml=editor.desktop
+x-scheme-handler/gale=gale-handler.desktop
 
 [Added Associations]
 application/xml=editor.desktop;

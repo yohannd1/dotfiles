@@ -51,7 +51,7 @@ local font_presets = {
     supports_ligatures = false,
   },
   ["FiraCode"] = {
-    name = "Fira Code Medium",
+    name = "Fira Code",
     base_size = 15.75,
   },
   ["JetbrainsMono"] = {
