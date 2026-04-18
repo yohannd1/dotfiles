@@ -361,20 +361,20 @@ gestures {
 }
 
 // TODO: uncomment when blur PR gets merged to master
-// window-rule {
-//     match app-id=""
+window-rule {
+    match app-id=""
 
-//     background-effect {
-//         blur true
+    background-effect {
+        blur true
 
-//         // more efficient if activated - every blur background is the actual
-//         // background, not the windows behind
-//         xray false
-//     }
-// }
-// blur {
-//    passes 1
-//    offset 2.0
-//    noise 0.05
-//    saturation 1.5
-// }
+        // more efficient if activated - every blur background is the actual
+        // background, not the windows behind
+        xray false
+    }
+}
+blur {
+   passes 1
+   offset 2.0
+   noise 0.05
+   saturation 1.0
+}
