@@ -312,21 +312,21 @@ local bufferSyntaxOff = function()
   vim.b.current_syntax = nil
 end
 
-autocmd({"BufReadPost"}, {
-  pattern = "*",
-  callback = function()
-    local fname = vim.fn.expand("%:p")
-    if fname == nil or fname == "" then
-      return
-    end
+-- autocmd({"BufReadPost"}, {
+--   pattern = "*",
+--   callback = function()
+--     local fname = vim.fn.expand("%:p")
+--     if fname == nil or fname == "" then
+--       return
+--     end
 
-    local size_kb = vim.fn.getfsize(fname) / 1024
-    if size_kb >= 100 then
-      print(("File size (%d KiB) too big - syntax=off"):format(size_kb))
-      bufferSyntaxOff()
-    end
-  end,
-})
+--     local size_kb = vim.fn.getfsize(fname) / 1024
+--     if size_kb >= 100 then
+--       print(("File size (%d KiB) too big - syntax=off"):format(size_kb))
+--       bufferSyntaxOff()
+--     end
+--   end,
+-- })
 
 -- TODO: inside neovim, replace the $EDITOR with a wrapper script that connects
 -- to the current neovim instance, opens a buffer, and waits for the buffer to

@@ -141,21 +141,41 @@ M.add({
 
   after = function()
     require("nvim-treesitter").setup({
-      ensure_installed = { "lua", "python" },
-      sync_install = false,
+      ensure_installed = {"lua", "python"},
 
+      sync_install = false,
       auto_install = false,
       ignore_install = {},
 
       indent = {
-        enable = { "python" },
+        enable = {"python"},
       },
 
       highlight = {
-        enable = { "lua", "python", "latex", "cmake", "java", "rust", "cpp", "'verilog" },
-        disable = { "gitcommit", "bash", "PKGBUILD", "janet" },
+        enable = false,
         additional_vim_regex_highlighting = false,
       },
+    })
+
+    local langs_enable = {"lua", "python", "latex", "cmake", "java", "rust", "cpp", "verilog"}
+    local langs_disable = {"gitcommit", "bash", "PKGBUILD", "janet"}
+
+    local findEqual = function(haystack, needle)
+      for _, x in ipairs(haystack) do
+        if x == needle then
+          return true
+        end
+      end
+      return false
+    end
+
+    vim.api.nvim_create_autocmd({"FileType"}, {
+      pattern = "*",
+      callback = function()
+        if findEqual(langs_enable, vim.bo.filetype) and not findEqual(langs_disable, vim.bo.filetype) then
+          vim.cmd("TSBufEnable highlight")
+        end
+      end,
     })
   end,
 })
