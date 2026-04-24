@@ -302,6 +302,17 @@ end
 
 create_cmd("ScratchBuffer", "edit $XDG_DATA_DIR/dots/scratch.acr", { nargs = 0 })
 
+create_cmd("EditExe", function(t)
+  local word = t.args
+  local path = vim.fn.exepath(word)
+
+  if path ~= "" then
+    vim.cmd.edit(path)
+  else
+    print("Could not find that in PATH")
+  end
+end, { nargs = 1 })
+
 local bufferSyntaxOff = function()
   if vim.fn.has("syntax") == 0 then
     return

@@ -34,11 +34,12 @@ do
     local before = opts.before or function() end
     local branch = opts.branch
     local after = opts.after or function() end
+    local build = opts.build
 
-    local condition = (function(x)
-      if x == nil then return true end
-      return x
-    end)(opts.condition)
+    local condition = true
+    if opts.condition ~= nil then
+      condition = opts.condition
+    end
 
     plugins[name] = {
       name = name,
@@ -47,6 +48,7 @@ do
       before = before,
       after = after,
       branch = branch,
+      build = build,
     }
     table.insert(plugin_names, name)
   end
@@ -92,7 +94,11 @@ do
           plug_args.branch = info.branch
         end
 
-        -- print(vim.inspect{pname, info, has_args, plug_args})
+        if info.build ~= nil then
+          -- TODO: support "function" argument type?
+          assert(type(info.build) == "string")
+          plug_args.build = info.build
+        end
 
         info.before()
         if has_args then
@@ -181,6 +187,15 @@ M.add({
 })
 -- }}}
 -- Telescope {{{
+local telescope_use_fzf = true
+
+if telescope_use_fzf then
+  M.add({
+    source = "nvim-telescope/telescope-fzf-native.nvim",
+    build = "make", -- FIXME: not working? had to manually run make...
+  })
+end
+
 M.add({
   source = "nvim-telescope/telescope.nvim",
   after = function()
@@ -224,7 +239,19 @@ M.add({
           theme = "dropdown"
         }
       },
+      extensions = {
+        fzf = {
+          fuzzy = true,
+          override_generic_sorter = true,
+          override_file_sorter = true,
+          case_mode = "smart_case",
+        },
+      },
     }
+
+    if telescope_use_fzf then
+      telescope.load_extension("fzf")
+    end
 
     local main_theme = themes.get_ivy()
     utils.services.fuzzyPicker = function(opts)
@@ -360,7 +387,7 @@ M.add({
 })
 
 M.add("nvim-lua/popup.nvim")
-M.add("nvim-lua/plenary.nvim")
+M.add("nvim-lua/plenary.nvim") -- dependency for telescope
 M.add("folke/which-key.nvim")
 -- M.add("slakkenhuis/vim-margin")
 -- M.add("airblade/vim-gitgutter")
