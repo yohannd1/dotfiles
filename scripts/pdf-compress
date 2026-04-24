@@ -1,0 +1,39 @@
+#!/usr/bin/env sh
+
+set -ue
+progname=$(basename "$0")
+
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
+if [ $# != 1 ]; then
+  printf >&2 "Usage: %s <FILE>\n" "$progname"
+  exit 2
+fi
+
+case "$1" in
+  *.pdf) ;;
+  *)
+    printf >&2 "error: input file %s should be a PDF!\n" "$1"
+    exit 1
+    ;;
+esac
+
+if ! exists "trash-put"; then
+  printf >&2 "error: 'trash-put' not found\n"
+  exit 1
+fi
+
+# TODO: make this in a tmp dir? idk. I'm lazy.
+tempFile="$1.compressed.pdf"
+if [ -f "$tempFile" ]; then
+  printf >&2 "GODAMMIT DON'T DO THIS HERE\n"
+  exit 1
+fi
+
+# compress into new file, trash the old one, then move it here
+gs \
+  -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/default \
+  -dNOPAUSE -dQUIET -dBATCH -dDetectDuplicateImages -dCompressFonts=true \
+  -r150 -sOutputFile="$tempFile" "$1"
+trash-put "$1"
+mv "$tempFile" "$1"

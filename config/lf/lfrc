@@ -125,6 +125,10 @@ cmd ffmpeg-convert ${{
   ffmpeg-convert "$f" "$targetFormat"
 }}
 
+cmd pdf-compress ${{
+  pdf-compress "$f"
+}}
+
 cmd vidir-rename ${{
   set -efu
   if [ -z "$fs" ]; then
