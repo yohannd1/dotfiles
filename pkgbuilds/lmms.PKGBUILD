@@ -21,7 +21,7 @@ optdepends=(
 makedepends=(
   git cmake extra-cmake-modules freetype2 git ladspa
   libsndfile libvorbis lame libsamplerate libogg libgig
-  fluidsynth fltk
+  fluidsynth fltk sndio
   qt5-base qt5-tools qt5-x11extras
   qt5-tools wine perl-list-moreutils perl-xml-parser perl-exporter-tiny
 )

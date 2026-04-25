@@ -234,6 +234,7 @@
 
   # project files
   (mt :ext ["drawio"] :gui ["drawio" file])
+  (mt :ext ["jff"] :gui ["@jflap" file])
   (mt :ext ["yyp"] :gui ["GameMaker" file])
 
   # godot project files
