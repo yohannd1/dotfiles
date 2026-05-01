@@ -1,0 +1,205 @@
+#!/usr/bin/env janet
+
+(import spork/http)
+(import spork/path :only [parent basename abspath normalize])
+(use dotf-utils)
+
+(var *opener* "xdg-open")
+(var *input-last-compiled* nil)
+(var *input-file* nil)
+(var *output-dir* nil)
+(var *katex-path* nil)
+(var *changes-queue* nil)
+(var *reload-queue* nil)
+(var *cached-output* nil)
+
+(defn get-mtime [path]
+  (-> (os/stat *input-file*) (in :modified)))
+
+(def mime-cache @{})
+(defn get-mime-type [p]
+  (defn actual-get-mime [file-path]
+    (cond
+      (string/has-suffix? ".css" file-path) "text/css"
+      (-> (run<stdout ["file" "--mime-type" "--brief" file-path])
+          (assert (string "failed to get mime type of file " file-path))
+          (string/trim))))
+
+  (defn update-value [mtime]
+    (def new-mime (actual-get-mime p))
+    (set (mime-cache p) [new-mime mtime])
+    new-mime)
+
+  (def p (path/abspath p))
+  (if-let [cached (in mime-cache p)]
+    (let [cur-mtime (get-mtime p)
+          [old-value old-mtime] cached]
+      (if (> cur-mtime old-mtime)
+        (update-value cur-mtime)
+        old-value))
+    (update-value (get-mtime p))))
+
+(def reload-js
+  ```
+  <script>
+  const es = new EventSource("/api/stream");
+  es.onmessage = (_) => window.location.reload();
+  es.onerror = (e) => {
+    console.error(e);
+    setTimeout(() => alert("An error ocurred! See console for info."), 1500);
+  };
+  </script>
+  ```)
+
+(defn sanitize-path
+  "Normalizes a path and only returns it if it's not trying to escape \".\""
+  [path]
+
+  (def ret (path/normalize path))
+  (if (string/has-prefix? "../" path) nil ret))
+
+(defn should-compile-input []
+  (cond
+    (nil? *input-last-compiled*) true
+    (> (get-mtime *input-file*) *input-last-compiled*)))
+
+(defn compile-input []
+  (def new-time (os/time))
+
+  (def out-file (string *output-dir* "/index.html"))
+
+  (def args ["acr2html" *input-file* "-o" out-file "-k" *katex-path*])
+  (os/setenv "OPEN_NEW_WINDOW" "1")
+
+  (defn sanitize-html [x]
+    (->> x (peg/replace-all "<" "&lt;") (peg/replace-all ">" "&gt;")))
+
+  # TODO: does this work properly? does stderr block as it used to in the python ver? not sure.
+  (match (run< args {:err true})
+    {:code 0}
+    (let [buf (slurp out-file)]
+      (buffer/push-string buf reload-js)
+      (set *cached-output* buf))
+
+    {:code code :err raw-err}
+    (let [sane-err (sanitize-html raw-err)]
+      (eprintf "--- PROGRAM ERRORED! -------------------------------")
+      (eprintf "%s" raw-err)
+      (eprintf "----------------------------------------------------\n")
+
+      (def err-page
+        (buffer
+          ```
+          <!DOCTYPE html>
+          <html>
+          <meta charset="utf-8"/>
+          <style>
+          code, pre {
+              white-space: pre-wrap;
+              overflow-wrap: break-word;
+              word-wrap: break-word;
+              max-width: 100%;
+          }
+          </style>
+          <h3>An error ocurred while parsing the file.</h3>
+          <p>Program output:</p>
+          ```
+          "<pre><code>" sane-err "</code></pre>"
+          ```
+          <p>See the live-preview output for (potentially) more details.</p>
+          </html>
+          ```
+          ))
+      (set *cached-output* err-page)))
+
+  (set *input-last-compiled* new-time))
+
+(defn req-handler [req]
+  (def {:method method :path path} req)
+
+  (defn reply-page []
+    (when (should-compile-input)
+      (compile-input))
+    {:status 200 :body *cached-output*})
+
+  (defn reply-evstream []
+    (def headers
+      {"Content-Type" "text/event-stream"
+       "Cache-Control" "no-cache"
+       "Connection" "keep-alive"})
+
+    (def body-fiber
+      (coro
+        # FIXME: this is chaotic if there are more than 2 event streams open!
+        (while (def x (ev/take *reload-queue*))
+          (yield "data: reload\n\n"))))
+
+    {:status 200 :headers headers :body body-fiber})
+
+  (defn reply-file []
+    (def sane-path (sanitize-path path))
+    (when (nil? sane-path)
+      (break {:status 400 :body "malformed path"}))
+
+    # make it absolute
+    (def sane-path (path/normalize (string *output-dir* "/" sane-path)))
+
+    (when (nil? (os/stat sane-path))
+      (break {:status 404 :body "Not found"}))
+
+    (def mime (get-mime-type sane-path))
+
+    # (pp {:path sane-path :mime mime})
+
+    (var contents nil)
+    (try
+      (set contents (slurp sane-path))
+      ([_] (break {:status 400 :body "failed to read file"})))
+
+    (def headers
+      {"Content-Type" mime})
+
+    {:status 200 :headers headers :body contents})
+
+  (defn is-get-of [m-path]
+    (= [method path] ["GET" m-path]))
+
+  (cond
+    (or (is-get-of "/") (is-get-of "/index.html")) (reply-page)
+    (is-get-of "/api/stream") (reply-evstream)
+    (= method "GET") (reply-file)
+    {:status 404 :body "???"}))
+
+(defn main [arg0 & args]
+  (assert (empty? args))
+
+  (if-let [opener (os/getenv "OPENER")]
+    (set *opener* opener))
+
+  (set *input-file* (os/getenv "FILE_TO_WATCH"))
+  (set *output-dir* (os/getenv "OUTPUT_DIR"))
+  (set *katex-path* (os/getenv "KATEX_PATH"))
+  (set *changes-queue* (ev/chan))
+  (set *reload-queue* (ev/chan 64))
+
+  (let [fw (filewatch/new *changes-queue*)
+        parent (path/parent *input-file*)]
+    (filewatch/add fw parent :close-write)
+    (filewatch/add fw parent :modify)
+    (filewatch/listen fw))
+
+  (ev/spawn
+    (def want-name (path/basename *input-file*))
+    (var i 0)
+    (while (def ev (ev/take *changes-queue*))
+      (def {:file-name got-name} ev)
+      (when (= want-name got-name)
+        (ev/give *reload-queue* "RELOAD!")
+        (++ i)))
+    (eprintf "warning: queue event loop abruptly stopped!"))
+
+  (def host "127.0.0.1")
+  (def port 8000)
+
+  # TODO: how to do an auto port? I think this defaults to 8000
+  (http/server req-handler host port))
