@@ -4,7 +4,6 @@
 (import spork/path :only [parent basename abspath normalize])
 (use dotf-utils)
 
-(var *opener* "xdg-open")
 (var *input-last-compiled* nil)
 (var *input-file* nil)
 (var *output-dir* nil)
@@ -69,7 +68,6 @@
   (def out-file (string *output-dir* "/index.html"))
 
   (def args ["acr2html" *input-file* "-o" out-file "-k" *katex-path*])
-  (os/setenv "OPEN_NEW_WINDOW" "1")
 
   (defn sanitize-html [x]
     (->> x (peg/replace-all "<" "&lt;") (peg/replace-all ">" "&gt;")))
@@ -173,9 +171,6 @@
 (defn main [arg0 & args]
   (assert (empty? args))
 
-  (if-let [opener (os/getenv "OPENER")]
-    (set *opener* opener))
-
   (set *input-file* (os/getenv "FILE_TO_WATCH"))
   (set *output-dir* (os/getenv "OUTPUT_DIR"))
   (set *katex-path* (os/getenv "KATEX_PATH"))
@@ -202,4 +197,9 @@
   (def port 8000)
 
   # TODO: how to do an auto port? I think this defaults to 8000
-  (http/server req-handler host port))
+  (http/server req-handler host port)
+
+  (def open-url (string "http://" host ":" port "/"))
+  (def opener (-> (os/getenv "OPENER") (or "xdg-open")))
+  (os/setenv "OPEN_NEW_WINDOW" "1")
+  (os/execute [opener open-url] :p))
