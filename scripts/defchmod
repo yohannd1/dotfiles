@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+
+set -ue
+progname=$(basename "$0")
+
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname [-R]
+EOF
+  exit 2
+}
+
+applyChmod() {
+  while read file; do
+    if [ -d "$file" ]; then
+      echo DIR $file
+      chmod +x "$file"
+    else
+      echo FILE $file
+      chmod -x "$file"
+    fi
+  done
+}
+
+case $# in
+  0) fd -d1 | applyChmod ;;
+  1) fd | applyChmod ;;
+  *) showHelp ;;
+esac
