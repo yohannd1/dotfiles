@@ -360,7 +360,6 @@ gestures {
     hot-corners { off; }
 }
 
-// TODO: uncomment when blur PR gets merged to master
 window-rule {
     match app-id=""
 
@@ -373,7 +372,7 @@ window-rule {
     }
 }
 blur {
-   passes 1
+   passes 2
    offset 2.0
    noise 0.05
    saturation 1.0
