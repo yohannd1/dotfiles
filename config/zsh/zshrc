@@ -442,6 +442,7 @@ l() { command ls -l "$@"; }
 la() { command ls -A "$@"; }
 du() { command du -shc "$@"; }
 sdu() { command du -shc "$@" | sort -h; }
+tsize() { tree -h --du; }
 
 # music related
 ytdl() {

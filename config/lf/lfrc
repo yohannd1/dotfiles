@@ -129,6 +129,11 @@ cmd pdf-compress ${{
   pdf-compress "$f"
 }}
 
+cmd dragon-drop ${{
+  IFS=$(printf '\n\t')
+  dragon-drop $fx
+}}
+
 cmd vidir-rename ${{
   set -efu
   if [ -z "$fs" ]; then
@@ -162,6 +167,7 @@ map v move-here
 map p copy-here
 map E extract
 map P set preview!
+map D dragon-drop
 map ~ cd ~
 map <c-z> ${{ kill -STOP "$PPID" }}
 map <c-l> reload; redraw
