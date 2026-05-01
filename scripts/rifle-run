@@ -150,8 +150,7 @@ elif isLang 'acrylic'; then
     export ACR_KATEX_PATH="$XDG_DATA_DIR/katex"
     ln -s "$ACR_KATEX_PATH" "$tmp/katex"
 
-    FILE_TO_WATCH="$file" OUTPUT_FILE="$tmp/out.html" KATEX_PATH="katex/" \
-      acr-live-preview
+    FILE_TO_WATCH="$file" OUTPUT_DIR="$tmp" KATEX_PATH="katex/" acr-live-preview
   }
 
 elif isLang 'alda'; then
@@ -467,22 +466,32 @@ elif isLang 'svg'; then
   do_run() { openfork "$file"; }
 
 elif isLang 'systemverilog'; then
-  # with verilator
-  # fdir=$(dirname "$file")
-  # fname=$(basename "$file")
-  # verilator --binary \
-  #   -j 0 -Wall \
-  #   --Mdir "$tmp" -I"$fdir" \
-  #   "$fname"
-  # "$tmp/V*"
+  useVerilator=1
 
-  do_build() {
-    iverilog -g2012 -o "$tmp/out" "$file"
-  }
-  do_run() {
-    do_build
-    "$tmp/out"
-  }
+  if [ "$useVerilator" ]; then
+    do_build() {
+      fdir=$(dirname "$file")
+      fname=$(basename "$file")
+      verilator --binary -j "${N_JOBS:-0}" -Wall -Wno-fatal \
+        -O0 --Mdir "$tmp" -I"$fdir" "$fname"
+    }
+    do_run() {
+      # echo WAIT
+      # openfork "$tmp"
+      # read _
+      do_build
+      "$tmp/V"*
+    }
+  else
+    do_build() {
+      iverilog -g2012 -o "$tmp/out" "$file"
+    }
+    do_run() {
+      do_build
+      "$tmp/out"
+    }
+  fi
+
   do_check() {
     verible-verilog-lint --rules "$_VERIBLE_LINT_RULES" "$file" || true
     verilator --lint-only -Wall "$file"

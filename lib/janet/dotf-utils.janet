@@ -86,7 +86,7 @@
     ret))
 
 (defn run<stdout
-  "Runs the specified command and returns either its stdout (if successful) or nil (if not successful)"
+  "Runs the specified command and returns either its stdout (if successful) or nil (if not successful)."
   [args]
 
   (match (run< args {:out true})
