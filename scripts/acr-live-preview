@@ -3,6 +3,7 @@
 (import spork/http)
 (import spork/path :only [parent basename abspath normalize])
 (use dotf-utils)
+(use dotf-evx)
 
 (var *input-last-compiled* nil)
 (var *input-file* nil)
@@ -10,6 +11,7 @@
 (var *katex-path* nil)
 (var *changes-queue* nil)
 (var *reload-queue* nil)
+(var *reload-bqueue* nil)
 (var *cached-output* nil)
 
 (defn get-mtime [path]
@@ -107,13 +109,13 @@
           <p>See the live-preview output for (potentially) more details.</p>
           </html>
           ```
-          ))
+          reload-js))
       (set *cached-output* err-page)))
 
   (set *input-last-compiled* new-time))
 
 (defn req-handler [req]
-  (def {:method method :path path} req)
+  (def {:method method :path path :connection conn} req)
 
   (defn reply-page []
     (when (should-compile-input)
@@ -128,9 +130,12 @@
 
     (def body-fiber
       (coro
-        # FIXME: this is chaotic if there are more than 2 event streams open!
-        (while (def x (ev/take *reload-queue*))
-          (yield "data: reload\n\n"))))
+        (def [code ch] (:connect *reload-bqueue*))
+        (defer (:disconnect *reload-bqueue* code)
+          (forever
+            (def _ (ev/take ch))
+            # FIXME: since the stream gets old, it errors out. Is there a way to maybe check if `conn` is dead?
+            (yield "data: reload\n\n")))))
 
     {:status 200 :headers headers :body body-fiber})
 
@@ -146,8 +151,6 @@
       (break {:status 404 :body "Not found"}))
 
     (def mime (get-mime-type sane-path))
-
-    # (pp {:path sane-path :mime mime})
 
     (var contents nil)
     (try
@@ -174,8 +177,9 @@
   (set *input-file* (os/getenv "FILE_TO_WATCH"))
   (set *output-dir* (os/getenv "OUTPUT_DIR"))
   (set *katex-path* (os/getenv "KATEX_PATH"))
-  (set *changes-queue* (ev/chan))
-  (set *reload-queue* (ev/chan 64))
+  (set *changes-queue* (ev/chan 64))
+  (def bqueue-middle (ev/chan 64))
+  (set *reload-bqueue* (make-broadcast-chan bqueue-middle))
 
   (let [fw (filewatch/new *changes-queue*)
         parent (path/parent *input-file*)]
@@ -189,7 +193,7 @@
     (while (def ev (ev/take *changes-queue*))
       (def {:file-name got-name} ev)
       (when (= want-name got-name)
-        (ev/give *reload-queue* "RELOAD!")
+        (ev/give bqueue-middle true)
         (++ i)))
     (eprintf "warning: queue event loop abruptly stopped!"))
 
