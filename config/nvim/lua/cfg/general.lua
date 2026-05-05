@@ -194,8 +194,17 @@ if false then
   })
 end
 
+autocmd({"WinEnter"}, {
+  pattern = "*",
+  callback = function()
+    utils.maxwin.tryMaxWin()
+  end
+})
+
 -- Fix some folds not being detected when a file is loaded.
--- Not even sure if it's related but I got it from there: https://github.com/nvim-treesitter/nvim-treesitter/issues/1337#issuecomment-1397639999
+--
+-- Not even sure if it's related but I got it from there:
+-- https://github.com/nvim-treesitter/nvim-treesitter/issues/1337#issuecomment-1397639999
 autocmd({"BufEnter"}, {
   pattern = "*",
   callback = function()
