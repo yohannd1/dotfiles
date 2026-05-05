@@ -3,11 +3,9 @@
 set -ue
 progname=$(basename "$0")
 
-PROMPT_ON_ERROR=${PROMPT_ON_ERROR:-}
-
 die() {
   printf >&2 "fatal: %s\n" "$*"
-  if [ "$PROMPT_ON_ERROR" ]; then
+  if [ "${PROMPT_ON_ERROR:-}" ]; then
     printf >&2 "[press enter to dismiss]"
     read -r _
     exit 1

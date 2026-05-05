@@ -28,7 +28,7 @@
   (exec-replace [SHELL "-c" cmd]))
 
 (defn cmd-menu [add-to-recent]
-  (if-let [out (readline-agnostic :prompt "Type the desired command: ")]
+  (if-let [out (readline-agnostic :prompt-msg "Type the desired command: ")]
     (run-shell (string out) add-to-recent)
     (os/exit 1)))
 
