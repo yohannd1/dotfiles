@@ -467,4 +467,35 @@ M.tryRequire = function(name)
   end
 end
 
+M.maxwin = {}
+local mw = M.maxwin
+
+mw._is_enabled = false
+
+mw.tryMaxWin = function()
+  if mw._is_enabled then
+    M.doKeys("<C-w>|<C-w>_")
+  end
+end
+
+mw.enable = function()
+  if not mw._is_enabled then
+    mw._is_enabled = true
+    print("maxwin mode enabled")
+  end
+  mw.tryMaxWin()
+end
+
+mw.disable = function()
+  mw._is_enabled = false
+  print("maxwin mode disabled")
+end
+
+mw.equalize = function()
+  if mw._is_enabled then
+    mw.disable()
+  end
+  M.doKeys("<C-w>=")
+end
+
 return M

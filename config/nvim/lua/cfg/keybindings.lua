@@ -429,11 +429,7 @@ local quickFixIsOpen = function()
 end
 
 local toggleQuickFix = function()
-  if quickFixIsOpen() then
-    vim.cmd.cclose()
-  else
-    vim.cmd.copen()
-  end
+  (quickFixIsOpen() and vim.cmd.cclose or vim.cmd.copen)()
 end
 
 map("n", "<Leader>qq", toggleQuickFix, { noremap = true, desc = "quickfix: toggle" })
@@ -511,8 +507,8 @@ map("v", "<Leader>,", ":ProgSnipVisual<CR>", arg_nr)
 -- map("n", "<Leader>g-", ":NumWriteDec<CR>", arg_nr_s)
 
 -- "Maximize & minimize" windows... kinda
-map("n", "<C-w>M", "<C-w>|<C-w>_", { desc = "maximize window" })
-map("n", "<C-w>m", "<C-w>=", { desc = "equalize windows" })
+map("n", "<C-w>M", utils.maxwin.enable, { desc = "maximize windows" })
+map("n", "<C-w>m", utils.maxwin.equalize, { desc = "equalize windows" })
 
 -- Strudel keybindings
 box(utils.tryRequire("strudel")):andThen(function(strudel)
