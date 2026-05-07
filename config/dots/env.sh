@@ -200,8 +200,14 @@ if [ -r ~/.config/dircolors ]; then
   eval "$(dircolors -b ~/.config/dircolors)"
 fi
 
+if [ -f ~/.local/share/dots/device-name ]; then
+  export DOTF_DEVNAME="$(cat ~/.local/share/dots/device-name)"
+else
+  export DOTF_DEVNAME="$HOST"
+fi
+
 # system-specific config
-case "$HOST" in
+case "$DOTF_DEVNAME" in
   core)
     export USE_BUILTIN_1080P=
     export RESLUA_FONT_SIZE=1.25
@@ -215,6 +221,9 @@ case "$HOST" in
     export DOTF_SCALE=1.15
     export VOLUMECTL_INCREMENT=5
     export N_JOBS=5 # don't want to use many...
+    ;;
+  *)
+    export N_JOBS=$(( $(nproc) / 2 ))
     ;;
 esac
 

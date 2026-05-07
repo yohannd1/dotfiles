@@ -64,11 +64,13 @@ _comp_options+=(globdots) # include hidden files in autocomplete
 # configure prompt
 {
   precmd() {
-    local cwdAbbreviated
-    cwdAbbreviated=$(pwd | awk -v patt="^$HOME" '{ gsub(patt, "~"); print }')
+    local cwd user
+    cwd=$(pwd | awk -v patt="^$HOME" '{ gsub(patt, "~"); print }')
+    user=$(whoami)
+    device=${DOTF_DEVNAME:-"@$HOST"}
 
     # set terminal title
-    setTitle "$(whoami)@${HOST}:$cwdAbbreviated"
+    setTitle "zsh($user,$device):$cwd"
   }
 
   _ps1Symbol="%F{13}λ "
@@ -92,8 +94,10 @@ _comp_options+=(globdots) # include hidden files in autocomplete
     _ps1ShellStackIndicator=""
   fi
 
+  _ps1DevName=" %F{4}${DOTF_DEVNAME}"
+
   PS1="
-${_ps1MainBox}${_ps1ExitCodeIndicator}${_ps1JobCountIndicator}${_ps1ShellStackIndicator}
+${_ps1MainBox}${_ps1DevName}${_ps1ExitCodeIndicator}${_ps1JobCountIndicator}${_ps1ShellStackIndicator}
 $_ps1Symbol%b%F{5}"
 
   _getGitBranch() {
