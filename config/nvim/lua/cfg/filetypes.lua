@@ -730,4 +730,12 @@ ft.ysh = function()
   setLocals { commentstring = "# %s" }
 end
 
+vim.lsp.config["c++"] = {
+  cmd = {"clangd"},
+  filetypes = {"cpp", "c"}, -- automatically attaches?
+  root_markers = {".git", "CMakeLists.txt", "Makefile"},
+  settings = {}, -- TODO: check this for clangd - https://catalog.lintel.tools/schemas/schemastore/clangd/ ?
+}
+vim.lsp.enable("c++")
+
 initialize()
