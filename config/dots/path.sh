@@ -9,12 +9,18 @@ _pathsh_glob() {
 _pathsh_noDup() { awk '!x[$0]++'; }
 
 _pathsh_printAll() {
+  # ccache wrapping
   [ -d /usr/lib/ccache/bin ] && echo /usr/lib/ccache/bin
 
+  # scripts
+  echo ~/storage/local/scripts
+  [ "$DOTFILES" ] && echo "$DOTFILES/scripts"
+
+  # local scripts
   echo ~/.local/bin
   echo ~/.nix-profile/bin
-  [ "$DOTFILES" ] && echo "$DOTFILES/scripts"
-  echo ~/storage/local/scripts
+
+  # from programming languages
   [ "$GOPATH" ] && echo "$GOPATH"
   [ "$CARGO_HOME" ] && echo "$CARGO_HOME/bin"
   echo "${GEM_HOME:-$HOME/.gem}/bin"
@@ -23,6 +29,7 @@ _pathsh_printAll() {
   echo "$XDG_CONFIG_HOME/composer/vendor/bin"
   [ "$LUAROCKS_HOME" ] && echo "$LUAROCKS_HOME/bin"
   echo "$JANET_MODPATH/bin"
+  [ "$FVM_CACHE_PATH" ] && echo "$FVM_CACHE_PATH/default/bin"
 
   _packsDir="${XDG_CACHE_HOME:-$HOME/.cache}/packs"
 

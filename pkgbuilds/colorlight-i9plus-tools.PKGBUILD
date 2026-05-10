@@ -1,3 +1,8 @@
+# NOTE: this package is a heavy WIP. I never really figured what to bundle, but
+# it's minimally functional, I guess.
+#
+# I may remove the ch347prog set up in the future, though, as openFPGALoader
+# does it better imo.
 _pkgname=colorlight-i9plus-tools
 pkgname=$_pkgname-git
 pkgver=0.1
@@ -17,8 +22,6 @@ source=(
   "git+https://github.com/openocd-org/openocd#commit=3a4f445bd92101d3daee3715178d3fbff3b7b029"
 )
 sha256sums=('SKIP' 'SKIP')
-
-# TODO: this package is a heavy WIP at the moment. Still figuring out what to bundle and ironing bugs out.
 
 prepare() {
   (

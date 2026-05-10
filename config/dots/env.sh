@@ -81,6 +81,7 @@ export JANET_MANPATH="$XDG_DATA_DIR/man"
 export ZSH_PLUGIN_PATH="$XDG_CACHE_HOME/zsh-plugins"
 export R_PROFILE_USER="$DOTFILES/config/Rprofile.R"
 export R_LIBS_USER="$XDG_CACHE_HOME/rlibs"
+export FVM_CACHE_PATH="$XDG_CACHE_HOME/fvm"
 if _exists sccache; then
   export RUSTC_WRAPPER=sccache
 fi
@@ -89,7 +90,7 @@ if _exists ccache; then
   export CMAKE_C_COMPILER_LAUNCHER=ccache
 fi
 
-# wine config (pick )
+# wine config
 export WINEW_32_PREFIX="$XDG_DATA_DIR/wine32"
 export WINEW_64_PREFIX="$XDG_DATA_DIR/wine64"
 export WINEARCH="win64"

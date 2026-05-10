@@ -45,9 +45,11 @@ pkgver() {
 }
 
 prepare() {
-  :
+  jobc=${N_JOBS:-$(nproc)}
 
   # XXX: SKIPPING THIS but it might be needed when setting up the repo on a new machine
+  # TODO: confirm if that is the case ^
+  #
   # git submodule init
   # git config submodule.src/3rdparty/qt5-x11embed.url "${srcdir}/qt5-x11embed"
   # git config submodule.src/3rdparty/rpmalloc.url "${srcdir}/rpmalloc"
@@ -75,7 +77,9 @@ build() {
     -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
     "$forkDir"
 
-  cmake --build .
+  # NOTE: only building the targets I believe are relevant here. This might be wrong.
+  cmake --build . -j "$jobc" -t plugins/all
+  cmake --build . -j "$jobc" -t lmms
 }
 
 package() {

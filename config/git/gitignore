@@ -19,3 +19,7 @@ Thumbs.db
 
 # formatters, linters and analyzers
 .php-cs-fixer.cache
+
+# FVM Version Cache
+.fvm/
+
