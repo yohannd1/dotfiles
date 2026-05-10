@@ -36,11 +36,17 @@ message() {
   '
 
   if isTermux; then
-    termux-battery-status \
-      | jq -r '"bat \(.percentage)%"'
+    termux-battery-status | jq -r '
+      (if .plugged == "PLUGGED_AC" then " chr" else "" end) as $chrSuffix
+      | "bat \(.percentage)%\($chrSuffix)"
+    '
   else
     find /sys/class/power_supply/ | grep BAT | while read -r battery; do
-      printf "bat %.0f%%\n" "$(cat "$battery/capacity")"
+      chrSuffix=
+      if cat "$battery/status" | grep '[Cc]harging'; then
+        chrSuffix=" chr"
+      fi
+      printf "bat %.0f%%%s\n" "$(cat "$battery/capacity")" "$chrSuffix"
     done
   fi
 
