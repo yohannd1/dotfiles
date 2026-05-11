@@ -517,3 +517,6 @@ box(utils.tryRequire("strudel")):andThen(function(strudel)
   map("n", "<Leader>ho", strudel.launch, { desc = "strudel: launch browser" })
   map("n", "<Leader>hO", strudel.quit, { desc = "strudel: quit browser" })
 end)
+
+-- LSP keybindings
+map("n", "<Leader>v", vim.diagnostic.setloclist, { desc = "open diagnostics" })

@@ -738,4 +738,12 @@ vim.lsp.config["c++"] = {
 }
 vim.lsp.enable("c++")
 
+-- vim.lsp.config["cs"] = {
+--   cmd = {"omnisharp"},
+--   filetypes = {"cs"},
+--   root_markers = {".git", "project.godot"},
+--   settings = {},
+-- }
+-- vim.lsp.enable("cs")
+
 initialize()
