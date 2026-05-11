@@ -1,7 +1,7 @@
 #!/usr/bin/env janet
 
 (import spork/http)
-(import spork/path :only [parent basename abspath normalize])
+(import spork/path :only [parent basename abspath normalize dirname])
 (use dotf-utils)
 (use dotf-evx)
 
@@ -144,11 +144,25 @@
     (when (nil? sane-path)
       (break {:status 400 :body "malformed path"}))
 
-    # make it absolute
-    (def sane-path (path/normalize (string *output-dir* "/" sane-path)))
+    # make it absolute by searching a path where it exists
+    (def input-dir (path/dirname *input-file*))
+    (def candidate-dirs [*output-dir* input-dir])
+    (var valid-path nil)
+    (defn rec-candidates [i]
+      (cond
+        (>= i (length candidate-dirs))
+        (do
+          (eprintf "warning: got request for \"%s\", but could not find file in anywhere" sane-path)
+          (eprintf "candidate dirs: %j" candidate-dirs)
+          (break {:status 404 :body "Not found"}))
 
-    (when (nil? (os/stat sane-path))
-      (break {:status 404 :body "Not found"}))
+        (-> (def abs-found (string (in candidate-dirs i) "/" sane-path))
+            (os/stat) (nil?) (not))
+        (set valid-path abs-found)
+
+        (rec-candidates (inc i))))
+    (rec-candidates 0)
+    (def sane-path (assert valid-path))
 
     (def mime (get-mime-type sane-path))
 
