@@ -263,16 +263,18 @@
     (t :tty ["exiftool" file])
     (t :runpage ["mediainfo" file]))
 
-  # images
-  (when (m :mime ["image/vnd.djvu"])
-    (t :runpage ["djvutxt" file])
-    (t :runpage ["exiftool" file]))
-  (when (or (m :mime [[:begins "image/"]])
-            (m :ext ["gif" "jpg" "png" "webp"]))
+  (defn handle-image [&keys is-djvu]
+    (default is-djvu false)
     (t :gui ["sxiv" "-a" "-s" "f" "-p" file])
+    (if is-djvu
+      (t :runpage ["img2txt" "--gamma=0.6" "--" file])
+      (t :runpage ["djvutxt" file]))
     (t :runpage ["viu" "-n" file])
-    (t :runpage ["img2txt" "--gamma=0.6" "--" file])
     (t :runpage ["exiftool" file]))
+
+  # image exensions
+  (when (m :ext ["gif" "jpg" "png" "webp"]) (handle-image))
+  (when (m :ext ["djvu"]) (handle-image :is-djvu true)) # TODO: confirm if it's this
 
   # music modules
   (when is-openmpt-compatible
@@ -364,6 +366,8 @@
   (mt :ext ["odt" "ods" "odp" "sxw"]
       :runpage ["odt2txt" file])
 
+  # general project files
+  (mt :ext ["aseprite"] :gui ["aseprite" file])
   (mt :ext ["kra"] :gui ["krita" file])
   (mt :ext ["pxo"] :gui ["pixelorama" file])
   (mt :ext ["blend"] :gui ["@blender" file])
@@ -401,7 +405,9 @@
   (mt :ext ["dot"] :gui ["rifle-run" "run" "dot" file])
   (mt :ext ["xopp"] :gui ["xournalpp" file])
 
-  (when (m :mime ["inode/x-empty" [:ends "/xml"]])
-    (handle-text))
+  # mime types
+  (when (m :mime ["image/vnd.djvu"]) (handle-image :is-djvu true))
+  (when (m :mime [[:begins "image/"]]) (handle-image))
+  (when (m :mime ["inode/x-empty" [:ends "/xml"]]) (handle-text))
 
   (t :fallback))
