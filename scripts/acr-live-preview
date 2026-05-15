@@ -150,11 +150,7 @@
     (var valid-path nil)
     (defn rec-candidates [i]
       (cond
-        (>= i (length candidate-dirs))
-        (do
-          (eprintf "warning: got request for \"%s\", but could not find file in anywhere" sane-path)
-          (eprintf "candidate dirs: %j" candidate-dirs)
-          (break {:status 404 :body "Not found"}))
+        (>= i (length candidate-dirs)) nil
 
         (-> (def abs-found (string (in candidate-dirs i) "/" sane-path))
             (os/stat) (nil?) (not))
@@ -162,7 +158,11 @@
 
         (rec-candidates (inc i))))
     (rec-candidates 0)
-    (def sane-path (assert valid-path))
+    (when (nil? valid-path)
+      (eprintf "warning: got request for \"%s\", but could not find file in anywhere" sane-path)
+      (eprintf "candidate dirs: %j" candidate-dirs)
+      (break {:status 404 :body "Not found"}))
+    (def sane-path valid-path)
 
     (def mime (get-mime-type sane-path))
 
