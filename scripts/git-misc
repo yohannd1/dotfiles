@@ -29,27 +29,42 @@ restoreFile() {
   git show "$commit":"$1"
 }
 
-pullCheap() {
-  # A simple 'git pull' may pull from other branches, and waste bandwidth.
-  # So let's figure out where exactly we need to pull from.
+_getRemoteBranch() {
+  [ $# = 0 ] || return 2
 
   # First attempt is to figure out the upstream branch name.
   localBranch=$(git rev-parse --abbrev-ref HEAD)
   remoteBranch=$(git for-each-ref --format='%(upstream:short)' "$(git symbolic-ref -q HEAD)")
   remoteName=${remoteBranch%%/*}
   if [ "$remoteName" ]; then
-    printf >&2 "Pulling branch \"%s\" from remote \"%s\"\n" "$localBranch" "$remoteName"
-    git pull "$remoteName" "$localBranch"
+    printf >&2 "info: got branch \"%s\" from remote \"%s\"\n" "$localBranch" "$remoteName"
+    _ret_remoteId=$remoteName
+    _ret_remoteRef=$localBranch
     return 0
   fi
 
   # Sometimes that isn't possible (e.g. when using branches created via `gh pr
   # checkout`), so let's try something else.
-  printf >&2 "No associated remote branch; trying to figure out through config...\n"
+  printf >&2 "info: no associated remote branch; trying to figure out through config...\n"
   remoteUrl=$(git config --get "branch.$localBranch.remote")
   remoteRef=$(git config --get "branch.$localBranch.merge")
-  printf >&2 "Pulling ref \"%s\" from remote \"%s\"\n" "$remoteRef" "$remoteUrl"
-  git pull "$remoteUrl" "$remoteRef"
+  if [ "$remoteUrl" ] && [ "$remoteRef" ]; then
+    printf >&2 "info: got \"%s\" from remote \"%s\"\n" "$remoteRef" "$remoteUrl"
+    _ret_remoteId=$remoteUrl
+    _ret_remoteRef=$remoteRef
+    return 0
+  fi
+
+  printf >&2 "error: could not figure out branch\n"
+  return 1
+}
+
+pullCheap() {
+  # A simple 'git pull' may pull from other branches, and waste bandwidth.
+  # So let's figure out where exactly we need to pull from.
+  if _getRemoteBranch; then
+    git pull "$_ret_remoteId" "$_ret_remoteRef"
+  fi
 }
 
 gitDir=$(upfind .git)
