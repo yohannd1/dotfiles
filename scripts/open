@@ -273,7 +273,7 @@
     (t :runpage ["exiftool" file]))
 
   # image exensions
-  (when (m :ext ["gif" "jpg" "png" "webp"]) (handle-image))
+  (when (m :ext ["svg" "gif" "jpg" "png" "webp"]) (handle-image))
   (when (m :ext ["djvu"]) (handle-image :is-djvu true)) # TODO: confirm if it's this
 
   # music modules

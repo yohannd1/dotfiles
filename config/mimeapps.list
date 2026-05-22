@@ -30,6 +30,8 @@ inode/directory=filemanager.desktop
 x-scheme-handler/file=filemanager.desktop
 text/xml=editor.desktop
 x-scheme-handler/gale=gale-handler.desktop
+video/mp4=open.desktop
+video/mkv=open.desktop
 
 [Added Associations]
 application/xml=editor.desktop;

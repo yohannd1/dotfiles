@@ -83,7 +83,7 @@ local font_presets = {
   },
   ["Sudo"] = {
     name = "Sudo",
-    base_size = 17,
+    base_size = 16,
   },
   ["Mononoki"] = {
     name = "Mononoki",
