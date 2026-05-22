@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+set -ue
+
+(
+  cd "$ACR_WIKI_DIR"
+  fd -tf '\.acr$' | while read -r file; do
+    acr2html -b debug "$file" >/dev/null \
+      || printf "ERROR IN FILE: [[ %s ]]\n" "$file"
+  done
+)

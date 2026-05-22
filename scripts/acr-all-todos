@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+set -ue
+
 acr-list-titles \
   | sort -h \
   | while read -r line; do
