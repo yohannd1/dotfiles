@@ -163,8 +163,8 @@ M.add({
       },
     })
 
-    local langs_enable = {"lua", "python", "latex", "cmake", "java", "rust", "cpp", "verilog"}
-    local langs_disable = {"gitcommit", "bash", "PKGBUILD", "janet"}
+    local langs_enable = {"lua", "latex", "cmake", "java", "rust", "cpp", "verilog"}
+    local langs_disable = {"gitcommit", "bash", "PKGBUILD", "janet", "python"}
 
     local findEqual = function(haystack, needle)
       for _, x in ipairs(haystack) do

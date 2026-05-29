@@ -332,14 +332,16 @@ local bufferSyntaxOff = function()
   vim.b.current_syntax = nil
 end
 
-create_cmd("LiveGrepRepo", function(t)
+dummy.liveGrepRepo = function()
   local root_folder = vim.fs.root(0, ".git")
   if root_folder == nil then
     print("Not in a git repo, it seems.")
   end
 
   require("telescope.builtin").live_grep({ cwd = root_folder })
-end, { nargs = 0 })
+end
+
+create_cmd("LiveGrepRepo", function(t) dummy.liveGrepRepo() end, { nargs = 0 })
 
 -- autocmd({"BufReadPost"}, {
 --   pattern = "*",

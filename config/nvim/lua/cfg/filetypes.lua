@@ -730,20 +730,30 @@ ft.ysh = function()
   setLocals { commentstring = "# %s" }
 end
 
-vim.lsp.config["c++"] = {
+local addLsp = function(name, config)
+  vim.lsp.config[name] = config
+  vim.lsp.enable(name)
+end
+
+addLsp("c++", {
   cmd = {"clangd"},
-  filetypes = {"cpp", "c"}, -- automatically attaches?
+  filetypes = {"cpp", "c"},
   root_markers = {".git", "CMakeLists.txt", "Makefile"},
   settings = {}, -- TODO: check this for clangd - https://catalog.lintel.tools/schemas/schemastore/clangd/ ?
-}
-vim.lsp.enable("c++")
+})
 
--- vim.lsp.config["cs"] = {
+addLsp("zig", {
+  cmd = {"zls"},
+  filetypes = {"zig"},
+  root_markers = {".git", "build.zig"},
+  settings = {},
+})
+
+-- addLsp("cs", {
 --   cmd = {"omnisharp"},
 --   filetypes = {"cs"},
 --   root_markers = {".git", "project.godot"},
 --   settings = {},
--- }
--- vim.lsp.enable("cs")
+-- })
 
 initialize()

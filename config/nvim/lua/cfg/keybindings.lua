@@ -344,6 +344,7 @@ map("n", "<Leader>fh", tsc_builtin.help_tags, { noremap = true, desc = "find hel
 map("n", "<Leader>f.", tsc_builtin.find_files, { noremap = true, desc = "find files" })
 map("n", "<Leader>fg", tsc_builtin.git_files, { noremap = true, desc = "find files in git repo" })
 map("n", "<Leader>fl", tsc_builtin.live_grep, { noremap = true, desc = "live grep" })
+map("n", "<Leader>fL", dummy.liveGrepRepo, { noremap = true, desc = "live grep (in repo root)" })
 map("n", "<Leader>m", tsc_builtin.commands, { noremap = true, desc = "find commands" })
 map("n", "<Leader>fr", dummy.menuOpenRecent, { noremap = true, desc = "find recent files" })
 
@@ -436,8 +437,6 @@ map("n", "<Leader>qq", toggleQuickFix, { noremap = true, desc = "quickfix: toggl
 map("n", "<Leader>qn", ":cnext<CR>", { noremap = true, desc = "quickfix: next" })
 map("n", "<Leader>qp", ":cprev<CR>", { noremap = true, desc = "quickfix: previous" })
 
-map("n", "<Leader>l", [[:messages<CR>]], arg_nr)
-
 -- open terminal
 map("n", "<Leader>tn", [[:terminal<CR>i]], arg_nr)
 map("n", "<Leader>tN", lazyJobStart("tmux", "new-window"), { noremap = true, desc = "new tmux tab" })
@@ -519,4 +518,5 @@ box(utils.tryRequire("strudel")):andThen(function(strudel)
 end)
 
 -- LSP keybindings
-map("n", "<Leader>v", vim.diagnostic.setloclist, { desc = "open diagnostics" })
+map("n", "<Leader>ll", vim.diagnostic.setloclist, { desc = "open diagnostics" })
+map("n", "<Leader>lg", vim.lsp.buf.definition, { desc = "go to definition" })
