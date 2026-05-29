@@ -28,6 +28,12 @@
   (peg/compile
     '(* :d+ "_" (<- (any (if-not ".wav" 1))) ".wav")))
 
+(defn map-range [start end x]
+  (cond
+    (string? x) (seq [i :range [start (inc end)]] (string/format x i))
+    (function? x) (seq [i :range [start (inc end)]] (x i))
+    (error "???")))
+
 (defn .osc-lmms [&opt path]
   "Generate corrscope channel entries for LMMS tracks."
 
