@@ -211,11 +211,10 @@
         (++ i)))
     (eprintf "warning: queue event loop abruptly stopped!"))
 
-  (def host "127.0.0.1")
-  (def port 8000)
-
-  # TODO: how to do an auto port? I think this defaults to 8000
-  (http/server req-handler host port)
+  (def [host port] ["127.0.0.1" 0]) # port 0 is "auto port"
+  (def server (http/server req-handler host port))
+  (def [_ got-port] (net/localname server))
+  (set port got-port)
 
   (def open-url (string "http://" host ":" port "/"))
   (def opener (-> (os/getenv "OPENER") (or "xdg-open")))
