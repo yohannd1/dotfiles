@@ -213,8 +213,7 @@
 
   (def [host port] ["127.0.0.1" 0]) # port 0 is "auto port"
   (def server (http/server req-handler host port))
-  (def [_ got-port] (net/localname server))
-  (set port got-port)
+  (def [_ port] (net/localname server))
 
   (def open-url (string "http://" host ":" port "/"))
   (def opener (-> (os/getenv "OPENER") (or "xdg-open")))
