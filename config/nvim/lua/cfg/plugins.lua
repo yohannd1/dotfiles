@@ -686,7 +686,7 @@ M.add("https://gitlab.com/HiPhish/guile.vim")
 M.add("yohannd1/fennel.vim") -- fork of bakpakin/fennel.vim
 M.add("ollykel/v-vim")
 M.add("habamax/vim-godot")
-M.add("bellinitte/uxntal.vim")
+-- M.add("bellinitte/uxntal.vim") -- apparently moved to https://167.235.19.20/uxntal.vim/ but I don't trust it yet
 M.add("dart-lang/dart-vim-plugin")
 M.add("lepture/vim-jinja")
 M.add("hylang/vim-hy")

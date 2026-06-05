@@ -217,7 +217,7 @@ case "$DOTF_DEVNAME" in
     export N_JOBS=2 # don't want to use many...
     ;;
   core2)
-    export RESLUA_FONT_SIZE=1.35
+    export RESLUA_FONT_SIZE=1.275
     export RESLUA_FONT_NAME="SourceCodePro"
     export DOTF_SCALE=1.15
     export VOLUMECTL_INCREMENT=5
