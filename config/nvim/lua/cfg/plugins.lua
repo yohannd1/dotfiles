@@ -163,8 +163,13 @@ M.add({
       },
     })
 
-    local langs_enable = {"lua", "python", "latex", "cmake", "java", "rust", "cpp", "verilog"}
+    local langs_enable = {"lua", "latex", "cmake", "java", "rust", "cpp", "verilog"}
     local langs_disable = {"gitcommit", "bash", "PKGBUILD", "janet"}
+
+    if not utils.os.is_android then
+      -- stupid treesitter bug. not quite sure what is happening.
+      table.insert(langs_enable, "python")
+    end
 
     local findEqual = function(haystack, needle)
       for _, x in ipairs(haystack) do
