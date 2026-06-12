@@ -164,7 +164,12 @@ M.add({
     })
 
     local langs_enable = {"lua", "latex", "cmake", "java", "rust", "cpp", "verilog"}
-    local langs_disable = {"gitcommit", "bash", "PKGBUILD", "janet", "python"}
+    -- Blacklist: gitcommit, bash, PKGBUILD, janet
+
+    if not utils.os.is_android then
+      -- stupid treesitter bug. not quite sure what is happening.
+      table.insert(langs_enable, "python")
+    end
 
     local findEqual = function(haystack, needle)
       for _, x in ipairs(haystack) do
@@ -178,7 +183,7 @@ M.add({
     vim.api.nvim_create_autocmd({"FileType"}, {
       pattern = "*",
       callback = function()
-        if findEqual(langs_enable, vim.bo.filetype) and not findEqual(langs_disable, vim.bo.filetype) then
+        if findEqual(langs_enable, vim.bo.filetype) then
           vim.cmd("TSBufEnable highlight")
         end
       end,
