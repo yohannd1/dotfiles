@@ -742,12 +742,12 @@ addLsp("c++", {
   settings = {}, -- TODO: check this for clangd - https://catalog.lintel.tools/schemas/schemastore/clangd/ ?
 })
 
-addLsp("zig", {
-  cmd = {"zls"},
-  filetypes = {"zig"},
-  root_markers = {".git", "build.zig"},
-  settings = {},
-})
+-- addLsp("zig", {
+--   cmd = {"zls"},
+--   filetypes = {"zig"},
+--   root_markers = {".git", "build.zig"},
+--   settings = {},
+-- })
 
 -- addLsp("cs", {
 --   cmd = {"omnisharp"},
