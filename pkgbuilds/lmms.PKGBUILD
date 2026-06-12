@@ -1,7 +1,7 @@
 # Based off furnace-git and lmms-git PKGBUILDs
 
 pkgname=lmms-fork
-pkgver=1.3.0.alpha.1.r1030.g22ebee18c
+pkgver=1.3.0.alpha.1.r1114.g71615e8d3
 pkgrel=1
 pkgdesc="The Linux MultiMedia Studio."
 arch=('x86_64')
@@ -79,6 +79,7 @@ build() {
 
   # NOTE: only building the targets I believe are relevant here. This might be wrong.
   cmake --build . -j "$jobc" -t plugins/all
+  cmake --build . -j "$jobc" -t manpage
   cmake --build . -j "$jobc" -t lmms
 }
 
