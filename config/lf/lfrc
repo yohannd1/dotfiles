@@ -152,10 +152,12 @@ cmd sizes ${{
 cmd vid-trim-small ${{ vid-trim-small "$f" }}; reload
 cmd make-exec ${{ chmod +x "$f" }}; reload
 cmd make-noexec ${{ chmod -x "$f" }}; reload
-cmd move-here ${{ PROMPT_ON_ERROR=1 d.fileman-actions move-here "$fs" }}; unselect; reload
-cmd copy-here ${{ PROMPT_ON_ERROR=1 d.fileman-actions copy-here "$fs" }}; unselect; reload
+cmd move-here :${{ PROMPT_ON_ERROR=1 d.fileman-actions move-here "$fs" }}; unselect; reload
+cmd copy-here :${{ PROMPT_ON_ERROR=1 d.fileman-actions copy-here "$fs" }}; unselect; reload
 cmd extract ${{ PROMPT_ON_ERROR=1 d.fileman-actions extract "$f" }}
 cmd flatten ${{ PROMPT_ON_ERROR=1 d.fileman-actions flatten "$f" }}
+
+cmd filter-music :set filtermethod regex; filter '\.(ogg|m4a|mp3|wav|flac|ogx|opus)$'
 
 # command mappings
 map . set hidden!
