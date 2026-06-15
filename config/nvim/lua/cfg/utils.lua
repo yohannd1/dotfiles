@@ -376,6 +376,16 @@ M.getVisualLineNumbers = function()
   return l_start, l_end
 end
 
+M.findEqual = function(haystack, needle)
+  for _, x in ipairs(haystack) do
+    if x == needle then
+      return true
+    end
+  end
+  return false
+end
+
+
 M.task = {}
 
 M.task.toggleLine = function()

@@ -139,57 +139,60 @@ local pj_code = ("%s/pj/code"):format(HOME)
 local UNUSED_PLUGIN_COND = false
 
 -- Treesitter {{{
-M.add({
-  source = "nvim-treesitter/nvim-treesitter",
 
-  -- FIXME: for some reason this is fixing a bug I was having. See https://github.com/neovim/neovim/discussions/38037, it's a bit related.
-  branch = "master",
+local ts_config = {}
 
-  after = function()
-    require("nvim-treesitter").setup({
-      ensure_installed = {"lua", "python"},
+ts_config.langs_enable = {"lua", "latex", "cmake", "java", "rust", "cpp", "verilog"}
+-- Blacklist: gitcommit, bash, PKGBUILD, janet
 
-      sync_install = false,
-      auto_install = false,
-      ignore_install = {},
+-- Configure treesitter differently depending on the condition. Based off this:
+-- https://samuellawrentz.com/blog/nvim-treesitter-archived-neovim-0-12-migration/
+-- (is this article AI generated? no shade if that's not the case... and thanks
+-- either way I guess)
+if vim.version.lt(vim.version(), "0.12.0") then
+  -- Slowly this bug is gonna spread, I think, until this alternative is
+  -- unusable. Outdated sources and stuff. But we'll see.
+  M.add({
+    source = "nvim-treesitter/nvim-treesitter",
 
-      indent = {
-        enable = {"python"},
-      },
+    -- FIXME: for some reason this is fixing a bug I was having. See
+    -- https://github.com/neovim/neovim/discussions/38037, it's a bit related.
+    branch = "master",
 
-      highlight = {
-        enable = false,
-        additional_vim_regex_highlighting = false,
-      },
-    })
+    after = function()
+      require("nvim-treesitter").setup({
+        ensure_installed = {"lua", "python"},
 
-    local langs_enable = {"lua", "latex", "cmake", "java", "rust", "cpp", "verilog"}
-    -- Blacklist: gitcommit, bash, PKGBUILD, janet
+        sync_install = false,
+        auto_install = false,
+        ignore_install = {},
 
-    if not utils.os.is_android then
-      -- stupid treesitter bug. not quite sure what is happening.
-      table.insert(langs_enable, "python")
-    end
+        indent = {
+          enable = {"python"},
+        },
 
-    local findEqual = function(haystack, needle)
-      for _, x in ipairs(haystack) do
-        if x == needle then
-          return true
-        end
-      end
-      return false
-    end
+        highlight = {
+          enable = ts_config.langs_enable,
+          additional_vim_regex_highlighting = false,
+        },
+      })
+    end,
+  })
+else
+  M.add({
+    source = "romus204/tree-sitter-manager.nvim",
+    dependencies = {},
+    after = function()
+      require("tree-sitter-manager").setup({
+        ensure_installed = {},
+        auto_install = false,
+        highlight = ts_config.langs_enable,
+        nohighlight = {},
+      })
+    end,
+  })
+end
 
-    vim.api.nvim_create_autocmd({"FileType"}, {
-      pattern = "*",
-      callback = function()
-        if findEqual(langs_enable, vim.bo.filetype) then
-          vim.cmd("TSBufEnable highlight")
-        end
-      end,
-    })
-  end,
-})
 -- }}}
 -- Telescope {{{
 local telescope_use_fzf = true
