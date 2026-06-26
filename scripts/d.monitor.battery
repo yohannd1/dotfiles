@@ -17,7 +17,7 @@ die() {
 
 warn() {
   _msg=$(printf "%s (%02d%%)\n" "$3" "$level")
-  notify-send -u "$2" -- "Battery $1 level alert" "$_msg"
+  notify-send -u "$2" -- "Battery level alert (for $1)" "$_msg"
 }
 
 monitorBattery() {
@@ -43,14 +43,14 @@ monitorBattery() {
         state=normal
       else
         state=low
-        warn critical "Battery is low!"
+        warn "$name" critical "Battery is low!"
       fi
     elif [ "$state" != critical ] && [ "$level" -le "$LEVEL_CRITICAL" ]; then
       if [ "$isCharging" ]; then
         state=normal
       else
         state=critical
-        warn critical "Battery is almost empty!"
+        warn "$name" critical "Battery is almost empty!"
       fi
     elif [ "$level" -gt "$LEVEL_LOW" ] && [ "$level" -lt "$LEVEL_HIGH" ]; then
       # I'm not sure if this part is good but I'm trying it

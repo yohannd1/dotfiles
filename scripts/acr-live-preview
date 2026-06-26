@@ -159,7 +159,7 @@
         (rec-candidates (inc i))))
     (rec-candidates 0)
     (when (nil? valid-path)
-      (eprintf "warning: got request for \"%s\", but could not find file in anywhere" sane-path)
+      (eprintf `warning: HTTP 404 for "%s"` sane-path)
       (eprintf "candidate dirs: %j" candidate-dirs)
       (break {:status 404 :body "Not found"}))
     (def sane-path valid-path)
