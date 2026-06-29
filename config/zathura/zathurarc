@@ -10,6 +10,9 @@ map J zoom in
 map K zoom out
 map i recolor
 
+map <Left> feedkeys <C-b><S-H>
+map <Right> feedkeys <C-f><S-H>
+
 set selection-clipboard clipboard
 set statusbar-home-tilde true
 set window-title-home-tilde true
