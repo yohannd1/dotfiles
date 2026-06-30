@@ -212,7 +212,7 @@ case "$DOTF_DEVNAME" in
   core)
     export USE_BUILTIN_1080P=
     export RESLUA_FONT_SIZE=1.25
-    export RESLUA_FONT_NAME="Iosevka"
+    export RESLUA_FONT_NAME="CourierPrimeCode"
     export DOTF_SCALE=1
     export N_JOBS=2 # don't want to use many...
     ;;
