@@ -53,6 +53,22 @@ message() {
   if ! isTermux; then
     printf "%s\n" "$(dwmblocks-volume)"
   fi
+
+  python3 <<EOF
+from time import clock_gettime, CLOCK_MONOTONIC, CLOCK_BOOTTIME
+# NOTE: this behavior is Linux-only (what a surprise!) - see clock_gettime(2)
+
+def s_to_hms(x):
+  sec = x
+  min = sec // 60
+  sec %= 60
+  hr = min // 60
+  min %= 60
+  return f"{int(hr)}h {int(min)}m {int(sec)}s"
+
+print("Time since boot:", s_to_hms(clock_gettime(CLOCK_BOOTTIME)))
+print("Time unsuspended:", s_to_hms(clock_gettime(CLOCK_MONOTONIC)))
+EOF
 }
 
 if [ -t 2 ]; then
