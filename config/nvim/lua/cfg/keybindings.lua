@@ -519,4 +519,6 @@ end)
 
 -- LSP keybindings
 map("n", "<Leader>ll", vim.diagnostic.setloclist, { desc = "open diagnostics" })
+map("n", "<Leader>lo", function() vim.diagnostic.open_float(0, { scope = "line" }) end, { desc = "explain diagnostic" })
 map("n", "<Leader>lg", vim.lsp.buf.definition, { desc = "go to definition" })
+map("n", "<Leader>lr", vim.lsp.buf.references, { desc = "find references" })

@@ -361,6 +361,11 @@ create_cmd("Open", "!openfork %", { nargs = 0 })
 --   end,
 -- })
 
+-- Vim LSP diagnostic config
+vim.diagnostic.config({
+  virtual_text = false,
+})
+
 -- TODO: inside neovim, replace the $EDITOR with a wrapper script that connects
 -- to the current neovim instance, opens a buffer, and waits for the buffer to
 -- unload before exiting.
