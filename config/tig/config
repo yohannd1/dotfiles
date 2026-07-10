@@ -1,4 +1,4 @@
-# vim: ft=conf foldmethod=marker foldmarker={{{,}}}
+# vim: ft=conf foldenable foldmethod=marker foldmarker={{{,}}}
 #
 # Useful references:
 # - https://gist.github.com/matsubo/8012c260f76f1dad3ad9
@@ -26,6 +26,8 @@ bind generic l view-main
 bind generic L view-log
 bind generic b view-blame
 bind generic y view-stash
+
+bind generic A !git add -p
 
 # status view bindings
 # TODO

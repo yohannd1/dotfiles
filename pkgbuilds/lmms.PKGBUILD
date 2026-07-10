@@ -1,7 +1,7 @@
 # Based off furnace-git and lmms-git PKGBUILDs
 
 pkgname=lmms-fork
-pkgver=1.3.0.alpha.1.r1114.g71615e8d3
+pkgver=1.3.0.alpha.1.r1129.g7128167cd
 pkgrel=1
 pkgdesc="The Linux MultiMedia Studio."
 arch=('x86_64')
@@ -47,13 +47,13 @@ pkgver() {
 prepare() {
   jobc=${N_JOBS:-$(nproc)}
 
+  cd "$forkDir"
+  git submodule sync
+  git submodule update --init --recursive
+
   # XXX: SKIPPING THIS but it might be needed when setting up the repo on a new machine
-  # TODO: confirm if that is the case ^
+  # TODO: confirm if that is the case
   #
-  # git submodule init
-  # git config submodule.src/3rdparty/qt5-x11embed.url "${srcdir}/qt5-x11embed"
-  # git config submodule.src/3rdparty/rpmalloc.url "${srcdir}/rpmalloc"
-  # git -c protocol.file.allow=always submodule update
   # # setting lib dir
   # sed -e 's|lib64|lib|g' -i cmake/modules/DetectMachine.cmake
   # sed -e 's/\(${BASHCOMP_USER\)/\1/g' -i cmake/modules/BashCompletion.cmake
