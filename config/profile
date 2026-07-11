@@ -51,7 +51,7 @@ _setupDotcfg() {
   fi
 
   printf >&2 "*** Setting up dotcfg...\n"
-  _folder=$(mktemp -d /tmp/dotcfg.XXXXXX) || {
+  _folder=$(mktemp -d ${TMPDIR:-/tmp}/dotcfg.XXXXXX) || {
     printf >&2 " * Failed to make temp directory\n"
     return 1
   }
@@ -93,6 +93,9 @@ if _isTermux; then
   } &
 fi
 
+# set up dotcfg daemon and load config
+_setupDotcfg || true
+
 if ! _isTermux; then
   # update the date because clock problems
   if _exists ntpd; then
@@ -104,9 +107,6 @@ if ! _isTermux; then
   gpgconf --launch gpg-agent
   export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
   printf >&2 "OK!\n"
-
-  # set up dotcfg daemon and load config
-  _setupDotcfg
 
   bootMarker="${TMPDIR:-/tmp}/dotf.booted"
   if [ -f "$bootMarker" ]; then
