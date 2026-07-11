@@ -1,0 +1,92 @@
+#!/usr/bin/env sh
+
+set -ue
+progname=$(basename "$0")
+
+showHelp() {
+cat >&2 <<EOF
+Usage: $progname <IN> [<OUT> <START-TIME> <END-TIME>]
+EOF
+  exit 2
+}
+
+if [ ! -e "$1" ]; then
+  printf >&2 "file %s doesn't exist...\n" "$1"
+  exit 1
+fi
+
+wr() { printf "%s" "$*"; }
+
+getVideoSize() {
+  [ $# = 1 ] || return 2
+
+  out=$(ffprobe -v error \
+    -select_streams v -show_entries 'stream=width,height : stream_side_data=rotation' \
+    -of default=noprint_wrappers=1 "$1" \
+    | gawk '
+      BEGIN { rotated = 0; }
+      /^width/ { a_width = $0; gsub(/^width=/, "", a_width); }
+      /^height/ { a_height = $0; gsub(/^height=/, "", a_height); }
+      /^rotation=-?(90|270)/ { rotated = 1; }
+      END {
+        if (rotated) {
+          tmp = a_width;
+          a_width = a_height;
+          a_height = tmp;
+        }
+        printf "%d\n", a_width;
+        printf "%d\n", a_height;
+        printf "%.5f\n", (a_width / a_height);
+      }
+    ')
+
+  _video_width=$(wr "$out" | head -n1 | tail -1)
+  _video_height=$(wr "$out" | head -n2 | tail -1)
+  _video_aspect_ratio=$(wr "$out" | head -n3 | tail -1)
+}
+
+getVideoSize "$1"
+printf >&2 "Original size: %sx%s\n" "$_video_width" "$_video_height"
+printf >&2 "Original ratio: %s\n" "$_video_aspect_ratio"
+
+BIGGEST_SIZE=640
+
+if [ "$_video_width" -ge "$_video_height" ]; then
+  new_width=$BIGGEST_SIZE
+  new_height=$(printf "(%s / %s) / 1\n" "$new_width" "$_video_aspect_ratio" | bc)
+else
+  new_height=$BIGGEST_SIZE
+  new_width=$(printf "(%s * %s) / 1\n" "$new_height" "$_video_aspect_ratio" | bc)
+fi
+
+# ffmpeg sometimes complains when dimensions are not even. We
+# can afford an one pixel error (it might've already happened
+# anyway)
+
+if [ "$(printf "(%d %% 2)\n" "$new_width" | bc)" -eq 1 ]; then
+  new_width=$((new_width+1))
+fi
+
+if [ "$(printf "(%d %% 2)\n" "$new_height" | bc)" -eq 1 ]; then
+  new_height=$((new_height+1))
+fi
+
+scale_arg="scale=${new_width}x${new_height}"
+
+printf >&2 "Scaling from %sx%s to %s\n" "$_video_width" "$_video_height" "$scale_arg"
+
+if [ $# = 1 ]; then
+  noExt=$(printf "%s" "$1" | sd '\.\w+$' '')
+  newFilename="${noExt}_small.mp4"
+  if [ -e "$newFilename" ]; then
+    printf >&2 "inferred filename %s already exists!\n" "$newFilename"
+    exit 1
+  fi
+  ffmpeg -i "$1" -vf "$scale_arg" -vcodec libx264 -crf 28 "$newFilename"
+elif [ $# = 2 ]; then
+  ffmpeg -i "$1" -vf "$scale_arg" -vcodec libx264 -crf 28 "$2"
+elif [ $# = 4 ]; then
+  ffmpeg -i "$1" -ss "$3" -to "$4" -vf "$scale_arg" -vcodec libx264 -crf 28 "$2"
+else
+  showHelp
+fi
