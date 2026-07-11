@@ -1,8 +1,18 @@
 #!/usr/bin/env sh
 
-set -e
-
+set -ue
 exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
+tmp=$(mktemp -d)
+_cleanup() {
+  [ -d "$tmp" ] && rm -r "$tmp"
+  return 0
+}
+trap '_cleanup' EXIT
+
+scriptPath=~/.local/bin
+
+cd "$DOTFILES/compiled"
 
 # if exists ldc; then LDC=ldc
 # elif exists ldc2; then LDC=ldc2
@@ -14,3 +24,6 @@ exists() { command -v "$1" >/dev/null 2>/dev/null; }
 # cd "$DOTFILES/compiled"
 # "$LDC" acr_list_titles.d --od=build/ --of=build/acr-list-titles
 # cp build/acr-list-titles -t ~/.local/bin
+
+nim --out:"dotcfg" --outdir:"$tmp" compile dotcfg.nim
+mv "$tmp/dotcfg" -t ~/.local/bin
