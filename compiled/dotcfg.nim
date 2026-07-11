@@ -223,7 +223,8 @@ else:
   stderr.writeLine(fmt"error: unknown command {args[0]}")
   showHelp()
 
-let socketPath = getEnv("DOTCFG_SOCKET", "/tmp/dotcfg.default.sock")
+let tmpFolder = getEnv("TMPDIR", "/tmp")
+let socketPath = getEnv("DOTCFG_SOCKET", fmt"{tmpFolder}/dotcfg.default.sock")
 
 if isServer:
   stderr.writeLine(fmt"ARE WE CONNECTED? {socketPath}")
