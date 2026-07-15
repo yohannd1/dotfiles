@@ -1,0 +1,86 @@
+#!/usr/bin/env sh
+
+set -ue
+progname=$(basename "$0")
+
+tmp=$(mktemp -d)
+_cleanup() {
+  rm -f "$tmp/mvnw-classpath" || true
+  rmdir "$tmp"
+}
+trap '_cleanup' EXIT
+
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
+cacheDir=${XDG_CACHE_HOME:-$HOME/.cache}/java-list-symbols
+mkdir -p "$cacheDir"
+
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname
+EOF
+  exit 2
+}
+
+sanitizeClasses() {
+  grep '\.class$' \
+    | grep -v '^META-INF' \
+    | sed 's/\.class$//g; s / . g' \
+    | grep -v '^module-info$' \
+    || true
+}
+
+listSymbols() {
+  jar tf "$1" | sanitizeClasses
+}
+
+listSymbolsForJars() {
+  while read -r file; do
+    if printf "%s" "$file" | grep -v '\.jar$'; then
+      printf >&2 "warning: not a .jar file: %s\n" "$file"
+      continue
+    elif [ -n "$allowCache" ]; then
+      # Allow caching. Only really effective for dependency jars, since they
+      # are properly versioned and namespaced, and thus the name is unique.
+      cacheId=$(printf "%s\n" "$file" | sed 's / _ g')
+      cacheFile="$cacheDir/$cacheId.txt"
+      if [ -f "$cacheFile" ]; then
+        cat "$cacheFile"
+      else
+        listSymbols "$file" | tee "$cacheFile"
+      fi
+    else
+      listSymbols "$file"
+    fi
+  done
+}
+
+mavenList() {
+  if [ -x "mvnw" ]; then
+    mavenExec="./mvnw"
+  elif exists mvn; then
+    mavenExec="mvn"
+  else
+    printf >&2 "??? 2\n"
+    exit 1
+  fi
+
+  "$mavenExec" dependency:build-classpath -Dmdep.outputFile="$tmp/mvnw-classpath" 1>&2
+  cat "$tmp/mvnw-classpath" | tr ':' '\n' | allowCache=1 listSymbolsForJars
+
+  # list classes in the project as well
+  (
+    cd target/classes
+    find . -type f | sed 's|^\./||' | sanitizeClasses
+  )
+}
+
+[ $# = 0 ] || showHelp
+
+if mavenDir=$(fparent-run pom.xml run-command file-dir pwd); then
+  cd "$mavenDir"
+  mavenList
+else
+  printf >&2 "???\n"
+  exit 1
+fi
