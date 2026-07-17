@@ -347,6 +347,8 @@ map("n", "<Leader>fl", tsc_builtin.live_grep, { noremap = true, desc = "live gre
 map("n", "<Leader>fL", dummy.liveGrepRepo, { noremap = true, desc = "live grep (in repo root)" })
 map("n", "<Leader>m", tsc_builtin.commands, { noremap = true, desc = "find commands" })
 map("n", "<Leader>fr", dummy.menuOpenRecent, { noremap = true, desc = "find recent files" })
+map("n", "<Leader>fs", tsc_builtin.lsp_dynamic_workspace_symbols, { noremap = true, desc = "find LSP dynamic workspace symbols" })
+map("n", "<Leader>f?", vim.cmd.Telescope, { noremap = true, desc = "telescope actions" })
 
 for k, path in pairs({
   v = vim.env.VIM_INIT,

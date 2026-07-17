@@ -742,6 +742,13 @@ addLsp("c++", {
   settings = {}, -- TODO: check this for clangd - https://catalog.lintel.tools/schemas/schemastore/clangd/ ?
 })
 
+addLsp("java", {
+  cmd = {"jdtls"},
+  filetypes = {"java"},
+  root_markers = {".git", "Makefile", "pom.xml", "mvnw", "gradlew"},
+  settings = {},
+})
+
 -- addLsp("zig", {
 --   cmd = {"zls"},
 --   filetypes = {"zig"},
