@@ -30,8 +30,8 @@
 
 (defn map-range [start end x]
   (cond
-    (string? x) (seq [i :range [start (inc end)]] (string/format x i))
-    (function? x) (seq [i :range [start (inc end)]] (x i))
+    (string? x) (seq [i :range [start end]] (string/format x i))
+    (function? x) (seq [i :range [start end]] (x i))
     (error "???")))
 
 (defn .osc-lmms [&opt path]

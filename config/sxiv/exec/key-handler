@@ -1,8 +1,23 @@
 #!/usr/bin/env sh
 
+set -ue
+
+msg() {
+  notify-send -- "$*"
+}
+
 while read file; do
   case "$1" in
     y) imgclip "$file" ;;
-    m) notify-send "$(file "$file")" ;;
+    c)
+      fullPath=$(realpath -m "$file")
+      printf "%s\n" "$fullPath" | d.clip copy
+      msg "File path copied to clipboard"
+      ;;
+    m)
+      imgInfo=$(file "$file")
+      msg "$imgInfo"
+      ;;
+    *) msg "unknown key: $1" ;;
   esac
 done
