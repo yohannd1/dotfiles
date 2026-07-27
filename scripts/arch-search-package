@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+set -ue
+
+curl -L https://man.archlinux.org/man/$1 2>/dev/null \
+  | awk '/https:\/\/www\.archlinux\.org\/packages\// { print }'
