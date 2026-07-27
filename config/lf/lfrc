@@ -150,6 +150,7 @@ cmd sizes ${{
 }}
 
 cmd vid-trim-small ${{ vid-trim-small "$f" }}; reload
+cmd image-small ${{ image-small "$f" }}; reload
 cmd make-exec ${{ chmod +x "$f" }}; reload
 cmd make-noexec ${{ chmod -x "$f" }}; reload
 cmd move-here :${{ PROMPT_ON_ERROR=1 d.fileman-actions move-here "$fs" }}; unselect; reload

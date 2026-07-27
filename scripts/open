@@ -256,7 +256,7 @@
   # audio files
   (when
     (or (and (not is-openmpt-compatible) (m :mime [[:begins "audio/"]]))
-        (m :ext ["aac" "flac" "m4a" "mpa" "mp2" "mp3" "ogg" "wav" "wma"]))
+        (m :ext ["aac" "flac" "m4a" "mpa" "mp2" "mp3" "ogg" "wav" "wma" "mo3"]))
 
     (t :pop ["mpv" "--no-video" file])
     (t :pop ["mocplay" file "opener"])

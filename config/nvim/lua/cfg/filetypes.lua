@@ -164,6 +164,7 @@ ext_ft.jl = "julia"
 ext_ft.mpp = "cpp"
 ext_ft.PKGBUILD = "PKGBUILD"
 ext_ft.rpy = "python"
+ext_ft.rpym = "python"
 ext_ft.scrbl = "scribble"
 -- ext_ft.str = "strudel"
 ext_ft.terra = "terra"
@@ -740,6 +741,13 @@ addLsp("c++", {
   filetypes = {"cpp", "c"},
   root_markers = {".git", "CMakeLists.txt", "Makefile"},
   settings = {}, -- TODO: check this for clangd - https://catalog.lintel.tools/schemas/schemastore/clangd/ ?
+})
+
+addLsp("java", {
+  cmd = {"jdtls"},
+  filetypes = {"java"},
+  root_markers = {".git", "Makefile", "pom.xml", "mvnw", "gradlew"},
+  settings = {},
 })
 
 -- addLsp("zig", {
