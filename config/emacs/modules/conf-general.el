@@ -1,28 +1,33 @@
 ;;; -*- lexical-binding: t; -*-
 
 ;; Set options for core-style.
-(inline-hook! 'core-style-before-update-hook ()
-              (setq core-style-current-theme 'base16
-                    core-style-font-family (get-xres "font" core-style-font-family)
-                    core-style-font-height 100))
+(inline-hook!
+  'core-style-before-update-hook ()
+  (setq
+   core-style-current-theme 'base16
+   core-style-font-family (get-cfg "emacs.font_name" core-style-font-family)
+   core-style-font-height (truncate (string-to-number (get-cfg "emacs.font_height" "110")))
+   core-style-alpha (string-to-number (get-cfg "emacs.alpha" "100"))))
 
 ;; Backup / autosave files
 ;; TODO: disable backup & autosave altogether if on "foreign" machines.
-(setq version-control t
-      kept-new-versions 5
-      kept-old-versions 3
-      delete-old-versions t
-      backup-by-copying t
-      vc-make-backup-files t
-      backup-directory-alist `(("" . ,(f-join user-cache-directory "backups")))
-      auto-save-file-name-transforms `((".*" ,(f-join user-cache-directory "saves") t)))
+(setq
+ version-control t
+ kept-new-versions 5
+ kept-old-versions 3
+ delete-old-versions t
+ backup-by-copying t
+ vc-make-backup-files t
+ backup-directory-alist `(("" . ,(f-join user-cache-directory "backups")))
+ auto-save-file-name-transforms `((".*" ,(f-join user-cache-directory "saves") t)))
 
 ;; Automatically create a file/buffer when called if it doesn't exist
 (setq confirm-nonexistent-file-or-buffer nil)
 
 ;; Pixelwise resizing
-(setq frame-resize-pixelwise t
-      window-resize-pixelwise t)
+(setq
+ frame-resize-pixelwise t
+ window-resize-pixelwise t)
 
 ;; No standard startup buffer
 (setq inhibit-startup-message t)
@@ -82,8 +87,10 @@
 
 ;; Title formatting
 ;; (from Doom Emacs)
-(setq frame-title-format '("%b - emacs")
-      icon-title-format frame-title-format)
+(setq
+ frame-title-format '("%b - emacs")
+ icon-title-format frame-title-format
+ )
 
 ;; Get rid of GUI widgets again (this time working on Emacs 26)
 ;; (from Doom Emacs)

@@ -222,6 +222,7 @@ local font = getFontInfo(font_name, font_size)
 
 local fsize_term = font.base_size
 local xft_font = longFontFormat(font.name, fsize_term)
+local bg_alpha = 0.9
 
 local withAlpha = function(color, alpha)
   return ("%s%02x"):format(color, math.floor(alpha * 255))
@@ -232,7 +233,7 @@ local enable_ligatures_int = enable_ligatures and 1 or 0
 
 -- st (x11 terminal)
 decl {
-  {"st.alpha", "0.9"},
+  {"st.alpha", bg_alpha},
   {"st.cursor", theme["base0D"]},
   {"st.font", xft_font},
   {"st.enableligatures", enable_ligatures_int},
@@ -411,9 +412,17 @@ decl {
   targets = T_ALL,
 }
 
+-- emacs
+decl {
+  {"emacs.font_name", font.name},
+  {"emacs.font_height", font.base_size * 7},
+  {"emacs.alpha", bg_alpha},
+
+  targets = T_ALL,
+}
+
 -- others
 decl {
-  {"Emacs.font", font.name},
   {"pencilwm.highlight", theme["base03"]},
   {"polybar.fontname", font.name},
   {"polybar.fontsize", "9.0"},

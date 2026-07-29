@@ -15,6 +15,10 @@
 (defvar core-style-before-after-hook nil
   "A hook that is after before the main part of `core-style-update' is ran.")
 
+(defun core-style--set-frame-option (key val)
+  (set-frame-parameter (selected-frame) key val)
+  (add-to-list 'default-frame-alist key val))
+
 (defun core-style-update ()
   (interactive)
 
@@ -24,6 +28,9 @@
   ;; Load the theme
   (when core-style-current-theme
     (load-theme core-style-current-theme t))
+
+  ;; Set background opacity
+  (core-style--set-frame-option 'alpha-background core-style-alpha)
 
   ;; Update face - main font
   (dolist (face (list 'default))
