@@ -253,4 +253,29 @@
   (setq initial-buffer-choice #'my/default-buffer)
   (kill-buffer "*scratch*"))
 
+; Source: https://emacs.stackexchange.com/questions/85133/customizing-tab-line-mode-to-always-show-all-files
+(defun return-file-buffers ()
+  (let ((bufs)
+        (buffers (buffer-list)))
+    (dolist (buf buffers)
+      (when (buffer-file-name buf)
+        (push buf bufs)))
+    bufs))
+(defun fixed-return-file-buffers ()
+  (let* ((old-buffers (window-parameter nil 'tab-line-buffers))
+         (buffer-positions (let ((index-table (make-hash-table :test 'eq)))
+                             (seq-do-indexed
+                              (lambda (buf idx) (puthash buf idx index-table))
+                              old-buffers)
+                             index-table))
+         (new-buffers (sort (return-file-buffers)
+                            :key (lambda (buffer)
+                                   (gethash buffer buffer-positions
+                                            most-positive-fixnum)))))
+  (set-window-parameter nil 'tab-line-buffers new-buffers)
+  new-buffers))
+(setq tab-line-tabs-function #'fixed-return-file-buffers)
+(global-tab-line-mode)
+; TODO: style the tab line!
+
 (provide 'conf-general)

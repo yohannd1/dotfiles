@@ -40,23 +40,15 @@
         ac-ignore-case nil)
   (ac-config-default)
 
-  (define-key global-map (kbd "C-j") nil)
-  (define-key global-map (kbd "C-l") nil)
-  (define-key global-map (kbd "C-k") nil)
-
   (ac-set-trigger-key "TAB")
-  (define-key global-map (kbd "C-j") nil)
   (define-key global-map (kbd "C-o") nil)
-
-  (define-key ac-menu-map (kbd "C-j") #'ac-next)
-  (define-key ac-menu-map (kbd "C-k") #'ac-previous)
   (define-key ac-menu-map (kbd "<backtab>") #'ac-previous)
-  (define-key ac-menu-map (kbd "C-l") #'ac-complete)
   (define-key ac-menu-map (kbd "RET") nil)
 
-  (inline-hook! 'rust-mode-hook ()
-                (setq fill-column 120)
-                (auto-complete-mode 1)))
+  (inline-hook!
+    'rust-mode-hook ()
+    (setq fill-column 120)
+    (auto-complete-mode 1)))
 
 (use-package magit
   :ensure t
@@ -103,10 +95,7 @@
   "A face for the secondary modeline element highlight.")
 
 (defun ml--propertize-list (elements properties)
-  (mapcar (lambda (el)
-            `(:propertize ,el
-                          ,@properties))
-          elements))
+  (mapcar (lambda (el) `(:propertize ,el ,@properties)) elements))
 
 (defun ml--expand-list (&rest args)
   (let ((value nil))
@@ -182,6 +171,11 @@
   :ensure t
   :config
   (xclip-mode 1))
+
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
 
 ;; (use-package centaur-tabs ;; TODO: move & remake
 ;;   :ensure t
@@ -284,14 +278,4 @@
 ;;        :face highlight-face
 ;;        :priority 99))))
 
-
 (provide 'conf-packages)
-
-
-
-
-
-
-
-
-
