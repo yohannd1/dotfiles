@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+
+set -ue
+[ $# = 1 ] || exit 2
+
+case "$1" in
+  *.tar.bz2|*.tbz2) tar -tzf "$1" ;;
+  *.tar.xz|*.txz) tar -tzf "$1" ;;
+  *.tar.gz|*.tgz) tar -tzf "$1" ;;
+  *.tar) tar -tzf "$1" ;;
+  *.tar.bz2.gpg|*.tbz2.gpg) gpg --decrypt "$1" | tar -tvj ;;
+  *.tar.xz.gpg|*.txz.gpg) gpg --decrypt "$1" | tar -tv ;;
+  *.tar.gz.gpg|*.tgz.gpg) gpg --decrypt "$1" | tar -tvz ;;
+  *.lzma) unlzma -l "$1" ;;
+  *.gz) gunzip -l "$1" ;;
+  *.xz) unxz -l "$1" ;;
+  *.rar) unrar l -- "$1" ;;
+  *.zip|*.jar|*.apk) unzip -l -- "$1" ;;
+  *.7z) 7z l "$1" ;;
+
+  *)
+    printf >&2 "unknown extension on %s\n" "$1"
+    exit 1
+    ;;
+esac
+
+# In case I ever need it, there's also:
+# atool --list -- "$1"
+# bsdtar --list --file "$1"

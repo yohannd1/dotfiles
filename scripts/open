@@ -337,14 +337,12 @@
     (t :tty ["mpv" "--no-video" file])
     (t :runpage ["mediainfo" file]))
 
-  (mt :ext ["rar"] :runpage ["unrar" "l" "-p-" "--" file])
-  (mt :ext ["7z"] :runpage ["7z" "l" "-p" "--" file])
-
-  (when (m :ext ["a" "ace" "alz" "arc" "arj" "bz" "bz2" "cab" "cpio" "deb" "gz" "jar"
-                 "lha" "lz" "lzh" "lzma" "lzo" "rpm" "rz" "t7z" "tar" "tbz2" "tgz"
-                 "tlz" "txz" "tZ" "tzo" "war" "xpi" "xz" "Z" "zip"])
-    (t :runpage ["atool" "--list" "--" file])
-    (t :runpage ["bsdtar" "--list" "--file" file]))
+  (def archive-formats
+    ["rar" "7z" "zip" "tar" "gz" "tgz" "tbz2"
+     "a" "ace" "alz" "arc" "arj" "bz" "bz2" "cab" "cpio" "deb" "jar"
+     "lha" "lz" "lzh" "lzma" "lzo" "rpm" "rz" "t7z"
+     "tlz" "txz" "tZ" "tzo" "war" "xpi" "xz" "Z"])
+  (mt :ext archive-formats :pop ["d.ar-menu" file])
 
   (when (m :ext ["torrent"])
     (t :pop ["rtorrent" file])
