@@ -15,7 +15,7 @@ text/x-java=editor.desktop
 text/html=browser.desktop
 application/x-shockwave-flash=open.desktop
 application/xml=editor.desktop
-application/zip=editor.desktop
+application/zip=open.desktop
 application/x-7z-compressed=editor.desktop
 
 x-scheme-handler/msteams=teams.desktop
@@ -27,7 +27,7 @@ x-scheme-handler/discord=vesktop.desktop
 gale=gale-handler.desktop
 ror2mm=gale-handler.desktop
 inode/directory=filemanager.desktop
-x-scheme-handler/file=filemanager.desktop
+x-scheme-handler/file=open.desktop
 text/xml=editor.desktop
 x-scheme-handler/gale=gale-handler.desktop
 video/mp4=open.desktop
