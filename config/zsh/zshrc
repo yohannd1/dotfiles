@@ -300,7 +300,13 @@ alias w='warpToZ'
 alias f='findFile'
 alias fo='findFile open'
 alias fof='findFile openfork'
-alias fcd='FINDFILE_DIRONLY=1 findFile cd-to-file'
+alias fto='findFile cdNear'
+alias fcd='FINDFILE_DIRONLY=1 findFile cdNear'
+
+cdNear() {
+  [ $# = 1 ] || return 2
+  cd "$(dirname "$1")"
+}
 
 anyArgIs() {
   for arg in "${@:2}"; do
