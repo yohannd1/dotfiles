@@ -1,0 +1,40 @@
+#!/usr/bin/env sh
+
+set -ue
+progname=$(basename "$0")
+
+showHelp() {
+  cat >&2 <<EOF
+Small utility to assist in using zerotier from the CLI.
+
+Usage: $progname { start | stop | restart | list | cli }
+EOF
+  exit 2
+}
+
+[ $# -ge 1 ] || showHelp
+
+case "$1" in
+  start)
+    [ $# = 1 ] || showHelp
+    systemctl start zerotier-one.service
+    ;;
+  stop)
+    [ $# = 1 ] || showHelp
+    systemctl stop zerotier-one.service
+    ;;
+  restart)
+    [ $# = 1 ] || showHelp
+    "$0" stop
+    "$0" start
+    ;;
+  list)
+    [ $# = 1 ] || showHelp
+    sudo zerotier-cli listnetworks
+    ;;
+  cli)
+    shift
+    sudo zerotier-cli "$@"
+    ;;
+  *) showHelp ;;
+esac
