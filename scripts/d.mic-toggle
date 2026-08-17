@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+set -ue
+
+[ $# = 0 ] || exit 2
+
+volumectl mute @DEFAULT_SOURCE@
+notify-send "$(pactl get-source-mute @DEFAULT_SOURCE@)" -t 1000

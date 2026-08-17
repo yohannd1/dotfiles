@@ -114,6 +114,8 @@
       "scroll-step": 5.0, // %, can be a float
       "format-source": "mic {volume}%",
       "format-source-muted": "mic OFF",
+      "on-click-right": "d.mic-toggle",
+      "on-click": "volumectl mute",
     },
 
     "cpu": {
