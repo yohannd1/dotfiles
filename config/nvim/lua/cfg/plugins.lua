@@ -215,7 +215,7 @@ M.add({
     local action_state = require("telescope.actions.state")
     local actions = require("telescope.actions")
 
-    telescope.setup {
+    telescope.setup({
       defaults = {
         layout_strategy = "bottom_pane",
         layout_config = {
@@ -255,7 +255,7 @@ M.add({
           case_mode = "smart_case",
         },
       },
-    }
+    })
 
     if telescope_use_fzf then
       telescope.load_extension("fzf")

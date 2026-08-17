@@ -508,4 +508,12 @@ mw.equalize = function()
   M.doKeys("<C-w>=")
 end
 
+M.cloneTable = function(t)
+  local ret = {}
+  for k, v in pairs(t) do
+    ret[k] = v
+  end
+  return ret
+end
+
 return M

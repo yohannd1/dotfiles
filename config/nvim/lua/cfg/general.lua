@@ -332,10 +332,25 @@ local bufferSyntaxOff = function()
   vim.b.current_syntax = nil
 end
 
-dummy.liveGrepRepo = function()
-  local root_folder = vim.fs.root(0, ".git")
+local getRepoRoot = function()
+  return vim.fs.root(0, ".git")
+end
+
+dummy.findFilesRepo = function()
+  local root_folder = getRepoRoot()
   if root_folder == nil then
     print("Not in a git repo, it seems.")
+    return
+  end
+
+  require("telescope.builtin").find_files({ cwd = root_folder })
+end
+
+dummy.liveGrepRepo = function()
+  local root_folder = getRepoRoot()
+  if root_folder == nil then
+    print("Not in a git repo, it seems.")
+    return
   end
 
   require("telescope.builtin").live_grep({ cwd = root_folder })

@@ -337,19 +337,26 @@ map("n", "gf", dummy.openCurrentWORD, arg_nr)
 
 map("n", "<Leader>bf", format.formatBuffer, { noremap = true, desc = "format buffer" })
 
-local tsc_builtin = require("telescope.builtin")
-map("n", "<Leader>ft", dummy.findTodos, { noremap = true, desc = "find TODOs (in buffer)" })
-map("n", "<Leader>fb", tsc_builtin.buffers, { noremap = true, desc = "find buffers" })
-map("n", "<Leader>fh", tsc_builtin.help_tags, { noremap = true, desc = "find help tags" })
-map("n", "<Leader>f.", tsc_builtin.find_files, { noremap = true, desc = "find files" })
-map("n", "<Leader>fc", lazy(tsc_builtin.find_files, { cwd = DOTFILES }), { noremap = true, desc = "find files (in dotfiles)" })
-map("n", "<Leader>fg", tsc_builtin.git_files, { noremap = true, desc = "find files in git repo" })
-map("n", "<Leader>fl", tsc_builtin.live_grep, { noremap = true, desc = "live grep" })
-map("n", "<Leader>fL", dummy.liveGrepRepo, { noremap = true, desc = "live grep (in repo root)" })
-map("n", "<Leader>m", tsc_builtin.commands, { noremap = true, desc = "find commands" })
-map("n", "<Leader>fr", dummy.menuOpenRecent, { noremap = true, desc = "find recent files" })
-map("n", "<Leader>fs", tsc_builtin.lsp_dynamic_workspace_symbols, { noremap = true, desc = "find LSP dynamic workspace symbols" })
-map("n", "<Leader>f?", vim.cmd.Telescope, { noremap = true, desc = "telescope actions" })
+do
+  local tsc_builtin = require("telescope.builtin")
+
+  for _, data in ipairs({
+    {"<Leader>ft", dummy.findTodos, "find TODOs (in buffer)"},
+    {"<Leader>fb", tsc_builtin.buffers, "find buffers"},
+    {"<Leader>fh", tsc_builtin.help_tags, "find help tags"},
+    {"<Leader>f.", tsc_builtin.find_files, "find files"},
+    {"<Leader>fc", lazy(tsc_builtin.find_files, { cwd = DOTFILES }), "find files (in dotfiles)"},
+    {"<Leader>fg", dummy.findFilesRepo, "find files (in repo root)"},
+    {"<Leader>fl", tsc_builtin.live_grep, "live grep"},
+    {"<Leader>fL", dummy.liveGrepRepo, "live grep (in repo root)"},
+    {"<Leader>m", tsc_builtin.commands, "find commands"},
+    {"<Leader>fr", dummy.menuOpenRecent, "find recent files"},
+    {"<Leader>fs", tsc_builtin.lsp_dynamic_workspace_symbols, "find LSP dynamic workspace symbols"},
+    {"<Leader>f?", vim.cmd.Telescope, "telescope actions"},
+  }) do
+    map("n", data[1], data[2], { noremap = true, desc = data[3] })
+  end
+end
 
 for k, path in pairs({
   v = vim.env.VIM_INIT,
