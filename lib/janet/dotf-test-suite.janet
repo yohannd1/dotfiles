@@ -3,6 +3,7 @@
 (use dotf-acr)
 (use dotf-path)
 (use dotf-utils)
+(use dotf-cli)
 
 (defn- test-utils []
   # Test stable-sort with plain numbers
@@ -21,6 +22,31 @@
   (assert (= (remove-suffix "@%foo" "oo") "@%f"))
   (assert (= (remove-prefix "foo@%" "fo") "o@%")))
 
+(defn test-cli []
+  (def specs
+    '(:description "omg hii"
+      :subcommands ({:name foo :args (bar baz abc) :rest others})
+      # :options
+      # ({:name version :short -v :long --version :help "show version"}
+      # {:name opt :short -o :long --opt :help "lovely option innit" :has-arg true}))
+      ))
+  (def r (parse-args ;specs :in-args '("omg" "foo" "1" "2" "3")))
+  (assert (-> r (in :subcmd) (= 'foo)))
+  (assert (-> r (in :args) (in 'bar) (= "1")))
+  (assert (-> r (in :args) (in 'baz) (= "2")))
+  (assert (-> r (in :args) (in 'abc) (= "3")))
+
+  (def specs
+    '(:description "omg hii"
+      :positional {:args (a b)}))
+  (def r (parse-args ;specs :in-args '("omg" "1" "2")))
+  (assert (-> r (in :subcmd) nil?))
+  (assert (-> r (in :args) (in 'a) (= "1")))
+  (assert (-> r (in :args) (in 'b) (= "2")))
+
+  # (def r (parse-args ;specs :in-args '("omg" "--help")))
+  )
+
 (defn test-all []
-  # TODO: add tests for all of 'em!
-  (test-utils))
+  (test-utils)
+  (test-cli))
