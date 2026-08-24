@@ -291,10 +291,10 @@
   (mt :ext ["kdenlive"] :gui ["kdenlive" file])
   (mt :ext ["sunvox"] :gui ["sunvox" file])
   (when (m :ext ["ardour"])
-    (t :gui ["ardour8" file])
-    (t :gui ["ardour7" file])
-    (t :gui ["ardour6" file]))
-  (when (m :ext ["mmp" "mmpz"]) # FIXME: mmp files are not being recognized here... or something
+    # each major ardour version has a different executable name... so for now I gotta update this constantly, I guess
+    (loop [i :down-to [9 6]]
+      (t :gui [(string "ardour" i) file])))
+  (when (m :ext ["mmp" "mmpz"])
     (t :gui ["@lmms" file])
     (t :gui ["lmms" file]))
   (mt :ext ["flp"] :gui ["@fl-studio" file])
@@ -359,14 +359,17 @@
      "odg" # drawing
      ])
 
-  (mt :ext libreoffice-candidates :gui ["libreoffice" "--nologo" file])
+  (mt :ext libreoffice-candidates
+      :gui ["libreoffice" "--nologo" file])
 
   (mt :ext ["odt" "ods" "odp" "sxw"]
       :runpage ["odt2txt" file])
 
   # general project files
   (mt :ext ["aseprite"] :gui ["aseprite" file])
-  (mt :ext ["kra"] :gui ["krita" file])
+  (when (m :ext ["kra"])
+    (t :gui ["@krita" file])
+    (t :gui ["krita" file]))
   (mt :ext ["pxo"] :gui ["pixelorama" file])
   (mt :ext ["blend"] :gui ["@blender" file])
   (mt :ext ["tic"] :gui ["tic80" file])
