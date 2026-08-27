@@ -355,6 +355,7 @@ for k, path in pairs({
   r = ("%s/config/dots/resources.lua"):format(DOTFILES),
   e = ("%s/config/dots/env.sh"):format(DOTFILES),
   p = ("%s/config/dots/path.sh"):format(DOTFILES),
+  t = ("%s/_tmp.acr"):format(vim.env.HOME),
 }) do
   local desc = ("edit: %s"):format(vim.fs.basename(path))
   map("n", "<Leader>e" .. k, lazy(vim.cmd.edit, path), { noremap = true, desc = desc })
