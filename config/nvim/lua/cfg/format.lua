@@ -32,7 +32,8 @@ M.formatBuffer = function()
 
   local command = fmt_opts.command
   if command == nil then
-    error("No format command found (set it with vim.b.format_opts.command)")
+    print("No format command found (set it with vim.b.format_opts.command)")
+    return
   end
 
   if command[1] == "exec" then

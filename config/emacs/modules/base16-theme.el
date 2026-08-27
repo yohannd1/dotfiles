@@ -2,7 +2,6 @@
 ;;; base16 theme (custom version)
 ;;; Based off: https://github.com/belak/base16-emacs/blob/master/base16-theme.el
 ;;;
-;;; GUI version only works on X (it uses Xresources)
 ;;; Terminal version only has been seen working with TERM=xterm-16color
 
 (require 'core-misc)
@@ -29,22 +28,22 @@
       base0F-gui-fallback "#d65d0e")
 
 ;; Attempt to load base16 colors from terminal colors and xresources.
-(setq base00-gui (get-xres "base00" base00-gui-fallback)
-      base01-gui (get-xres "base01" base01-gui-fallback)
-      base02-gui (get-xres "base02" base02-gui-fallback)
-      base03-gui (get-xres "base03" base03-gui-fallback)
-      base04-gui (get-xres "base04" base04-gui-fallback)
-      base05-gui (get-xres "base05" base05-gui-fallback)
-      base06-gui (get-xres "base06" base06-gui-fallback)
-      base07-gui (get-xres "base07" base07-gui-fallback)
-      base08-gui (get-xres "base08" base08-gui-fallback)
-      base09-gui (get-xres "base09" base09-gui-fallback)
-      base0A-gui (get-xres "base0A" base0A-gui-fallback)
-      base0B-gui (get-xres "base0B" base0B-gui-fallback)
-      base0C-gui (get-xres "base0C" base0C-gui-fallback)
-      base0D-gui (get-xres "base0D" base0D-gui-fallback)
-      base0E-gui (get-xres "base0E" base0E-gui-fallback)
-      base0F-gui (get-xres "base0F" base0F-gui-fallback)
+(setq base00-gui (get-cfg "theme.base00" base00-gui-fallback)
+      base01-gui (get-cfg "theme.base01" base01-gui-fallback)
+      base02-gui (get-cfg "theme.base02" base02-gui-fallback)
+      base03-gui (get-cfg "theme.base03" base03-gui-fallback)
+      base04-gui (get-cfg "theme.base04" base04-gui-fallback)
+      base05-gui (get-cfg "theme.base05" base05-gui-fallback)
+      base06-gui (get-cfg "theme.base06" base06-gui-fallback)
+      base07-gui (get-cfg "theme.base07" base07-gui-fallback)
+      base08-gui (get-cfg "theme.base08" base08-gui-fallback)
+      base09-gui (get-cfg "theme.base09" base09-gui-fallback)
+      base0A-gui (get-cfg "theme.base0A" base0A-gui-fallback)
+      base0B-gui (get-cfg "theme.base0B" base0B-gui-fallback)
+      base0C-gui (get-cfg "theme.base0C" base0C-gui-fallback)
+      base0D-gui (get-cfg "theme.base0D" base0D-gui-fallback)
+      base0E-gui (get-cfg "theme.base0E" base0E-gui-fallback)
+      base0F-gui (get-cfg "theme.base0F" base0F-gui-fallback)
 
       base00-tty "black"
       base01-tty "red"

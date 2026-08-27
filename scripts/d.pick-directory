@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+set -ue
+
+[ $# = 0 ] || exit 2
+
+dir=$PWD
+
+validateAndSet() {
+  if [ -d "$1" ]; then
+    dir=$1
+  else
+    printf >&2 "Not a directory: %s\n" "$1"
+  fi
+}
+
+while true; do
+  printf >&2 "Directory: %s\n" "$dir"
+  printf >&2 "(t)ype it; from (c)lipboard; (y) accept; (q)uit and cancel: "
+
+  read -r -n1 ch
+  printf >&2 "\n"
+  case "$ch" in
+    t)
+      printf >&2 "Type: "
+      read -r d
+      validateAndSet "$d"
+      ;;
+    c)
+      d=$(d.clip paste) || continue
+      validateAndSet "$d"
+      ;;
+    y)
+      printf "%s\n" "$dir"
+      exit 0
+      ;;
+    q)
+      exit 1
+      ;;
+    *)
+      printf >&2 "Unknown key %q...\n" "$ch"
+      ;;
+  esac
+done

@@ -162,13 +162,13 @@ ext_ft.gml = "gml"
 ext_ft.h = "c"
 ext_ft.jl = "julia"
 ext_ft.mpp = "cpp"
+ext_ft.mmp = "xml" -- uncompressed LMMS project
 ext_ft.PKGBUILD = "PKGBUILD"
 ext_ft.rpy = "python"
 ext_ft.rpym = "python"
 ext_ft.scrbl = "scribble"
 -- ext_ft.str = "strudel"
 ext_ft.terra = "terra"
-ext_ft.xdc = "tcl" -- constraint files
 ext_ft.pro = "prolog"
 ext_ft.tsx = function()
   if vim.fn.getline(1):find("<?xml") == 1 then
@@ -179,6 +179,7 @@ ext_ft.v = function()
   local filetype = vim.fn.search("^module\\>") > 0 and "verilog" or "vlang"
   setLocals { filetype = filetype }
 end
+ext_ft.xdc = "tcl" -- constraint files
 
 table.insert(ft_hooks, function()
   local filename = vim.fn.expand("%f")

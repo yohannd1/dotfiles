@@ -205,6 +205,11 @@ window-rule {
 }
 
 window-rule {
+    match title="^CarlaRack-.*$"
+    open-floating true
+}
+
+window-rule {
     match app-id=r#"(firefox|LibreWolf)$"# title="^Picture-in-Picture$"
     open-floating true
 }

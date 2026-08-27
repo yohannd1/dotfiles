@@ -12,12 +12,30 @@
                         (f-exists? (f-expand file path)))
                       (or starting-directory ".")))
 
+(defun process-exit-code-and-output (program &rest args)
+  "Run PROGRAM with ARGS and return the exit code and output in a list."
+  ; https://stackoverflow.com/a/23299809/7448276
+  (with-temp-buffer
+    (list (apply 'call-process program nil (current-buffer) nil args)
+          (buffer-string))))
+
+(defun get-cfg (resource fallback)
+  "Attempts to get a config entry `emacs.RESOURCE'. First attempts through dotcfg, then tries Xresources, otherwise returns FALLBACK."
+  (if IS-LINUX
+    (let* ((request (concat "get:" resource))
+           (result (process-exit-code-and-output "dotcfg" "send" request))
+           (exit-code (nth 0 result))
+           (output (nth 1 result)))
+      (cond
+        ((= exit-code 0) (string-trim output))
+        (t (get-xres resource fallback))))))
+
 (defun get-xres (resource fallback)
   "Attempts to get an X resource, falling back to `FALLBACK' if any error occurs.
 On non-linux platforms `FALLBACK' is always returned."
   (if (and IS-LINUX (getenv "DISPLAY"))
       (let ((result (if core--xgetres-path
-                         (string-trim (shell-command-to-string (concat "xgetres Emacs." resource)))
+                         (string-trim (shell-command-to-string (concat "xgetres " resource)))
                        (x-get-resource resource ""))))
         (pcase result
           ("" fallback)

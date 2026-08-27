@@ -164,6 +164,7 @@ cmd filter-music :set filtermethod regex; filter '\.(ogg|m4a|mp3|wav|flac|ogx|op
 map . set hidden!
 map n new
 map <c-n> search-next
+map a ${{ d.ar-menu "$f" }}
 map x trash
 map R vidir-rename
 map v move-here

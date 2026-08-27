@@ -342,6 +342,7 @@ map("n", "<Leader>ft", dummy.findTodos, { noremap = true, desc = "find TODOs (in
 map("n", "<Leader>fb", tsc_builtin.buffers, { noremap = true, desc = "find buffers" })
 map("n", "<Leader>fh", tsc_builtin.help_tags, { noremap = true, desc = "find help tags" })
 map("n", "<Leader>f.", tsc_builtin.find_files, { noremap = true, desc = "find files" })
+map("n", "<Leader>fc", lazy(tsc_builtin.find_files, { cwd = DOTFILES }), { noremap = true, desc = "find files (in dotfiles)" })
 map("n", "<Leader>fg", tsc_builtin.git_files, { noremap = true, desc = "find files in git repo" })
 map("n", "<Leader>fl", tsc_builtin.live_grep, { noremap = true, desc = "live grep" })
 map("n", "<Leader>fL", dummy.liveGrepRepo, { noremap = true, desc = "live grep (in repo root)" })
