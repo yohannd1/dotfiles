@@ -104,7 +104,7 @@
       (exec-replace ["xdg-open" file]))
 
     :block
-    (die 1 "attempted to open blocked file (%s)\nMIME: %j; EXT: %j\n"
+    (die 1 "attempted to open blocked file (%s)\nMIME: %q; EXT: %q\n"
          file mime ext)
 
     (error (string/format "unknown action for symbol %s" -type))
@@ -146,9 +146,9 @@
               (set ret true)
               (break))
 
-            _ (-> "bad format for tuple-match: %j" (string/format elem) (error)))
+            _ (-> "bad format for tuple-match: %q" (string/format elem) (error)))
 
-          (-> "expected tuple or string, got %j" (string/format elem) (error))
+          (-> "expected tuple or string, got %q" (string/format elem) (error))
           ))
       ret))
 

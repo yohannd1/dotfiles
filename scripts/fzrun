@@ -77,5 +77,5 @@
   (if-let [[n _] (try-brief (fzagnostic (map first actions) :prompt "Run: "))]
     (if-let [act (get actions n)]
       (-> act (in 1) (apply))
-      (die "out of range choice: %j" n))
+      (die "out of range choice: %q" n))
     (os/exit 1)))

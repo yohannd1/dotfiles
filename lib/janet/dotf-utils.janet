@@ -31,7 +31,7 @@
           (defer (:close pipe)
             (ei pipe))))
 
-      (error (string/format "bad argument of type %j" (type ei)))))
+      (error (string/format "bad argument of type %q" (type ei)))))
 
   (defn make-writer-fn []
     (def ei (get env :in))
@@ -50,7 +50,7 @@
           (defer (:close pipe)
             (ei pipe))))
 
-      (error (string/format "bad argument: %j" ei))))
+      (error (string/format "bad argument: %q" ei))))
 
   (def in-fn (make-writer-fn))
   (def out-fn (make-reader-fn :out))
@@ -140,7 +140,7 @@
     (let [[num-str rest] (string/split " " .x 0 2)]
       (if-let [num (scan-number num-str)]
         [(- num starting-number) rest]
-        (-> "bad input (%j is not a number)"
+        (-> "bad input (%q is not a number)"
             (string/format num-str) (error-func))))))
 
 (defn readline-agnostic

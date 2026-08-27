@@ -103,7 +103,7 @@
         (array/push sig-decls (string/format "signal %s : %s;" p t))
         (array/push port-conns (string/format "%s => %s" p-raw p)))
 
-      other (assertf false "unknown value %j" other)))
+      other (assertf false "unknown value %q" other)))
 
   (def ret @"")
   (defn ps [fmt & args]

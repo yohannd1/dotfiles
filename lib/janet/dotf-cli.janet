@@ -70,7 +70,7 @@
     (and (bytes? x) (truthy? (peg/match peg x))))
 
   (defn normalize-name [x]
-    (assert (valid-name? x) (string/format "not a valid name: %j" x))
+    (assert (valid-name? x) (string/format "not a valid name: %q" x))
     (symbol x))
 
   (def subcmd-map @{})

@@ -79,5 +79,5 @@
 
       (printf "}"))
 
-    (die 1 "bad format: %j" format))
+    (die 1 "bad format: %q" format))
   )

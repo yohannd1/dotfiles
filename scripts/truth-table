@@ -40,7 +40,7 @@
   (def result (if (nil? result) nil [;result]))
 
   (unless (deep= result expected)
-    (def msg (string/format "expected %j, got %j (input %j, main keyword %j)" expected result in-str main-kw))
+    (def msg (string/format "expected %q, got %q (input %q, main keyword %q)" expected result in-str main-kw))
     (error msg)))
 
 (when false
@@ -98,7 +98,7 @@
       [:not a] [op-not (to-expr a)]
       [:and & args] [op-and ;(map to-expr args)]
       [:or & args] [op-or ;(map to-expr args)]
-      _ (error (string/format "WHAT IS THIS %j" x))))
+      _ (error (string/format "WHAT IS THIS %q" x))))
 
   (eval ~(fn [,;symbols] ,(to-expr parsed))))
 
