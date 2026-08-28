@@ -112,6 +112,8 @@
         (eprintf "")
         (unless (nil? help)
           (eprintf "    %s" help))))
+    (when (all nil? [positional subcommands])
+      (eprintf "\nUsage: %s" progname))
     (unless (empty? options)
       (eprintf "\nOptions:")
       (each {:name name :short short :long long :help help} options
@@ -159,7 +161,7 @@
     nil # do nothing; subcommand will be picked later
 
     # make a dummy subcommand with no arguments
-    (set-subcmd {:args []}))
+    (set-subcmd {:args []} nil))
 
   (defn no-more-args? []
     (>= in-i (length in-args)))
@@ -176,21 +178,19 @@
     (when (= a0 "--help")
       (show-help))
 
-    (def name (in option-kw-map a0))
-
+    (def name (in option-kw-map (symbol a0)))
     (def info (assert (in option-map name)))
 
     (++ in-i)
     (unless (in info :has-arg)
-      (pp ~(opt ,name))
+      # (pp ~(opt ,name))
       (break [name]))
 
     (when (>= in-i (length in-args))
       (show-help (string "option " a0 " expected an argument")))
-
-    (++ in-i)
     (def a1 (in in-args in-i))
-    (pp ~(opt ,name ,a1))
+    # (pp ~(opt ,name ,a1))
+    (++ in-i)
     [name a1])
 
   (defn get-pos-arg []
@@ -213,6 +213,7 @@
 
   (var n-provided 0)
   (def provided @{})
+  (def prov-opts @{})
   (while (not (no-more-args?))
     (cond
       (get-skip-arg)
@@ -241,6 +242,11 @@
           (++ n-provided)))
 
       (def oa (get-option-arg))
+      (case (length oa)
+        1 (let [[x] oa] (set (prov-opts x) true))
+        2 (let [[x y] oa] (set (prov-opts x) y))
+        (error "???"))
+
       (comment (pp ~(opt ,oa)))))
 
   (when (< n-provided min-args)
@@ -251,4 +257,5 @@
     (show-help "no subcommand provided"))
 
   {:args provided
+   :opts prov-opts
    :subcmd subcmd-name})
