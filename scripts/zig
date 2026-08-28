@@ -2,6 +2,7 @@
 
 set -ue
 
+DEFAULT_ZIG_VERSION=${DEFAULT_ZIG_VERSION:-0.16.0}
 PREFIX=${PREFIX:-/usr}
 zig="$PREFIX/bin/zig"
 
@@ -11,7 +12,7 @@ if exists anyzig; then
   if [ $# -ge 0 ] && [ "$1" = build ]; then
     exec anyzig "$@"
   else
-    exec anyzig 0.16.0 "$@"
+    exec anyzig "$DEFAULT_ZIG_VERSION" "$@"
   fi
 elif exists "$zig"; then
   exec "$zig" "$@"
