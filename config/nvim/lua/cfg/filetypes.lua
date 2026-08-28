@@ -475,7 +475,7 @@ ft.yaml = function()
 end
 
 ft.markdown = function()
-  _G.dummy.markdownFold = function(lnum)
+  dummy.markdownFold = function(lnum)
     -- FIXME: more efficient: have a match for '^#+' and count the length, then set that as the fold level
     for count = 5, 1, -1 do
       local s = string.rep("#", count)
@@ -487,7 +487,7 @@ ft.markdown = function()
     return "="
   end
 
-  vim.b.rifle_mode = "silent"
+  vim.b.rifle_mode = "bg_buffer"
   vim.b.rifle_ft = "markdown"
 
   setSpaceIndent(2)
@@ -744,12 +744,12 @@ addLsp("c++", {
   settings = {}, -- TODO: check this for clangd - https://catalog.lintel.tools/schemas/schemastore/clangd/ ?
 })
 
-addLsp("java", {
-  cmd = {"jdtls"},
-  filetypes = {"java"},
-  root_markers = {".git", "Makefile", "pom.xml", "mvnw", "gradlew"},
-  settings = {},
-})
+-- addLsp("java", {
+--   cmd = {"jdtls"},
+--   filetypes = {"java"},
+--   root_markers = {".git", "Makefile", "pom.xml", "mvnw", "gradlew"},
+--   settings = {},
+-- })
 
 -- addLsp("zig", {
 --   cmd = {"zls"},
