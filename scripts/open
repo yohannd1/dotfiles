@@ -378,7 +378,7 @@
 
   (when (m :ext ["md"])
     # (t :runpage ["glowrapper" file])
-    (t :gui ["md-preview" file]))
+    (t :gui ["live-preview" file]))
 
   (when (m :ext ["tex"])
     (t :pop ["rifle-run" "run" "tex" file]))

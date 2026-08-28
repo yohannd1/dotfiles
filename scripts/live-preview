@@ -3,6 +3,7 @@
 (import spork/http)
 (import spork/path :only [parent basename abspath normalize dirname])
 (use dotf-utils)
+(use dotf-cli)
 (use dotf-evx)
 
 (var *input-last-compiled* nil)
@@ -13,6 +14,11 @@
 (var *reload-queue* nil)
 (var *reload-bqueue* nil)
 (var *cached-output* nil)
+
+(defn path-parent [p]
+  (import spork/path :only [parent])
+  (def x (path/parent p))
+  (if (= x "") "." x))
 
 (defn get-mtime [path]
   (-> (os/stat *input-file*) (in :modified)))
@@ -52,6 +58,17 @@
   </script>
   ```)
 
+(def md-css-fix
+  ```
+  <style>
+  img {
+    width: 100%;
+  }
+  </style>
+  ```)
+
+# TODO: for markdown, allow dedicated CSS overrides. Maybe do that for any filetype tbh
+
 (defn sanitize-path
   "Normalizes a path and only returns it if it's not trying to escape \".\""
   [path]
@@ -66,19 +83,32 @@
 
 (defn compile-input []
   (def new-time (os/time))
-
   (def out-file (string *output-dir* "/index.html"))
 
-  (def args ["acr2html" *input-file* "-o" out-file "-k" *katex-path*])
+  (def is-markdown
+    (or (string/has-suffix? ".md" *input-file*)
+        (string/has-suffix? ".markdown" *input-file*)))
+
+  (def args
+    (cond
+      is-markdown
+      ["comrak" *input-file* "-t" "html" "-o" out-file]
+
+      (string/has-suffix? ".acr" *input-file*)
+      ["acr2html" *input-file* "-o" out-file "-k" *katex-path*]
+
+      (die 1 "unknown file type for file %q" *input-file*)))
 
   (defn sanitize-html [x]
     (->> x (peg/replace-all "<" "&lt;") (peg/replace-all ">" "&gt;")))
 
-  # TODO: does this work properly? does stderr block as it used to in the python ver? not sure.
+  # TODO: does this work properly? does stderr block as it used to in the python ver? not sure. I'm hoping not because it's writing as it's read into a buffer, in iirc a separate fiber.
   (match (run< args {:err true})
     {:code 0}
     (let [buf (slurp out-file)]
       (buffer/push-string buf reload-js)
+      (when is-markdown
+        (buffer/push-string buf md-css-fix))
       (set *cached-output* buf))
 
     {:code code :err raw-err}
@@ -185,18 +215,34 @@
     (= method "GET") (reply-file)
     {:status 404 :body "???"}))
 
-(defn main [arg0 & args]
-  (assert (empty? args))
+(def arg-spec
+  '(:description "live previewer for acrylic documents"
 
-  (set *input-file* (os/getenv "FILE_TO_WATCH"))
-  (set *output-dir* (os/getenv "OUTPUT_DIR"))
-  (set *katex-path* (os/getenv "KATEX_PATH"))
+    :options
+    ({:name file :short -f :long --file
+      :help "the input file to watch" :has-arg true}
+     {:name out-dir :short -o :long --out-dir
+      :help "the output directory" :has-arg true}
+     {:name katex-path :long --katex-path
+      :help "TODO: desc" :has-arg true}
+     )))
+
+(defn main [& args]
   (set *changes-queue* (ev/chan 64))
   (def bqueue-middle (ev/chan 64))
   (set *reload-bqueue* (make-broadcast-chan bqueue-middle))
 
+  (def {:opts arg-opts} (parse-args ;arg-spec :in-args args))
+
+  (when (def v (arg-opts 'file))
+    (set *input-file* v))
+  (when (def v (arg-opts 'out-dir))
+    (set *output-dir* v))
+  (when (def v (arg-opts 'katex-path))
+    (set *katex-path* v))
+
   (let [fw (filewatch/new *changes-queue*)
-        parent (path/parent *input-file*)]
+        parent (path-parent *input-file*)]
     (filewatch/add fw parent :close-write)
     (filewatch/add fw parent :modify)
     (filewatch/listen fw))

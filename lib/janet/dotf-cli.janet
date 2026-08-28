@@ -115,7 +115,7 @@
     (when (all nil? [positional subcommands])
       (eprintf "\nUsage: %s" progname))
     (unless (empty? options)
-      (eprintf "\nOptions:")
+      (eprintf "Options:")
       (each {:name name :short short :long long :help help} options
         (def cand [;(if short [short] []) ;(if long [long] [])])
         (eprinf "  %s" (string/join cand ", "))
@@ -179,6 +179,9 @@
       (show-help))
 
     (def name (in option-kw-map (symbol a0)))
+    (when (nil? name)
+      (show-help (string "unknown option: " a0)))
+
     (def info (assert (in option-map name)))
 
     (++ in-i)

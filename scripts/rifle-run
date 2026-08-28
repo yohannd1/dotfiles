@@ -149,8 +149,7 @@ elif isLang 'acrylic'; then
   do_run() {
     export ACR_KATEX_PATH="$XDG_DATA_DIR/katex"
     ln -s "$ACR_KATEX_PATH" "$tmp/katex"
-
-    FILE_TO_WATCH="$file" OUTPUT_DIR="$tmp" KATEX_PATH="katex/" acr-live-preview
+    live-preview --file "$file" --out-dir "$tmp" --katex-path "katex/"
   }
 
 elif isLang 'alda'; then
@@ -333,7 +332,9 @@ elif isLang 'lua'; then
   }
 
 elif isLang 'markdown'; then
-  do_run() { md-preview "$file"; }
+  do_run() {
+    live-preview --file "$file" --out-dir "$tmp"
+  }
 
 elif isLang 'nim'; then
   do_build() {
