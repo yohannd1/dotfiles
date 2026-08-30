@@ -1,26 +1,12 @@
 #!/usr/bin/env janet
 
 (use dotf-path)
+(use dotf-cli)
 (use dotf-utils)
 
 (def TMPDIR (os/getenv "TMPDIR" "/tmp"))
 (def HOME (-> (os/getenv "HOME") (assert "no HOME set..?")))
 (def state-path (string/format "%s/mus.state" TMPDIR))
-(var *progname* nil)
-
-(defn show-help []
-  (eprintf "%s: a music playing utility" *progname*)
-  (eprintf "Usage:")
-  (eprintf "  %s add [FILES...]" *progname*)
-  (eprintf "  %s clear" *progname*)
-  (eprintf "  %s current" *progname*)
-  (eprintf "  %s edit" *progname*)
-  (eprintf "  %s queue" *progname*)
-  (eprintf "  %s shuffle" *progname*)
-  (eprintf "    Shuffle the songs after the current one in the queue.")
-  (eprintf "  %s { next | prev } [AMOUNT]" *progname*)
-  (eprintf "    Go forward or backwards in the queue by AMOUNT (defaults to 1).")
-  (os/exit 2))
 
 (defn shuffle
   "Shuffle an array."
@@ -92,69 +78,90 @@
            (save-state ,cap))
          ,;body))))
 
-(defn main [arg0 & args]
-  (set *progname* (path/basename arg0))
-  (def args-len (length args))
+(def arg-spec
+  '(:description "mpv-based music queue manager and player"
+    :subcommands
+    ({:name add :args () :rest songs
+      :help "Add one or more songs to the end of the queue"}
+     {:name clear :help "Clear the queue"}
+     {:name current :help "Get the song at the front of the queue"}
+     {:name edit :help "Edit the queue file"}
+     {:name queue :help "Show the queue"}
+     {:name shuffle :help "Shuffle the songs after the current one in the queue"}
+     {:name play :help "Play the songs in the queue"}
 
-  (when (empty? args) (show-help))
+     # TODO: whoops! I think we do need optional arguments.
+     {:name next :rest amount :help "Go forwards in the queue by AMOUNT (defaults to 1)"}
+     {:name prev :rest amount :help "Go backwards in the queue by AMOUNT (defaults to 1)"}
+     )
 
-  (match (in args 0)
-    "add"
+    :options
+    ({:name skip-dirs :short -D :long --skip-dirs :help "Ignore directories when adding files to the queue"})
+    ))
+
+(var *skip-dirs* false)
+(var *editor* "vi")
+
+(defn add-song [state fname]
+  (assert
+    (path/exists? fname)
+    (string/format "file %s does not exist" fname))
+
+  (if (path/is-dir? fname)
+    (if *skip-dirs*
+      (eprintf "warning: skipping directory %s" fname)
+      (each sub (os/dir fname)
+        (add-song state (string fname "/" sub))))
+    (let [real (os/realpath fname)
+          ext (path/extension real)]
+      (case (get-ext-kind ext)
+        :music (array/push (in state :queue) real)
+        :image nil # do nothing
+        :unknown (eprintf "warning: skipping %s (unsupported extension %q)" fname ext)))))
+
+(defn main [& raw-args]
+  (def {:subcmd subcmd :args args :opts opts}
+    (parse-args :in-args raw-args ;arg-spec))
+
+  (when (def v (in opts 'skip-dirs))
+    (set *skip-dirs* true))
+
+  (when (def v (os/getenv "EDITOR"))
+    (set *editor* v))
+
+  (defn parse-amount []
+    (def am (in args 'amount))
+    (if (empty? am) 1 (-> am first scan-number math/floor)))
+
+  (case subcmd
+    'add
     (with-state state
-      (def skip-dirs
-        (-> (os/getenv "SKIP_DIRS") (or "") (string/trim) (not= "")))
-
-      (defn add-song [fname]
-        (assert
-          (path/exists? fname)
-          (string/format "file %s does not exist" fname))
-
-        (if (path/is-dir? fname)
-          (if skip-dirs
-            (eprintf "warning: skipping directory %s" fname)
-            (each sub (os/dir fname)
-              (add-song (string fname "/" sub))))
-          (do
-            (def real (os/realpath fname))
-            (def ext (path/extension real))
-
-            (case (get-ext-kind ext)
-              :music (array/push (in state :queue) real)
-              :image nil # do nothing
-              :unknown (eprintf "warning: skipping %s (unsupported extension %q)" fname ext)))))
-
-      (each arg (array/slice args 1)
+      (each arg (in args 'songs)
         (if (= arg "-")
           (while (def fname (:read stdin :line))
-            (add-song (string/trim fname)))
-          (add-song arg)))
-
+            (add-song state (string/trim fname)))
+          (add-song state arg)))
       (set (state :write) true))
 
-    "clear"
+    'clear
     (with-state state
       (set (state :index) 0)
       (-> (state :queue) (array/clear))
       (set (state :write) true))
 
-    "current"
+    'current
     (with-state state
-      (when (> args-len 1) (show-help))
       (def {:index index :queue queue} state)
       (if (< index (length queue))
         (printf "%d %s" (inc index) (in queue index))
-        (do
-          (eprintf "queue is \"empty\"")
-          (os/exit 1))))
+        (die 1 "no more songs to play")))
 
-    "edit"
-    (let [EDITOR (or (os/getenv "EDITOR") "vi")]
-      (with-lock state-path
-        (os/execute [EDITOR state-path] :p)))
+    'edit
+    (with-lock state-path
+      (os/execute [*editor* state-path] :p))
 
-    "queue"
+    'queue
     (with-state state
-      (when (> args-len 1) (show-help))
       (loop [:let [index (in state :index)
                    queue (in state :queue)]
              [i path] :pairs queue]
@@ -164,76 +171,66 @@
             (< i index) "  "
             (= i index) "* "
             (> i index) "- "))
-        (printf "%s%s" prefix final-path)))
+        (print prefix final-path)))
 
-    "shuffle"
+    'shuffle
     (with-state state
-      (when (> args-len 1) (show-help))
       (def {:index index :queue queue} state)
-
       (if (< (+ index 1) (length queue))
         (shuffle queue (+ index 1))
         (eprintf "no elements to shuffle."))
-
       (set (state :write) true))
 
-    "next"
+    'next
     (with-state state
-      (when (> args-len 2) (show-help))
-
-      (def amount
-        (-> args (get 1) (or "1") (scan-number) (math/floor)))
+      (def amount (parse-amount))
       (set (state :index) (-> state (in :index) (+ amount)))
       (set (state :write) true))
 
-    "prev"
+    'prev
     (with-state state
-      (when (> args-len 2) (show-help))
-
-      (def amount (-> args (get 1) (or "1") (scan-number) (math/floor)))
+      (def amount (parse-amount))
       (set (state :index) (-> state (in :index) (- amount) (max 0)))
       (set (state :write) true))
 
-    "play"
+    'play
     (do
-      (when (> args-len 1) (show-help))
-
       (defn get-queue-state []
         (with-state {:queue q :index i}
           {:index i
            :queue q
            :cur-song (get q i)}))
 
-      (prompt 'loop
-        (while true
+      (defn the-loop []
+        (def
+          {:index index
+           :queue queue
+           :cur-song cur-song}
+          (get-queue-state))
+
+        (when (nil? cur-song)
+          (eprintf "no more songs to play.")
+          (break))
+
+        (eprintf "(%d of %d) playing %s" (inc index) (length queue) (path/basename cur-song))
+        (eprintf "full path: %s" cur-song)
+
+        (os/execute ["mpv" "--no-video" cur-song] :p)
+        (eprintf "\n")
+
+        (with-state state
           (def
             {:index index
-             :queue queue
-             :cur-song cur-song}
-            (get-queue-state))
+             :queue queue}
+            state)
+          (def cur-song-2 (get queue index))
+          (if (= cur-song cur-song-2)
+            (do
+              (set (state :index) (inc index))
+              (set (state :write) true))
+            (eprintf "warning: current song isn't what I thought it was. I'm lost.")))
+        (the-loop))
 
-          (when (nil? cur-song)
-            (eprintf "no more songs to play.")
-            (return 'loop))
+      (the-loop))
 
-          (eprintf "(%d of %d) playing %s" (inc index) (length queue) (path/basename cur-song))
-          (eprintf "full path: %s" cur-song)
-
-          (os/execute ["mpv" "--no-video" cur-song] :p)
-          (eprintf "\n")
-
-          (with-state state
-            (def
-              {:index index
-               :queue queue}
-              state)
-            (def cur-song-2 (get queue index))
-            (if (= cur-song cur-song-2)
-              (do
-                (set (state :index) (inc index))
-                (set (state :write) true))
-              (eprintf "warning: current song isn't what I thought it was. I'm lost."))))))
-
-    _ (show-help)
-    )
-  )
+    (-> "what? what command is %q" (string/format subcmd) (error))))

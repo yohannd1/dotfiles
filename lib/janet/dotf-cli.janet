@@ -107,6 +107,7 @@
     (unless (nil? subcommands)
       (eprintf "\nUsage:")
       (each {:name name :args args :rest rest :help help} subcommands
+        (default args '())
         (eprinf "  %s %s" progname name)
         (print-argspec args rest)
         (eprintf "")
@@ -145,13 +146,19 @@
   (var cur-subcmd nil)
   (var subcmd-name nil)
 
+  (def provided @{})
   (defn set-subcmd [subcmd name]
     (def {:args args :rest rest} subcmd)
+    (default args '())
+
+    (unless (nil? rest)
+      (set (provided rest) @[]))
 
     (set min-args (length args))
     (set max-args (if (nil? rest) min-args math/inf))
     (set cur-subcmd subcmd)
-    (set subcmd-name name))
+    (set subcmd-name name)
+    )
 
   (cond
     (not (nil? positional))
@@ -215,7 +222,6 @@
     true)
 
   (var n-provided 0)
-  (def provided @{})
   (def prov-opts @{})
   (while (not (no-more-args?))
     (cond
@@ -239,8 +245,6 @@
 
             # "rest" args
             (let [{:rest sc-rest} cur-subcmd]
-              (unless (in provided sc-rest)
-                (set (provided sc-rest) @[]))
               (array/push (in provided sc-rest) pa-raw)))
           (++ n-provided)))
 
@@ -252,12 +256,11 @@
 
       (comment (pp ~(opt ,oa)))))
 
-  (when (< n-provided min-args)
-    (show-help "not enough args"))
-
-  # TODO: this shouldn't always error out, should it?
   (when (nil? cur-subcmd)
     (show-help "no subcommand provided"))
+
+  (when (< n-provided min-args)
+    (show-help "not enough args"))
 
   {:args provided
    :opts prov-opts

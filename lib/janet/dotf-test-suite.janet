@@ -23,6 +23,10 @@
   (assert (= (remove-prefix "foo@%" "fo") "o@%")))
 
 (defn test-cli []
+  (defn multi-in [ds ks]
+    (tuple ;(map |(in ds $) ks)))
+  (assert (= (multi-in {:a 10 :b 20} [:a :b]) [10 20]))
+
   (def specs
     '(:description "omg hii"
       :subcommands ({:name foo :args (bar baz abc) :rest others})
@@ -41,10 +45,11 @@
       :positional {:args (a b)}))
   (def r (parse-args ;specs :in-args '("omg" "1" "2")))
   (assert (-> r (in :subcmd) nil?))
-  (assert (-> r (in :args) (in 'a) (= "1")))
-  (assert (-> r (in :args) (in 'b) (= "2")))
+  (assert (-> r (in :args) (multi-in ['a 'b]) (= ["1" "2"])))
 
-  # (def r (parse-args ;specs :in-args '("omg" "--help")))
+  # TODO: test options
+  # TODO: test multiple subcommands
+  # TODO: test empty args subcommand
   )
 
 (defn test-all []
