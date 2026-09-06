@@ -6,7 +6,14 @@ local M = {}
 
 M.run = function(command)
   if executable("rifle-run") == 0 then
-    error("could not find `rifle-run` in PATH")
+    print("could not find `rifle-run` in PATH")
+    return
+  end
+
+  local fname = vim.fn.expand("%:p")
+  if fname == "" then
+    print("no file name set; cannot run rifle")
+    return
   end
 
   local has_display = (vim.env.DISPLAY ~= nil) or (vim.env.WAYLAND_DISPLAY ~= nil)
@@ -24,7 +31,8 @@ M.run = function(command)
   local dotfiles = assert(vim.env.DOTFILES, "$DOTFILES not set (sorry)")
   local rifle_run_path = ("%s/scripts/rifle-run"):format(dotfiles)
   local runread_path = ("%s/scripts/runread"):format(dotfiles)
-  local cmd = {rifle_run_path, command, rifle_ft, vim.fn.expand("%:p")}
+
+  local cmd = {rifle_run_path, command, rifle_ft, fname}
   local cmd_prefix = utils.os.is_android and {"bash"} or {}
 
   local createRifleTerm = function()
