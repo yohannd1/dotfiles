@@ -2,6 +2,7 @@ lockPref("privacy.resistFingerprinting", false);
 lockPref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
 lockPref("browser.uidensity", 0); // compact UI density
 lockPref("sidebar.animation.enabled", false); // this animation is too long, it feels a bit off
+lockPref("browser.urlbar.showSearchTerms.enabled", false); // no search text on the URL bar, dammit
 
 // const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
