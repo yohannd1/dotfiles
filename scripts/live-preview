@@ -58,6 +58,26 @@
   </script>
   ```)
 
+(def md-prelude
+  ```
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+      <meta name="HandheldFriendly" content="true"/>
+      <meta charset="UTF-8"/>
+    </head>
+    <body>
+  ```
+  )
+
+(def md-postlude
+  ```
+    </body>
+  </html>
+  ```)
+
 (def md-css-fix
   ```
   <style>
@@ -105,10 +125,19 @@
   # TODO: does this work properly? does stderr block as it used to in the python ver? not sure. I'm hoping not because it's writing as it's read into a buffer, in iirc a separate fiber.
   (match (run< args {:err true})
     {:code 0}
-    (let [buf (slurp out-file)]
+    (let [buf-orig (slurp out-file)
+          buf @""]
+
+      (when is-markdown
+        (buffer/push-string buf md-prelude))
       (buffer/push-string buf reload-js)
       (when is-markdown
         (buffer/push-string buf md-css-fix))
+
+      (buffer/push-string buf buf-orig)
+
+      (when is-markdown
+        (buffer/push-string buf md-postlude))
       (set *cached-output* buf))
 
     {:code code :err raw-err}
