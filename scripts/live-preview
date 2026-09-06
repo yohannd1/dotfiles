@@ -112,7 +112,9 @@
   (def args
     (cond
       is-markdown
-      ["comrak" *input-file* "-t" "html" "-o" out-file]
+      ["comrak" *input-file* "-t" "html" "-o" out-file
+       "--syntax-highlighting" "base16-ocean.dark"
+       "--extension" "strikethrough,tagfilter,table,autolink,tasklist,superscript,footnotes,description-lists"]
 
       (string/has-suffix? ".acr" *input-file*)
       ["acr2html" *input-file* "-o" out-file "-k" *katex-path*]
