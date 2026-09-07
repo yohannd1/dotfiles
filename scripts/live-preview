@@ -134,7 +134,14 @@
         (buffer/push-string buf md-prelude))
       (buffer/push-string buf reload-js)
       (when is-markdown
-        (buffer/push-string buf md-css-fix))
+        (buffer/push-string buf md-css-fix)
+
+        (let [home (assert (os/getenv "HOME"))
+              path (string home "/storage/local/share/markdown_css/default.css")]
+          (unless (nil? (os/stat path))
+            (buffer/push-string buf "<style>")
+            (buffer/push-string buf (slurp path))
+            (buffer/push-string buf "</style>"))))
 
       (buffer/push-string buf buf-orig)
 
