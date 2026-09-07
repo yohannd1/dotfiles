@@ -132,7 +132,6 @@
 
       (when is-markdown
         (buffer/push-string buf md-prelude))
-      (buffer/push-string buf reload-js)
       (when is-markdown
         (buffer/push-string buf md-css-fix)
 
@@ -145,6 +144,7 @@
 
       (buffer/push-string buf buf-orig)
 
+      (buffer/push-string buf reload-js)
       (when is-markdown
         (buffer/push-string buf md-postlude))
       (set *cached-output* buf))

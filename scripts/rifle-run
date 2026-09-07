@@ -83,6 +83,8 @@ fparent_pattern() {
   done
 }
 
+export NO_COLOR=1 # please. I'm losing my patience.
+
 _CFLAGS_C=(-Wpedantic -Wall)
 _VERIBLE_LINT_RULES='-parameter-name-style'
 
