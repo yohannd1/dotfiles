@@ -370,6 +370,7 @@
   (when (m :ext ["kra"])
     (t :gui ["@krita" file])
     (t :gui ["krita" file]))
+  (mt :ext ["xcf"] :gui ["gimp" file])
   (mt :ext ["pxo"] :gui ["pixelorama" file])
   (mt :ext ["blend"] :gui ["@blender" file])
   (mt :ext ["tic"] :gui ["tic80" file])
