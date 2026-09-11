@@ -1,6 +1,6 @@
 # Based off the furnace-git one in the AUR
 
-pkgname=furnace-git
+pkgname=furnace-fork
 _truepkg=furnace
 pkgver=ddd098734
 pkgrel=1
