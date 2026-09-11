@@ -117,7 +117,12 @@
       (case (get-ext-kind ext)
         :music (array/push (in state :queue) real)
         :image nil # do nothing
-        :unknown (eprintf "warning: skipping %s (unsupported extension %q)" fname ext)))))
+
+        :unknown
+        (print "warning: skipping " fname " "
+               (if (nil? ext)
+                 "(no extension)"
+                 (string "(unsupported extension " ext ")")))))))
 
 (defn main [& raw-args]
   (def {:subcmd subcmd :args args :opts opts}
