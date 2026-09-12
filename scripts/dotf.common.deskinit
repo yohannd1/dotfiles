@@ -25,7 +25,9 @@ if isWayland; then
 fi
 
 # set up config
-[ "$DISPLAY" ] && { gen-res xresources | xrdb; }
+if [ "$DISPLAY" ] && exists xrdb; then
+  gen-res xresources | xrdb
+fi
 gen-res dotcfg | dotcfg stdin-send
 gen-config # we already run this in the login shell but it needs to know about wayland
 

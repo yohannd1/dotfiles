@@ -5,6 +5,9 @@ if [ -z "$_STARTUP_DEBUG_TIME" ]; then
   _STARTUP_DEBUG_TIME=$(date +"%s%3N")
 fi
 
+# curse you, nix!!!!!
+unalias ${(k)aliases} ${(k)galiases} ${(k)saliases}
+
 ZSH_RC_PATH="${ZDOTDIR:-$HOME}/.zshrc"
 XDG_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}
 XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}

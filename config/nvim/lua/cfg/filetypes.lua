@@ -387,6 +387,10 @@ ft.make = function()
   setTabIndent(8)
 end
 
+ft.nix = function()
+  setSpaceIndent(2)
+end
+
 ft.tex = function()
   vim.b.rifle_ft = "tex"
   vim.b.rifle_mode = "bg_buffer"

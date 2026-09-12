@@ -2,28 +2,34 @@
 
 (use dotf-utils)
 
-(def WAYLAND-TERMINAL (or (os/getenv "WAYLAND_TERMINAL") "foot"))
-(def XORG-TERMINAL (or (os/getenv "XORG_TERMINAL") "xterm"))
+# useful for debugging when I eventually mess up this script for the nth time (n >= 3)
+# (defn fuck-dbg [x] (os/execute ["notify-send" "--" (string x)] :p))
+
 (def WAYLAND-DISPLAY (os/getenv "WAYLAND_DISPLAY"))
 (def XORG-DISPLAY (os/getenv "DISPLAY"))
 
 (defn shell-cmd-exists [cmd]
-  (def p (os/spawn ["sh" "-c" (string/join ["command -v" cmd] " ")]
-                   :p {:out :pipe :err :pipe}))
+  (def args ["sh" "-c" (string/join ["command -v" cmd] " ")])
+  (def p (os/spawn args :p {:out :pipe :err :pipe}))
   (= (:wait p) 0))
 
-(when (and WAYLAND-DISPLAY (not (shell-cmd-exists WAYLAND-TERMINAL))
-  (printf "WAYLAND_DISPLAY is set, but couldn't find %s" WAYLAND-TERMINAL)
-  (os/exit 1)))
+(defn get-xorg-terminal []
+  (def ret (os/getenv "XORG_TERMINAL" "xterm"))
+  (unless (shell-cmd-exists ret)
+    (die 1 "xorg terminal %q not found" ret))
+  ret)
 
-(when (and XORG-DISPLAY (not (shell-cmd-exists XORG-TERMINAL)))
-  (die 1 "DISPLAY is set, but couldn't find %s" XORG-TERMINAL))
+(defn get-wayland-terminal []
+  (def ret (os/getenv "WAYLAND_TERMINAL" "foot"))
+  (unless (shell-cmd-exists ret)
+    (die 1 "wayland terminal %q not found" ret))
+  ret)
 
 (def terminal
   (cond
-    WAYLAND-DISPLAY WAYLAND-TERMINAL
-    XORG-DISPLAY XORG-TERMINAL
-    (die 1 "could not figure out what terminal to use")))
+    WAYLAND-DISPLAY (get-wayland-terminal)
+    XORG-DISPLAY (get-xorg-terminal)
+    (die 1 "could not figure out what terminal to use; are you on a graphical session?")))
 
 (defn main [arg0 & args]
   (def arguments @{})

@@ -60,6 +60,19 @@ if exists ddcutil && ddcutil --skip-ddc-checks detect | grep -q '^Display'; then
     cur=$(impl_get | addAndClamp "$1" 1 100)
     _setBrightness "$cur"
   }
+elif exists brightnessctl; then
+  impl_get() {
+    awk -v v="$(brightnessctl g)" -v m="$(brightnessctl m)" \
+      'BEGIN { print v / m * 100; }'
+  }
+  impl_set() {
+    real=$(awk -v v="$1" -v m="$(brightnessctl m)" 'BEGIN { print v * m / 100; }')
+    brightnessctl s "$real"
+  }
+  impl_mod() {
+    cur=$(impl_get | addAndClamp "$1" 1 100)
+    impl_set "$cur"
+  }
 elif exists light; then
   cmd() { light -s "sysfs/backlight/auto" -v1 "$@"; }
   impl_get() { cmd; }
@@ -81,6 +94,9 @@ elif [ "${DISPLAY:-}" ] && [ -z "${WAYLAND_DISPLAY:-}" ] && exists xbacklight; t
     cur=$(impl_get | addAndClamp "$1" 0.5 100)
     xbacklight -set "$cur"
   }
+else
+  printf >&2 "could not find valid backend\n"
+  exit 1
 fi
 
 if [ $# -lt 1 ] || [ $# -gt 2 ]; then
