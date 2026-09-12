@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+#
+# Wrapper script for putting things in trash.
+
+set -ue
+
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
+prefix=${PREFIX:-/usr/bin}
+
+if exists gtrash; then
+  exec gtrash put "$@"
+elif exists trashy; then
+  exec trashy put "$@"
+elif exists "$PREFIX/trash-put"; then
+  # probably the "original impl" in the trash-cli package
+  exec "$PREFIX/trash-put" "$@"
+else
+  printf >&2 "error: could not find suitable trash command\n"
+  exit 1
+fi
