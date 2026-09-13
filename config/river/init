@@ -117,8 +117,8 @@ riverctl map normal Super+Alt Comma spawn "playerctl previous"
 riverctl map normal Super+Alt Period spawn "playerctl next"
 
 # backlight (brightness)
-riverctl map -repeat normal Super Minus spawn "backlightctl mod -5"
-riverctl map -repeat normal Super Equal spawn "backlightctl mod 5"
+riverctl map -repeat normal Super Minus spawn "d.bright mod -5"
+riverctl map -repeat normal Super Equal spawn "d.bright mod 5"
 
 # red screen (wl-gammarelay)
 riverctl map normal Super F12 spawn "dotf.wrap.redscreen toggle"

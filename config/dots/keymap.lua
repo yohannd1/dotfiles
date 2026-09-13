@@ -61,8 +61,8 @@ return function(api)
   -- api.key("super alt period"):desc("next in player"):map("playerctl next")
   api.key("super alt y"):desc("play/pause"):map("playerctl play-pause")
 
-  api.key("super minus"):desc("decrease screen brightness"):map("backlightctl mod -10")
-  api.key("super equal"):desc("increase screen brightness"):map("backlightctl mod +10")
+  api.key("super minus"):desc("decrease screen brightness"):map("d.bright mod -10")
+  api.key("super equal"):desc("increase screen brightness"):map("d.bright mod +10")
 
   api.key("super F12")
     :desc("toggle red screen")

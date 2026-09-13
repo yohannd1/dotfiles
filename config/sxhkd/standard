@@ -66,7 +66,7 @@ super + alt + y
 
 # XF86MonBrightness{Down,Up}
 super + {minus,equal}
-    backlightctl mod {-10,10}
+    d.bright mod {-10,10}
 
 # toggle red screen
 super + F12

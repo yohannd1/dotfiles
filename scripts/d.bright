@@ -7,6 +7,8 @@ exists() { command -v "$1" >/dev/null 2>/dev/null; }
 
 showHelp() {
   cat >&2 <<EOF
+$progname: utility to control screen brightness.
+
 Usage: $progname { get | set <VALUE> | mod <AMOUNT> }
   VALUE has to be a positive integer.
   AMOUNT has to be a signed integer, with + or - explicitly as the signal.
