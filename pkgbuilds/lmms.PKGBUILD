@@ -1,7 +1,7 @@
 # Based off furnace-git and lmms-git PKGBUILDs
 
 pkgname=lmms-fork
-pkgver=1.3.0.alpha.1.r1129.g7128167cd
+pkgver=1.3.0.alpha.2.r143.gbbf2dcdb3
 pkgrel=1
 pkgdesc="The Linux MultiMedia Studio."
 arch=('x86_64')
@@ -78,9 +78,23 @@ build() {
     "$forkDir"
 
   # NOTE: only building the targets I believe are relevant here. This might be wrong.
-  cmake --build . -j "$jobc" -t plugins/all
-  cmake --build . -j "$jobc" -t manpage
-  cmake --build . -j "$jobc" -t lmms
+  # Look into these facts:
+  # - the "ALL" parameter in ADD_CUSTOM_TARGETS makes the added target auto-add to the default targets list;
+  # - to list all known targets, `cmake --target help`;
+  # - to list targets under the target "all" in ninja: `ninja -C build -t targets all`
+
+  buildTarget() { cmake --build . -j "$jobc" -t "$1"; }
+
+  buildTarget finalize-locales
+  buildTarget plugins/all
+
+  if buildTarget help | grep -q manpage; then
+    buildTarget manpage
+  else
+    printf >&2 "warning: no 'manpage' target found!\n"
+  fi
+
+  buildTarget lmms
 }
 
 package() {
