@@ -32,6 +32,7 @@
     (-?> (peg/match peg-url-protocol file) (in 0)))
 
   # normalize filename if it's a file:// protocol
+  # TODO: might also need to decode the URL...
   (when (= protocol "file")
     (set protocol nil)
     (set file (string/slice file (length "file://"))))
@@ -44,6 +45,9 @@
     (if (nil? protocol)
       (-?> (peg/match peg-file-ext file) (last) (string/ascii-lower))
       nil))
+
+  (when (and file (or (nil? protocol) (= protocol "file")) (nil? (os/stat file)))
+    (die 1 "file does not exist or is not accessible: %q" file))
 
   @{:open-alt open-alt
     :file file
@@ -107,7 +111,7 @@
     (die 1 "attempted to open blocked file (%s)\nMIME: %q; EXT: %q\n"
          file mime ext)
 
-    (error (string/format "unknown action for symbol %s" -type))
+    (error (string "unknown action for symbol " -type))
     ))
 
 (defn warn [msg]
