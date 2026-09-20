@@ -1,0 +1,69 @@
+#!/usr/bin/env sh
+
+set -ue
+progname=$(basename "$0")
+
+showHelp() {
+  cat >&2 <<EOF
+Usage:
+  $progname list: list all entries
+  $progname get <NAME>: get the value of a entry
+  $progname set <NAME> <VALUE>: set a specific entry to a value
+
+Notes:
+  <NAME> must not contain slashes (and newlines will be ignored)
+  Use this somewhat sparingly. It writes to disk!
+EOF
+  # TODO: set-stdin maybe
+  exit 2
+}
+
+[ $# -gt 0 ] || showHelp
+
+getBasePath() {
+  _basePath=${XDG_DATA_DIR:-$HOME/.local/share}/dots
+  if [ -d "$_basePath" ]; then
+    true
+  elif [ -e "$_basePath" ]; then
+    printf >&2 "config path exists, but is not a dir: %s\n" "$_basePath"
+    exit 1
+  else
+    mkdir -p "$_basePath"
+  fi
+  printf "%s" "$_basePath"
+}
+
+getPath() {
+  _basePath=$(getBasePath)
+  _v=$(printf "%s\n" "$1" | tr -d '\n') # remove newlines just to make sure
+
+  if printf "%s\n" "$_v" | grep '/'; then
+    printf >&2 "invalid name: %s\n" "$_v"
+    exit 1
+  fi
+
+  printf "%s/%s" "$_basePath" "$_v"
+}
+
+case "$1" in
+  list)
+    [ $# = 1 ] || showHelp
+    bp=$(getBasePath)
+    cd "$bp"
+    find -maxdepth 1 -type f | sed 's ^\./  g'
+    ;;
+  get)
+    [ $# = 2 ] || showHelp
+    name=$2
+    path=$(getPath "$name")
+    cat "$path"
+    ;;
+  set)
+    [ $# = 3 ] || showHelp
+    name=$2
+    path=$(getPath "$name")
+    value=$3
+    printf "%s" "$value" > "$path"
+    ;;
+  *) showHelp ;;
+esac
