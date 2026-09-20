@@ -4,8 +4,6 @@ set -ue
 progname=$(basename "$0")
 
 cacheHome=${XDG_CACHE_HOME:-$HOME/.cache}
-cachePath=${cacheHome}/fzemoji-cache.json
-emojiFileURL="https://raw.githubusercontent.com/chalda-pnuzig/emojis.json/refs/heads/master/src/list.only.modifiers.json"
 
 showHelp() {
   cat >&2 <<EOF
@@ -14,15 +12,73 @@ EOF
   exit 2
 }
 
-[ $# = 0 ] || showHelp
+main() {
+  [ $# = 0 ] || showHelp
+  choice=$(genEmojiListV2 | fzagnostic)
+  printf "%s" "$choice" | cut -d' ' -f1 | tr -d '\n' | d.clip copy
+}
 
-if [ ! -f "$cachePath" ]; then
-  curl -L --output "$cachePath" -- "$emojiFileURL"
-fi
-
-genEmojiList() {
+genEmojiListV1() {
+  cachePath=${cacheHome}/fzemoji-cache-v1.json
+  emojiFileURL="https://raw.githubusercontent.com/chalda-pnuzig/emojis.json/refs/heads/master/src/list.only.modifiers.json"
+  if [ ! -f "$cachePath" ]; then
+    curl -L --output "$cachePath" -- "$emojiFileURL"
+  fi
   jq -r '.emojis[] | "\(.emoji) \(.name)"' "$cachePath"
 }
 
-choice=$(genEmojiList | fzagnostic)
-printf "%s" "$choice" | cut -d' ' -f1 | tr -d '\n' | d.clip copy
+genEmojiListV2() {
+  cachePath=${cacheHome}/fzemoji-cache-v2.txt
+  emojiFileURL="https://www.unicode.org/emoji/charts/full-emoji-list.html"
+
+  if [ ! -f "$cachePath" ]; then
+    tmp=$(mktemp)
+    _cleanup() { rm -f "$tmp" || true; }
+    trap '_cleanup' EXIT
+
+    curl -L -o "$tmp" -- "$emojiFileURL"
+
+    # I'm sorry but like, what else am I supposed to do to parse HTML?
+    TMP_FILE="$tmp" python3 >"$cachePath" <<EOF
+import bs4, os, sys
+
+def log(x: str) -> None:
+    print(x, file=sys.stderr)
+
+def main() -> None:
+    with open(os.environ["TMP_FILE"], "r", encoding="utf-8") as f:
+        content = f.read()
+
+    soup = bs4.BeautifulSoup(content, "html.parser")
+
+    for tr in soup.find("table").children:
+        if isinstance(tr, bs4.NavigableString):
+            # log(f"Skipping text: {repr(tr.get_text())}")
+            continue
+        elif not isinstance(tr, bs4.Tag):
+            log(f"Skipping unknown {type(tr)}: repr({tr})")
+            continue
+
+        tr0 = next(tr.children)
+        tr0_cls = set(tr0.attrs.get("class"))
+
+        if tr0.name == "th":
+            continue
+        if tr0_cls & {"bighead", "mediumhead"}:
+            continue
+        elif "rchars" in tr0_cls:
+            emoji = tr.select_one(".chars").get_text().strip()
+            name = tr.select_one(".name").get_text().strip()
+            print(f"{emoji} {name}")
+        else:
+            raise ValueError("???")
+
+if __name__ == "__main__":
+    main()
+EOF
+  fi
+
+  cat "$cachePath"
+}
+
+main "$@"
