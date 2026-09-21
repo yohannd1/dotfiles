@@ -111,4 +111,8 @@ return function(api)
   api.key("super alt g")
     :desc("open current window menu")
     :map("runnsend error-and-output dotf.cur-window")
+
+  api.key("super alt i")
+    :desc("open emoji picker")
+    :map("fzemoji")
 end

@@ -35,7 +35,7 @@ eval "$(lua "$DOTFILES/lib/z.lua" --init zsh enhanced once echo fzf)" \
 
 # Load some other libraries
 sourceIf "$XDG_CONFIG_HOME/dots/env.sh"
-sourceIf ~/storage/local/config/zshrc.personal
+localPath=$(d.localconf get localpath 2>/dev/null) && sourceIf "$localPath/config/zshrc.personal"
 
 # general options
 setopt interactivecomments # can use '#' for comments in interactive
@@ -70,10 +70,10 @@ _comp_options+=(globdots) # include hidden files in autocomplete
     local cwd user
     cwd=$(pwd | awk -v patt="^$HOME" '{ gsub(patt, "~"); print }')
     user=$(whoami)
-    device=${DOTF_DEVNAME:-"@$HOST"}
+    device=${DOTF_DEVNAME:-"$HOST"}
 
     # set terminal title
-    setTitle "zsh($user,$device):$cwd"
+    setTitle "zsh($user@$device):$cwd"
   }
 
   _ps1Symbol="%F{13}λ "
