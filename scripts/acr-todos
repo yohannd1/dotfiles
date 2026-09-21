@@ -1,0 +1,51 @@
+#!/usr/bin/env sh
+
+set -ue
+progname=$(basename "$0")
+
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname { all | journal } [{ list | pick | fzedit }]
+EOF
+  exit 2
+}
+
+[ $# -ge 0 ] || showHelp
+[ $# -le 2 ] || showHelp
+
+source=all
+[ $# -ge 1 ] && source=$1 || true
+
+action=list
+[ $# -ge 2 ] && action=$2 || true
+
+genIdList() {
+  case "$source" in
+    all) (cd "$ACR_WIKI_DIR" && fd -tf '\.acr$') | sed 's \.acr$  g' ;;
+    journal) acr-list-titles | rg '^[^ ]+ Journal' | cut -d' ' -f1 ;;
+    *) showHelp ;;
+  esac
+}
+
+readSources() {
+  genIdList | while read -r id; do
+    cat "$ACR_WIKI_DIR/$id.acr" | filter \
+      | sed 's/^\s\+\([*-]\s*\)\?//g' \
+      | awk -v id="$id" '{ print id, $0 }'
+  done
+}
+
+filter() {
+  rg '^\s*([*-]\s+)?(\[ \]|\( \))|\b(TODO|FIXME)\b'
+}
+
+act() {
+  case "$action" in
+    list) cat ;;
+    pick) fzagnostic | cut -d' ' -f1 ;;
+    fzedit) fzagnostic | cut -d' ' -f1 | xargs -I{} "$EDITOR" "$ACR_WIKI_DIR/{}.acr" ;;
+    *) showHelp ;;
+  esac
+}
+
+readSources | act
