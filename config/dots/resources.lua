@@ -1,4 +1,7 @@
 -- vim: fdm=marker foldenable
+
+local meta = _G._meta
+
 -- FONT DEFS {{{
 
 -- TODO: find a way to check all font sizes to see if they are around the same
@@ -10,7 +13,7 @@ local font_presets = {
   },
   ["Agave"] = {
     name = "Agave Nerd Font",
-    base_size = 18.5,
+    base_size = 18,
   },
   ["AporeticSansMono"] = {
     name = "Aporetic Sans Mono",
@@ -22,7 +25,7 @@ local font_presets = {
   },
   ["CommitMono"] = {
     name = "CommitMono Nerd Font",
-    base_size = 16,
+    base_size = 16.5,
   },
   ["CourierPrimeCode"] = {
     name = "Courier Prime Code",
@@ -83,7 +86,7 @@ local font_presets = {
   },
   ["Sudo"] = {
     name = "Sudo",
-    base_size = 16,
+    base_size = 17,
   },
   ["Mononoki"] = {
     name = "Mononoki",
@@ -145,9 +148,12 @@ local font_presets = {
     base_size = 19,
   },
 }
+meta.declFonts(font_presets)
 -- }}}
 -- PREPARATIONS {{{
-local meta = _G._meta
+local home = assert(os.getenv("HOME"))
+local xdg_data_home = os.getenv("XDG_DATA_HOME") or ("%s/.local/share"):format(home)
+
 local theme = meta.theme
 local decl = meta.decl
 
@@ -191,18 +197,48 @@ local fileExists = function(file)
   return fd ~= nil
 end
 
+local fileRead = function(path)
+  local fd = io.open(path, "rb")
+  if not fd then
+    error("failed to open file: " .. path)
+  end
+  local ret = fd:read("*a")
+  fd:close()
+  return ret
+end
+
 local trimString = function(str)
   return str:match("^%s*(.-)%s*$")
 end
 
+local getLocalConf = function(name)
+  local is_bad_name = string.find(name, "/") ~= nil
+  assert(not is_bad_name, "invalid name for config entry: " .. name)
+
+  local path = ("%s/dots/%s"):format(xdg_data_home, name)
+
+  if fileExists(path) then
+    return fileRead(path)
+  else
+    return nil
+  end
+end
+
 local T_ALL = {t_xres, t_dots}
--- }}}
 
-local want_enable_ligatures = (os.getenv("RESLUA_ENABLE_LIGATURES") or "") ~= ""
-local wayland_scale_factor = os.getenv("WAYLAND_DISPLAY") and 1.025 or 1.0
-local font_size = wayland_scale_factor * tonumber(os.getenv("RESLUA_FONT_SIZE") or 1.2)
+local formalGetConf = function(localconf_name, display_name, default)
+  local val = getLocalConf(localconf_name)
+  if val ~= nil then return val end
+  io.stderr:write(display_name)
+  io.stderr:write(" (option \"")
+  io.stderr:write(localconf_name)
+  io.stderr:write("\") unspecified; using default: ")
+  io.stderr:write(default)
+  io.stderr:write("\n")
+  return default
+end
 
-local font_name = os.getenv("RESLUA_FONT_NAME") or "SourceCodePro"
+local font_name = formalGetConf("font-name", "Font name", "SourceCodePro")
 if font_name == "*random*" then
   local names = {}
   for k, _ in pairs(font_presets) do
@@ -217,9 +253,17 @@ if font_name == "*random*" then
   font_name = names[idx]
   io.stderr:write(("seed=%d, name=%s, idx=%d\n"):format(seed, font_name, idx))
 end
+-- }}}
+
+assert(font_name ~= nil) -- (defined more previously)
+
+local want_enable_ligatures = formalGetConf("font-ligatures", "Font ligatures", "false") ~= "false"
+local wayland_scale_factor = os.getenv("WAYLAND_DISPLAY") and 1.025 or 1.0
+
+local base_font_size = tonumber(formalGetConf("font-size", "Font size", "1.2"))
+local font_size = wayland_scale_factor * base_font_size
 
 local font = getFontInfo(font_name, font_size)
-
 local fsize_term = font.base_size
 local xft_font = longFontFormat(font.name, fsize_term)
 local bg_alpha = 0.9
@@ -244,7 +288,7 @@ decl {
 -- foot (wayland terminal)
 decl {
   {"foot.font", xft_font},
-  {"foot.alpha", "0.8"},
+  {"foot.alpha", "0.9"},
 
   targets = T_ALL,
 }

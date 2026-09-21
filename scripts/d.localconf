@@ -60,6 +60,7 @@ case "$1" in
       cat "$path"
     else
       printf >&2 "error: config entry '%s' does not exist\n" "$name"
+      exit 1
     fi
     ;;
   set)

@@ -205,7 +205,8 @@ if [ -r ~/.config/dircolors ]; then
   eval "$(dircolors -b ~/.config/dircolors)"
 fi
 
-DOTF_DEVNAME=$(_localconf get device-name 2>/dev/null) || DOTF_DEVNAME=$HOST
+DOTF_DEVNAME=$(_localconf get device-name 2>/dev/null || printf "%s\n" "$HOST")
+export DOTF_DEVNAME
 
 # system-specific config
 case "$DOTF_DEVNAME" in
@@ -217,8 +218,6 @@ case "$DOTF_DEVNAME" in
     export N_JOBS=2 # don't want to use many...
     ;;
   core2)
-    export RESLUA_FONT_SIZE=1.2
-    export RESLUA_FONT_NAME="Adwaita"
     export DOTF_SCALE=1.15
     export VOLUMECTL_INCREMENT=5
     export N_JOBS=5 # don't want to use many...

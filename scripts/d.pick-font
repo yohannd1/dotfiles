@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+set -ue
+progname=$(basename "$0")
+
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname
+EOF
+  exit 2
+}
+
+[ $# = 0 ] || showHelp
+
+choice=$(gen-res dump-fonts | fzagnostic)
+d.localconf set font-name "$choice"
