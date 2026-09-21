@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
 
+# we gotta use the full path because the PATH might not be set up yet
+_localconf() { "$DOTFILES/scripts/d.localconf" "$@"; }
+
 _pathsh_glob() {
   [ -d "$1" ] || return 1
   find "$(realpath "$1")" -maxdepth 1 -type d
@@ -13,7 +16,7 @@ _pathsh_printAll() {
   [ -d /usr/lib/ccache/bin ] && echo /usr/lib/ccache/bin
 
   # repo scripts
-  localPath=$(d.localconf get localpath 2>&1) && echo "$localPath/scripts"
+  localPath=$(_localconf get localpath) && echo "$localPath/scripts"
   [ "$DOTFILES" ] && echo "$DOTFILES/scripts"
 
   # local scripts

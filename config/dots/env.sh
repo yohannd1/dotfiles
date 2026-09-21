@@ -13,6 +13,9 @@ else
   export DOTFILES="$_fallback_dotpath"
 fi
 
+# we gotta use the full path because the PATH might not be set up yet
+_localconf() { "$DOTFILES/scripts/d.localconf" "$@"; }
+
 # XDG dirs
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DOWNLOAD_DIR="$HOME/inbox"
@@ -40,7 +43,7 @@ fi
 # the laziest way to force the locale I want
 export LC_ALL='en_US.UTF-8'
 
-if ACR_WIKI_DIR=$(d.localconf get acr-wiki-dir 2>/dev/null); then
+if ACR_WIKI_DIR=$(_localconf get acr-wiki-dir 2>/dev/null); then
   export ACR_WIKI_DIR
 else
   printf >&2 "warning: could not get acrylic wiki dir!\n"
@@ -202,7 +205,7 @@ if [ -r ~/.config/dircolors ]; then
   eval "$(dircolors -b ~/.config/dircolors)"
 fi
 
-DOTF_DEVNAME=$(d.localconf get device-name 2>/dev/null) || DOTF_DEVNAME=$HOST
+DOTF_DEVNAME=$(_localconf get device-name 2>/dev/null) || DOTF_DEVNAME=$HOST
 
 # system-specific config
 case "$DOTF_DEVNAME" in
