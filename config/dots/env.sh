@@ -3,15 +3,26 @@
 _exists() { command -v "$1" >/dev/null 2>/dev/null; }
 _isTermux() { [ "$(uname -o)" = Android ]; }
 
-# dotfiles dir
+# dotfiles dir (this one is hardcoded! don't use d.localconf here)
 _dotpath=~/.local/share/dots/dotpath
 _fallback_dotpath=~/.dotfiles
 if [ -f "$_dotpath" ]; then
   export DOTFILES="$(cat "$_dotpath")"
 else
-  printf >&2 "warning: %s doesn't exist - %s will fallback to %s" "$_dotpath" '$DOTFILES' "$_fallback_dotpath"
+  printf >&2 "warning: %s doesn't exist - \$DOTFILES will fallback to %s" "$_dotpath" "$_fallback_dotpath"
   export DOTFILES="$_fallback_dotpath"
 fi
+
+# XDG dirs
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DOWNLOAD_DIR="$HOME/inbox"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_STATE_HOME="$HOME/.local/state"
+export XDG_DATA_DIR="$XDG_DATA_HOME" # FIXME: almost sure this isn't a real var - see https://specifications.freedesktop.org/basedir/latest/
+
+# man page path
+export MANPATH="$XDG_DATA_DIR/man:/usr/share/man"
 
 # wayland stuff
 if [ "$WAYLAND_DISPLAY" ]; then
@@ -29,18 +40,11 @@ fi
 # the laziest way to force the locale I want
 export LC_ALL='en_US.UTF-8'
 
-# XDG dirs
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_DOWNLOAD_DIR="$HOME/inbox"
-export XDG_CACHE_HOME="$HOME/.cache"
-export XDG_DATA_DIR="$HOME/.local/share"
-export XDG_DATA_HOME="$XDG_DATA_DIR"
-
-# personal dirs (should this even be here lol)
-export ACR_WIKI_DIR="$HOME/wiki/vimwiki"
-
-# man page path
-export MANPATH="$XDG_DATA_DIR/man:/usr/share/man"
+if ACR_WIKI_DIR=$(d.localconf get acr-wiki-dir 2>/dev/null); then
+  export ACR_WIKI_DIR
+else
+  printf >&2 "warning: could not get acrylic wiki dir!\n"
+fi
 
 # global options
 if _isTermux; then
@@ -175,11 +179,8 @@ _gcc_colors='
 export GCC_COLORS="$(printf "%s" "$_gcc_colors" | tr '\n' ':' | tr -d ' ')"
 
 # dotfiles program options
-export DIR_BOOKMARKS=~/storage/local/share/bookmarks.sh
-export FLAMEW_SCR_FOLDER=~/storage/pictures/screenshots
+export FLAMEW_SCR_FOLDER=~/storage/pictures/screenshots # TODO: make this more private
 export SETBG_WALLPAPER_TYPE="image"
-export BKMK_FILE="$WIKI/data/bookmarks.json"
-export ITMN_FILE="$WIKI/data/itmn.json"
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"
 export GUILE_LOAD_PATH="$DOTFILES/lib/guile"
 export CLANG_FORMAT_C_CONFIG="$DOTFILES/config/clang-format-c.yaml"
@@ -201,11 +202,7 @@ if [ -r ~/.config/dircolors ]; then
   eval "$(dircolors -b ~/.config/dircolors)"
 fi
 
-if [ -f ~/.local/share/dots/device-name ]; then
-  export DOTF_DEVNAME="$(cat ~/.local/share/dots/device-name)"
-else
-  export DOTF_DEVNAME="$HOST"
-fi
+DOTF_DEVNAME=$(d.localconf get device-name 2>/dev/null) || DOTF_DEVNAME=$HOST
 
 # system-specific config
 case "$DOTF_DEVNAME" in
@@ -217,8 +214,8 @@ case "$DOTF_DEVNAME" in
     export N_JOBS=2 # don't want to use many...
     ;;
   core2)
-    export RESLUA_FONT_SIZE=1.275
-    export RESLUA_FONT_NAME="Mononoki"
+    export RESLUA_FONT_SIZE=1.2
+    export RESLUA_FONT_NAME="Adwaita"
     export DOTF_SCALE=1.15
     export VOLUMECTL_INCREMENT=5
     export N_JOBS=5 # don't want to use many...

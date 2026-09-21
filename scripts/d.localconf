@@ -56,7 +56,11 @@ case "$1" in
     [ $# = 2 ] || showHelp
     name=$2
     path=$(getPath "$name")
-    cat "$path"
+    if [ -f "$path" ]; then
+      cat "$path"
+    else
+      printf >&2 "error: config entry '%s' does not exist\n" "$name"
+    fi
     ;;
   set)
     [ $# = 3 ] || showHelp

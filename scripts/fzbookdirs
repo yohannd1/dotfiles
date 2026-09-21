@@ -1,24 +1,35 @@
 #!/usr/bin/env sh
 
-if [ $# != 0 ]; then
-  printf >&2 "Usage: %s\n" "$(basename "$0")"
-fi
+set -ue
+progname=$(basename "$0")
+
+showHelp() {
+  cat >&2 <<EOF
+Usage: $progname
+EOF
+  exit 2
+}
+
+[ $# = 0 ] || showHelp
 
 genbk() {
   fd -d1 -td '.' ~
   fd -d1 -td '.' ~/pj/code
 
-  [ -r "$DIR_BOOKMARKS" ] && sh "$DIR_BOOKMARKS"
+  if localPath=$(d.localconf get localpath 2>/dev/null); then
+    rcPath="$localPath/share/bookmarks.sh"
+    [ -r "$rcPath" ] && sh "$rcPath"
+  fi
 
   fd -d1 -td '.' ~/pj/etc &
   fd -d1 -td '.' ~/pj/clone &
   fd -d1 -td '.' ~/pj/write &
-  [ -d "/run/media/$USER" ] && fd -d1 -td '.' "/run/media/$USER"
+  [ -d "/run/media/$USER" ] && fd -d1 -td '.' "/run/media/$USER" &
 
-  wait $!
+  wait
 }
 
-dopackHome() { sed "s|^$HOME|~|g"; }
+packHome() { sed "s|^$HOME|~|g"; }
 unpackHome() { sed "s|^~|$HOME|g"; }
 
-genbk | dopackHome | fzagnostic | unpackHome || exit 1
+genbk | packHome | fzagnostic | unpackHome || exit 1

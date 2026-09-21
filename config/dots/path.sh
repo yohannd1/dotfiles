@@ -12,15 +12,15 @@ _pathsh_printAll() {
   # ccache wrapping
   [ -d /usr/lib/ccache/bin ] && echo /usr/lib/ccache/bin
 
-  # scripts
-  echo ~/storage/local/scripts
+  # repo scripts
+  localPath=$(d.localconf get localpath 2>&1) && echo "$localPath/scripts"
   [ "$DOTFILES" ] && echo "$DOTFILES/scripts"
 
   # local scripts
   echo ~/.local/bin
   echo ~/.nix-profile/bin
 
-  # from programming languages
+  # compilers, frameworks, runtimes & package managers
   [ "$GOPATH" ] && echo "$GOPATH"
   [ "$CARGO_HOME" ] && echo "$CARGO_HOME/bin"
   echo "${GEM_HOME:-$HOME/.gem}/bin"
@@ -53,7 +53,7 @@ if [ "$LUAROCKS_HOME" ]; then
   dotfLibDir="$DOTFILES/lib/lua"
 
   # Paths for lua 5.2 and on
-  for luaVer in 2 3 4; do
+  for luaVer in {2..5}; do
     shareDir="$LUAROCKS_HOME/share/lua/5.${luaVer}"
     libDir="$LUAROCKS_HOME/lib/lua/5.${luaVer}"
     lrDir="$LUAROCKS_HOME/lib/luarocks/5.${luaVer}"

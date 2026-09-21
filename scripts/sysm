@@ -5,11 +5,19 @@ from shutil import which
 from datetime import datetime
 from pathlib import Path
 
+def _read_localconf(name: str) -> "str | None":
+    assert Path(name).name == name, f"invalid config entry name: {name}"
+    path = XDG_DATA_HOME / "dots" / name
+    return path.read_text() if path.exists() else None
+
 HOME = Path(os.environ["HOME"])
-DOTFILES = Path(os.environ.get("DOTFILES", f"{HOME}/.dotfiles"))
-XDG_CACHE_HOME = Path(os.environ.get("XDG_CACHE_HOME", f"{HOME}/.cache"))
-DOTS_CONFIG = DOTFILES / "config/dots/sysmrc.py"
-LOCAL_CONFIG = HOME / "storage/local/config/sysmrc.py"
+XDG_DATA_HOME = Path(os.getenv("XDG_DATA_HOME") or "f{HOME}/.local/share")
+XDG_CACHE_HOME = Path(os.getenv("XDG_CACHE_HOME") or f"{HOME}/.cache")
+DOTFILES = Path(os.getenv("DOTFILES") or f"{HOME}/.dotfiles")
+
+RCS = [DOTFILES / "config/dots/sysmrc.py"]
+if (localpath := _read_localconf("localpath")) is not None:
+    RCS.append(Path(f"{localpath}/config/sysmrc.py"))
 
 class Manager:
     is_linux: bool
@@ -96,6 +104,11 @@ class Manager:
         eprint(f"      moved to: {to_backup}")
         path.rename(to_backup)
 
+    def read_localconf(self, name: str) -> "str | None":
+        return _read_localconf(name)
+
+    class Vars: ...
+
 def usage(args):
     eprint(f"Usage: {args[0]}")
     sys.exit(1)
@@ -108,15 +121,14 @@ def main(args):
         usage(args)
 
     m = Manager()
+    m.Vars.dotfiles = DOTFILES
+    m.Vars.home = HOME
 
-    for config in [DOTS_CONFIG, LOCAL_CONFIG]:
+    for config in RCS:
         if config.is_file():
             eprint(f"sysm: sourcing: {config}")
             with config.open() as f:
-                exec(f.read(), {}, {
-                    "m": m,
-                    "DOTFILES": DOTFILES,
-                })
+                exec(f.read(), {}, {"m": m})
         else:
             eprint(f"sysm: skipping (not found): {config}")
 

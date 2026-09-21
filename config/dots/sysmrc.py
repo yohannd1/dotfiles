@@ -1,7 +1,8 @@
 import os, sys
 from pathlib import Path
 
-HOME = Path(os.environ["HOME"])
+HOME = m.Vars.home
+DOTFILES = m.Vars.dotfiles
 
 def eprint(*args, **kwargs) -> None:
     global sys
@@ -84,13 +85,17 @@ m.link_glob(DOTFILES / "config/w3m", "~/.w3m")
 if not m.is_android:
     # desktop apps
 
-    # FIXME: dynamically detect valid profile folders (not that hard I think...)
-    m.link_conf("librewolf/overrides.js", "~/.librewolf/librewolf.overrides.cfg")
-    m.link_conf("librewolf/userChrome.css", "~/.librewolf/slyys373.default-default/chrome/userChrome.css")
+    lwdir = Path("~/.librewolf").expanduser()
+    m.link_conf("librewolf/overrides.js", lwdir / "librewolf.overrides.cfg")
+    for lwconf in lwdir.glob("*/addons.json"):
+        # the hope here is that each installation (or at least each that
+        # matters) of librewolf has an "addons.json" file, because I can't
+        # quite figure out which ones matter.
+        # FIXME: dynamically detect valid profile folders (not that hard I think...)
+        m.link_conf("librewolf/userChrome.css", lwdir / "chrome/userChrome.css")
 
     m.link_glob(DOTFILES / "config/qutebrowser", "~/.config/qutebrowser")
 
-    # m.link_glob(DOTFILES / "config/furnace", "~/.config/furnace") # new backup system is incompatible with this
     m.link_glob(DOTFILES / "desktop", "~/.local/share/applications")
 
     # m.link_glob(DOTFILES / "config/vscode", "~/.config/Code/User")
