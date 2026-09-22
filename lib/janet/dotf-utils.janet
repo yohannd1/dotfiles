@@ -305,3 +305,25 @@
   (def rvalues (map last binds-p))
   ~(let [,name (fn ,name [,;lvalues] ,;body)]
      (,name ,;rvalues)))
+
+(comment
+  [SUPERSEDED STUFF HERE]
+
+  # use "print-table" from dotf-tui instead
+  (defmacro with-auto-tab [opts cap & body]
+    (assert (tuple? cap) "`cap` must be a tuple")
+    (assert (= (length cap) 1) "`cap` must have a single entry")
+    (def [cap0] cap)
+
+    (with-syms [opts-sym in-sep out-sep cmd out-file proc in-pipe]
+      ~(let [,opts-sym ,opts
+             ,in-sep (in ,opts-sym :in-sep ",")
+             ,out-sep (in ,opts-sym :out-sep " ")
+             ,out-file (in ,opts-sym :out stdout)
+             ,cmd ["column" "-t" "-s" ,in-sep "-o" ,out-sep]
+             ,proc (os/spawn ,cmd :p {:in :pipe :out ,out-file})
+             ,in-pipe (in ,proc :in)
+             ,cap0 ,in-pipe]
+         (defer (do (:close ,in-pipe) (:wait ,proc))
+           ,;body))))
+  )
