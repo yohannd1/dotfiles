@@ -1,0 +1,96 @@
+#!/usr/bin/env janet
+
+(use dotf-acr)
+(use dotf-cli)
+(use dotf-utils)
+
+(def arg-spec
+  '[:description "TODO"
+
+    :subcommands
+    [{:name list :args ()}
+     {:name pick :args ()}
+     {:name pick-edit :args ()}]
+
+    :options
+    [{:name source :short -s :long --source
+      :help "the source from where to pick the tasks: all (default), journal"
+      :has-arg true}
+     {:name important :short -i :long --important
+      :help "only show important tasks"}
+     ]])
+
+(defn main [& args]
+  (def {:opts opts :subcmd subcmd}
+    (parse-args ;arg-spec :in-args args))
+
+  (def wiki-dir (getenv-or-die "ACR_WIKI_DIR"))
+  (def note-pairs (acr-get-wiki-note-pairs wiki-dir))
+
+  (def task-peg
+    (peg/compile
+      '{:main (* :s* (? :bullet) (<- :task) :s+ (<- (any 1)) -1)
+        :bullet (* (+ "-" "*") :s+)
+        :task (+ "( )" "[ ]")}))
+  # TODO: specify 
+
+  (defn parse-task [line]
+    # TODO: get the line the task is in
+    (match (peg/match task-peg line)
+      nil nil
+      [t c] {:prefix t :content c}))
+
+  (assert (= (parse-task "( ) foo") {:prefix "( )" :content "foo"}))
+  (assert (= (parse-task "- ( ) foo") {:prefix "( )" :content "foo"}))
+  (assert (= (parse-task "  - [ ] foo") {:prefix "[ ]" :content "foo"}))
+
+  (var important-filter (fn [&] true))
+  (when (opts 'important)
+    (defn func [t]
+      (->> (t :content) (string/find "%important") nil? not))
+    (set important-filter func))
+
+  (defn parse-all-tasks [on-file-tasks]
+    (each np note-pairs
+      (def [id path] np)
+      (def tasks
+        (->>
+          (acr-slurp-contents path)
+          (string/split "\n")
+          (map parse-task)
+          (filter (complement nil?))
+          (filter important-filter)))
+      (on-file-tasks np tasks)))
+
+  (defn pick-task []
+    (def choices @[])
+    (def paths @[])
+    (def all-tasks @[])
+
+    (parse-all-tasks
+      (fn [[_ path] tasks]
+        (array/concat all-tasks tasks)
+        (array/concat choices (map |($ :content) tasks))
+        (for _ 0 (length tasks) (array/push paths path))))
+
+    (if-let [[idx _] (try-brief (fzagnostic choices :prompt "Task:"))]
+      [(in paths idx) (in all-tasks idx)]))
+
+  (case subcmd
+    'list
+    (parse-all-tasks
+      (fn [[id _] tasks]
+        (each t tasks
+          (print id " " (t :prefix) " " (t :content)))))
+
+    'pick
+    (match (pick-task)
+      nil (os/exit 1)
+      [path _] (print path))
+
+    'pick-edit
+    (match (pick-task)
+      nil (os/exit 1)
+      [path _] (exec-replace [(os/getenv "EDITOR" "vi") path]))
+
+    (error "unreachable")))
