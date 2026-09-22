@@ -109,7 +109,16 @@ dummy.bufSwitch = function(dir)
 end
 
 dummy.findTodos = function()
-  local queries = {'<TODO>', '<FIXME>', '<XXX>'}
+  local queries = {}
+
+  -- using a manual border here because some filetypes change the word borders
+  -- (e.g. lisp) and that fucks things up
+  local border_l = [[(^|[^a-zA-Z0-9])\zs]]
+  local border_r = [[\ze($|[^a-zA-Z0-9])]]
+  for _, w in ipairs({"TODO", "FIXME", "XXX"}) do
+    table.insert(queries, border_l .. w .. border_r)
+  end
+
   for _, q in ipairs(vim.b.todo_queries or {}) do
     table.insert(queries, q)
   end
