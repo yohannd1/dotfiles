@@ -1,40 +1,46 @@
 (use dotf-utils)
 (use dotf-path)
 
-(defn acr-read-header [fd]
+(defn acr-parse-file [fd &named only-header]
+  (def h-entries @{})
+  (def ret @{:header h-entries})
+
   (def lines-iter (file/lines fd))
-  (def ret @{})
+  (var last-lnum 0)
+  (defn next-line []
+    (def k (next lines-iter))
+    (unless (nil? k)
+      (++ last-lnum)
+      (in lines-iter k)))
 
-  (defn rec []
-    (when (def line-k (next lines-iter))
-      (def line (in lines-iter line-k))
+  (letrec rec []
+    (when (def line (next-line))
       (if (string/has-prefix? "%:" line)
-        (let [[start v] (string/split " " line 0 2)
-              k (-> start (string/slice 2) (keyword))]
-          (set (ret k) (string/trim v))
-          (rec)))))
+        (do
+          (def [start ev] (string/split " " line 0 2))
+          (def ek (-> start (string/slice 2) keyword))
+          (set (h-entries ek) (string/trim ev))
+          (rec))
+        (set (ret :body-start-lnum) last-lnum))))
 
-  (rec)
+  (when only-header
+    (break ret))
+
+  # push everything in the body into a buffer (TODO: should I instead split it into lines already?)
+  (def body @"")
+  (while (def line (next-line))
+    (buffer/push-string body line)
+    (each line lines-iter
+      (buffer/push-string body line)))
+  (set (ret :body) body)
+
   ret)
+
+(defn acr-read-header [fd]
+  (in (acr-parse-file fd :only-header true) :header))
 
 (defn acr-read-contents [fd]
-  (def lines-iter (file/lines fd))
-  (def ret @"")
-
-  (defn rec []
-    (when (def line-k (next lines-iter))
-      (def line (in lines-iter line-k))
-
-      (if (string/has-prefix? "%:" line)
-        (rec)
-        (do
-          # push everything into the buffer
-          (buffer/push-string ret line)
-          (each line lines-iter
-            (buffer/push-string ret line))))))
-
-  (rec)
-  ret)
+  (in (acr-parse-file fd) :body))
 
 (defn acr-slurp-header [path]
   (with [fd (file/open path :rn)]
@@ -43,6 +49,10 @@
 (defn acr-slurp-contents [path]
   (with [fd (file/open path :rn)]
     (acr-read-contents fd)))
+
+(defn acr-slurp-parse [path & args]
+  (with [fd (file/open path :rn)]
+    (acr-parse-file fd ;args)))
 
 (defn acr-get-wiki-note-pairs [wiki-dir]
   (seq [name :in (os/dir wiki-dir)

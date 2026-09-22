@@ -5,7 +5,7 @@
 (use dotf-utils)
 
 (def arg-spec
-  '[:description "TODO"
+  '[:description "utility to filter tasks list"
 
     :subcommands
     [{:name list :args ()}
@@ -32,17 +32,15 @@
       '{:main (* :s* (? :bullet) (<- :task) :s+ (<- (any 1)) -1)
         :bullet (* (+ "-" "*") :s+)
         :task (+ "( )" "[ ]")}))
-  # TODO: specify 
 
-  (defn parse-task [line]
-    # TODO: get the line the task is in
+  (defn parse-task [line lnum]
     (match (peg/match task-peg line)
       nil nil
-      [t c] {:prefix t :content c}))
+      [t c] {:prefix t :content c :lnum lnum}))
 
-  (assert (= (parse-task "( ) foo") {:prefix "( )" :content "foo"}))
-  (assert (= (parse-task "- ( ) foo") {:prefix "( )" :content "foo"}))
-  (assert (= (parse-task "  - [ ] foo") {:prefix "[ ]" :content "foo"}))
+  (assert (= (parse-task "( ) foo" 0) {:prefix "( )" :content "foo" :lnum 0}))
+  (assert (= (parse-task "- ( ) foo" 0) {:prefix "( )" :content "foo" :lnum 0}))
+  (assert (= (parse-task "  - [ ] foo" 0) {:prefix "[ ]" :content "foo" :lnum 0}))
 
   (var important-filter (fn [&] true))
   (when (opts 'important)
@@ -50,14 +48,22 @@
       (->> (t :content) (string/find "%important") nil? not))
     (set important-filter func))
 
+  (defn add-line-numbers [base-lnum lines]
+    (seq [[i x] :pairs lines]
+      [(+ i base-lnum) x]))
+
   (defn parse-all-tasks [on-file-tasks]
     (each np note-pairs
       (def [id path] np)
+      (def data (acr-slurp-parse path))
+      (def base-lnum (inc (data :body-start-lnum)))
+
       (def tasks
         (->>
-          (acr-slurp-contents path)
+          (data :body)
           (string/split "\n")
-          (map parse-task)
+          (add-line-numbers base-lnum)
+          (map |(parse-task (in $ 1) (in $ 0)))
           (filter (complement nil?))
           (filter important-filter)))
       (on-file-tasks np tasks)))
@@ -91,6 +97,6 @@
     'pick-edit
     (match (pick-task)
       nil (os/exit 1)
-      [path _] (exec-replace [(os/getenv "EDITOR" "vi") path]))
+      [path task] (edit-file path :lnum (task :lnum) :replace true))
 
     (error "unreachable")))

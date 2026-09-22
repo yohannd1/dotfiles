@@ -283,3 +283,25 @@
     (when (cmp< e2 e)
       (set (arr i) e2)
       (set (arr i2) e))))
+
+(defn edit-file [path &named lnum replace]
+  (def editor (os/getenv "EDITOR" "vi"))
+  (def args @[editor])
+  (unless (nil? lnum)
+    # only push this argument if it's supported
+    (def valid-editors ["vi" "vim" "nvim" "dotf.wrap.editor"])
+    (when (some |(= $ editor) valid-editors)
+      (array/push args (string "+" lnum))))
+  (array/push args path)
+  (if replace
+    (exec-replace args)
+    (os/execute args :p)))
+
+(defmacro letrec [name binds & body]
+  (assert (symbol? name))
+  (assert (indexed? binds))
+  (def binds-p (partition 2 binds))
+  (def lvalues (map first binds-p))
+  (def rvalues (map last binds-p))
+  ~(let [,name (fn ,name [,;lvalues] ,;body)]
+     (,name ,;rvalues)))
