@@ -25,5 +25,29 @@ cd "$DOTFILES/compiled"
 # "$LDC" acr_list_titles.d --od=build/ --of=build/acr-list-titles
 # cp build/acr-list-titles -t ~/.local/bin
 
-nim --out:"dotcfg" --outdir:"$tmp" compile dotcfg.nim
-mv "$tmp/dotcfg" -t ~/.local/bin
+isAgeLeq() {
+  m1=$(stat -c '%Y' "$1")
+  m2=$(stat -c '%Y' "$2")
+  [ "$m1" -le "$m2" ]
+}
+
+nimComp() {
+  if [ $# != 3 ]; then
+    printf >&2 "%s: bad args\n" "$0"
+    return 2
+  fi
+
+  src=$1
+  destDir=$2
+  destName=$3
+  destPath="$2/$3"
+
+  if ! isAgeLeq "$src" "$destPath"; then
+    nim --out:"$destName" --outdir:"$tmp" compile "$src"
+    mv "$tmp/$destName" "$destPath"
+  fi
+}
+
+# single-file nim programs
+nimComp dotcfg.nim ~/.local/bin dotcfg
+nimComp mus2.nim ~/.local/bin mus2
