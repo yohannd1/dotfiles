@@ -117,6 +117,7 @@ act_branchSwitch() {
   selectedBranch=$(
     git branch -l \
       | sed 's|^*||g' \
+      | grep -v 'HEAD detached' \
       | awk '{ print $1 }' \
       | fzagnostic) \
     && git checkout "$selectedBranch"
@@ -133,6 +134,7 @@ act_branchSwitchAll() {
   selectedBranch=$(
     git branch -la \
       | sed 's|^*||g' \
+      | grep -v 'HEAD detached' \
       | awk '{ print $1 }' \
       | fzagnostic) \
     && git checkout "$selectedBranch"
