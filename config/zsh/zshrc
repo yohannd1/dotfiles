@@ -612,3 +612,38 @@ dict() {
   local url="https://en.wiktionary.org/wiki/$1"
   w3m -dump "$url" | "$EDITOR"
 }
+
+jsonReq() {
+  [ $# = 2 ] || [ $# = 3 ] || return 2
+  local method url data args hasData
+
+  method=$1
+  url=$2
+
+  if [ $# = 3 ]; then
+    hasData=1
+    data=$3
+  fi
+
+  args=()
+
+  case "$method" in
+    GET)
+      args+=(-G)
+      [ -z "$hasData" ] || args+=(--data-urlencode "$data")
+      ;;
+    PUT|POST|PATCH)
+      args+=(-X "$method" --header "Content-Type: application/json" --data "$data")
+      if [ -z "$hasData" ]; then
+        printf >&2 "data must be specified for %s\n" "$method"
+        return 2
+      fi
+      ;;
+    *)
+      printf >&2 "unknown method: %s\n" "$method"
+      return 2
+      ;;
+  esac
+
+  curl "${args[@]}" "$url"
+}
