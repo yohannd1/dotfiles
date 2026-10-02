@@ -49,12 +49,22 @@
 (def reload-js
   ```
   <script>
-  const es = new EventSource("/api/stream");
-  es.onmessage = (_) => window.location.reload();
-  es.onerror = (e) => {
-    console.error(e);
-    setTimeout(() => alert("An error ocurred! See console for info."), 1500);
-  };
+  (() => {
+    const es = new EventSource("/api/stream");
+    let isAlright = true;
+
+    es.onmessage = (_) => window.location.reload();
+    es.onerror = (e) => {
+      console.error(e);
+      setTimeout(() => {
+        // Only show alert once.
+        if (isAlright) {
+          alert("An error ocurred! See console for info.");
+          isAlright = false;
+        }
+      }, 1500);
+    };
+  })();
   </script>
   ```)
 
@@ -160,21 +170,25 @@
           ```
           <!DOCTYPE html>
           <html>
-          <meta charset="utf-8"/>
-          <style>
-          code, pre {
-              white-space: pre-wrap;
-              overflow-wrap: break-word;
-              word-wrap: break-word;
-              max-width: 100%;
-          }
-          </style>
-          <h3>An error ocurred while parsing the file.</h3>
-          <p>Program output:</p>
-          ```
-          "<pre><code>" sane-err "</code></pre>"
-          ```
-          <p>See the live-preview output for (potentially) more details.</p>
+            <head>
+              <meta charset="utf-8"/>
+              <style>
+              code, pre {
+                  white-space: pre-wrap;
+                  overflow-wrap: break-word;
+                  word-wrap: break-word;
+                  max-width: 100%;
+              }
+              </style>
+            </head>
+            <body>
+              <h3>An error ocurred while parsing the file.</h3>
+              <p>Program output:</p>
+              ```
+              "<pre><code>" sane-err "</code></pre>"
+              ```
+              <p>See the live-preview output for (potentially) more details.</p>
+            </body>
           </html>
           ```
           reload-js))
@@ -202,10 +216,16 @@
         (defer (:disconnect *reload-bqueue* code)
           (forever
             (def _ (ev/take ch))
-            # FIXME: since the stream gets old, it errors out. Is there a way to maybe check if `conn` is dead?
+            # FIXME: since the stream gets old, it errors out. Is there a way to maybe check if `conn` is dead? (see `on-error`)
             (yield "data: reload\n\n")))))
 
-    {:status 200 :headers headers :body body-fiber})
+    (defn on-error [e]
+      # See (TODO : PR link here)
+      # "Broken pipe" errors are usually alright (in the case of aborted connections) so we can just ignore them
+      (unless (= e "Broken pipe")
+        (eprint "got error while replying: " e)))
+
+    {:status 200 :headers headers :body body-fiber :error on-error})
 
   (defn reply-file []
     (def sane-path (sanitize-path path))
@@ -237,7 +257,7 @@
     (var contents nil)
     (try
       (set contents (slurp sane-path))
-      ([_] (break {:status 400 :body "failed to read file"})))
+      ([e] (break {:status 400 :body (string "failed to read file: " e)})))
 
     (def headers
       {"Content-Type" mime})
