@@ -365,7 +365,7 @@ dummy.liveGrepRepo = function()
   require("telescope.builtin").live_grep({ cwd = root_folder })
 end
 
-create_cmd("LiveGrepRepo", function(t) dummy.liveGrepRepo() end, { nargs = 0 })
+create_cmd("LiveGrepRepo", function(_t) dummy.liveGrepRepo() end, { nargs = 0 })
 
 create_cmd("Open", "!openfork %", { nargs = 0 })
 
