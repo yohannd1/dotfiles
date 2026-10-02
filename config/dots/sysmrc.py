@@ -52,6 +52,7 @@ apps += [
     "dots",
     "mpv",
     "lf",
+    "containers", # podman config
     # "broot",
 ]
 
