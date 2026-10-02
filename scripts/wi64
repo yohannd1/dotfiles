@@ -1,2 +1,3 @@
 #!/usr/bin/env sh
-WINEW_ARCH=64 winew "$@"
+export WINEW_ARCH=64
+exec winew "$@"
