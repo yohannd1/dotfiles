@@ -115,16 +115,14 @@ dummy.findTodos = function()
   -- (e.g. lisp) and that fucks things up
   local border_l = [[(^|[^a-zA-Z0-9])\zs]]
   local border_r = [[\ze($|[^a-zA-Z0-9])]]
-  for _, w in ipairs({"TODO", "FIXME", "XXX"}) do
-    table.insert(queries, border_l .. w .. border_r)
-  end
+  local todo_kws = {"TODO", "FIXME", "XXX"}
+  table.insert(queries, border_l .. table.concat(todo_kws, "|") .. border_r)
 
   for _, q in ipairs(vim.b.todo_queries or {}) do
     table.insert(queries, q)
   end
 
   local query = string.format("\\v(%s)", table.concat(queries, "|"))
-
   vim.fn.search(query)
   vim.fn.histadd("/", query)
 end
@@ -132,7 +130,7 @@ end
 -- Pager mode
 dummy.pagerMode = function(filetype)
   vim.o.filetype = filetype or ""
-  vim.cmd([[ setlocal ts=8 nomod nolist noma timeoutlen=0 nocursorline nonumber norelativenumber noshowcmd ]])
+  vim.cmd("setlocal ts=8 nomod nolist noma timeoutlen=0 nocursorline nonumber norelativenumber noshowcmd")
   local arg_nr_bs = { noremap = true, buffer = true, silent = true }
   map("n", "d", "<C-d>", arg_nr_bs)
   map("n", "u", "<C-u>", arg_nr_bs)
