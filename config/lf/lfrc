@@ -160,6 +160,19 @@ cmd flatten ${{ PROMPT_ON_ERROR=1 d.fileman-actions flatten "$f" }}
 
 cmd filter-music :set filtermethod regex; filter '\.(ogg|m4a|mp3|wav|flac|ogx|opus)$'
 
+cmd cd-to ${{
+  set -ue
+  choice=$(lua "$DOTFILES/lib/z.lua" -l | awk '{ print $2 }' | while read -r line; do
+    if [ -d "$line" ]; then
+      printf "%s\n" "$line"
+    fi
+  done | fzagnostic)
+  echo "GOT CHOICE: $choice"
+  if [ -n "$choice" ]; then
+    lf -remote "send $id cd \"$choice\""
+  fi
+}}
+
 # command mappings
 map . set hidden!
 map n new
@@ -178,6 +191,7 @@ map <c-l> reload; redraw
 map C ffmpeg-convert
 map I ${{ imgs-view }}
 map / filter
+map <a-w> cd-to
 
 # Remember that sort keybindings are through `s`! There's a lotta 'em.
 

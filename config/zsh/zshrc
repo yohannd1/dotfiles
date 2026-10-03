@@ -31,7 +31,7 @@ sourceOneOf() {
 }
 
 eval "$(lua "$DOTFILES/lib/z.lua" --init zsh enhanced once echo fzf)" \
-  || printf >&2 "error: failed to load z.lua\n"
+  || printf >&2 "warning: failed to load z.lua\n"
 
 # Load some other libraries
 sourceIf "$XDG_CONFIG_HOME/dots/env.sh"
@@ -297,9 +297,7 @@ _warnBlockedCmd() {
 }
 r() { _warnBlockedCmd "$0"; }
 
-warpToZ() { z -I -t . "$@"; }
-
-alias w='warpToZ'
+w() { z -I -t . "$@"; }
 alias f='findFile'
 alias fo='findFile open'
 alias fof='findFile openfork'
