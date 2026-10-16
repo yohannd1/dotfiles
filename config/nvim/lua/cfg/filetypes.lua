@@ -179,7 +179,12 @@ ext_ft.v = function()
   local filetype = vim.fn.search("^module\\>") > 0 and "verilog" or "vlang"
   setLocals { filetype = filetype }
 end
-ext_ft.xdc = "tcl" -- constraint files
+ext_ft.xdc = "tcl" -- Xilinx/Vivado constraint files
+ext_ft.yy = function()
+  -- this might refer to either yacc files or gamemaker data
+  local filetype = vim.fn.search("^{") > 0 and "json" or "yacc"
+  setLocals { filetype = filetype }
+end
 
 table.insert(ft_hooks, function()
   local filename = vim.fn.expand("%f")

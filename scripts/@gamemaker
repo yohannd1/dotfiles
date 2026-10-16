@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+
+set -ue
+
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
+if exists GameMaker; then
+  GameMaker "$@"
+elif exists ,launch; then
+  printf >&2 "TODO: pass arguments LMAO\n"
+  exit 1
+else
+  printf >&2 "???\n"
+fi
