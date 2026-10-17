@@ -286,8 +286,6 @@ do
   vim.keymap.set("i", "<C-m>", pv_check("<C-y>", "<C-m>"), { expr = true })
 end
 
-vim.cmd([[ map <C-m> <CR> ]])
-
 dummy.nerdTreeToggleX = function()
   if vim.fn.exists("b:NERDTree") ~= 0 then
     vim.cmd.NERDTreeClose()
