@@ -20,14 +20,6 @@ quickRoutine() {
   pgrep winedevice | xargs -I{} kill -9 {}
 }
 
-fullRoutine() {
-  printf >&2 "Commiting on personal repos (via std-commits)...\n"
-  std-commits
-
-  printf >&2 "Tidying up filehist...\n"
-  filehist tidy
-}
-
 doShutdown() {
   printf >&2 "Shutting down soon! 3 seconds...\n"
   sleep 3
@@ -37,7 +29,7 @@ doShutdown() {
 case "$1" in
   full)
     quickRoutine
-    fullRoutine
+    s.on-shutdown
     doShutdown
     ;;
   quick)

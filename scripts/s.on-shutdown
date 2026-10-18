@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+set -ue
+[ $# = 0 ] || exit 2
+
+exists() { command -v "$1" >/dev/null 2>/dev/null; }
+
+printf >&2 "Tidying up filehist...\n"
+filehist tidy
+
+if exists s.on-shutdown-local; then
+  printf >&2 "Running local shutdown hook...\n"
+  s.on-shutdown-local
+else
+  printf >&2 "(Local shutdown hook not found; skipping that)\n"
+fi
