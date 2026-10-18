@@ -273,9 +273,15 @@ vim.cmd.cabbrev("bd! Bclose!")
 
 -- Navigate the completion menu with <C-k>, <C-j> and <C-m>
 do
-  local pv_check = function(lhs, rhs)
+  -- If completion menu is visible, returns `tv`; otherwise, returns `fv`.
+  local pv_check = function(tv, fv)
+    local pumvisible = vim.fn.pumvisible
     return function()
-      return vim.fn.pumvisible() == 1 and lhs or rhs
+      if pumvisible() == 1 then
+        return tv
+      else
+        return fv
+      end
     end
   end
 
@@ -295,7 +301,6 @@ dummy.nerdTreeToggleX = function()
 end
 
 map("n", "-", dummy.nerdTreeToggleX, arg_nr)
--- map("n", "<Leader>G", ":Goyo<CR>", arg_nr_s)
 
 -- better n/N keys
 map("n", "n", "/<Up><CR>", arg_nr_s)
@@ -450,6 +455,16 @@ map("n", "<Leader>qp", ":cprev<CR>", { noremap = true, desc = "quickfix: previou
 map("n", "<Leader>tn", [[:terminal<CR>i]], arg_nr)
 map("n", "<Leader>tN", lazyJobStart("tmux", "new-window"), { noremap = true, desc = "new tmux tab" })
 map("n", "<Leader>to", lazyJobStart(TERMINAL), { noremap = true, desc = "new terminal window" })
+
+-- TODO: what is this category?
+map("n", "<Leader>ah", function()
+  if vim.b.help_func then
+    local cword = vim.fn.expand("<cword>")
+    vim.b.help_func(cword)
+  else
+    print("No help function registered for this buffer")
+  end
+end, { noremap = true, desc = "help on the current word (per buffer/filetype)" })
 
 services.defKeyMenu({
   id = "buffer",

@@ -228,6 +228,17 @@ create_cmd("Find", function(t)
   vim.cmd.copen()
 end, { nargs = "*" })
 
+create_cmd("FindInRepo", function(t)
+  local root_folder = utils.getRepoRoot()
+  if root_folder == nil then
+    print("Could not get repo root")
+    return
+  end
+  vim.fn.chdir(root_folder)
+  vim.cmd(("silent grep %s"):format(t.args))
+  vim.cmd.copen()
+end, { nargs = "*" })
+
 create_cmd("AcrMentionedIn", function()
   local parent_dir = vim.fn.expand("%:h")
   local current_path = vim.fn.expand("%f")
@@ -339,12 +350,8 @@ local bufferSyntaxOff = function()
   vim.b.current_syntax = nil
 end
 
-local getRepoRoot = function()
-  return vim.fs.root(0, ".git")
-end
-
 dummy.findFilesRepo = function()
-  local root_folder = getRepoRoot()
+  local root_folder = utils.getRepoRoot()
   if root_folder == nil then
     print("Not in a git repo, it seems.")
     return
@@ -354,7 +361,7 @@ dummy.findFilesRepo = function()
 end
 
 dummy.liveGrepRepo = function()
-  local root_folder = getRepoRoot()
+  local root_folder = utils.getRepoRoot()
   if root_folder == nil then
     print("Not in a git repo, it seems.")
     return

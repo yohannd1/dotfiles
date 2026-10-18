@@ -516,4 +516,9 @@ M.cloneTable = function(t)
   return ret
 end
 
+M.getRepoRoot = function()
+  -- TODO: use other types of markers as well
+  return vim.fs.root(0, ".git")
+end
+
 return M
