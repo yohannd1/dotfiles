@@ -1,0 +1,56 @@
+#!/usr/bin/env janet
+
+(use dotf-cli)
+(use dotf-utils)
+
+(def arg-spec
+  '(:description "list all tasks with dates, and sort them"
+    :options
+    [{:name not-reverse :short -R :long --not-reverse
+      :help "Don't reverse dates in display"}
+     ]))
+
+(defn find-and-extract [peg text]
+  (as?->
+    (peg/find peg text) .x
+    (peg/match peg (string/slice text .x))))
+
+(defn main [& args]
+  (def {:opts arg-opts} (parse-args ;arg-spec :in-args args))
+
+  (defn remove-filename [x]
+    (in (string/split " " x 0 2) 1))
+  (assert (= (remove-filename "foo bar baz") "bar baz"))
+
+  (def peg
+    (peg/compile
+      # TODO: is this the best way to parse it? It feels frail idk
+      '{:main (* :prefix (<- :date))
+        :prefix (* (+ "( )" "[ ]") " ")
+        :date (* (repeat 4 :d) "/" (repeat 2 :d) "/" (repeat 2 :d))}))
+
+  (defn parse-date [task-line]
+    [(-?> (find-and-extract peg task-line) (in 0))
+     task-line])
+
+  (as->
+    (run<stdout ["acr-tasks" "list"]) .x
+    (string/trim .x)
+    (string/split "\n" .x)
+    (filter (complement empty?) .x)
+    (map remove-filename .x)
+    (map parse-date .x)
+    (filter |(in $ 0) .x)
+    (group-by |(in $ 0) .x)
+    (let [sort-fn (if (arg-opts 'not-reverse) |(< $0 $1) |(< $1 $0))
+          ret @[]]
+      (each k (sorted (keys .x) sort-fn)
+        (def tasks (map |(in $ 1) (in .x k)))
+        (array/push ret [k tasks]))
+      ret)
+    (each [day tasks] .x
+      (print "== " day " ==")
+      (each t tasks
+        (print "  " t))
+      (print))
+    ))
