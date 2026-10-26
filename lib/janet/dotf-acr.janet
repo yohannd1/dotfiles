@@ -15,13 +15,12 @@
 
   (letrec rec []
     (when (def line (next-line))
-      (if (string/has-prefix? "%:" line)
-        (do
-          (def [start ev] (string/split " " line 0 2))
-          (def ek (-> start (string/slice 2) keyword))
-          (set (h-entries ek) (string/trim ev))
-          (rec))
-        (set (ret :body-start-lnum) last-lnum))))
+      (when (string/has-prefix? "%:" line)
+        (def [start ev] (string/split " " line 0 2))
+        (def ek (-> start (string/slice 2) keyword))
+        (set (h-entries ek) (string/trim ev))
+        (rec))))
+  (set (ret :body-start-lnum) last-lnum)
 
   (when only-header
     (break ret))
