@@ -1,9 +1,12 @@
 (use dotf-utils)
 (use dotf-path)
 
-(defn acr-parse-file [fd &named only-header]
-  (def h-entries @{})
-  (def ret @{:header h-entries})
+(defn acr-make-parser [fd]
+  # Valid states:
+  #   'start : nothing parsed yet
+  #   'did-header : parsed the header
+  #   'done : parsed header & body
+  (var state 'start)
 
   (def lines-iter (file/lines fd))
   (var last-lnum 0)
@@ -13,26 +16,65 @@
       (++ last-lnum)
       (in lines-iter k)))
 
-  (letrec rec []
-    (when (def line (next-line))
-      (when (string/has-prefix? "%:" line)
-        (def [start ev] (string/split " " line 0 2))
-        (def ek (-> start (string/slice 2) keyword))
-        (set (h-entries ek) (string/trim ev))
-        (rec))))
-  (set (ret :body-start-lnum) last-lnum)
-
-  (when only-header
-    (break ret))
-
-  # push everything in the body into a buffer (TODO: should I instead split it into lines already?)
+  # declaring it early because parse-header might add to it
   (def body @"")
-  (while (def line (next-line))
-    (buffer/push-string body line)
-    (each line lines-iter
-      (buffer/push-string body line)))
-  (set (ret :body) body)
+  (var body-start-lnum nil)
 
+  (defn parse-header [_]
+    (when (not= state 'start)
+      (error "header already parsed/skipped"))
+
+    (def entries @{})
+
+    (defn is-tag-line [x]
+      (string/has-prefix? "%:" x))
+
+    (letrec rec []
+      (def line (next-line))
+
+      (if (and line (is-tag-line line))
+        (let [[start ev] (string/split " " line 0 2)
+              ek (-> start (string/slice 2) keyword)]
+          (set (entries ek) (string/trim ev))
+          (rec))
+        (do
+          (when line
+            (buffer/push-string body line))
+          (set body-start-lnum last-lnum))))
+    (set state 'did-header)
+
+    entries)
+
+  (defn parse-body [_]
+    (when (not= state 'did-header)
+      (error "invalid state for parsing body"))
+
+    # push everything in the body into a buffer
+    (while (def line (next-line))
+      (buffer/push-string body line)
+      (each line lines-iter
+        (buffer/push-string body line)))
+    (set state 'done)
+
+    body)
+
+  (defn get-body-start-lnum [_]
+    (when (= state 'start)
+      (error "info not available yet"))
+    body-start-lnum)
+
+  {:parse-header parse-header
+   :parse-body parse-body
+   :get-body-start-lnum get-body-start-lnum})
+
+(defn acr-parse-file [fd &named only-header]
+  (def ret @{})
+  (def p (acr-make-parser fd))
+
+  (set (ret :header) (:parse-header p))
+  (set (ret :body-start-lnum) (:get-body-start-lnum p))
+  (unless only-header
+    (set (ret :body) (:parse-body p)))
   ret)
 
 (defn acr-read-header [fd]
