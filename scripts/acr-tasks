@@ -18,6 +18,8 @@
       :has-arg true}
      {:name important :short -i :long --important
       :help "only show important tasks"}
+     {:name vim-quickfix :long --vim-quickfix
+      :help "use vim-quickfix format for use in the wiki folder"}
      ]])
 
 (defn main [& args]
@@ -56,7 +58,7 @@
     (each np note-pairs
       (def [id path] np)
       (def data (acr-slurp-parse path))
-      (def base-lnum (inc (data :body-start-lnum)))
+      (def base-lnum (data :body-start-lnum))
 
       (def tasks
         (->>
@@ -87,7 +89,10 @@
     (parse-all-tasks
       (fn [[id _] tasks]
         (each t tasks
-          (print id " " (t :prefix) " " (t :content)))))
+          (def t-text (string (t :prefix) " " (t :content)))
+          (if (opts 'vim-quickfix)
+            (print id ".acr:" (t :lnum) ":1:" t-text) # TODO: location!!
+            (print id " " t-text)))))
 
     'pick
     (match (pick-task)
