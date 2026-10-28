@@ -3,12 +3,13 @@
   Starts it with the program name and arguments from `args`, and receives options in `env`.
 
   Valid options are :in, :out and :err, referring to said descriptors, and they can be one of either:
-  - a string/buffer, which is read onto (or written into);
+  - a string/buffer, which is read from in the case of :in, and written into otherwise;
   - a function, which receives the file descriptor;"
   [args &opt env]
 
   # FIXME: improve this ugly fuck ass spaghetti code
   # TODO: fix the doc. It's not clear.
+  # TODO: "ignore" thingy that redirects traffic to /dev/null or ignores it
 
   (default env {})
 
