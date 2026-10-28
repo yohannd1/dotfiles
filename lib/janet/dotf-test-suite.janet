@@ -52,6 +52,21 @@
   # TODO: test empty args subcommand
   )
 
+(defn test-acr []
+  (def cases
+    '(("( ) foo" {:prefix "( )" :content "foo"})
+      ("- ( ) foo" {:prefix "( )" :content "foo"})
+      ("  - [ ] foo" {:prefix "[ ]" :content "foo"})))
+  (each [a b] cases
+    (assert (= (acr-parse-task-line a) b))))
+
 (defn test-all []
-  (test-utils)
-  (test-cli))
+  (def to-test
+    [["dotf-utils" test-utils]
+     ["dotf-cli" test-cli]
+     ["dotf-acr" test-acr]])
+
+  (each [name func] to-test
+    (eprint name ": testing...")
+    (func)
+    (eprint name ": done!")))

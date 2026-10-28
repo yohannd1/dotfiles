@@ -16,10 +16,5 @@
   (def wiki-dir (getenv-or-die "ACR_WIKI_DIR"))
   (def [tag] args)
 
-  (each [id path] (acr-get-wiki-note-pairs wiki-dir)
-    (def header (acr-slurp-header path))
-    (def tags-raw (in header :tags))
-    (when tags-raw
-      (def tags (string/split " " tags-raw))
-      (when (find |(= $ tag) tags)
-        (printf "%s %s" id (-> header (in :title) (or "<NO TITLE>")))))))
+  (each [id path _ header] (acr-find-by-tag wiki-dir tag)
+    (print id " " (in header :title "<NO TITLE>"))))

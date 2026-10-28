@@ -29,20 +29,12 @@
   (def wiki-dir (getenv-or-die "ACR_WIKI_DIR"))
   (def note-pairs (acr-get-wiki-note-pairs wiki-dir))
 
-  (def task-peg
-    (peg/compile
-      '{:main (* :s* (? :bullet) (<- :task) :s+ (<- (any 1)) -1)
-        :bullet (* (+ "-" "*") :s+)
-        :task (+ "( )" "[ ]")}))
-
   (defn parse-task [line lnum]
-    (match (peg/match task-peg line)
-      nil nil
-      [t c] {:prefix t :content c :lnum lnum}))
-
-  (assert (= (parse-task "( ) foo" 0) {:prefix "( )" :content "foo" :lnum 0}))
-  (assert (= (parse-task "- ( ) foo" 0) {:prefix "( )" :content "foo" :lnum 0}))
-  (assert (= (parse-task "  - [ ] foo" 0) {:prefix "[ ]" :content "foo" :lnum 0}))
+    (def p (acr-parse-task-line line))
+    (unless (nil? p)
+      {:prefix (p :prefix)
+       :content (p :content)
+       :lnum lnum}))
 
   (var important-filter (fn [&] true))
   (when (opts 'important)

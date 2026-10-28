@@ -1,0 +1,31 @@
+#!/usr/bin/env janet
+
+(use dotf-acr)
+
+(defn main [arg0 & args]
+  (assert (empty? args))
+  (def wiki-dir (assert (os/getenv "ACR_WIKI_DIR")))
+
+  (def projects (acr-find-by-tag wiki-dir "project"))
+  (def n-active (length projects))
+  (def n-frozen (length (acr-find-by-tag wiki-dir "project.frozen")))
+  (def n-done (length (acr-find-by-tag wiki-dir "project.done")))
+  (def n-discarded (length (acr-find-by-tag wiki-dir "project.discarded")))
+
+  (printf
+    "%d active projects, %d frozen, %d done, %d discarded"
+    n-active n-frozen n-done n-discarded)
+
+  (each [id path tags header] projects
+    (print "=== " (header :title) " (" (header :tags) ") ===")
+    (def p (acr-slurp-parse path))
+    (def body-lines (string/split "\n" (p :body))) # TODO: this can be faster if I don't read the entire body at once.
+
+    (prompt 'blk
+      (each x body-lines
+        (when (def t (acr-parse-task-line x))
+          (print "  " (t :prefix) " " (t :content))
+          (return 'blk)))
+      (print "  (could not find any tasks)"))
+
+    (print)))

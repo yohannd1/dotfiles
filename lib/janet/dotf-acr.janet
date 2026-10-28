@@ -107,3 +107,31 @@
   (as->
     (os/dir wiki-dir) .x
     (map |(remove-suffix $ ".acr") .x)))
+
+(def- task-peg
+  (peg/compile
+    '{:main (* :s* (? :bullet) (<- :task) :s+ (<- (any 1)) -1)
+      :bullet (* (+ "-" "*") :s+)
+      :task (+ "( )" "[ ]")}))
+
+(defn acr-parse-task-line [line]
+  (match (peg/match task-peg line)
+    nil nil
+    [t c] {:prefix t :content c}
+    _ (error "unreachable")))
+
+(defn acr-find-by-tag
+  "Finds all notes in the wiki with the specified tag. Returns an array of `[id
+  path tags header]` tuples."
+  [wiki-dir tag]
+
+  (def ret @[])
+
+  (each [id path] (acr-get-wiki-note-pairs wiki-dir)
+    (def header (acr-slurp-header path))
+    (def tags-raw (in header :tags ""))
+    (def tags (string/split " " tags-raw))
+    (when (find |(= $ tag) tags)
+      (array/push ret [id path tags header])))
+
+  ret)
