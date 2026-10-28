@@ -809,8 +809,6 @@ M.afterPluginLoad = function()
     utils.addTextInLine(text, opts)
   end
 
-  -- Android is so wonky but I still use so I have to do this kinda hack.
-  -- local list_titles_command = {"lua", ("%s/scripts/acr-list-titles"):format(vim.env.DOTFILES)}
   local list_titles_command = {"acr-list-titles"}
 
   dummy.wikiFzOpen = function()
