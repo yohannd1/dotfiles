@@ -247,6 +247,14 @@ create_cmd("AcrMentionedIn", function()
 end, { nargs = 0 })
 
 create_cmd("AcrImportant", [[Find '\%important']], { nargs = 0 })
+create_cmd("AcrTaskRepeat", ".!acr-task-repeat", { nargs = 0 })
+create_cmd("AcrAllTasks", function()
+  local proc = vim.system({"acr-tasks", "list", "--vim-quickfix"}, { text = true }):wait()
+  local lines = vim.split(proc.stdout, "\n")
+  print(vim.inspect(lines[1]))
+  vim.fn.setloclist(0, {}, "r", { lines = lines })
+  vim.cmd.lopen()
+end, { nargs = 0 })
 
 do
   local num_val = 0
