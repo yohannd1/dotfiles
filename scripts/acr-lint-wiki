@@ -1,11 +1,14 @@
-#!/usr/bin/env sh
+#!/usr/bin/env janet
 
-set -ue
+(use dotf-utils)
+(use dotf-acr)
 
-(
-  cd "$ACR_WIKI_DIR"
-  fd -tf '\.acr$' | while read -r file; do
-    acr2html -b debug "$file" >/dev/null \
-      || printf "ERROR IN FILE: [[ %s ]]\n" "$file"
-  done
-)
+(defn main [arg0 & args]
+  (assert (empty? args))
+  (def wiki-dir (assert (os/getenv "ACR_WIKI_DIR")))
+
+  (each [id path] (acr-get-wiki-note-pairs wiki-dir)
+    (def res (run< ["acr2html" "-b" "debug" path] {:out true :err true}))
+    (unless (zero? (res :code))
+      (print id " ============")
+      (print (res :err)))))
