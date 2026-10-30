@@ -46,3 +46,12 @@ def factor(x: int) -> Iterable[int]:
         raise Exception(f"Bad state: {cur=} {prime=} {factors=}")
 
     return factors
+
+def bpm_to_ms(x: float) -> float:
+    """Converts a BPM frequency to a milisecond period."""
+    return 60_000 / x
+
+def ms_to_bpm(x: float) -> float:
+    """Converts a milisecond period to a BPM frequency."""
+    # It's the same formula haha
+    return bpm_to_ms(x)
