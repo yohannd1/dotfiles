@@ -207,6 +207,7 @@ ft.gml = function()
     foldenable = true,
     foldmarker = "#region,#endregion",
     commentstring = "// %s",
+    textwidth = 999,
   }
   setTabIndent(4)
 end
