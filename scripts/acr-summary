@@ -10,9 +10,12 @@
   (defn get-title [[_ _ _ header]]
     (in header :title ""))
 
+  (defn project-or-task-queue [x]
+    (or (= x "project") (= x "task_queue")))
+
   (def projects
     (as->
-      (acr-find-by-tag wiki-dir "project") .x
+      (acr-find-by-tag wiki-dir (fn [tags] (find project-or-task-queue tags))) .x
       (sort-by get-title .x)))
   (def n-active (length projects))
   (def n-frozen (length (acr-find-by-tag wiki-dir "project.frozen")))
@@ -32,14 +35,19 @@
   (defn is-long-term [[_ _ tags _]]
     (truthy? (find |(= $ "long_term") tags)))
 
-  (def projects-hp @[])
+  (defn is-task-queue [[_ _ tags _]]
+    (truthy? (find |(= $ "task_queue") tags)))
+
+  (def projects-main @[])
   (def projects-lp @[])
   (def projects-lt @[])
+  (def task-queues @[])
   (each p projects
     (cond
+      (is-task-queue p) (array/push task-queues p)
       (is-low-priority p) (array/push projects-lp p)
       (is-long-term p) (array/push projects-lt p)
-      (array/push projects-hp p)))
+      (array/push projects-main p)))
 
   (defn get-first-task [path]
     (def p (acr-slurp-parse path))
@@ -54,7 +62,7 @@
       (t :content)
       "(could not find any tasks)"))
 
-  (each [id path tags header] projects-hp
+  (each [id path tags header] projects-main
     (print "- *" (header :title) "* (" (header :tags) ")")
     (print "  " (get-first-task-text path))
     (print))
@@ -69,6 +77,13 @@
   (each [id path tags header] projects-lt
     (def title (in header :title "<NO TITLE>"))
     (print "  *" title "*: " (get-first-task-text path)))
+  (print)
 
+  (print "--- TASK QUEUES ---")
+  (each [id path tags header] task-queues
+    (def title (in header :title "<NO TITLE>"))
+    (print "  *" title "*: " (get-first-task-text path)))
+
+  # TODO: get the first in each task queue as well
   # TODO: list frozen as well?
   )

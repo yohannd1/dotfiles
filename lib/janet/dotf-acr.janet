@@ -121,17 +121,24 @@
     _ (error "unreachable")))
 
 (defn acr-find-by-tag
-  "Finds all notes in the wiki with the specified tag. Returns an array of `[id
-  path tags header]` tuples."
+  "Finds all notes in the wiki with the specified tag, which may be a single
+  tag (as a string) or a predicate that takes in the list of available tags.
+  Returns an array of `[id path tags header]` tuples."
   [wiki-dir tag]
 
   (def ret @[])
+
+  (def tag-func
+    (cond
+      (string? tag) (fn [tags] (truthy? (find |(= $ tag) tags)))
+      (function? tag) tag
+      (error (string "expected string or function, got " tag))))
 
   (each [id path] (acr-get-wiki-note-pairs wiki-dir)
     (def header (acr-slurp-header path))
     (def tags-raw (in header :tags ""))
     (def tags (string/split " " tags-raw))
-    (when (find |(= $ tag) tags)
+    (when (tag-func tags)
       (array/push ret [id path tags header])))
 
   ret)

@@ -256,6 +256,18 @@ create_cmd("AcrAllTasks", function()
   vim.cmd.lopen()
 end, { nargs = 0 })
 
+create_cmd("AcrSummary", function()
+  local wd = vim.g.acr_wiki_dir
+  if wd == nil then
+    print("Wiki dir not defined!")
+  end
+  vim.fn.chdir(wd)
+  vim.cmd(".!acr-summary")
+  vim.cmd.normal("dd")
+  vim.bo.filetype = "acrylic"
+  vim.cmd("setlocal nomod noma")
+end, { nargs = 0 })
+
 do
   local num_val = 0
 
