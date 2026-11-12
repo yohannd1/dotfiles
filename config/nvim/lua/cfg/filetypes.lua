@@ -755,6 +755,13 @@ addLsp("c++", {
   settings = {}, -- TODO: check this for clangd - https://catalog.lintel.tools/schemas/schemastore/clangd/ ?
 })
 
+addLsp("ts", {
+  cmd = {"typescript-language-server", "--stdio"},
+  filetypes = {"typescript", "typescriptreact"},
+  root_markers = {"package.json", "tsconfig.json"},
+  settings = {},
+})
+
 -- addLsp("java", {
 --   cmd = {"jdtls"},
 --   filetypes = {"java"},
