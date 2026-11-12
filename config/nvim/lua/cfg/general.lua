@@ -223,9 +223,26 @@ autocmd({"BufEnter"}, {
 
 -- vim.g.rifle_split_direction = utils.os.is_android and "down" or "right"
 
-create_cmd("Find", function(t)
-  vim.cmd(("silent grep %s"):format(t.args))
+local trimLastLine = function(t)
+  while vim.trim(t[#t]) == "" do
+    t[#t] = nil
+  end
+end
+
+-- Search for a regex in the current directory and fill the location
+-- list
+local searchExprLoc = function(s)
+  -- Before this, I used to use: vim.cmd(("silent grep %s"):format(s))
+  local cmd = {"rg", "--vimgrep", "--no-hidden", "--no-heading", "--", s}
+  local proc = vim.system(cmd, { text = true }):wait()
+  local lines = vim.split(proc.stdout, "\n")
+  trimLastLine(lines)
+  vim.fn.setqflist({}, "r", { title = "Search results for " .. s, lines = lines })
   vim.cmd.copen()
+end
+
+create_cmd("Find", function(t)
+  searchExprLoc(t.args)
 end, { nargs = "*" })
 
 create_cmd("FindInRepo", function(t)
@@ -235,8 +252,7 @@ create_cmd("FindInRepo", function(t)
     return
   end
   vim.fn.chdir(root_folder)
-  vim.cmd(("silent grep %s"):format(t.args))
-  vim.cmd.copen()
+  searchExprLoc(t.args)
 end, { nargs = "*" })
 
 create_cmd("AcrMentionedIn", function()
@@ -247,11 +263,10 @@ create_cmd("AcrMentionedIn", function()
 end, { nargs = 0 })
 
 create_cmd("AcrImportant", [[Find '\%important']], { nargs = 0 })
-create_cmd("AcrTaskRepeat", ".!acr-task-repeat", { nargs = 0 })
+create_cmd("AcrTaskRepeat", ".!acr-task-repeat", { nargs = 0 }) -- TODO: actually make this real lmao
 create_cmd("AcrAllTasks", function()
   local proc = vim.system({"acr-tasks", "list", "--vim-quickfix"}, { text = true }):wait()
   local lines = vim.split(proc.stdout, "\n")
-  print(vim.inspect(lines[1]))
   vim.fn.setloclist(0, {}, "r", { lines = lines })
   vim.cmd.lopen()
 end, { nargs = 0 })
