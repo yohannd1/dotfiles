@@ -8,41 +8,7 @@ def eprint(*args, **kwargs) -> None:
     global sys
     print(*args, file=sys.stderr, **kwargs)
 
-apps = []
-
-if m.is_android:
-    # m.link_glob(DOTFILES/"config/termux", "~/.termux")
-    pass
-else:
-    apps += [
-        "xorg",
-        "river",
-        "hypr",
-        "awesome",
-        "qtile",
-        # "i3",
-        # "bspwm",
-
-        "sxhkd",
-        "MangoHud",
-        "picom",
-        "zathura",
-        "taskwarrior",
-        "sxiv",
-        "tig",
-        # "rofi",
-        # "polybar",
-
-        # "wezterm",
-        # "alacritty",
-    ]
-
-    for i in {2, 4}:
-        origin = DOTFILES / f"config/gtk-{i}.0"
-        if origin.is_dir():
-            m.link_glob(origin, f"~/.config/gtk-{i}.0")
-
-apps += [
+FOLDERS_ALL = [
     "irb",
     "inputrc",
     "dircolors",
@@ -53,11 +19,36 @@ apps += [
     "mpv",
     "lf",
     "containers", # podman config
+    "tig",
     # "broot",
 ]
 
-for app in apps:
-    m.link_conf(app, f"~/.config/{app}")
+FOLDERS_ANDROID = []
+
+FOLDERS_PC = [
+    "xorg",
+    "river",
+    "hypr",
+    "awesome",
+    "qtile",
+    # "i3",
+    # "bspwm",
+
+    "sxhkd",
+    "MangoHud",
+    "picom",
+    "zathura",
+    "taskwarrior",
+    "sxiv",
+    # "rofi",
+    # "polybar",
+
+    # "wezterm",
+    # "alacritty",
+]
+
+for fld in FOLDERS_ALL + (FOLDERS_ANDROID if m.is_android else FOLDERS_PC):
+    m.link_conf(fld, f"~/.config/{fld}")
 
 m.link_conf("gdbinit", "~/.gdbinit")
 m.link_conf("gtkwaverc", "~/.gtkwaverc")
@@ -83,8 +74,12 @@ m.link_glob(DOTFILES / "config/nvim", "~/.config/nvim")
 m.link_glob(DOTFILES / "config/emacs", "~/.emacs.d")
 m.link_glob(DOTFILES / "config/w3m", "~/.w3m")
 
+# desktop stuff
 if not m.is_android:
-    # desktop apps
+    for i in {2, 4}:
+        origin = DOTFILES / f"config/gtk-{i}.0"
+        if origin.is_dir():
+            m.link_glob(origin, f"~/.config/gtk-{i}.0")
 
     lwdir = Path("~/.librewolf").expanduser()
     m.link_conf("librewolf/overrides.js", lwdir / "librewolf.overrides.cfg")
