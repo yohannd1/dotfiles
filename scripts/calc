@@ -56,6 +56,13 @@ def ms_to_bpm(x: float) -> float:
     # It's the same formula haha
     return bpm_to_ms(x)
 
+def sec_to_hms(secs: int) -> int:
+    s = secs % 60
+    m = secs // 60
+    h = m // 60
+    m = m % 60
+    return (h, m, s)
+
 def fahrenheit_to_celsius(x: float) -> float:
     return (x - 32) * 5 / 9
 
