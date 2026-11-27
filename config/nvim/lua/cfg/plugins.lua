@@ -612,7 +612,7 @@ M.add({
 
 M.add({
   source = "goerz/jupytext.nvim",
-  condition = not utils.os.is_android,
+  condition = false, -- utils.os.is_android,
   after = function()
     local jupytext = utils.tryRequire("jupytext")
     if jupytext == nil then
