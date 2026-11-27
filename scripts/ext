@@ -43,6 +43,7 @@ main() {
     *.tar.bz2|*.tbz2) tar -xvjf "$archive" ;;
     *.tar.xz|*.txz) tar -xvf "$archive" ;;
     *.tar.gz|*.tgz) tar -xvzf "$archive" ;;
+    *.tar.zst|*.tzst) tar --zstd -xvf "$archive" ;;
     *.lzma) unlzma "$archive" ;;
     *.tar) tar -xvf "$archive" ;;
     *.bz2) bunzip2 "$archive" ;;
@@ -53,6 +54,7 @@ main() {
     *.tar.bz2.gpg|*.tbz2.gpg) gpg --decrypt "$archive" | tar -xvj ;;
     *.tar.xz.gpg|*.txz.gpg) gpg --decrypt "$archive" | tar -xv ;;
     *.tar.gz.gpg|*.tgz.gpg) gpg --decrypt "$archive" | tar -xvz ;;
+    *.tar.zst.gpg|*.tzst.gpg) gpg --decrypt "$archive" | tar --zstd -xvj ;;
 
     *.rar) unrar x -ad "$archive" ;;
     *.zip) unzip "$archive" ;;
