@@ -53,8 +53,8 @@ return function(api)
   api.key("super period"):desc("increase volume"):map("volumectl inc")
   api.key("super y"):desc("toggle mute (speakers)"):map("volumectl mute")
 
-  api.key("super alt comma"):desc("decrease mic volume"):map("volumectl dec @DEFAULT_SOURCE@")
-  api.key("super alt period"):desc("increase mic volume"):map("volumectl inc @DEFAULT_SOURCE@")
+  api.key("super alt comma"):desc("decrease mic volume"):map("VOLUMECTL_MAX_LIMIT=1000 volumectl dec @DEFAULT_SOURCE@")
+  api.key("super alt period"):desc("increase mic volume"):map("VOLUMECTL_MAX_LIMIT=1000 volumectl inc @DEFAULT_SOURCE@")
   api.key("super x"):desc("toggle mute (mic)"):map("d.mic-toggle")
 
   -- api.key("super alt comma"):desc("previous in player"):map("playerctl previous")
