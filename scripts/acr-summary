@@ -57,32 +57,41 @@
         (when (def t (acr-parse-task-line x))
           (return 'blk t)))))
 
+  (def could-not-find       "%% (could not find any tasks)")
+
   (defn get-first-task-text [path]
     (if (def t (get-first-task path))
       (t :content)
-      "(could not find any tasks)"))
+      could-not-find))
 
   (each [id path tags header] projects-main
     (print "- *" (header :title) "* (" (header :tags) ")")
     (print "  " (get-first-task-text path))
     (print))
 
+  (defn print-small-project [header path]
+    (def title (in header :title "<NO TITLE>"))
+    (def ft (get-first-task-text path))
+
+    (print
+      "  *" title "*:"
+      (if (= ft could-not-find)
+        (string " " ft)
+        (string "\n    " ft))))
+
   (print "--- LOW PRIORITY ---")
   (each [id path tags header] projects-lp
-    (def title (in header :title "<NO TITLE>"))
-    (print "  *" title "*: " (get-first-task-text path)))
+    (print-small-project header path))
   (print)
 
   (print "--- LONG TERM ---")
   (each [id path tags header] projects-lt
-    (def title (in header :title "<NO TITLE>"))
-    (print "  *" title "*: " (get-first-task-text path)))
+    (print-small-project header path))
   (print)
 
   (print "--- TASK QUEUES ---")
   (each [id path tags header] task-queues
-    (def title (in header :title "<NO TITLE>"))
-    (print "  *" title "*: " (get-first-task-text path)))
+    (print-small-project header path))
 
   # TODO: get the first in each task queue as well
   # TODO: list frozen as well?
